@@ -24,8 +24,8 @@ import com.avnet.cs.commons.dao.BaseEntity;
 @SequenceGenerator(initialValue = 1, name = "idgen", sequenceName = "tables_id_seq", allocationSize = 1)
 public class Table extends BaseEntity {
 
-	@javax.persistence.Column(name = "server_id")
-	private Long serverId;
+//	@javax.persistence.Column(name = "server_id")
+//	private Long serverId;
 
 	@javax.persistence.Column(name = "name")
 	private String name;
@@ -102,13 +102,13 @@ public class Table extends BaseEntity {
 		this.server = server;
 	}
 
-	public Long getServerId() {
-		return serverId;
-	}
-
-	public void setServerId(Long serverId) {
-		this.serverId = serverId;
-	}
+//	public Long getServerId() {
+//		return serverId;
+//	}
+//
+//	public void setServerId(Long serverId) {
+//		this.serverId = serverId;
+//	}
 
 	public boolean isActive() {
 		return active;

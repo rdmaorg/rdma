@@ -1,24 +1,23 @@
 package ie.clients.gdma2.domain;
 
-import java.io.Serializable;
-
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 
+import com.avnet.cs.commons.dao.BaseEntity;
+
 @Entity
 @javax.persistence.Table(name = "user_access")
 @SequenceGenerator(initialValue = 1, name = "idgen", sequenceName = "user_access_id_seq", allocationSize = 1)
-public class UserAccess implements Serializable {
+public class UserAccess extends BaseEntity {
 
-	private static final long serialVersionUID = -2834870515554339937L;
 
-	@javax.persistence.Column(name = "user_id")
-	private Long userId;
-	
-	@javax.persistence.Column(name = "table_id")
-	private Long tableId;
+//	@javax.persistence.Column(name = "user_id")
+//	private Long userId;
+//	
+//	@javax.persistence.Column(name = "table_id")
+//	private Long tableId;
 	
 	@javax.persistence.Column(name = "allow_display")
 	private boolean allowDisplay = false;
@@ -40,21 +39,21 @@ public class UserAccess implements Serializable {
 	@JoinColumn(name = "table_id", nullable = false)
 	private Table table;
 	
-	public Long  getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long  userId) {
-        this.userId = userId;
-    }
-    
-    public Long  getTableId() {
-        return tableId;
-    }
-
-    public void setTableId(Long  tableId) {
-        this.tableId = tableId;
-    }
+//	public Long  getUserId() {
+//        return userId;
+//    }
+//
+//    public void setUserId(Long  userId) {
+//        this.userId = userId;
+//    }
+//    
+//    public Long  getTableId() {
+//        return tableId;
+//    }
+//
+//    public void setTableId(Long  tableId) {
+//        this.tableId = tableId;
+//    }
     
     public boolean getAllowDisplay() {
         return allowDisplay;

@@ -1,18 +1,27 @@
 package ie.clients.gdma2.rest;
 
+import java.util.List;
 import java.util.Map;
 
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
 import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 
 @RestController
 @RequestMapping("rest/server")
 public class ServerResource extends BaseDataTableResource {
-	@RequestMapping("search")
-	public PaginatedTableResponse<Server> searchPlanSwitchOrders(@RequestParam Map<String, String> params) {
+	@RequestMapping("list")
+	public List<Server> getallServers(){
+		return serviceFacade.getMetadataService().getAllServers();
+	}
+	
+	@RequestMapping("table")
+	public PaginatedTableResponse<Server> getServerPaginatedTable(@RequestParam Map<String, String> params) {
 		String orderByColumn = "id";
 
 		switch (getOrderByColumn(params)) {
@@ -50,4 +59,10 @@ public class ServerResource extends BaseDataTableResource {
 		return resp;
 
 	}
+	
+	@RequestMapping(value="save", method = RequestMethod.POST)
+	public void saveServer(@RequestBody Server server){
+		serviceFacade.getMetadataService().saveServer(server);
+	}
+	
 }
