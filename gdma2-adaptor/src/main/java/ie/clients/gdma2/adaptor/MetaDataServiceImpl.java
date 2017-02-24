@@ -60,4 +60,17 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		repositoryManager.getServerRepository().save(server);
 	}
 
+	@Transactional
+	@Override
+	public void deleteServer(int id) {
+		repositoryManager.getServerRepository().delete(id);
+	}
+
+	@Transactional
+	@Override
+	public void deleteServer(Server server) {
+		repositoryManager.getServerRepository().delete(server);
+	}
+
+	
 }

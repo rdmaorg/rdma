@@ -11,4 +11,6 @@ public interface MetaDataService {
 			String orderDirection, int startIndex, int length);
 
 	public void saveServer(Server server);
+	public void deleteServer(int id);
+	public void deleteServer(Server server);
 }

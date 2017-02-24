@@ -3,6 +3,7 @@ package ie.clients.gdma2.rest;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -64,5 +65,11 @@ public class ServerResource extends BaseDataTableResource {
 	public void saveServer(@RequestBody Server server){
 		serviceFacade.getMetadataService().saveServer(server);
 	}
+
 	
+	@RequestMapping(value="delete/{id}", method = RequestMethod.DELETE)
+	public void saveServer(@PathVariable("id") Integer id){
+		serviceFacade.getMetadataService().deleteServer(id);
+	}
+
 }
