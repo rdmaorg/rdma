@@ -5,7 +5,8 @@ var restUri = {
 //	},
 	server:{
 		list: getRestBaseUri() + '/server/list',
-		table: getRestBaseUri() + '/server/table'
+		table: getRestBaseUri() + '/server/table',
+		save: getRestBaseUri() + '/server/save'
 	}
 };
 
