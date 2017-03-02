@@ -14,34 +14,40 @@ import com.avnet.cs.commons.dao.BaseEntity;
  *
  */
 @Entity
-@javax.persistence.Table(name = "user")
-@SequenceGenerator(initialValue = 1, name = "idgen", sequenceName = "user_id_seq", allocationSize = 1)
+@javax.persistence.Table(name = "USERS_GDMA2")
+@SequenceGenerator(initialValue = 1, name = "idgen", sequenceName = "SEQ_USERS_GDMA2", allocationSize = 1)
 public class User extends BaseEntity {
 
-	@javax.persistence.Column(name = "first_name")
+	@javax.persistence.Column(name = "FIRST_NAME")
     private String firstName;
 
-	@javax.persistence.Column(name = "last_name")
+	@javax.persistence.Column(name = "LAST_NAME")
     private String lastName;
 
-	@javax.persistence.Column(name = "user_name")
+	@javax.persistence.Column(name = "USERNAME")
     private String userName;
 
-	@javax.persistence.Column(name = "domain")
+	@javax.persistence.Column(name = "DOMAIN")
     private String domain;
 
-	@javax.persistence.Column(name = "admin")
+	@javax.persistence.Column(name = "IS_ADMIN")
     private boolean admin;
 
-	@javax.persistence.Column(name = "locked")
+	@javax.persistence.Column(name = "IS_LOCKED")
     private boolean locked;
 
-	@javax.persistence.Column(name = "active")
+	@javax.persistence.Column(name = "ACTIVE")
     private boolean active;
 
-	@OneToMany(mappedBy="user")
+	//@OneToMany(mappedBy="gdmaUser")
+	@javax.persistence.Transient
     private Set<UserAccess> userAccess = new LinkedHashSet<UserAccess>();
     
+	/*
+	@ManyToMany(cascade = CascadeType.MERGE, mappedBy = "users")
+	private List<Table> tables;
+	*/
+	
     public String getDomain() {
         return domain;
     }

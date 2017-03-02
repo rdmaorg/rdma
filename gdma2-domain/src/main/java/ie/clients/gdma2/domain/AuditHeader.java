@@ -13,27 +13,32 @@ import com.avnet.cs.commons.dao.BaseEntity;
  *         This class is an Audit Header record
  */
 @Entity
-@javax.persistence.Table(name = "audit_header")
-@SequenceGenerator(initialValue = 1, name = "idgen", sequenceName = "audit_header_id_seq", allocationSize = 1)
+@javax.persistence.Table(name = "AUDIT_HEADER_GDMA2")
+@SequenceGenerator(initialValue = 1, name = "idgen", sequenceName = "SEQ_AUDIT_HEADER_GDMA2", allocationSize = 1)
 public class AuditHeader extends BaseEntity{
 
-	@javax.persistence.Column(name = "table_id")
-    private Long tableID;
+	/*TODO openQ use table object instead od ID?*/
+	/*DB table being modified*/
+	@javax.persistence.Column(name = "TABLE_ID")
+    private Integer tableID;
 
-	@javax.persistence.Column(name = "type")
+	/*auditType - UPDATE, DELETE, ADD*/
+	@javax.persistence.Column(name = "AUDIT_TYPE")
     private char type;
 
-	@javax.persistence.Column(name = "modified_by")
+	/*user who modified table - is our domain user not spring one*/
+	@javax.persistence.Column(name = "MODIFIED_BY")
     private String modifiedBy;
 
-	@javax.persistence.Column(name = "modified_on")
+	/*date of modification, usually current java.util.Date */
+	@javax.persistence.Column(name = "MODIFIED_ON")
     private Date modifiedOn;
 
-    public Long getTableID() {
+    public Integer getTableID() {
         return tableID;
     }
 
-    public void setTableID(Long tableID) {
+    public void setTableID(Integer tableID) {
         this.tableID = tableID;
     }
 

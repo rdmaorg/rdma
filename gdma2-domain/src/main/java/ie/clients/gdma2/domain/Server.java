@@ -22,39 +22,41 @@ import com.avnet.cs.commons.dao.BaseEntity;
  * @author Ronan Gill
  */
 @Entity
-@javax.persistence.Table(name = "server")
-@SequenceGenerator(initialValue = 1, name = "idgen", sequenceName = "server_id_seq", allocationSize = 1)
+@javax.persistence.Table(name = "SERVER_GDMA2")
+@SequenceGenerator(initialValue = 1, name = "idgen", sequenceName = "SEQ_SERVER_GDMA2", allocationSize = 1)
 public class Server extends BaseEntity {
 
-	@javax.persistence.Column(name = "name")
+	@javax.persistence.Column(name = "NAME")
 	private String name;
 
-	@javax.persistence.Column(name = "username")
+	@javax.persistence.Column(name = "USERNAME")
 	private String username;
 
-	@javax.persistence.Column(name = "password")
+	@javax.persistence.Column(name = "PASSWORD")
 	private String password;
 
-	@javax.persistence.Column(name = "connection_url")
+	@javax.persistence.Column(name = "URL")
 	private String connectionUrl;
 
-	@ManyToOne
-	@JoinColumn(name = "connection_type_id", nullable = false)
-	private ConnectionType connectionType;
-
-	@javax.persistence.Column(name = "prefix")
+	@javax.persistence.Column(name = "PREFIX")
 	private String prefix;
 
-	@javax.persistence.Column(name = "active")
+	@javax.persistence.Column(name = "ACTIVE")
 	private boolean active;
-
-	@OneToMany(mappedBy="server")
+	
+	@ManyToOne
+	@JoinColumn(name = "CONNECTION_TYPE_ID", nullable = false)
+	private ConnectionType connectionType;
+	
+	//@OneToMany(mappedBy="server") //BIDIRECT :causing infinite loop on REST response!
+	@javax.persistence.Transient
 	private Set<Table> tables = new LinkedHashSet<Table>();
 
-	// the following 2 values are runtime values and are not persisted
+	/*runtime value - not persisted*/
 	@Transient
 	private boolean connected;
 
+	/*runtime value - not persisted*/
 	@Transient
 	private String lastError;
 

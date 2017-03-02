@@ -17,17 +17,17 @@ import com.avnet.cs.commons.dao.BaseEntity;
  *         14-Mar-2004
  */
 @Entity
-@javax.persistence.Table(name = "connection_type")
-@SequenceGenerator(initialValue = 1, name = "idgen", sequenceName = "connection_type_id_seq", allocationSize = 1)
+@javax.persistence.Table(name = "CONNECTION_TYPES_GDMA2")
+@SequenceGenerator(initialValue = 1, name = "idgen", sequenceName = "SEQ_CONNECTION_TYPES_GDMA2", allocationSize = 1)
 public class ConnectionType extends BaseEntity {
 
-	@javax.persistence.Column(name = "name")
+	@javax.persistence.Column(name = "NAME")
 	private String name;
 
-	@javax.persistence.Column(name = "sql_get_tables")
+	@javax.persistence.Column(name = "SELECT_GET_TABLES")
 	private String SQLGetTables;
 
-	@javax.persistence.Column(name = "connection_class")
+	@javax.persistence.Column(name = "CONNECTION_CLASS")
 	private String connectionClass;
 
 	public String getName() {

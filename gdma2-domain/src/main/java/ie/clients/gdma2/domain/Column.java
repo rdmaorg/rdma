@@ -16,64 +16,65 @@ import com.avnet.cs.commons.dao.BaseEntity;
  * 
  */
 @Entity
-@javax.persistence.Table(name = "columns")
-@SequenceGenerator(initialValue = 1, name = "idgen", sequenceName = "columns_id_seq", allocationSize = 1)
+@javax.persistence.Table(name = "COLUMN_GDMA2")
+@SequenceGenerator(initialValue = 1, name = "idgen", sequenceName = "SEQ_COLUMN_GDMA2", allocationSize = 1)
 public class Column extends BaseEntity{
 
-
-	@javax.persistence.Column(name = "name")
+	@javax.persistence.Column(name = "NAME")
     private String name;
 
-	@javax.persistence.Column(name = "column_type")
+	@javax.persistence.Column(name = "COLUMN_TYPE")
     private int columnType;
 
-	@javax.persistence.Column(name = "column_type_string")
+	@javax.persistence.Column(name = "COLUMN_TYPE_STR")
     private String columnTypeString;
 
 	@ManyToOne
-	@JoinColumn(name = "drop_down_column_display", nullable = false)
+	@JoinColumn(name = "DD_LOOKUP_DISPLAY", nullable = false)
     private Column dropDownColumnDisplay;
 
 	@ManyToOne
-	@JoinColumn(name = "drop_down_column_store", nullable = false)
+	@JoinColumn(name = "DD_LOOKUP_STORE", nullable = false)
     private Column dropDownColumnStore;
 
-	@javax.persistence.Column(name = "displayed")
+	@javax.persistence.Column(name = "DISPLAYED")
     private boolean displayed;
 
-	@javax.persistence.Column(name = "allow_insert")
+	@javax.persistence.Column(name = "ALLOW_INSERT")
     private boolean allowInsert;
 
-	@javax.persistence.Column(name = "allow_update")
+	@javax.persistence.Column(name = "ALLOW_UPDATE")
     private boolean allowUpdate;
 
-	@javax.persistence.Column(name = "nullable_column")
+	@javax.persistence.Column(name = "IS_NULLABLE")
     private boolean nullable;
 
-	@javax.persistence.Column(name = "column_primary_key")
+	@javax.persistence.Column(name = "SPECIAL")
+    private String special;
+	
+	@javax.persistence.Column(name = "IS_PRIMARY_KEY")
     private boolean primarykey;
 
-	@javax.persistence.Column(name = "special")
-    private String special;
+	@javax.persistence.Column(name = "MIN_WIDTH")
+    private Integer minWidth;
+	
+	@javax.persistence.Column(name = "MAX_WIDTH")
+    private Integer maxWidth;
+	
+	@javax.persistence.Column(name = "ORDER_BY")
+    private Integer orderby;
+    
+	@javax.persistence.Column(name = "COLUMN_SIZE")
+    private Integer columnSize;
+    
+	@javax.persistence.Column(name = "ACTIVE")
+    private boolean active;
 
 	@ManyToOne
 	@JoinColumn(name = "table_id", nullable = false)
     private Table table;
 
-	@javax.persistence.Column(name = "min_width")
-    private Integer minWidth;
-
-	@javax.persistence.Column(name = "max_width")
-    private Integer maxWidth;
-
-	@javax.persistence.Column(name = "order_by")
-    private Integer orderby;
-    
-	@javax.persistence.Column(name = "column_size")
-    private Integer columnSize;
-    
-	@javax.persistence.Column(name = "active")
-    private boolean active;
+	
     
     public Integer getColumnSize() {
         return columnSize;
@@ -84,8 +85,6 @@ public class Column extends BaseEntity{
     }
 
     
-    
-
     public Integer getOrderby() {
         return orderby;
     }

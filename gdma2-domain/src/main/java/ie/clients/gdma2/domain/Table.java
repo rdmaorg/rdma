@@ -20,34 +20,41 @@ import com.avnet.cs.commons.dao.BaseEntity;
  * 
  */
 @Entity
-@javax.persistence.Table(name = "tables")
-@SequenceGenerator(initialValue = 1, name = "idgen", sequenceName = "tables_id_seq", allocationSize = 1)
+@javax.persistence.Table(name = "TABLE_GDMA2")
+@SequenceGenerator(initialValue = 1, name = "idgen", sequenceName = "SEQ_TABLE_GDMA2", allocationSize = 1)
 public class Table extends BaseEntity {
 
-//	@javax.persistence.Column(name = "server_id")
-//	private Long serverId;
-
-	@javax.persistence.Column(name = "name")
+	@javax.persistence.Column(name = "NAME")
 	private String name;
 
+	@javax.persistence.Column(name = "ACTIVE")
+	private boolean active;
+	
 	@ManyToOne
-	@JoinColumn(name = "server_id", nullable = false)
+	@JoinColumn(name = "SERVER_ID", nullable = false)
 	private Server server;
 
+	/*TODO openQ - using this approach only DB table is created but no Entity.
+	 * Other approach is to create @Enity UserAccess and map using  @ManyToOne to Table and to User*/
+	/*do we need this property in @Entity User: 
+	 * @ManyToMany(cascade = CascadeType.MERGE, mappedBy = "users")
+	private List<Table> tables;
+	*/
 	@ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
-	@JoinTable(name = "tables_has_users", joinColumns = {
-			@JoinColumn(name = "table_id", nullable = false, updatable = false) }, inverseJoinColumns = {
-			@JoinColumn(name = "user_id", nullable = false, updatable = false) })
+	@JoinTable(name = "TABLE_HAS_USERS_GDMA2", joinColumns = {
+			@JoinColumn(name = "TABLE_ID", nullable = false, updatable = false) }, inverseJoinColumns = {
+			@JoinColumn(name = "USER_ID", nullable = false, updatable = false) })
 	private Set<User> users = new LinkedHashSet<User>();
 
-	@OneToMany(mappedBy="table")
+	//@OneToMany(mappedBy="table")
+	@javax.persistence.Transient
 	private Set<Column> columns = new LinkedHashSet<Column>();
 
-	@OneToMany(mappedBy="table")
+	//@OneToMany(mappedBy="table")
+	@javax.persistence.Transient
 	private Set<UserAccess> userAccess = new LinkedHashSet<UserAccess>();
 
-	@javax.persistence.Column(name = "active")
-	private boolean active;
+
 
 	public Set<UserAccess> getUserAccess() {
 		return userAccess;
@@ -101,14 +108,6 @@ public class Table extends BaseEntity {
 	public void setServer(Server server) {
 		this.server = server;
 	}
-
-//	public Long getServerId() {
-//		return serverId;
-//	}
-//
-//	public void setServerId(Long serverId) {
-//		this.serverId = serverId;
-//	}
 
 	public boolean isActive() {
 		return active;

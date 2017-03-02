@@ -1,6 +1,7 @@
 package ie.clients.gdma2.domain;
 
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
@@ -8,52 +9,40 @@ import javax.persistence.SequenceGenerator;
 import com.avnet.cs.commons.dao.BaseEntity;
 
 @Entity
-@javax.persistence.Table(name = "user_access")
-@SequenceGenerator(initialValue = 1, name = "idgen", sequenceName = "user_access_id_seq", allocationSize = 1)
+@javax.persistence.Table(name = "USER_TABLE_ACCESS_GDMA2")
+@SequenceGenerator(initialValue = 1, name = "idgen", sequenceName = "SEQ_USER_TABLE_ACCESS_GDMA2", allocationSize = 1)
 public class UserAccess extends BaseEntity {
-
-
-//	@javax.persistence.Column(name = "user_id")
-//	private Long userId;
-//	
-//	@javax.persistence.Column(name = "table_id")
-//	private Long tableId;
 	
-	@javax.persistence.Column(name = "allow_display")
+	/*openQ instead of having PK and sequnece generator from BaseEntity, to have composite primary key (user_id, table_id):
+	 * 
+	 * no - @SequenceGenerator
+	 * public class UserAccess implements Serializable 
+	 * 
+	 * put  @Id
+	 * on User and Table 
+	 * */
+	
+	@javax.persistence.Column(name = "ALLOW_DISPLAY")
 	private boolean allowDisplay = false;
 	
-	@javax.persistence.Column(name = "allow_update")
+	@javax.persistence.Column(name = "ALLOW_UPDATE")
 	private boolean allowUpdate = false;
 	
-	@javax.persistence.Column(name = "allow_insert")
+	@javax.persistence.Column(name = "ALLOW_INSERT")
 	private boolean allowInsert = false;
 	
-	@javax.persistence.Column(name = "allow_delete")
+	@javax.persistence.Column(name = "ALLOW_DELETE")
 	private boolean allowDelete = false;
 	
+	//@Id
 	@ManyToOne
-	@JoinColumn(name = "user_id", nullable = false)
+	@JoinColumn(name = "USER_ID", nullable = false)
 	private User user;
 	
+	//@Id
 	@ManyToOne
-	@JoinColumn(name = "table_id", nullable = false)
+	@JoinColumn(name = "TABLE_ID", nullable = false)
 	private Table table;
-	
-//	public Long  getUserId() {
-//        return userId;
-//    }
-//
-//    public void setUserId(Long  userId) {
-//        this.userId = userId;
-//    }
-//    
-//    public Long  getTableId() {
-//        return tableId;
-//    }
-//
-//    public void setTableId(Long  tableId) {
-//        this.tableId = tableId;
-//    }
     
     public boolean getAllowDisplay() {
         return allowDisplay;

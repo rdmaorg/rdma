@@ -11,22 +11,28 @@ import com.avnet.cs.commons.dao.BaseEntity;
  * This class is an Audit Record
  */
 @Entity
-@javax.persistence.Table(name = "audit_records")
-@SequenceGenerator(initialValue = 1, name = "idgen", sequenceName = "audit_records_id_seq", allocationSize = 1)
+@javax.persistence.Table(name = "AUDIT_RECORD_GDMA2")
+@SequenceGenerator(initialValue = 1, name = "idgen", sequenceName = "SEQ_AUDIT_RECORD_GDMA2", allocationSize = 1)
 public class AuditRecord extends BaseEntity{
-	@javax.persistence.Column(name = "audit_header_id")
-    private Long auditHeaderID;
-	@javax.persistence.Column(name = "column_id")
-    private Long columnID;
-	@javax.persistence.Column(name = "old_value")
+	
+	/*TODO openQ use AuditHeader object instead od ID?*/
+	@javax.persistence.Column(name = "AUDIT_HEADER_ID")
+    private Integer auditHeaderID;
+	
+	/*TODO openQ use Column object instead od ID?*/
+	@javax.persistence.Column(name = "COLUMN_ID")
+    private Integer columnID;
+	
+	@javax.persistence.Column(name = "OLD_VALUE")
     private String oldValue;
-	@javax.persistence.Column(name = "new_value")
+	
+	@javax.persistence.Column(name = "NEW_VALUE")
     private String newValue;
 
     /**
      * @return Returns the auditHeaderID.
      */
-    public Long getAuditHeaderID() {
+    public Integer getAuditHeaderID() {
         return auditHeaderID;
     }
 
@@ -34,14 +40,14 @@ public class AuditRecord extends BaseEntity{
      * @param auditHeaderID
      *            The auditHeaderID to set.
      */
-    public void setAuditHeaderID(Long auditHeaderID) {
+    public void setAuditHeaderID(Integer auditHeaderID) {
         this.auditHeaderID = auditHeaderID;
     }
 
     /**
      * @return Returns the columnID.
      */
-    public Long getColumnID() {
+    public Integer getColumnID() {
         return columnID;
     }
 
@@ -49,7 +55,7 @@ public class AuditRecord extends BaseEntity{
      * @param columnID
      *            The columnID to set.
      */
-    public void setColumnID(Long columnID) {
+    public void setColumnID(Integer columnID) {
         this.columnID = columnID;
     }
 

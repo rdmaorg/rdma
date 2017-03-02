@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ie.clients.gdma2.domain.Server;
+import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 import ie.clients.gdma2.spi.interfaces.MetaDataService;
 
@@ -70,6 +71,14 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	@Override
 	public void deleteServer(Server server) {
 		repositoryManager.getServerRepository().delete(server);
+	}
+
+	
+	@Override
+	public List<Table> getAllTables() {
+		//return IteratorUtils.toList(repositoryManager.getServerRepository().findAll().iterator());
+		return IteratorUtils.toList(repositoryManager.getTableRepository().findAll().iterator());
+		
 	}
 
 	

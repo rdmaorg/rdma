@@ -9,12 +9,23 @@ public class RepositoryManager {
 	@Autowired
 	private ServerRepository serverRepository;
 
+	@Autowired
+	private TableRepository tableRepository;
+	
 	public ServerRepository getServerRepository() {
 		return serverRepository;
 	}
 
 	public void setServerRepository(ServerRepository serverRepository) {
 		this.serverRepository = serverRepository;
+	}
+
+	public TableRepository getTableRepository() {
+		return tableRepository;
+	}
+
+	public void setTableRepository(TableRepository tableRepository) {
+		this.tableRepository = tableRepository;
 	}
 	
 	
