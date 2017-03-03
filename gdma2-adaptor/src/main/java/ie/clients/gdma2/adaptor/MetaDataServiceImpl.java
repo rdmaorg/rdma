@@ -74,6 +74,13 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	}
 
 	
+	/*TABLE section*/
+	
+	@Override
+	public Server findOne(Integer serverId) {
+		return repositoryManager.getServerRepository().findOne(serverId);
+	}
+	
 	@Override
 	public List<Table> getAllTables() {
 		//return IteratorUtils.toList(repositoryManager.getServerRepository().findAll().iterator());
@@ -81,5 +88,64 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		
 	}
 
+	@Override
+	public PaginatedTableResponse<Table> getTablesForServer(Integer serverId,
+			String matching, String orderBy, String orderDirection,
+			int startIndex, int length) {
+		
+		logger.debug("Param ServerId: " + serverId);
+		logger.debug("getTablesForServer");
+		
+		//Article article = serviceFacade.getCmsService().getArticleById(id);
+		Server server = null;
+		List<Table> tables = null;
+		long total = 0;
+		long filtered = 0;
+
+		server = repositoryManager.getServerRepository().findOne(serverId);
+		//TODO if(null == server)
+		
+		//empty search, select all tables for server
+		if (StringUtils.isBlank(matching)) {
+			total = repositoryManager.getTableRepository().countTablesForServer(server.getId());
+			logger.debug("Total, no search:" + total);
+			filtered = total;
+			//servers = repositoryManager.getServerRepository().findAll(getPagingRequest(orderBy, orderDirection, startIndex, length, total)).getContent();
+			logger.debug("findALL...getPagingRequest():");
+			tables = repositoryManager.getTableRepository().findAll(getPagingRequest(orderBy, orderDirection, startIndex, length, total)).getContent();
+			logger.debug("tables found: " + tables.size());
+		} else {
+			total = repositoryManager.getTableRepository().countTablesForServer(server.getId());
+			logger.debug("Total, with search:" + total);
+			filtered = repositoryManager.getTableRepository().getCountMatching("%" + matching.trim().toUpperCase() + "%");
+			
+			tables = repositoryManager.getTableRepository().getMatchingTables(
+					"%" + matching.trim().toUpperCase() + "%",
+					getPagingRequest(orderBy, orderDirection, startIndex, length, total));
+
+		}
+
+		logger.debug("Search Tables: Search: " + matching + ", Total: " + total + ", Filtered: " + filtered
+				+ ", Result Table Count: " + tables.size());
+
+		return getPaginatedTableResponse(tables != null ? tables : new ArrayList<Table>(), total, filtered);	
+	
+	
+	}
+
+	@Override
+	public List<Table> findTablesByServerId(Integer serverId) {
+		return repositoryManager.getTableRepository().findByServerId(serverId);
+	}
+
+	@Override
+	public Long countTablesForServer(Integer serverId) {
+		return repositoryManager.getTableRepository().countTablesForServer(serverId);
+	}
+
+	
+
+	
+	
 	
 }

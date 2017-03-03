@@ -17,7 +17,17 @@ public interface MetaDataService {
 	public void deleteServer(int id);
 	public void deleteServer(Server server);
 	
-	/*Tables for Server, */
+	/*Tables*/
+	public Server findOne(Integer serverId);
+	
 	public List<Table> getAllTables();
+	
+	
+	public List<Table> findTablesByServerId(Integer serverId); 
+	
+	public Long countTablesForServer(Integer serverId);
+	
+	public PaginatedTableResponse<Table> getTablesForServer(Integer serverId, String matching, String orderBy,
+			String orderDirection, int startIndex, int length );
 	
 }

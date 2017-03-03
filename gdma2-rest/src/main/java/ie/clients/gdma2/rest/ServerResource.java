@@ -78,11 +78,5 @@ public class ServerResource extends BaseDataTableResource {
 		serviceFacade.getMetadataService().deleteServer(id);
 	}
 	
-	@RequestMapping(value="table/list", method = RequestMethod.GET)
-	public List<Table> getAllTables(){
-		logger.debug("* * * * * * * getAllTables()");
-		return serviceFacade.getMetadataService().getAllTables();
-		
-	}
-
+	
 }
