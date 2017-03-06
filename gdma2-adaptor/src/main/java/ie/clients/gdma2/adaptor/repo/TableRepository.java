@@ -1,11 +1,9 @@
 package ie.clients.gdma2.adaptor.repo;
 
-import java.util.List;
-
-import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.Table;
 
-import org.springframework.data.domain.PageRequest;
+import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
@@ -41,6 +39,8 @@ public interface TableRepository extends PagingAndSortingRepository<Table, Integ
 	@Query("select t from Table t where upper(t.name) like ?1 or upper(t.server.name) like ?1")
 	public List<Table> getMatchingTables(String matching, Pageable pageable);
 
-	
+	/*find all ACTIVE=true tables for server*/
+	/*see GdmaAdminAjaxFacade.getTablesForServer, must use  serverUtil.resyncTableList(server);*/
+	public List<Table> findByServerIdAndActiveTrue(Integer serverId);
 	
 }

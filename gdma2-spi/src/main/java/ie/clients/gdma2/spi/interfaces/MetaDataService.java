@@ -20,17 +20,16 @@ public interface MetaDataService {
 	
 	/*Tables*/
 	public Server findOne(Integer serverId);
-	
 	public List<Table> getAllTables();
-	
-	
-	public List<Table> findTablesByServerId(Integer serverId); 
-	
+	public List<Table> findTablesByServerId(Integer serverId);
+	public List<Table> findByServerIdAndActiveTrue(Integer serverId);
 	public Long countTablesForServer(Integer serverId);
-	
 	public PaginatedTableResponse<Table> getTablesForServer(Integer serverId, String matching, String orderBy,
 			String orderDirection, int startIndex, int length );
 
+	public void saveTable(Table table);
+	public void deleteTable(int id);
+	
 	/*User*/
 	public List<User> getAllUsers();
 	public List<User> getAllActiveUsers();

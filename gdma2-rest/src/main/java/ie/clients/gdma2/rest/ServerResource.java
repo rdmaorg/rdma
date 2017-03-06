@@ -74,7 +74,7 @@ public class ServerResource extends BaseDataTableResource {
 
 	
 	@RequestMapping(value="delete/{id}", method = RequestMethod.DELETE)
-	public void saveServer(@PathVariable("id") Integer id){
+	public void deleteServer(@PathVariable("id") Integer id){
 		serviceFacade.getMetadataService().deleteServer(id);
 	}
 	

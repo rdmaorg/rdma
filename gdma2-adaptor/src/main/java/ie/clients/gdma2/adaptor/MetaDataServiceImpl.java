@@ -75,7 +75,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		repositoryManager.getServerRepository().delete(server);
 	}
 
-
+	
 	/*TABLE section*/
 
 	@Override
@@ -154,7 +154,28 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		return repositoryManager.getTableRepository().countTablesForServer(serverId);
 	}
 
+	@Override
+	public List<Table> findByServerIdAndActiveTrue(Integer serverId) {
+		return repositoryManager.getTableRepository().findByServerIdAndActiveTrue(serverId);
+	}
+	
+	@Transactional
+	@Override
+	public void saveTable(Table table) {
+		repositoryManager.getTableRepository().save(table);
+		
+	}
+
+	@Transactional
+	@Override
+	public void deleteTable(int id) {
+		repositoryManager.getTableRepository().delete(id);
+		
+	}
+
+	
 	/*USER*/
+	
 	@Override
 	public List<User> getAllUsers() {
 		return IteratorUtils.toList(repositoryManager.getUserRepository().findAll().iterator());
@@ -192,5 +213,6 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		repositoryManager.getUserRepository().delete(id);
 		
 	}
+
 	
 }
