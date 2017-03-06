@@ -33,4 +33,13 @@ public interface MetaDataService {
 
 	/*User*/
 	public List<User> getAllUsers();
+	public List<User> getAllActiveUsers();
+	public List<User> findByUserNameIgnoreCase(String userName);
+	
+	public List<User> saveUsers(List<User> userList);
+	/*TODO check is saving single user is needed or can be done via saveUsers()*/
+	public void saveUser(User user);
+	
+	public void deleteUser(int id);
+	
 }

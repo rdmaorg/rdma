@@ -75,29 +75,29 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		repositoryManager.getServerRepository().delete(server);
 	}
 
-	
+
 	/*TABLE section*/
-	
+
 	@Override
 	public Server findOne(Integer serverId) {
 		return repositoryManager.getServerRepository().findOne(serverId);
 	}
-	
+
 	@Override
 	public List<Table> getAllTables() {
 		//return IteratorUtils.toList(repositoryManager.getServerRepository().findAll().iterator());
 		return IteratorUtils.toList(repositoryManager.getTableRepository().findAll().iterator());
-		
+
 	}
 
 	@Override
 	public PaginatedTableResponse<Table> getTablesForServer(Integer serverId,
 			String matching, String orderBy, String orderDirection,
 			int startIndex, int length) {
-		
+
 		logger.debug("Param ServerId: " + serverId);
 		logger.debug("getTablesForServer");
-		
+
 		//Article article = serviceFacade.getCmsService().getArticleById(id);
 		Server server = null;
 		List<Table> tables = null;
@@ -106,22 +106,22 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 		server = repositoryManager.getServerRepository().findOne(serverId);
 		//TODO if(null == server)
-		
+
 		//empty search, select all tables for server
 		if (StringUtils.isBlank(matching)) {
 			total = repositoryManager.getTableRepository().countTablesForServer(server.getId());
 			logger.debug("Total, no search:" + total);
 			filtered = total;
-			
+
 			logger.debug("findALL...getPagingRequest():");
 			/*
 			To get paging in your query methods, you must change the signature of your query methods to accept a Pageable 
 			as a parameter and return a Page<T> rather than a List<T>.
-			
+
 			PageRequest pagingRequest = getPagingRequest(orderBy, orderDirection, startIndex, length, total);
 			Page<Table> tablesPage = repositoryManager.getTableRepository().findAll(pagingRequest);
 			tables = tablesPage.getContent();
-			*/ 
+			 */ 
 
 			tables = repositoryManager.getTableRepository().findAll(getPagingRequest(orderBy, orderDirection, startIndex, length, total)).getContent();
 			logger.debug("tables found: " + tables.size());
@@ -129,7 +129,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			total = repositoryManager.getTableRepository().countTablesForServer(server.getId());
 			logger.debug("Total, with search:" + total);
 			filtered = repositoryManager.getTableRepository().getCountMatching("%" + matching.trim().toUpperCase() + "%");
-			
+
 			tables = repositoryManager.getTableRepository().getMatchingTables(
 					"%" + matching.trim().toUpperCase() + "%",
 					getPagingRequest(orderBy, orderDirection, startIndex, length, total));
@@ -140,8 +140,8 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 				+ ", Result Table Count: " + tables.size());
 
 		return getPaginatedTableResponse(tables != null ? tables : new ArrayList<Table>(), total, filtered);	
-	
-	
+
+
 	}
 
 	@Override
@@ -158,9 +158,39 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	@Override
 	public List<User> getAllUsers() {
 		return IteratorUtils.toList(repositoryManager.getUserRepository().findAll().iterator());
+
+	}
+
+	@Override
+	public List<User> getAllActiveUsers() {
+		return IteratorUtils.toList(repositoryManager.getUserRepository().findByActiveTrue().iterator());
+	}
+
+	@Override
+	public List<User> findByUserNameIgnoreCase(String userName) {
+		return 	IteratorUtils.toList(repositoryManager.getUserRepository().findByUserNameIgnoreCase(userName).iterator());
+
+	}
+
+	
+	@Transactional
+	@Override
+	public void saveUser(User user) {
+		repositoryManager.getUserRepository().save(user);
 		
 	}
-	
-	
+
+	@Transactional
+	@Override
+	public List<User> saveUsers(List<User> userList) {
+		return IteratorUtils.toList(repositoryManager.getUserRepository().save(userList).iterator());		
+	}
+
+	@Transactional
+	@Override
+	public void deleteUser(int id) {
+		repositoryManager.getUserRepository().delete(id);
+		
+	}
 	
 }
