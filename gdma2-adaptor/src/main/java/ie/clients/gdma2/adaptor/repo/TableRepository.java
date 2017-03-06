@@ -34,6 +34,7 @@ public interface TableRepository extends PagingAndSortingRepository<Table, Integ
 	@Query("select count(t) from Table t where t.server.id = ?1")
 	public long countTablesForServer(Integer serverId);
 
+	/*matching = search term, search in all columns of data table on UI*/
 	@Query("select count(t) from Table t where upper(t.name) like ?1 or upper(t.server.name) like ?1")
 	public long getCountMatching(String matching);
 

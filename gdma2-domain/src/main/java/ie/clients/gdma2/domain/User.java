@@ -18,26 +18,26 @@ import com.avnet.cs.commons.dao.BaseEntity;
 @SequenceGenerator(initialValue = 1, name = "idgen", sequenceName = "SEQ_USERS_GDMA2", allocationSize = 1)
 public class User extends BaseEntity {
 
-	@javax.persistence.Column(name = "FIRST_NAME")
+	@javax.persistence.Column(name = "FIRST_NAME", nullable = false)
     private String firstName;
 
-	@javax.persistence.Column(name = "LAST_NAME")
+	@javax.persistence.Column(name = "LAST_NAME", nullable = false)
     private String lastName;
 
-	@javax.persistence.Column(name = "USERNAME")
+	@javax.persistence.Column(name = "USERNAME", nullable = false)
     private String userName;
 
-	@javax.persistence.Column(name = "DOMAIN")
+	@javax.persistence.Column(name = "USER_DOMAIN")
     private String domain;
 
-	@javax.persistence.Column(name = "IS_ADMIN")
+	@javax.persistence.Column(name = "IS_ADMIN", nullable = false)
     private boolean admin;
 
-	@javax.persistence.Column(name = "IS_LOCKED")
+	@javax.persistence.Column(name = "IS_LOCKED", nullable = false)
     private boolean locked;
 
-	@javax.persistence.Column(name = "ACTIVE")
-    private boolean active;
+	@javax.persistence.Column(name = "ACTIVE", nullable = false)
+    private boolean active = true;
 
 	//@OneToMany(mappedBy="gdmaUser")
 	@javax.persistence.Transient

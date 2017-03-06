@@ -7,12 +7,14 @@ import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.Table;
+import ie.clients.gdma2.domain.User;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 import ie.clients.gdma2.spi.interfaces.MetaDataService;
 
@@ -110,8 +112,17 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			total = repositoryManager.getTableRepository().countTablesForServer(server.getId());
 			logger.debug("Total, no search:" + total);
 			filtered = total;
-			//servers = repositoryManager.getServerRepository().findAll(getPagingRequest(orderBy, orderDirection, startIndex, length, total)).getContent();
+			
 			logger.debug("findALL...getPagingRequest():");
+			/*
+			To get paging in your query methods, you must change the signature of your query methods to accept a Pageable 
+			as a parameter and return a Page<T> rather than a List<T>.
+			
+			PageRequest pagingRequest = getPagingRequest(orderBy, orderDirection, startIndex, length, total);
+			Page<Table> tablesPage = repositoryManager.getTableRepository().findAll(pagingRequest);
+			tables = tablesPage.getContent();
+			*/ 
+
 			tables = repositoryManager.getTableRepository().findAll(getPagingRequest(orderBy, orderDirection, startIndex, length, total)).getContent();
 			logger.debug("tables found: " + tables.size());
 		} else {
@@ -143,8 +154,12 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		return repositoryManager.getTableRepository().countTablesForServer(serverId);
 	}
 
-	
-
+	/*USER*/
+	@Override
+	public List<User> getAllUsers() {
+		return IteratorUtils.toList(repositoryManager.getUserRepository().findAll().iterator());
+		
+	}
 	
 	
 	
