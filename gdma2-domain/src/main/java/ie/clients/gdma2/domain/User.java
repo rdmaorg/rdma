@@ -4,7 +4,6 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.persistence.Entity;
-import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 
 import com.avnet.cs.commons.dao.BaseEntity;

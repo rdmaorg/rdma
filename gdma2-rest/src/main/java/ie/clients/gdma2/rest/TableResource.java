@@ -1,6 +1,5 @@
 package ie.clients.gdma2.rest;
 
-import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 
@@ -32,12 +31,12 @@ public class TableResource extends BaseDataTableResource{
 	/*paginated table list for selected server*/
 	/*TODO fix URI template*/
 	@RequestMapping(value = "/server/{id}/table/list")
-	public PaginatedTableResponse<Table> getTablesPaginatedTable(@PathVariable("id") String id,
+	public PaginatedTableResponse<Table> getTablesPaginatedTable(@PathVariable("id") String serverId,
 			@RequestParam Map<String,String> params){
 		logger.debug("getTablesPaginatedTable()");
 		/*order[0][column]:4*/
 
-		Integer serverId = Integer.parseInt(id);	//TODO handle empty ServerId int val = Integer.parseInt(reqParams.get(QUERY_PARAM_DRAW) == null... 
+		Integer srvId = Integer.parseInt(serverId);	//TODO handle empty ServerId int val = Integer.parseInt(reqParams.get(QUERY_PARAM_DRAW) == null... 
 
 		String orderByColumn = "id";
 		switch(getOrderByColumn(params)){
@@ -54,9 +53,11 @@ public class TableResource extends BaseDataTableResource{
 			orderByColumn = "server.name";
 			break;
 		}
+		
+		logger.debug("orderBy column: " + orderByColumn) ;
 
 		PaginatedTableResponse<Table> resp = serviceFacade.getMetadataService().
-				getTablesForServer(serverId, getSearchValue(params), orderByColumn, getOrderByDirection(params),getStartIndex(params), getLength(params));
+				getTablesForServer(srvId, getSearchValue(params), orderByColumn, getOrderByDirection(params),getStartIndex(params), getLength(params));
 
 		resp.setDraw(getDraw(params));
 		return resp;

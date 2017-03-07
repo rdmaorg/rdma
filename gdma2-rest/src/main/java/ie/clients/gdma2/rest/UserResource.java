@@ -1,8 +1,10 @@
 package ie.clients.gdma2.rest;
 
 import ie.clients.gdma2.domain.User;
+import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -32,6 +35,49 @@ public class UserResource extends BaseDataTableResource{
 		return serviceFacade.getMetadataService().getAllActiveUsers();
 	}
 
+	@RequestMapping("table")
+	public PaginatedTableResponse<User> getUserPaginatedTable(@RequestParam Map<String, String> params){
+		logger.debug("*** getUserPaginatedTable()");
+		String orderByColumn = "id";
+		
+		switch (getOrderByColumn(params)) {
+		case 0:
+			orderByColumn = "id";
+			break;
+		case 1:
+			orderByColumn = "firstName";
+			break;
+		case 2:
+			orderByColumn = "lastName";
+			break;
+		case 3:
+			orderByColumn = "userName";
+			break;
+		case 4:
+			orderByColumn = "domain";
+			break;
+		case 5:
+			orderByColumn = "admin";
+			break;
+		case 6:
+			orderByColumn = "locked";
+			break;
+		case 7:
+			orderByColumn = "active";
+			break;
+		}
+		
+		logger.debug("orderBy column: " + orderByColumn) ;
+		PaginatedTableResponse<User> paginatedTabRespUsers= serviceFacade.getMetadataService().getUsers(
+				getSearchValue(params), 
+				orderByColumn, 
+				getOrderByDirection(params),
+				getStartIndex(params),
+				getLength(params));
+		
+		paginatedTabRespUsers.setDraw(getDraw(params));
+		return paginatedTabRespUsers;
+	}
 
 		
 	/*see 16.3.1 Communicating errors to the client, 404 instead of 200 with empty body. Empty page... */

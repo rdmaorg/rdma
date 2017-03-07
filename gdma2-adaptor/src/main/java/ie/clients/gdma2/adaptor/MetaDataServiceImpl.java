@@ -1,5 +1,11 @@
 package ie.clients.gdma2.adaptor;
 
+import ie.clients.gdma2.domain.Server;
+import ie.clients.gdma2.domain.Table;
+import ie.clients.gdma2.domain.User;
+import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
+import ie.clients.gdma2.spi.interfaces.MetaDataService;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,12 +18,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import ie.clients.gdma2.domain.Server;
-import ie.clients.gdma2.domain.Table;
-import ie.clients.gdma2.domain.User;
-import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
-import ie.clients.gdma2.spi.interfaces.MetaDataService;
-
 @Service
 public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataService {
 	private static final Logger logger = LoggerFactory.getLogger(MetaDataServiceImpl.class);
@@ -27,6 +27,36 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		return IteratorUtils.toList(repositoryManager.getServerRepository().findAll().iterator());
 	}
 
+	@Override
+	public PaginatedTableResponse<User> getUsers(String matching,
+			String orderBy, String orderDirection, int startIndex, int length) {
+		logger.debug("*** getUsers()");
+		List<User> users = null;
+		long total = 0;
+		long filtered = 0;
+		
+		if(StringUtils.isBlank(matching)){
+			total = repositoryManager.getUserRepository().count();
+			filtered = total;
+			logger.debug("Total, no search:" + total);
+			PageRequest pagingRequest = getPagingRequest(orderBy, orderDirection, startIndex, length, total);
+			Page<User> userPages = repositoryManager.getUserRepository().findAll(pagingRequest);
+			users = userPages.getContent();
+		} else{
+			String match = "%" + matching.trim().toUpperCase() + "%";
+			total = repositoryManager.getUserRepository().getCountMatching(match);
+			logger.debug("Total, with search:" + total);
+			PageRequest pagingRequest = getPagingRequest(orderBy, orderDirection, startIndex, length, total);
+			users = repositoryManager.getUserRepository().getMatchingUsers(match, pagingRequest);
+		}
+		logger.debug("Search Users: Search: " + matching + ", Total: " + total + ", Filtered: " + filtered
+				+ ", Result Count: " + users.size());
+		
+		return getPaginatedTableResponse( users != null ? users : new ArrayList<User>(), total, filtered);
+		
+	}
+	
+	
 	@Override
 	public PaginatedTableResponse<Server> getServers(String matching, String orderBy, String orderDirection,
 			int startIndex, int length) {
@@ -213,6 +243,8 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		repositoryManager.getUserRepository().delete(id);
 		
 	}
+
+	
 
 	
 }

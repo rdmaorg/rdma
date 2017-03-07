@@ -1,5 +1,8 @@
 package ie.clients.gdma2.rest;
 
+import ie.clients.gdma2.domain.Server;
+import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
+
 import java.util.List;
 import java.util.Map;
 
@@ -12,10 +15,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import ie.clients.gdma2.domain.Server;
-import ie.clients.gdma2.domain.Table;
-import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
-
 @RestController
 @RequestMapping("rest/server")
 public class ServerResource extends BaseDataTableResource {
@@ -24,11 +23,14 @@ public class ServerResource extends BaseDataTableResource {
 	
 	@RequestMapping("list")
 	public List<Server> getallServers(){
+		logger.debug("getallServers()");
 		return serviceFacade.getMetadataService().getAllServers();
 	}
 	
 	@RequestMapping("table")
 	public PaginatedTableResponse<Server> getServerPaginatedTable(@RequestParam Map<String, String> params) {
+		logger.debug("getServerPaginatedTable");
+		
 		String orderByColumn = "id";
 
 		switch (getOrderByColumn(params)) {
@@ -69,12 +71,14 @@ public class ServerResource extends BaseDataTableResource {
 	
 	@RequestMapping(value="save", method = RequestMethod.POST)
 	public void saveServer(@RequestBody Server server){
+		logger.debug("saveServer " + server.getName() );
 		serviceFacade.getMetadataService().saveServer(server);
 	}
 
 	
 	@RequestMapping(value="delete/{id}", method = RequestMethod.DELETE)
 	public void deleteServer(@PathVariable("id") Integer id){
+		logger.debug("delete server: " + id);
 		serviceFacade.getMetadataService().deleteServer(id);
 	}
 	
