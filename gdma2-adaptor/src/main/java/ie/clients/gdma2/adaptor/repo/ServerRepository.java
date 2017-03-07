@@ -16,4 +16,13 @@ public interface ServerRepository extends PagingAndSortingRepository<Server, Int
 	@Query("select s from Server s where upper(s.name) like ?1 or upper(s.username) like ?1 or upper(s.connectionUrl) like ?1 or upper(s.connectionType.name) like ?1 or upper(s.prefix) like ?1 ")
 	public List<Server> getMatchingServers(String matching, Pageable pageable);
 
+	/* TODO
+	ServerDao
+	public Server getByColumn(Long columnId);
+    public List<Server> getServerTableList(String username);
+    public List<Server> getServerTableColumnList();
+    public List<Server> getServerTableColumnList(Long serverId, Long tableId);
+	public List<Server> getServerTableColumnListForDDDropdown();
+	*/
+
 }

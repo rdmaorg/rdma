@@ -15,6 +15,9 @@ public class RepositoryManager {
 	@Autowired
 	private UserRepository userRepository;
 	
+	@Autowired
+	private ColumnRepository columnRepository;
+	
 	public ServerRepository getServerRepository() {
 		return serverRepository;
 	}
@@ -38,7 +41,15 @@ public class RepositoryManager {
 	public void setUserRepository(UserRepository userRepository) {
 		this.userRepository = userRepository;
 	}
-	
 
+	public ColumnRepository getColumnRepository() {
+		return columnRepository;
+	}
+
+	public void setColumnRepository(ColumnRepository columnRepository) {
+		this.columnRepository = columnRepository;
+	}
+	
+	
 	
 }

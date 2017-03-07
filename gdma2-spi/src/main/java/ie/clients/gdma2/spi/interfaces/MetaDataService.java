@@ -1,11 +1,13 @@
 package ie.clients.gdma2.spi.interfaces;
 
+import ie.clients.gdma2.domain.Column;
 import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.User;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 
 import java.util.List;
+import java.util.Set;
 
 public interface MetaDataService {
 	
@@ -42,4 +44,22 @@ public interface MetaDataService {
 
 	public PaginatedTableResponse<User> getUsers(String matching, String orderBy,
 			String orderDirection, int startIndex, int length);
+	
+	/*Column*/
+	public List<Column> getAllColumns();//TODO delete, just for initail repos testing
+	public void deleteColumn(int id);
+	
+	public List<Column>saveColumns(List<Column> columnList);
+	/*TODO check is saving single user is needed or can be done via saveColums()*/
+	
+	/*public Set<Column> getColumnsForTable(Long serverId, Long tableId); //see GdmaAdminAjaxFacade.getColumnsForTable
+	
+	public PaginatedTableResponse<Column> getColumns(String matching, String orderBy,
+			String orderDirection, int startIndex, int length);
+	
+	
+	
+	public void deleteColumn(int id);
+	public void deleteColumn(Column column);*/
+	
 }

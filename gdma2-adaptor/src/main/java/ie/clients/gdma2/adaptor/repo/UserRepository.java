@@ -21,9 +21,9 @@ public interface UserDao {
 
     public void delete(User user); //INHERITED
 
-    public List<User> getAccess(Long tableId); ? not used
+    public List<User> getAccess(Long tableId); //TODO
 
-    public List<User> getCannotAccess(Long tableId); } ? not used
+    public List<User> getCannotAccess(Long tableId); } //TODO
 */
 
 public interface UserRepository extends PagingAndSortingRepository<User, Integer>{

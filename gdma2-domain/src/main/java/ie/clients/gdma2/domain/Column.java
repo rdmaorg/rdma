@@ -20,41 +20,46 @@ import com.avnet.cs.commons.dao.BaseEntity;
 @SequenceGenerator(initialValue = 1, name = "idgen", sequenceName = "SEQ_COLUMN_GDMA2", allocationSize = 1)
 public class Column extends BaseEntity{
 
-	@javax.persistence.Column(name = "NAME")
+	@ManyToOne
+	@JoinColumn(name = "table_id", nullable = false)
+    private Table table;
+	
+	@javax.persistence.Column(name = "NAME", nullable = false)
     private String name;
 
-	@javax.persistence.Column(name = "COLUMN_TYPE")
+	@javax.persistence.Column(name = "COLUMN_TYPE", nullable = false )
     private int columnType;
 
 	@javax.persistence.Column(name = "COLUMN_TYPE_STR")
     private String columnTypeString;
 
 	@ManyToOne
-	@JoinColumn(name = "DD_LOOKUP_DISPLAY", nullable = false)
+	@JoinColumn(name = "DD_LOOKUP_DISPLAY")
     private Column dropDownColumnDisplay;
 
 	@ManyToOne
-	@JoinColumn(name = "DD_LOOKUP_STORE", nullable = false)
+	@JoinColumn(name = "DD_LOOKUP_STORE")
     private Column dropDownColumnStore;
 
-	@javax.persistence.Column(name = "DISPLAYED")
-    private boolean displayed;
+	@javax.persistence.Column(name = "DISPLAYED", nullable = false)
+    private boolean displayed = false;
 
-	@javax.persistence.Column(name = "ALLOW_INSERT")
-    private boolean allowInsert;
+	@javax.persistence.Column(name = "ALLOW_INSERT", nullable = false)
+    private boolean allowInsert = false;
 
-	@javax.persistence.Column(name = "ALLOW_UPDATE")
-    private boolean allowUpdate;
+	@javax.persistence.Column(name = "ALLOW_UPDATE", nullable = false)
+    private boolean allowUpdate = false;
 
-	@javax.persistence.Column(name = "IS_NULLABLE")
-    private boolean nullable;
+	@javax.persistence.Column(name = "IS_NULLABLE", nullable = false)
+    private boolean nullable = false;
 
-	@javax.persistence.Column(name = "SPECIAL")
+	@javax.persistence.Column(name = "IS_PRIMARY_KEY", nullable = false)
+    private boolean primarykey = false;
+	
+	/*none or special type User or special type Date*/
+	@javax.persistence.Column(name = "SPECIAL", nullable = false)
     private String special;
 	
-	@javax.persistence.Column(name = "IS_PRIMARY_KEY")
-    private boolean primarykey;
-
 	@javax.persistence.Column(name = "MIN_WIDTH")
     private Integer minWidth;
 	
@@ -67,15 +72,10 @@ public class Column extends BaseEntity{
 	@javax.persistence.Column(name = "COLUMN_SIZE")
     private Integer columnSize;
     
-	@javax.persistence.Column(name = "ACTIVE")
-    private boolean active;
-
-	@ManyToOne
-	@JoinColumn(name = "table_id", nullable = false)
-    private Table table;
+	@javax.persistence.Column(name = "ACTIVE", nullable = false)
+    private boolean active = true;
 
 	
-    
     public Integer getColumnSize() {
         return columnSize;
     }

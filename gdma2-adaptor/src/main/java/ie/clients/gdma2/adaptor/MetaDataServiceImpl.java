@@ -1,5 +1,6 @@
 package ie.clients.gdma2.adaptor;
 
+import ie.clients.gdma2.domain.Column;
 import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.User;
@@ -244,7 +245,25 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		
 	}
 
+	/*Column*/
+	@Override
+	public List<Column> getAllColumns() {
+		return IteratorUtils.toList(repositoryManager.getColumnRepository().findAll().iterator());
+	}
+
+	
+	@Transactional
+	@Override
+	public List<Column> saveColumns(List<Column> columnList) {
+		return IteratorUtils.toList(repositoryManager.getColumnRepository().save(columnList).iterator());
+	}
 	
 
+	@Transactional
+	@Override
+	public void deleteColumn(int id) {
+		repositoryManager.getColumnRepository().delete(id);
+		
+	}
 	
 }
