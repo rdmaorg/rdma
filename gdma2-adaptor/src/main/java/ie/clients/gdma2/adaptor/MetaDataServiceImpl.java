@@ -1,6 +1,5 @@
 package ie.clients.gdma2.adaptor;
 
-import ie.clients.gdma2.adaptor.repo.UserRepository;
 import ie.clients.gdma2.domain.Column;
 import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.Table;
@@ -28,35 +27,6 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	@Override
 	public List<Server> getAllServers() {
 		return IteratorUtils.toList(repositoryManager.getServerRepository().findAll().iterator());
-	}
-
-	@Override
-	public PaginatedTableResponse<User> getUsers(String matching,
-			String orderBy, String orderDirection, int startIndex, int length) {
-		logger.debug("*** getUsers()");
-		List<User> users = null;
-		long total = 0;
-		long filtered = 0;
-
-		if(StringUtils.isBlank(matching)){
-			total = repositoryManager.getUserRepository().count();
-			filtered = total;
-			logger.debug("Total, no search:" + total);
-			PageRequest pagingRequest = getPagingRequest(orderBy, orderDirection, startIndex, length, total);
-			Page<User> userPages = repositoryManager.getUserRepository().findAll(pagingRequest);
-			users = userPages.getContent();
-		} else{
-			String match = "%" + matching.trim().toUpperCase() + "%";
-			total = repositoryManager.getUserRepository().getCountMatching(match);
-			logger.debug("Total, with search:" + total);
-			PageRequest pagingRequest = getPagingRequest(orderBy, orderDirection, startIndex, length, total);
-			users = repositoryManager.getUserRepository().getMatchingUsers(match, pagingRequest);
-		}
-		logger.debug("Search Users: Search: " + matching + ", Total: " + total + ", Filtered: " + filtered
-				+ ", Result Count: " + users.size());
-
-		return getPaginatedTableResponse( users != null ? users : new ArrayList<User>(), total, filtered);
-
 	}
 
 
@@ -165,6 +135,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	}
 
 
+	
 
 
 	@Override
@@ -210,6 +181,36 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		return IteratorUtils.toList(repositoryManager.getUserRepository().findByActiveTrue().iterator());
 	}
 
+	@Override
+	public PaginatedTableResponse<User> getUsers(String matching,
+			String orderBy, String orderDirection, int startIndex, int length) {
+		logger.debug("*** getUsers()");
+		List<User> users = null;
+		long total = 0;
+		long filtered = 0;
+
+		if(StringUtils.isBlank(matching)){
+			total = repositoryManager.getUserRepository().count();
+			filtered = total;
+			logger.debug("Total, no search:" + total);
+			PageRequest pagingRequest = getPagingRequest(orderBy, orderDirection, startIndex, length, total);
+			Page<User> userPages = repositoryManager.getUserRepository().findAll(pagingRequest);
+			users = userPages.getContent();
+		} else{
+			String match = "%" + matching.trim().toUpperCase() + "%";
+			total = repositoryManager.getUserRepository().getCountMatching(match);
+			logger.debug("Total, with search:" + total);
+			PageRequest pagingRequest = getPagingRequest(orderBy, orderDirection, startIndex, length, total);
+			users = repositoryManager.getUserRepository().getMatchingUsers(match, pagingRequest);
+		}
+		logger.debug("Search Users: Search: " + matching + ", Total: " + total + ", Filtered: " + filtered
+				+ ", Result Count: " + users.size());
+
+		return getPaginatedTableResponse( users != null ? users : new ArrayList<User>(), total, filtered);
+
+	}
+
+	
 	@Override
 	public List<User> findByUserNameIgnoreCase(String userName) {
 		return 	IteratorUtils.toList(repositoryManager.getUserRepository().findByUserNameIgnoreCase(userName).iterator());
@@ -313,6 +314,8 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 		return getPaginatedTableResponse(columns != null ? columns : new ArrayList<Column>(), total, filtered);
 	}
+	
+	
 
 	@Override
 	public void deleteColumn(Column column) {
@@ -322,10 +325,67 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 	
 	/*UserAccess section*/
+	
 	@Override
 	public List<UserAccess> getAllUserAccess() {
 		 return IteratorUtils.toList(repositoryManager.getUserAccessRepository().findAll().iterator());
 	}
+
+	/*paginated table of UserAccess by id or user.userName*/
+	@Override
+	public PaginatedTableResponse<UserAccess> getUserAccessForTable(
+			Integer tableId, String matching, String orderBy,String orderDirection, int startIndex, int length) {
+		
+		logger.info("getUserAccessForTable" + tableId);
+		
+		//TODO see complete impl of GdmaAdminAjaxFacade.getAccessListForTable(Long tableId) add make complete logic  */ 
+		/* load table and all users, iterrate over each user
+		 * if 	userAccess for(tableId, userId) does not exist 
+		 *      create one and set default flags to false
+		 *      set if to parent and save if (maybe remove Bidirect...)
+		 *      add to list   
+		 *   else 
+		 *      set to parent if needed
+		 *      add to list
+		 *  
+		 * end: userAccess now exist for tableId and each user     
+		 * 
+		 */
+		
+		Table table = null;
+		List<UserAccess> userAccessListForTable = null;
+		long total = 0;
+		long filtered = 0;
+		
+		table = repositoryManager.getTableRepository().findOne(tableId);
+		//TODO if(null == table)
+		if(StringUtils.isBlank(matching)){
+			total = repositoryManager.getColumnRepository().countColumnsForTable(table.getId());
+			logger.debug("Total count UserAccess for table, no search:" + total);
+			filtered = total;
+			logger.debug("findALL...getPagingRequest():");
+			PageRequest pagingRequest = getPagingRequest(orderBy, orderDirection, startIndex, length, total);
+			Page<UserAccess> userAccessPages = repositoryManager.getUserAccessRepository().findAll(pagingRequest);
+			userAccessListForTable = userAccessPages.getContent();
+			logger.debug("userAccess entries found: " + (null != userAccessListForTable ? userAccessListForTable.size() : "0"));
+		} else {
+			String match = "%" + matching.trim().toUpperCase() + "%";
+			total = repositoryManager.getUserAccessRepository().countUserAccessForTable(table.getId());
+			logger.debug("Total count UserAccess for table, with search:" + total);
+			filtered = repositoryManager.getUserAccessRepository().getCountMatching(match);
+			PageRequest pagingRequest = getPagingRequest(orderBy, orderDirection, startIndex, length, total);
+			userAccessListForTable =  repositoryManager.getUserAccessRepository().getMatchingUserAccesses(match, pagingRequest);
+			
+		}
+		
+		logger.debug("Search UserAccess: Search: " + matching + ", Total: " + total + ", Filtered: " + filtered
+				+ ", Result Count: " + ((userAccessListForTable != null) ? userAccessListForTable.size() : "0"));
+		
+		return getPaginatedTableResponse(userAccessListForTable, total, filtered);
+		
+		
+	}
+	
 
 	
 

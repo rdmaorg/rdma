@@ -71,6 +71,8 @@ public interface ColumnRepository extends PagingAndSortingRepository<Column, Int
 	
 	@Query("select c from Column c where upper(c.name) like ?1 or upper(c.dropDownColumnDisplay.name) like ?1 or upper(c.dropDownColumnStore.name) like ?1 or upper(c.special) like ?1")
 	public List<Column> getMatchingColumns(String matching, Pageable pageable);
+
+	
 	
 	
 

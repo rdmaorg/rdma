@@ -66,11 +66,10 @@ public interface MetaDataService {
 	/*UserAccess*/
 	/*Server*/
 	public List<UserAccess> getAllUserAccess();
-	
-	/*
 	public PaginatedTableResponse<UserAccess> getUserAccessForTable(Integer tableId, String matching, String orderBy,
 			String orderDirection, int startIndex, int length);
 
+	/*
 	public void saveUserAccess(UserAccess userAccess);
 	public void deleteUserAccess(int id);
 	public void deleteUserAccess(UserAccess userAccess);

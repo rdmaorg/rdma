@@ -373,15 +373,27 @@ INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_inser
 TEST URLS
   see *Resource files e.g. ServerResource.java and RequestMappings used
   
-  	http://localhost:8080/gdma2/server
-  	http://localhost:8080/gdma2/rest/server/table
+  	SERVER
+  		http://localhost:8080/gdma2/server
+  		http://localhost:8080/gdma2/rest/server/table
   	
-  	http://localhost:8080/gdma2/rest/user/table
-  	http://localhost:8080/gdma2/rest/table/server/1/table/list?order[0][column]=1&search[value]=a
-  	http://localhost:8080/gdma2/rest/user/table?search[value]=com
+  	TABLE
+  		http://localhost:8080/gdma2/rest/table/server/1/table/list?order[0][column]=1&search[value]=a
   	
-  	http://localhost:8080/gdma2/rest/column/list
+  	USER
+  		http://localhost:8080/gdma2/rest/user/table
+  		http://localhost:8080/gdma2/rest/user/table?search[value]=com
+	
+		Search 'on', length 20, order by lastname:	
+			http://localhost:8080/gdma2/rest/user/table?search[value]=on&length=20&order[0][column]=2
+	
+  	COLUMS
+  		http://localhost:8080/gdma2/rest/column/list
   	
+  	For table '2':
+  		SEARCH 'sales' order by name DESC	
+  			http://localhost:8080/gdma2/rest/column/table/2?length=4&order[0][column]=1&order[0][dir]=desc&start=2&search[value]=sales
   	
-  	http://localhost:8080/gdma2/rest/column/list
-  	
+  	USER ACCESS
+  		For table '2':
+  		http://localhost:8080/gdma2/rest/access/table/2?length=5&search[value]=emma
