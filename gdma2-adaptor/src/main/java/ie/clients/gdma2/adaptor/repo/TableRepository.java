@@ -40,7 +40,8 @@ public interface TableRepository extends PagingAndSortingRepository<Table, Integ
 	public List<Table> getMatchingTables(String matching, Pageable pageable);
 
 	/*find all ACTIVE=true tables for server*/
-	/*see GdmaAdminAjaxFacade.getTablesForServer, must use  serverUtil.resyncTableList(server);*/
+	/*see GdmaAdminAjaxFacade.getTablesForServer, must use  serverUtil.resyncTableList(server);
+	 * TODO create new  resyncTableList() impl*/
 	public List<Table> findByServerIdAndActiveTrue(Integer serverId);
 	
 }

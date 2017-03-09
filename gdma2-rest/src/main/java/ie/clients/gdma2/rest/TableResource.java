@@ -28,7 +28,7 @@ public class TableResource extends BaseDataTableResource{
 		return serviceFacade.getMetadataService().getAllTables();
 	}
 
-	/*paginated table list for selected server*/
+	/*paginated table list for selected server - ALL Tables*/
 	/*TODO fix URI template*/
 	@RequestMapping(value = "/server/{id}/table/list")
 	public PaginatedTableResponse<Table> getTablesPaginatedTable(@PathVariable("id") String serverId,
@@ -64,7 +64,9 @@ public class TableResource extends BaseDataTableResource{
 
 	}
 	
-	/*List of ACTIVE tables for selected server*/
+	/*ADMIN module: List of ACTIVE tables for selected server
+	 * see GDMA I: GdmaAdmin.getTablesForServer.dwr 
+	 * TODO: pagination */
 	@RequestMapping(value = "/server/{id}/active",method = RequestMethod.GET)
 	public List<Table> findByServerIdAndActiveTrue(@PathVariable("id") Integer serverId){
 		logger.debug("*** findByServerIdAndActiveTrue(), serverId: " +  serverId);

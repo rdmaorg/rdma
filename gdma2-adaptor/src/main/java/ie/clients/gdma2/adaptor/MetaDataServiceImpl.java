@@ -35,7 +35,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		List<User> users = null;
 		long total = 0;
 		long filtered = 0;
-		
+
 		if(StringUtils.isBlank(matching)){
 			total = repositoryManager.getUserRepository().count();
 			filtered = total;
@@ -52,12 +52,12 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		}
 		logger.debug("Search Users: Search: " + matching + ", Total: " + total + ", Filtered: " + filtered
 				+ ", Result Count: " + users.size());
-		
+
 		return getPaginatedTableResponse( users != null ? users : new ArrayList<User>(), total, filtered);
-		
+
 	}
-	
-	
+
+
 	@Override
 	public PaginatedTableResponse<Server> getServers(String matching, String orderBy, String orderDirection,
 			int startIndex, int length) {
@@ -106,7 +106,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		repositoryManager.getServerRepository().delete(server);
 	}
 
-	
+
 	/*TABLE section*/
 
 	@Override
@@ -129,7 +129,6 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		logger.debug("Param ServerId: " + serverId);
 		logger.debug("getTablesForServer");
 
-		//Article article = serviceFacade.getCmsService().getArticleById(id);
 		Server server = null;
 		List<Table> tables = null;
 		long total = 0;
@@ -145,15 +144,6 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			filtered = total;
 
 			logger.debug("findALL...getPagingRequest():");
-			/*
-			To get paging in your query methods, you must change the signature of your query methods to accept a Pageable 
-			as a parameter and return a Page<T> rather than a List<T>.
-
-			PageRequest pagingRequest = getPagingRequest(orderBy, orderDirection, startIndex, length, total);
-			Page<Table> tablesPage = repositoryManager.getTableRepository().findAll(pagingRequest);
-			tables = tablesPage.getContent();
-			 */ 
-
 			tables = repositoryManager.getTableRepository().findAll(getPagingRequest(orderBy, orderDirection, startIndex, length, total)).getContent();
 			logger.debug("tables found: " + tables.size());
 		} else {
@@ -167,13 +157,13 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 		}
 
-		logger.debug("Search Tables: Search: " + matching + ", Total: " + total + ", Filtered: " + filtered
-				+ ", Result Table Count: " + tables.size());
+		logger.debug("Search Tables: Search: " + matching + ", Total: " + total + ", Filtered: " + filtered	+ ", Result Table Count: " + tables.size());
 
 		return getPaginatedTableResponse(tables != null ? tables : new ArrayList<Table>(), total, filtered);	
-
-
 	}
+
+
+
 
 	@Override
 	public List<Table> findTablesByServerId(Integer serverId) {
@@ -189,24 +179,24 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	public List<Table> findByServerIdAndActiveTrue(Integer serverId) {
 		return repositoryManager.getTableRepository().findByServerIdAndActiveTrue(serverId);
 	}
-	
+
 	@Transactional
 	@Override
 	public void saveTable(Table table) {
 		repositoryManager.getTableRepository().save(table);
-		
+
 	}
 
 	@Transactional
 	@Override
 	public void deleteTable(int id) {
 		repositoryManager.getTableRepository().delete(id);
-		
+
 	}
 
-	
+
 	/*USER*/
-	
+
 	@Override
 	public List<User> getAllUsers() {
 		return IteratorUtils.toList(repositoryManager.getUserRepository().findAll().iterator());
@@ -224,12 +214,12 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 	}
 
-	
+
 	@Transactional
 	@Override
 	public void saveUser(User user) {
 		repositoryManager.getUserRepository().save(user);
-		
+
 	}
 
 	@Transactional
@@ -242,28 +232,85 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	@Override
 	public void deleteUser(int id) {
 		repositoryManager.getUserRepository().delete(id);
-		
+
 	}
 
-	/*Column*/
+	/*COLUMN section*/
+
 	@Override
 	public List<Column> getAllColumns() {
 		return IteratorUtils.toList(repositoryManager.getColumnRepository().findAll().iterator());
 	}
 
-	
+
 	@Transactional
 	@Override
 	public List<Column> saveColumns(List<Column> columnList) {
 		return IteratorUtils.toList(repositoryManager.getColumnRepository().save(columnList).iterator());
 	}
-	
+
 
 	@Transactional
 	@Override
 	public void deleteColumn(int id) {
 		repositoryManager.getColumnRepository().delete(id);
-		
+
 	}
-	
+
+	@Override
+	public List<Column> findByTableIdAndActiveTrue(Integer tableId) {
+		return IteratorUtils.toList(repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(tableId).iterator());
+
+	}
+
+	/*paginated Columns for table, special case for ADMIN, see: GdmaAdmin.getColumnsForTable*/
+	@Override
+	public PaginatedTableResponse<Column> getColumnsForTable(Integer tableId, String matching, String orderBy, String orderDirection,
+			int startIndex, int length) {
+		logger.info("getColumnsForTable : " + tableId);
+
+		/*TODO as precondition, add logic from : public Set<Column> getColumnsForTable(Long serverId, Long tableId) {*/
+		/*
+		Server server = gdmaFacade.getServerDao().get(serverId);
+        Table table = gdmaFacade.getTableDao().get(tableId);
+        
+        serverUtil.resyncColumnList(server, table); //SYNCH , after synch return PAGINATED table of ACTIVE columns for Table that was synched and saved
+        */
+        
+		Table table = null;
+		List<Column> columns = null;
+		long total = 0;
+		long filtered = 0;
+
+		table = repositoryManager.getTableRepository().findOne(tableId);
+		//TODO if(null == table)
+
+		if(StringUtils.isBlank(matching)){
+			total = repositoryManager.getColumnRepository().countColumnsForTable(table.getId());
+			logger.debug("Total count columns for table, no search:" + total);
+			filtered = total;
+			logger.debug("findALL...getPagingRequest():");
+			PageRequest pagingRequest = getPagingRequest(orderBy, orderDirection, startIndex, length, total);
+			Page<Column> columnPages = repositoryManager.getColumnRepository().findAll(pagingRequest);
+			columns = columnPages.getContent();
+			logger.debug("columns found: " + (null != columns ? columns.size() : "0"));
+		} else {
+			String match = "%" + matching.trim().toUpperCase() + "%";
+
+			total = repositoryManager.getColumnRepository().countColumnsForTable(table.getId());
+			logger.debug("Total count columns for table, with search:" + total);
+			filtered = repositoryManager.getColumnRepository().getCountMatching(match);
+			logger.debug("filtered : " + filtered + ", for match: " + match);
+			PageRequest pagingRequest = getPagingRequest(orderBy, orderDirection, startIndex, length, total);
+			columns = repositoryManager.getColumnRepository().getMatchingColumns(match, pagingRequest);
+
+		}
+
+		logger.debug("Search Columns: Search: " + matching + ", Total: " + total + ", Filtered: " + filtered
+				+ ", Result Count: " + ((columns != null) ? columns.size() : "0"));
+
+		return getPaginatedTableResponse(columns != null ? columns : new ArrayList<Column>(), total, filtered);
+
+	}
+
 }

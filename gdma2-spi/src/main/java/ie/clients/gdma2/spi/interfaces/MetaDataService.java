@@ -47,6 +47,12 @@ public interface MetaDataService {
 	
 	/*Column*/
 	public List<Column> getAllColumns();//TODO delete, just for initail repos testing
+	public List<Column> findByTableIdAndActiveTrue(Integer tableId);
+	
+	
+	public PaginatedTableResponse<Column> getColumnsForTable(Integer tableId, String matching, String orderBy,
+			String orderDirection, int startIndex, int length);
+	
 	public void deleteColumn(int id);
 	
 	public List<Column>saveColumns(List<Column> columnList);
@@ -54,8 +60,7 @@ public interface MetaDataService {
 	
 	/*public Set<Column> getColumnsForTable(Long serverId, Long tableId); //see GdmaAdminAjaxFacade.getColumnsForTable
 	
-	public PaginatedTableResponse<Column> getColumns(String matching, String orderBy,
-			String orderDirection, int startIndex, int length);
+	
 	
 	
 	
