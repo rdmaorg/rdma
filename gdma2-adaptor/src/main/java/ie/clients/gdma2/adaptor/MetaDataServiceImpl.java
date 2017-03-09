@@ -1,9 +1,11 @@
 package ie.clients.gdma2.adaptor;
 
+import ie.clients.gdma2.adaptor.repo.UserRepository;
 import ie.clients.gdma2.domain.Column;
 import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.User;
+import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 import ie.clients.gdma2.spi.interfaces.MetaDataService;
 
@@ -310,7 +312,21 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 				+ ", Result Count: " + ((columns != null) ? columns.size() : "0"));
 
 		return getPaginatedTableResponse(columns != null ? columns : new ArrayList<Column>(), total, filtered);
-
 	}
+
+	@Override
+	public void deleteColumn(Column column) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	
+	/*UserAccess section*/
+	@Override
+	public List<UserAccess> getAllUserAccess() {
+		 return IteratorUtils.toList(repositoryManager.getUserAccessRepository().findAll().iterator());
+	}
+
+	
 
 }

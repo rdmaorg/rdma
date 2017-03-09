@@ -4,6 +4,7 @@ import ie.clients.gdma2.domain.Column;
 import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.User;
+import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 
 import java.util.List;
@@ -54,17 +55,26 @@ public interface MetaDataService {
 			String orderDirection, int startIndex, int length);
 	
 	public void deleteColumn(int id);
+	public void deleteColumn(Column column); /*TODO check if needed*/ 
 	
 	public List<Column>saveColumns(List<Column> columnList);
 	/*TODO check is saving single user is needed or can be done via saveColums()*/
 	
-	/*public Set<Column> getColumnsForTable(Long serverId, Long tableId); //see GdmaAdminAjaxFacade.getColumnsForTable
+	/* public Set<Column> getColumnsForTable(Long serverId, Long tableId); //see GdmaAdminAjaxFacade.getColumnsForTable */
 	
 	
+	/*UserAccess*/
+	/*Server*/
+	public List<UserAccess> getAllUserAccess();
 	
+	/*
+	public PaginatedTableResponse<UserAccess> getUserAccessForTable(Integer tableId, String matching, String orderBy,
+			String orderDirection, int startIndex, int length);
+
+	public void saveUserAccess(UserAccess userAccess);
+	public void deleteUserAccess(int id);
+	public void deleteUserAccess(UserAccess userAccess);
+	*/
 	
-	
-	public void deleteColumn(int id);
-	public void deleteColumn(Column column);*/
 	
 }

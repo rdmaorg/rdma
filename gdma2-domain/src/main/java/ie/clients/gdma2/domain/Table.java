@@ -34,17 +34,24 @@ public class Table extends BaseEntity {
 	@JoinColumn(name = "SERVER_ID", nullable = false)
 	private Server server;
 
-	/*TODO openQ - using this approach only DB table is created but no Entity.
-	 * Other approach is to create @Enity UserAccess and map using  @ManyToOne to Table and to User*/
-	/*do we need this property in @Entity User: 
-	 * @ManyToMany(cascade = CascadeType.MERGE, mappedBy = "users")
-	private List<Table> tables;
-	*/
+	/*TODO REMOVE this we need LINK table with extra columns
+	/*
 	@ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
 	@JoinTable(name = "TABLE_HAS_USERS_GDMA2", joinColumns = {
 			@JoinColumn(name = "TABLE_ID", nullable = false, updatable = false) }, inverseJoinColumns = {
 			@JoinColumn(name = "USER_ID", nullable = false, updatable = false) })
 	private Set<User> users = new LinkedHashSet<User>();
+	
+	public Set<User> getUsers() {
+		return users;
+	}
+
+	public void setUsers(Set<User> users) {
+		this.users = users;
+	}
+	
+	
+	*/
 
 	//@OneToMany(mappedBy="table")
 	@javax.persistence.Transient
@@ -72,13 +79,7 @@ public class Table extends BaseEntity {
 		this.name = name;
 	}
 
-	public Set<User> getUsers() {
-		return users;
-	}
-
-	public void setUsers(Set<User> users) {
-		this.users = users;
-	}
+	
 
 	public Set<Column> getColumns() {
 		return columns;
