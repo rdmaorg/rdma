@@ -10,10 +10,12 @@
 	<groupId>ie.clients.gdma</groupId>
 	<artifactId>gdma2</artifactId>
 	<version>0.1-SNAPSHOT</version>
-	<name>GDMA 2</name>
-	<description>GDMA with Spring Boot</description>
+	<name>DDMA-II</name>
+	<description>Dynamic Data Management Application</description>
 	<packaging>pom</packaging>
-
+	<organization>
+		<name>Client Solutions</name>
+	</organization>
 	<scm>
 		<connection>scm:hg:http://10.252.220.63/hg/gdma2</connection>
 		<developerConnection>scm:hg:http://10.252.220.63/hg/gdma2</developerConnection>
@@ -27,7 +29,7 @@
 			<id>805096</id>
 			<name>Farrukh Mirza</name>
 			<email>Farrukh.Mirza@avnet.com</email>
-			<organization>Avnet Client Solutions</organization>
+			<organization>Client Solutions</organization>
 		</developer>
 	</developers>
 
