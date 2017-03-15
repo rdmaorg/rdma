@@ -2,25 +2,29 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:th="http://www.thymeleaf.org">
 <head th:replace="inc/header"></head>
-<body>
-
-
-	<div class="container">
-		<div class="row">
-			<div class="col-md-12">
-				<h1 th:text="#{view.home.heading}">Hello world</h1>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-md-12">
-				<a th:href="@{/server}">Server page</a>
-			</div>
-		</div>
+<body class="sidebar-mini sidebar-collapse">
+	<div class="wrapper">
+		<header th:replace="inc/contentHeader"></header>
+		<aside th:replace="inc/leftPanel"></aside>
+		<div class="content-wrapper" style="min-height: 368px;">
+		  <!-- Content Header (Page header) -->
+		  <section class="content-header">
+		    <h1>
+		      Blackbee Investments
+		      <small><i class="fa fa-home"></i> Home</small>
+		    </h1>
+		    
+		  </section>
+		
+		  <!-- Main content -->
+		  <section class="content">		    
+		
+		  </section>
+		  <!-- /.content -->
+		</div>	
+		<footer th:replace="inc/footer"></footer>
+		<aside th:replace="inc/rightPanel"></aside>
 	</div>
-
-
-
-	<footer th:replace="inc/footer"></footer>
 	<script th:src="@{/public/main/page/index.js}"></script>
 
 </body>

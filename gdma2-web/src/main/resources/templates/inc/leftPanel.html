@@ -1,0 +1,154 @@
+<!-- sidebar -->
+<aside class="main-sidebar navbar-inverse" xmlns:th="http://www.thymeleaf.org">
+    <!-- sidebar: style can be found in sidebar.less -->
+    <section class="sidebar" style="height: auto;">
+      <!-- Sidebar user panel -->
+
+      <!-- search form -->
+      
+      <!-- /.search form -->
+      <!-- sidebar menu: : style can be found in sidebar.less -->
+      <ul class="sidebar-menu">
+        <li class="header">MAIN NAVIGATION</li>
+        <li class="treeview">
+          <a href="http://10.252.222.188:9090/GDMA/gdma.html#">
+            <i class="fa fa-database"></i> <span>hive</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+          </a>
+          <ul class="treeview-menu">
+			<li>
+					<div class="input-group">
+						<input type="text" name="q" class="form-control" placeholder="Search..." />
+						<span class="input-group-btn">
+							<button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i>
+							</button>
+						</span>
+					</div>
+			</li>
+            <li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.account_balance_history</a></li>
+            <li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.bank</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.client</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.commission</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.custodian</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.ifa</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.instruction</a></li>
+            <li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.investment_index</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.lkp_aml_type</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.lkp_country</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.lkp_currency</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.lkp_feature</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.product</a></li>
+            <li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.product_booking</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.product_event</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.product_fee</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.product_ifa_fee</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.product_upload</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.reconciliation</a></li>
+            <li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.sales_agent</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.task</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.task_type</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.user_aml</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.users</a></li>
+          </ul>
+        </li>
+		
+		<li class="treeview">
+          <a href="http://10.252.222.188:9090/GDMA/gdma.html#">
+            <i class="fa fa-database"></i> <span>hive_prod</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+          </a>
+			<ul class="treeview-menu">
+				<li>
+					<form action="http://10.252.222.188:9090/GDMA/gdma.html#" method="get" class="sidebar-form">
+						<div class="input-group">
+							<input type="text" name="q" class="form-control" placeholder="Search..." />
+							<span class="input-group-btn">
+								<button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i>
+								</button>
+							</span>
+						</div>
+					</form>
+				</li>
+				<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.account_balance_history</a></li>
+            <li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.bank</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.client</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.commission</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.custodian</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.ifa</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.instruction</a></li>
+            <li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.investment_index</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.lkp_aml_type</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.lkp_country</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.lkp_currency</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.lkp_feature</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.product</a></li>
+            <li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.product_booking</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.product_event</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.product_fee</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.product_ifa_fee</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.product_upload</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.reconciliation</a></li>
+            <li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.sales_agent</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.task</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.task_type</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.user_aml</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.users</a></li>
+		 
+			</ul>
+        </li>
+		
+		<li class="treeview">
+          <a href="http://10.252.222.188:9090/GDMA/gdma.html#">
+            <i class="fa fa-database"></i> <span>hive_tst</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+          </a>
+			<ul class="treeview-menu">
+				<li>
+					<form action="http://10.252.222.188:9090/GDMA/gdma.html#" method="get" class="sidebar-form">
+						<div class="input-group">
+							<input type="text" name="q" class="form-control" placeholder="Search..." />
+							<span class="input-group-btn">
+								<button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i>
+								</button>
+							</span>
+						</div>
+					</form>
+				</li>
+				<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.account_balance_history</a></li>
+            <li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.bank</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.client</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.commission</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.custodian</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.ifa</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.instruction</a></li>
+            <li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.investment_index</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.lkp_aml_type</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.lkp_country</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.lkp_currency</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.lkp_feature</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.product</a></li>
+            <li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.product_booking</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.product_event</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.product_fee</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.product_ifa_fee</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.product_upload</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.reconciliation</a></li>
+            <li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.sales_agent</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.task</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.task_type</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.user_aml</a></li>
+			<li><a href="http://10.252.222.188:9090/GDMA/working_table.html"><i class="fa fa-table"></i>dbo.users</a></li>
+			</ul>
+        </li>
+
+       
+      </ul>
+    </section>
+    <!-- /.sidebar -->
+  </aside>	
