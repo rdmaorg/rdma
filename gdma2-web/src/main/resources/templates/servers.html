@@ -2,48 +2,134 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
 	xmlns:th="http://www.thymeleaf.org">
 <head th:replace="inc/header"></head>
-<body>
-
-
-	<div class="container">
-		<div class="row">
-			<div class="col-md-12">
+<body class="skin-blue sidebar-mini sidebar-collapse">
+	<div class="wrapper">
+		<header th:replace="inc/contentHeader"></header>
+		<aside th:replace="inc/leftPanel"></aside>
+		<div class="content-wrapper" style="min-height: 368px;">
+		  <!-- Content Header (Page header) -->
+		  <section class="content-header">
 				<h1 th:text="#{view.server.heading}">Hello world</h1>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-md-12">
-				<div class="panel panel-default">
-					<div class="panel-heading">
-						<h3 class="panel-title" th:text="#{view.server.panel.title}"></h3>
+				<div class="row">
+					<div class="col-md-12">
+						<button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal"><i class="fa fa-database"></i> Insert Server</button>
 					</div>
-					<div class="panel-body">
-						<div class="table-responsive">
-							<table id="tbl_server"
-								class="table table-striped dt-responsive" cellspacing="0" width="100%">
-								<thead>
-									<tr>
-										<th width="10%" th:text="#{view.server.table.heading.id}"></th>
-										<th width="15%" th:text="#{view.server.table.heading.name}"></th>
-										<th width="10%" th:text="#{view.server.table.heading.username}"></th>
-										<th width="10%" th:text="#{view.server.table.heading.password}"></th>
-										<th width="20%" th:text="#{view.server.table.heading.connectionUrl}"></th>
-										<th width="15%" th:text="#{view.server.table.heading.connectionType}"></th>
-										<th width="10%" th:text="#{view.server.table.heading.prefix}"></th>
-										<th width="10%" th:text="#{view.server.table.heading.active}"></th>
-									</tr>
-								</thead>
-							</table>
-						</div>
+					<div id="myModal" class="modal fade" role="dialog">
+					  <div class="modal-dialog">
+					
+					    <!-- Modal content-->
+					    <div class="modal-content">
+					      <div class="modal-header">
+					        <button type="button" class="close" data-dismiss="modal">&times;</button>
+					        <h4 class="modal-title">Insert Server</h4>
+					      </div>
+					      <div class="modal-body">
+					        <div class="row">
+							   <div class="col-md-6 col-sm-6 col-xs-12">
+							    <form>
+							     <div class="form-group ">
+							      <label class="control-label requiredField" for="name">
+							       Name
+							       <span class="asteriskField">
+							        *
+							       </span>
+							      </label>
+							      <input class="form-control" id="name" name="name" type="text"/>
+							     </div>
+							     <div class="form-group ">
+							      <label class="control-label requiredField" for="email">
+							       Username
+							       <span class="asteriskField">
+							        *
+							       </span>
+							      </label>
+							      <input class="form-control" id="email" name="email" type="text"/>
+							     </div>
+							     <div class="form-group ">
+							      <label class="control-label requiredField" for="subject">
+							       Password
+							       <span class="asteriskField">
+							        *
+							       </span>
+							      </label>
+							      <input class="form-control" id="subject" name="subject" type="text"/>
+							     </div>
+							     <div class="form-group ">
+							      <label class="control-label requiredField" for="url">
+							       Connection URL
+							       <span class="asteriskField">
+							        *
+							       </span>
+							      </label>
+							      <input class="form-control" id="url" name="url" type="text"/>
+							     </div>
+							     <div class="form-group ">
+							      <label class="control-label requiredField" for="name2">
+							       Prefix
+							       <span class="asteriskField">
+							        *
+							       </span>
+							      </label>
+							      <input class="form-control" id="name2" name="name2" type="text"/>
+							     </div>
+							     <div class="form-group" id="div_radio">
+							      <label class="control-label requiredField" for="radio">
+							       Connection Type
+							       <span class="asteriskField">
+							        *
+							       </span>
+							      </label>
+							      <div class="">
+							       <label class="radio-inline">
+							        <input name="radio" type="radio" value="1"/>
+							        1
+							       </label>
+							       <label class="radio-inline">
+							        <input name="radio" type="radio" value="2"/>
+							        2
+							       </label>
+							       <label class="radio-inline">
+							        <input name="radio" type="radio" value="3"/>
+							        3
+							       </label>
+							      </div>
+							     </div>
+							    </form>
+							   </div>
+							  </div>
+					      </div>
+					      <div class="modal-footer">
+					        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>					        
+							<button class="btn btn-primary" name="submit" type="submit">Submit</button>
+					      </div>
+					    </div>
+					
+					  </div>
 					</div>
 				</div>
-			</div>
+		  </section>
+		  <!-- Main content -->
+		  <section class="content">	
+					<table id="tbl_server" class="table table-striped dt-responsive" cellspacing="0" width="100%">
+						<thead>
+							<tr>
+								<th width="10%" th:text="#{view.server.table.heading.id}"></th>
+								<th width="15%" th:text="#{view.server.table.heading.name}"></th>
+								<th width="10%" th:text="#{view.server.table.heading.username}"></th>
+								<th width="10%" th:text="#{view.server.table.heading.password}"></th>
+								<th width="20%" th:text="#{view.server.table.heading.connectionUrl}"></th>
+								<th width="15%" th:text="#{view.server.table.heading.connectionType}"></th>
+								<th width="10%" th:text="#{view.server.table.heading.prefix}"></th>
+								<th width="10%" th:text="#{view.server.table.heading.active}"></th>
+							</tr>
+						</thead>
+					</table>
+			</section>
 		</div>
+
+		<footer th:replace="inc/footer"></footer>
+		<aside th:replace="inc/rightPanel"></aside>
 	</div>
-
-
-
-	<footer th:replace="inc/footer"></footer>
 	<script th:src="@{/public/main/page/servers.js}"></script>
 
 </body>
