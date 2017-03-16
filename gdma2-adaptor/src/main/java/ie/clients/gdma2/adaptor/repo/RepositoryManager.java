@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 public class RepositoryManager {
 
 	@Autowired
+	ConnectionTypeRepository connectionTypeRepository;
+	
+	@Autowired
 	private ServerRepository serverRepository;
 
 	@Autowired
@@ -20,6 +23,16 @@ public class RepositoryManager {
 	
 	@Autowired
 	private UserAccessRepository userAccessRepository;
+
+	
+	public ConnectionTypeRepository getConnectionTypeRepository() {
+		return connectionTypeRepository;
+	}
+
+	public void setConnectionTypeRepository(
+			ConnectionTypeRepository connectionTypeRepository) {
+		this.connectionTypeRepository = connectionTypeRepository;
+	}
 
 	public ServerRepository getServerRepository() {
 		return serverRepository;

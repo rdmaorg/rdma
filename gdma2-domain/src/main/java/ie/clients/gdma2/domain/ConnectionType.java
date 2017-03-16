@@ -21,13 +21,13 @@ import com.avnet.cs.commons.dao.BaseEntity;
 @SequenceGenerator(initialValue = 1, name = "idgen", sequenceName = "SEQ_CONNECTION_TYPES_GDMA2", allocationSize = 1)
 public class ConnectionType extends BaseEntity {
 
-	@javax.persistence.Column(name = "NAME")
+	@javax.persistence.Column(name = "NAME", nullable = false)
 	private String name;
 
-	@javax.persistence.Column(name = "SELECT_GET_TABLES")
+	@javax.persistence.Column(name = "SELECT_GET_TABLES", nullable = false)
 	private String SQLGetTables;
 
-	@javax.persistence.Column(name = "CONNECTION_CLASS")
+	@javax.persistence.Column(name = "CONNECTION_CLASS", nullable = false)
 	private String connectionClass;
 
 	public String getName() {
@@ -67,4 +67,11 @@ public class ConnectionType extends BaseEntity {
 		return name.hashCode();
 	}
 
+	public String toString() {
+		return "ConnectionType [name=" + name + ", SQLGetTables="
+				+ SQLGetTables + ", connectionClass=" + connectionClass
+				+ ", getId()=" + getId() + "]";
+	}
+
+	
 }

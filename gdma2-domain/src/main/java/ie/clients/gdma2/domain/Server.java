@@ -26,10 +26,10 @@ import com.avnet.cs.commons.dao.BaseEntity;
 @SequenceGenerator(initialValue = 1, name = "idgen", sequenceName = "SEQ_SERVER_GDMA2", allocationSize = 1)
 public class Server extends BaseEntity {
 
-	@javax.persistence.Column(name = "NAME")
+	@javax.persistence.Column(name = "NAME", nullable = false)
 	private String name;
 	
-	@javax.persistence.Column(name = "USERNAME")
+	@javax.persistence.Column(name = "USERNAME", nullable = false)
 	private String username;
 
 	@javax.persistence.Column(name = "PASSWORD")
@@ -42,7 +42,7 @@ public class Server extends BaseEntity {
 	private String prefix;
 
 	@javax.persistence.Column(name = "ACTIVE")
-	private boolean active;
+	private boolean active = true;
 	
 	@javax.persistence.Column(name = "SERVER_ALIAS")
 	private String alias;

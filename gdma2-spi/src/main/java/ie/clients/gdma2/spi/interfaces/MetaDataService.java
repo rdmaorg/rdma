@@ -1,6 +1,7 @@
 package ie.clients.gdma2.spi.interfaces;
 
 import ie.clients.gdma2.domain.Column;
+import ie.clients.gdma2.domain.ConnectionType;
 import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.User;
@@ -8,9 +9,14 @@ import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 
 import java.util.List;
-import java.util.Set;
 
 public interface MetaDataService {
+
+	/*Connection Type*/
+	public List<ConnectionType> getAllConnectionTypes();
+	//TODO public PaginatedTableResponse
+	public void saveConnectionType(ConnectionType connectionType);
+	public void deleteConnectionType(Integer id);
 	
 	/*Server*/
 	public List<Server> getAllServers();
@@ -68,7 +74,10 @@ public interface MetaDataService {
 	public List<UserAccess> getAllUserAccess();
 	public PaginatedTableResponse<UserAccess> getUserAccessForTable(Integer tableId, String matching, String orderBy,
 			String orderDirection, int startIndex, int length);
+	
 
+	
+	
 	/*
 	public void saveUserAccess(UserAccess userAccess);
 	public void deleteUserAccess(int id);

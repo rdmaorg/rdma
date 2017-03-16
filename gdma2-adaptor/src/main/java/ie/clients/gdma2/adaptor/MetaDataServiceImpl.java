@@ -1,6 +1,7 @@
 package ie.clients.gdma2.adaptor;
 
 import ie.clients.gdma2.domain.Column;
+import ie.clients.gdma2.domain.ConnectionType;
 import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.User;
@@ -24,6 +25,28 @@ import org.springframework.transaction.annotation.Transactional;
 public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataService {
 	private static final Logger logger = LoggerFactory.getLogger(MetaDataServiceImpl.class);
 
+
+	/*Connection type section*/
+	@Override
+	public List<ConnectionType> getAllConnectionTypes() {
+		return IteratorUtils.toList(repositoryManager.getConnectionTypeRepository().findAll().iterator());
+	}
+
+	@Transactional
+	@Override
+	public void saveConnectionType(ConnectionType connectionType) {
+		repositoryManager.getConnectionTypeRepository().save(connectionType);
+	}
+	
+	@Transactional
+	@Override
+	public void deleteConnectionType(Integer id) {
+		repositoryManager.getConnectionTypeRepository().delete(id);
+		
+	}
+
+
+	/*Server section*/
 	@Override
 	public List<Server> getAllServers() {
 		return IteratorUtils.toList(repositoryManager.getServerRepository().findAll().iterator());
@@ -65,7 +88,8 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	public void saveServer(Server server) {
 		repositoryManager.getServerRepository().save(server);
 	}
-
+	
+	
 	@Transactional
 	@Override
 	public void deleteServer(int id) {
@@ -137,7 +161,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	}
 
 
-	
+
 
 
 	@Override
@@ -212,7 +236,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 	}
 
-	
+
 	@Override
 	public List<User> findByUserNameIgnoreCase(String userName) {
 		return 	IteratorUtils.toList(repositoryManager.getUserRepository().findByUserNameIgnoreCase(userName).iterator());
@@ -278,10 +302,10 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		/*
 		Server server = gdmaFacade.getServerDao().get(serverId);
         Table table = gdmaFacade.getTableDao().get(tableId);
-        
+
         serverUtil.resyncColumnList(server, table); //SYNCH , after synch return PAGINATED table of ACTIVE columns for Table that was synched and saved
-        */
-        
+		 */
+
 		Table table = null;
 		List<Column> columns = null;
 		long total = 0;
@@ -316,30 +340,30 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 		return getPaginatedTableResponse(columns != null ? columns : new ArrayList<Column>(), total, filtered);
 	}
-	
-	
+
+
 
 	@Override
 	public void deleteColumn(Column column) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
-	
+
 	/*UserAccess section*/
-	
+
 	@Override
 	public List<UserAccess> getAllUserAccess() {
-		 return IteratorUtils.toList(repositoryManager.getUserAccessRepository().findAll().iterator());
+		return IteratorUtils.toList(repositoryManager.getUserAccessRepository().findAll().iterator());
 	}
 
 	/*paginated table of UserAccess by id or user.userName*/
 	@Override
 	public PaginatedTableResponse<UserAccess> getUserAccessForTable(
 			Integer tableId, String matching, String orderBy,String orderDirection, int startIndex, int length) {
-		
+
 		logger.info("getUserAccessForTable" + tableId);
-		
+
 		//TODO see complete impl of GdmaAdminAjaxFacade.getAccessListForTable(Long tableId) add make complete logic  */ 
 		/* load table and all users, iterrate over each user
 		 * if 	userAccess for(tableId, userId) does not exist 
@@ -353,12 +377,12 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		 * end: userAccess now exist for tableId and each user     
 		 * 
 		 */
-		
+
 		Table table = null;
 		List<UserAccess> userAccessListForTable = null;
 		long total = 0;
 		long filtered = 0;
-		
+
 		table = repositoryManager.getTableRepository().findOne(tableId);
 		//TODO if(null == table)
 		if(StringUtils.isBlank(matching)){
@@ -377,18 +401,25 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			filtered = repositoryManager.getUserAccessRepository().getCountMatching(match);
 			PageRequest pagingRequest = getPagingRequest(orderBy, orderDirection, startIndex, length, total);
 			userAccessListForTable =  repositoryManager.getUserAccessRepository().getMatchingUserAccesses(match, pagingRequest);
-			
+
 		}
-		
+
 		logger.debug("Search UserAccess: Search: " + matching + ", Total: " + total + ", Filtered: " + filtered
 				+ ", Result Count: " + ((userAccessListForTable != null) ? userAccessListForTable.size() : "0"));
-		
+
 		return getPaginatedTableResponse(userAccessListForTable, total, filtered);
-		
-		
+
+
 	}
-	
+
+
 
 	
+
+
+
+
+
+
 
 }
