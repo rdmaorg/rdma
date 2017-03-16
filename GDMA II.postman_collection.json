@@ -1,0 +1,303 @@
+{
+	"variables": [],
+	"info": {
+		"name": "GDMA II",
+		"_postman_id": "a952a843-3f19-3e4f-6478-db961ee60de5",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Update Server ",
+			"request": {
+				"url": "http://localhost:8080/gdma2/rest/server/save",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"id\":1,\"name\":\"My Old GDMA\",\"username\":\"postgres\",\"password\":\"admin\",\"connectionUrl\":\"jdbc:pgsql://localhost:5432/gdma2\",\"connectionType\":{\"id\":1,\"name\":\"Test Connection Type\",\"connectionClass\":\"Postgresql4.2\",\"sqlgetTables\":\"select * from tables\"},\"prefix\":\"\",\"active\":true,\"tables\":[],\"connected\":false,\"lastError\":\"\"}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "SERVER save",
+			"request": {
+				"url": "http://localhost:8080/gdma2/rest/server/save",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"name\":\"My Old GDMA\",\"username\":\"postgres\",\"password\":\"admin\",\"connectionUrl\":\"jdbc:pgsql://localhost:5432/gdma2\",\"connectionType\":{\"id\":1,\"name\":\"Test Connection Type\",\"connectionClass\":\"Postgresql4.2\",\"sqlgetTables\":\"select * from tables\"},\"prefix\":\"\",\"active\":true,\"tables\":[],\"connected\":false,\"lastError\":\"\"}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Table - get all paginated",
+			"request": {
+				"url": "http://localhost:8080/gdma2/rest/table/list",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Table paginated - server 2, search: user",
+			"request": {
+				"url": "http://localhost:8080/gdma2/rest/table/server/2/table/list?search[value]=user",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Table - get all ACTIVE for server 2",
+			"request": {
+				"url": "http://localhost:8080/gdma2/rest/table/server/2/active",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Table - delete 5",
+			"request": {
+				"url": "http://localhost:8080/gdma2/rest/table/delete/5",
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Table table list",
+			"request": {
+				"url": "http://localhost:8080/gdma2/rest/table/list",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Table POST server 2",
+			"request": {
+				"url": "http://localhost:8080/gdma2/rest/table/save",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \n    \"name\": \"Cars\",\n    \"active\": true,\n    \"server\": {\n      \"id\": 2,\n      \"name\": \"TEST2\",\n      \"username\": \"postgres11\",\n      \"password\": \"12345678\",\n      \"connectionUrl\": \"jdbc:pgsql://localhost:5432/gdma21\",\n      \"prefix\": \"public\",\n      \"active\": true,\n      \"connectionType\": {\n        \"id\": 1,\n        \"name\": \"Test Connection Type\",\n        \"connectionClass\": \"Postgresql4.2\",\n        \"sqlgetTables\": \"select * from tables\"\n      },\n      \"tables\": [],\n      \"connected\": false,\n      \"lastError\": \"\"\n    },\n    \"users\": [],\n    \"columns\": [],\n    \"userAccess\": []\n  }"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "USER GET all",
+			"request": {
+				"url": "http://localhost:8080/gdma2/rest/user/list",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "USER get active",
+			"request": {
+				"url": "http://localhost:8080/gdma2/rest/user/listactive",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "USER paginated",
+			"request": {
+				"url": "http://localhost:8080/gdma2/rest/user/table?order[0][column]=1",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": "no search order by firstName: order[0][column]:1"
+			},
+			"response": []
+		},
+		{
+			"name": "Users - Save 3 new users",
+			"request": {
+				"url": "http://localhost:8080/gdma2/rest/user/save",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n  {\n    \"firstName\": \"Alan\",\n    \"lastName\": \"May\",\n    \"userName\": \"may.a\",\n    \"domain\": \"TD\",\n    \"admin\": true,\n    \"locked\": true,\n    \"active\": true,\n    \"userAccess\": []\n  },\n  {\n    \"firstName\": \"Ben\",\n    \"lastName\": \"Otiss\",\n    \"userName\": \"otiss.b.\",\n    \"domain\": \"ab\",\n    \"admin\": true,\n    \"locked\": false,\n    \"active\": false,\n    \"userAccess\": []\n  },\n  {\n    \"firstName\": \"Mike\",\n    \"lastName\": \"Mills\",\n    \"userName\": \"mils.s\",\n    \"domain\": \"e\",\n    \"admin\": false,\n    \"locked\": false,\n    \"active\": true,\n    \"userAccess\": []\n  }\n]"
+				},
+				"description": "http://localhost:8080/gdma2/rest/user/save"
+			},
+			"response": []
+		},
+		{
+			"name": "USER delete /5",
+			"request": {
+				"url": "http://localhost:8080/gdma2/rest/user/delete/5",
+				"method": "DELETE",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Users - update single user",
+			"request": {
+				"url": "http://localhost:8080/gdma2/rest/user/save",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n\t{\r\n\"id\": 5,\r\n\"firstName\": \"Rob\",\r\n\"lastName\": \"Day\",\r\n\"userName\": \"day.r\",\r\n\"domain\": \"NEW_DOMAIN\",\r\n\"admin\": false,\r\n\"locked\": true,\r\n\"active\": true,\r\n\"userAccess\": []\r\n}\r\n]"
+				},
+				"description": "JSON - array of lenght 1 is used around user\n\n[\n {\n \t...\n  }\n\n]"
+			},
+			"response": []
+		},
+		{
+			"name": "Column list",
+			"request": {
+				"url": "http://localhost:8080/gdma2/rest/column/list",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Column GET paginated table 2",
+			"request": {
+				"url": "http://localhost:8080/gdma2/rest/column/table/2",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Column Delete /99",
+			"request": {
+				"url": "http://localhost:8080/gdma2/rest/column/delete/99",
+				"method": "DELETE",
+				"header": [],
+				"body": {},
+				"description": " /* delete ie.clients.gdma2.domain.Column */\r\n \r\n delete from column_gdma2 where id=?"
+			},
+			"response": []
+		},
+		{
+			"name": "Column POST 2 colums",
+			"request": {
+				"url": "http://localhost:8080/gdma2/rest/column/save",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n\t{\r\n\t\"table\": {\r\n\t\t\"id\": 1,\r\n\t\t\"name\": \"USER_VIDEO\",\r\n\t\t\"active\": true,\r\n\t\t\"server\": {\r\n\t\t\t\"id\": 2,\r\n\t\t\t\"name\": \"TEST2\",\r\n\t\t\t\"username\": \"postgres11\",\r\n\t\t\t\"password\": \"12345678\",\r\n\t\t\t\"connectionUrl\": \"jdbc:pgsql://localhost:5432/gdma21\",\r\n\t\t\t\"prefix\": \"public\",\r\n\t\t\t\"active\": true,\r\n\t\t\t\"connectionType\": {\r\n\t\t\t\t\"id\": 1,\r\n\t\t\t\t\"name\": \"Test Connection Type\",\r\n\t\t\t\t\"connectionClass\": \"Postgresql4.2\",\r\n\t\t\t\t\"sqlgetTables\": \"select * from tables\"\r\n\t\t\t},\r\n\t\t\t\"tables\": [],\r\n\t\t\t\"connected\": false,\r\n\t\t\t\"lastError\": \"\"\r\n\t\t},\r\n\t\t\"users\": [],\r\n\t\t\"columns\": [],\r\n\t\t\"userAccess\": []\r\n\t},\r\n\t\"name\": \"Project Manager\",\r\n\t\"columnType\": 6,\r\n\t\"columnTypeString\": \"#3D3C3A\",\r\n\t\"dropDownColumnDisplay\": null,\r\n\t\"dropDownColumnStore\": null,\r\n\t\"displayed\": true,\r\n\t\"allowInsert\": true,\r\n\t\"allowUpdate\": true,\r\n\t\"nullable\": true,\r\n\t\"primarykey\": true,\r\n\t\"special\": \"ckUkf\",\r\n\t\"minWidth\": 6,\r\n\t\"maxWidth\": 69,\r\n\t\"orderby\": 2,\r\n\t\"columnSize\": 14,\r\n\t\"active\": true\r\n}, {\r\n\t\r\n\t\"table\": {\r\n\t\t\"id\": 2,\r\n\t\t\"name\": \"USER_MOVIE\",\r\n\t\t\"active\": false,\r\n\t\t\"server\": {\r\n\t\t\t\"id\": 2,\r\n\t\t\t\"name\": \"TEST2\",\r\n\t\t\t\"username\": \"postgres11\",\r\n\t\t\t\"password\": \"12345678\",\r\n\t\t\t\"connectionUrl\": \"jdbc:pgsql://localhost:5432/gdma21\",\r\n\t\t\t\"prefix\": \"public\",\r\n\t\t\t\"active\": true,\r\n\t\t\t\"connectionType\": {\r\n\t\t\t\t\"id\": 1,\r\n\t\t\t\t\"name\": \"Test Connection Type\",\r\n\t\t\t\t\"connectionClass\": \"Postgresql4.2\",\r\n\t\t\t\t\"sqlgetTables\": \"select * from tables\"\r\n\t\t\t},\r\n\t\t\t\"tables\": [],\r\n\t\t\t\"connected\": false,\r\n\t\t\t\"lastError\": \"\"\r\n\t\t},\r\n\t\t\"users\": [],\r\n\t\t\"columns\": [],\r\n\t\t\"userAccess\": []\r\n\t},\r\n\t\"name\": \"Project Support, Business Intelligence and Fraud Agents\",\r\n\t\"columnType\": 9,\r\n\t\"columnTypeString\": \"#463E3F\",\r\n\t\"dropDownColumnDisplay\": null,\r\n\t\"dropDownColumnStore\": null,\r\n\t\"displayed\": false,\r\n\t\"allowInsert\": false,\r\n\t\"allowUpdate\": false,\r\n\t\"nullable\": false,\r\n\t\"primarykey\": false,\r\n\t\"special\": \"YrCzy\",\r\n\t\"minWidth\": 12,\r\n\t\"maxWidth\": 29,\r\n\t\"orderby\": 2,\r\n\t\"columnSize\": 14,\r\n\t\"active\": false\r\n }\r\n]"
+				},
+				"description": "remove IDs"
+			},
+			"response": []
+		},
+		{
+			"name": "Column Update - Post 2",
+			"request": {
+				"url": "http://localhost:8080/gdma2/rest/column/save",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n  {\n    \"id\": 104,\n    \"table\": {\n      \"id\": 1,\n      \"name\": \"USER_VIDEO\",\n      \"active\": true,\n      \"server\": {\n        \"id\": 2,\n        \"name\": \"TEST2\",\n        \"username\": \"postgres11\",\n        \"password\": \"12345678\",\n        \"connectionUrl\": \"jdbc:pgsql://localhost:5432/gdma21\",\n        \"prefix\": \"public\",\n        \"active\": true,\n        \"connectionType\": {\n          \"id\": 1,\n          \"name\": \"Test Connection Type\",\n          \"connectionClass\": \"Postgresql4.2\",\n          \"sqlgetTables\": \"select * from tables\"\n        },\n        \"tables\": [],\n        \"connected\": false,\n        \"lastError\": \"\"\n      },\n      \"users\": [],\n      \"columns\": [],\n      \"userAccess\": []\n    },\n    \"name\": \"Project Manager104 UPDATE\",\n    \"columnType\": 6,\n    \"columnTypeString\": \"#3D3C3A\",\n    \"dropDownColumnDisplay\": null,\n    \"dropDownColumnStore\": null,\n    \"displayed\": true,\n    \"allowInsert\": true,\n    \"allowUpdate\": true,\n    \"nullable\": true,\n    \"primarykey\": true,\n    \"special\": \"sss\",\n    \"minWidth\": 6,\n    \"maxWidth\": 69,\n    \"orderby\": 2,\n    \"columnSize\": 14,\n    \"active\": true\n  },\n  {\n    \"id\": 105,\n    \"table\": {\n      \"id\": 2,\n      \"name\": \"USER_MOVIE\",\n      \"active\": false,\n      \"server\": {\n        \"id\": 2,\n        \"name\": \"TEST2\",\n        \"username\": \"postgres11\",\n        \"password\": \"12345678\",\n        \"connectionUrl\": \"jdbc:pgsql://localhost:5432/gdma21\",\n        \"prefix\": \"public\",\n        \"active\": true,\n        \"connectionType\": {\n          \"id\": 1,\n          \"name\": \"Test Connection Type\",\n          \"connectionClass\": \"Postgresql4.2\",\n          \"sqlgetTables\": \"select * from tables\"\n        },\n        \"tables\": [],\n        \"connected\": false,\n        \"lastError\": \"\"\n      },\n      \"users\": [],\n      \"columns\": [],\n      \"userAccess\": []\n    },\n    \"name\": \"Project Support105 update\",\n    \"columnType\": 9,\n    \"columnTypeString\": \"#463E3F\",\n    \"dropDownColumnDisplay\": null,\n    \"dropDownColumnStore\": null,\n    \"displayed\": false,\n    \"allowInsert\": false,\n    \"allowUpdate\": false,\n    \"nullable\": false,\n    \"primarykey\": false,\n    \"special\": \"sss\",\n    \"minWidth\": 12,\n    \"maxWidth\": 29,\n    \"orderby\": 2,\n    \"columnSize\": 14,\n    \"active\": false\n  }\n]"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "ACCESS get for table 2",
+			"request": {
+				"url": "http://localhost:8080/gdma2/rest/access/table/3?length=40",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": "length 40 (all in DB)"
+			},
+			"response": []
+		}
+	]
+}
