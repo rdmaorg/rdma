@@ -1,7 +1,9 @@
 var configureDataTable = function(){
+	
 	var config={
+	        fixedHeader: true,
 			order: [[ 1, "asc" ]],
-			"lengthMenu": [ [10, 25, 50, 100], [10, 25, 50, 100] ],
+			"lengthMenu": [ [25, 50, 100], [25, 50, 100] ],
 			"columns": [
 			            { "data": "id" },
 			            { "data": "name" },
@@ -13,7 +15,7 @@ var configureDataTable = function(){
 			            { "data": "active" }
 			        ]
 	};
-	
+
 	$('#tbl_server').configureDataTable(config, {url: restUri.server.table, complete: function(){
 //		hideLoading();
 	}});
