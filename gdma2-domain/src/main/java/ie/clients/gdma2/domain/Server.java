@@ -28,7 +28,7 @@ public class Server extends BaseEntity {
 
 	@javax.persistence.Column(name = "NAME")
 	private String name;
-
+	
 	@javax.persistence.Column(name = "USERNAME")
 	private String username;
 
@@ -43,6 +43,9 @@ public class Server extends BaseEntity {
 
 	@javax.persistence.Column(name = "ACTIVE")
 	private boolean active;
+	
+	@javax.persistence.Column(name = "SERVER_ALIAS")
+	private String alias;
 	
 	@ManyToOne
 	@JoinColumn(name = "CONNECTION_TYPE_ID", nullable = false)
@@ -146,6 +149,15 @@ public class Server extends BaseEntity {
 		this.lastError = lastError;
 	}
 
+		
+	public String getAlias() {
+		return alias;
+	}
+
+	public void setAlias(String alias) {
+		this.alias = alias;
+	}
+
 	public boolean equals(Object other) {
 		if (this == other)
 			return true;
@@ -159,10 +171,14 @@ public class Server extends BaseEntity {
 		return name.hashCode();
 	}
 
+
 	public String toString() {
-		return "Server [connected=" + connected + ", connectionType=" + connectionType + ", connectionUrl="
-				+ connectionUrl + ", id=" + getId() + ", lastError=" + lastError + ", name=" + name + ", password="
-				+ password + ", prefix=" + prefix + ", tables=" + tables + ", username=" + username + "]";
+		return "Server [name=" + name + ", username=" + username
+				+ ", password=" + password + ", connectionUrl=" + connectionUrl
+				+ ", prefix=" + prefix + ", active=" + active + ", alias="
+				+ alias + ", connectionType=" + connectionType + ", tables="
+				+ tables + ", connected=" + connected + ", lastError="
+				+ lastError + ", getId()=" + getId() + "]";
 	}
 
 }

@@ -31,7 +31,7 @@ public class TableResource extends BaseDataTableResource{
 	/*paginated table list for selected server - ALL Tables*/
 	/*TODO fix URI template*/
 	@RequestMapping(value = "/server/{id}/table/list")
-	public PaginatedTableResponse<Table> getTablesPaginatedTable(@PathVariable("id") String serverId,
+	public PaginatedTableResponse<Table> getPaginatedTableByServer(@PathVariable("id") String serverId,
 			@RequestParam Map<String,String> params){
 		logger.debug("getTablesPaginatedTable()");
 		/*order[0][column]:4*/
@@ -51,6 +51,9 @@ public class TableResource extends BaseDataTableResource{
 			break;
 		case 3: 
 			orderByColumn = "server.name";
+			break;
+		case 4:
+			orderByColumn = "alias";
 			break;
 		}
 		

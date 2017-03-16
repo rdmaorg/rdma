@@ -91,9 +91,12 @@ public class ColumnResource extends BaseDataTableResource{
 		case 16:
 			orderByColumn = "columnSize";
 			break;
+		case 17:
+			orderByColumn = "alias";
+			break;
 		}
 		
-		logger.info("orderByColumn" + orderByColumn);
+		logger.info("orderByColumn: " + orderByColumn);
 		PaginatedTableResponse<Column> resp = serviceFacade.getMetadataService().getColumnsForTable(
 				tableId,
 				getSearchValue(reqParams),

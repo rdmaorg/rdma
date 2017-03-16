@@ -23,11 +23,11 @@ public interface TableRepository extends PagingAndSortingRepository<Table, Integ
 	public long countTablesForServer(Integer serverId);
 
 	/*matching = search term, search in all columns of data table on UI*/
-	@Query("select count(t) from Table t where upper(t.name) like ?1 or upper(t.server.name) like ?1")
-	public long getCountMatching(String matching);
+	@Query("select count(t) from Table t where upper(t.name) like ?1 or upper(t.alias) like ?1 or upper(t.server.name) like ?1 and t.server.id = ?2")
+	public long getCountMatching(String matching, Integer serverId); //TODO pass serverId
 
-	@Query("select t from Table t where upper(t.name) like ?1 or upper(t.server.name) like ?1")
-	public List<Table> getMatchingTables(String matching, Pageable pageable);
+	@Query("select t from Table t where upper(t.name) like ?1  or upper(t.alias) like ?1 or upper(t.server.name) like ?1 and t.server.id = ?2")
+	public List<Table> getMatchingTables(String matching, Integer serverId, Pageable pageable);
 
 	/*find all ACTIVE=true tables for server*/
 	/*see GdmaAdminAjaxFacade.getTablesForServer, must use  serverUtil.resyncTableList(server);

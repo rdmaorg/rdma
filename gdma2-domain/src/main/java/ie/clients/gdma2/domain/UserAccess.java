@@ -13,6 +13,9 @@ import com.avnet.cs.commons.dao.BaseEntity;
 @SequenceGenerator(initialValue = 1, name = "idgen", sequenceName = "SEQ_USER_TABLE_ACCESS_GDMA2", allocationSize = 1)
 public class UserAccess extends BaseEntity {
 	
+	/*TODO uniqueConstraints={@UniqueConstraint(columnNames = {"user.user_id" , "table.table_id"})}
+	 * */
+	
 	/*openQ instead of having PK and sequnece generator from BaseEntity, to have composite primary key (user_id, table_id):
 	 * 
 	 * no - @SequenceGenerator
@@ -95,7 +98,7 @@ public class UserAccess extends BaseEntity {
     }
 
     
-	
+	//TODO use biz key for HashCode and equals not generic
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;

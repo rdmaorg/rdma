@@ -58,8 +58,13 @@ public class ServerResource extends BaseDataTableResource {
 		case 7:// by active
 			orderByColumn = "active";
 			break;
+		case 8: //alias
+			orderByColumn = "alias";
+			break;
 		}
 
+		logger.debug("orderByColumn: " + orderByColumn);
+		
 		PaginatedTableResponse<Server> resp = serviceFacade.getMetadataService().getServers(getSearchValue(params), orderByColumn, getOrderByDirection(params),
 				getStartIndex(params), getLength(params));
 

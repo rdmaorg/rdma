@@ -94,11 +94,11 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	}
 
 	@Override
-	public PaginatedTableResponse<Table> getTablesForServer(Integer serverId,
+	public PaginatedTableResponse<Table> getTablesForServer(Integer serverIdParam,
 			String matching, String orderBy, String orderDirection,
 			int startIndex, int length) {
 
-		logger.debug("Param ServerId: " + serverId);
+		logger.debug("Param ServerId: " + serverIdParam);
 		logger.debug("getTablesForServer");
 
 		Server server = null;
@@ -106,12 +106,13 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		long total = 0;
 		long filtered = 0;
 
-		server = repositoryManager.getServerRepository().findOne(serverId);
+		server = repositoryManager.getServerRepository().findOne(serverIdParam);
+		int serverId = server.getId();
 		//TODO if(null == server)
 
 		//empty search, select all tables for server
 		if (StringUtils.isBlank(matching)) {
-			total = repositoryManager.getTableRepository().countTablesForServer(server.getId());
+			total = repositoryManager.getTableRepository().countTablesForServer(serverId);
 			logger.debug("Total, no search:" + total);
 			filtered = total;
 
@@ -119,12 +120,13 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			tables = repositoryManager.getTableRepository().findAll(getPagingRequest(orderBy, orderDirection, startIndex, length, total)).getContent();
 			logger.debug("tables found: " + tables.size());
 		} else {
-			total = repositoryManager.getTableRepository().countTablesForServer(server.getId());
+			String match = "%" + matching.trim().toUpperCase() + "%";
+			total = repositoryManager.getTableRepository().countTablesForServer(serverId);
 			logger.debug("Total, with search:" + total);
-			filtered = repositoryManager.getTableRepository().getCountMatching("%" + matching.trim().toUpperCase() + "%");
+			filtered = repositoryManager.getTableRepository().getCountMatching(match, serverId);
 
 			tables = repositoryManager.getTableRepository().getMatchingTables(
-					"%" + matching.trim().toUpperCase() + "%",
+					match,serverId,
 					getPagingRequest(orderBy, orderDirection, startIndex, length, total));
 
 		}

@@ -26,42 +26,25 @@ public class Table extends BaseEntity {
 
 	@javax.persistence.Column(name = "NAME")
 	private String name;
-
+	
 	@javax.persistence.Column(name = "ACTIVE")
 	private boolean active;
 	
 	@ManyToOne
 	@JoinColumn(name = "SERVER_ID", nullable = false)
 	private Server server;
-
-	/*TODO REMOVE this we need LINK table with extra columns
-	/*
-	@ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.EAGER)
-	@JoinTable(name = "TABLE_HAS_USERS_GDMA2", joinColumns = {
-			@JoinColumn(name = "TABLE_ID", nullable = false, updatable = false) }, inverseJoinColumns = {
-			@JoinColumn(name = "USER_ID", nullable = false, updatable = false) })
-	private Set<User> users = new LinkedHashSet<User>();
 	
-	public Set<User> getUsers() {
-		return users;
-	}
-
-	public void setUsers(Set<User> users) {
-		this.users = users;
-	}
+	@javax.persistence.Column(name = "TABLE_ALIAS")
+	private String alias;
 	
-	
-	*/
-
 	//@OneToMany(mappedBy="table")
 	@javax.persistence.Transient
 	private Set<Column> columns = new LinkedHashSet<Column>();
+	
 
 	//@OneToMany(mappedBy="table")
 	@javax.persistence.Transient
 	private Set<UserAccess> userAccess = new LinkedHashSet<UserAccess>();
-
-
 
 	public Set<UserAccess> getUserAccess() {
 		return userAccess;
@@ -89,20 +72,7 @@ public class Table extends BaseEntity {
 		this.columns = columns;
 	}
 
-	public boolean equals(Object other) {
-		if (this == other)
-			return true;
-		if (!(other instanceof Table))
-			return false;
-		final Table that = (Table) other;
-		return this.name.equals(that.getName());
-	}
-
-	public int hashCode() {
-		return name.hashCode();
-	}
-
-	public Server getServer() {
+		public Server getServer() {
 		return server;
 	}
 
@@ -118,4 +88,33 @@ public class Table extends BaseEntity {
 		this.active = active;
 	}
 
+	public String getAlias() {
+		return alias;
+	}
+
+	public void setAlias(String alias) {
+		this.alias = alias;
+	}
+
+	
+	public boolean equals(Object other) {
+		if (this == other)http://marketplace.eclipse.org/marketplace-client-intro?mpc_install=150
+			return true;http://marketplace.eclipse.org/marketplace-client-intro?mpc_install=150
+		if (!(other instanceof Table))
+			return false;
+		final Table that = (Table) other;
+		return this.name.equals(that.getName());
+	}
+
+	public int hashCode() {
+		return name.hashCode();
+	}
+	
+	
+	public String toString() {
+		return "Table [name=" + name + ", active=" + active + ", server="
+				+ server + ", alias=" + alias + ", columns=" + columns
+				+ ", userAccess=" + userAccess + ", getId()=" + getId() + "]";
+	}
+	
 }

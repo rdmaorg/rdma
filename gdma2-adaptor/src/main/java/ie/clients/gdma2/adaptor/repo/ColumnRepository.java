@@ -66,10 +66,12 @@ public interface ColumnRepository extends PagingAndSortingRepository<Column, Int
 	public long countColumnsForTable(Integer id);
 
 	/*PAGINATED columns*/
-	@Query("select count(c) from Column c where upper(c.name) like ?1 or upper(c.dropDownColumnDisplay.name) like ?1 or upper(c.dropDownColumnStore.name) like ?1 or upper(c.special) like ?1")
+	@Query("select count(c) from Column c where upper(c.name) like ?1 or upper(c.dropDownColumnDisplay.name) like ?1 "
+			+ " or upper(c.dropDownColumnStore.name) like ?1 or upper(c.special) like ?1 or upper(c.alias) like ?1 ")
 	public long getCountMatching(String matching);
 	
-	@Query("select c from Column c where upper(c.name) like ?1 or upper(c.dropDownColumnDisplay.name) like ?1 or upper(c.dropDownColumnStore.name) like ?1 or upper(c.special) like ?1")
+	@Query("select c from Column c where upper(c.name) like ?1 or upper(c.dropDownColumnDisplay.name) like ?1"
+			+ " or upper(c.dropDownColumnStore.name) like ?1 or upper(c.special) like ?1 or upper(c.alias) like ?1")
 	public List<Column> getMatchingColumns(String matching, Pageable pageable);
 
 	
