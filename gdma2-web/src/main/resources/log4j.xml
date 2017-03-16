@@ -27,7 +27,7 @@
 	</category>
 
 	<root>
-		<level value="ERROR" />
+		<level value="DEBUG" />
 		<appender-ref ref="console" />
 		<appender-ref ref="file" />
 	</root>

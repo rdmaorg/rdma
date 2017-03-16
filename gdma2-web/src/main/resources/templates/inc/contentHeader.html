@@ -1,35 +1,35 @@
 <header class="main-header" xmlns:th="http://www.thymeleaf.org">
-  <!-- Logo -->
-  <a th:href="@{/}" class="logo">
-    <!-- mini logo for sidebar mini 50x50 pixels -->
-    <span class="logo-mini"><b>G</b></span>
-    <!-- logo for regular state and mobile devices -->
-    <span class="logo-lg"><b>GDMA</b></span>
-  </a>
+
   <!-- Header Navbar: style can be found in header.less -->
   <nav class="navbar navbar-inverse">
-    <!-- Sidebar toggle button-->
-    <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
-      <span class="sr-only">Toggle navigation</span>
-    </a>
 
-	<span th:text="${@environment.getProperty('application.description')}"></span>
 
       <ul class="nav navbar-nav">
+        <li>
+			<a th:href="@{/}" class="logo">
+			  <!-- mini logo for sidebar mini 50x50 pixels -->
+			  <span class="logo-mini"><img class="img-responsive" th:src="@{/public/main/images/logo-gdma.png}" /></span>
+			  <!-- logo for regular state and mobile devices -->
+			  <span class="logo-lg"><b th:text="${@environment.getProperty('application.description')}"></b></span>
+			</a>		  
+		</li>
         <li>
 		    <!-- Sidebar toggle button-->
 		    <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
 		      <span class="sr-only">Toggle navigation</span>
 		    </a>
 	    </li>
+	    <li>
+		</li>
+	  </ul>
+	  <ul class="nav navbar-nav pull-right">
         <li class="dropdown user user-menu">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">          
             <span class="hidden-xs">John Doe</span>
           </a>
-          <ul class="dropdown-menu">
+          <ul class="dropdown-menu dropdown-menu-right">
             <!-- User image -->
-            <li class="user-header">
-              
+            <li class="user-header">              
               <p>
                 Joe Doe
                 <small>User since Nov. 2012</small>
@@ -48,7 +48,6 @@
             </li>
           </ul>
         </li>
-        <!-- Control Sidebar Toggle Button -->
         <li>
           <a href="#" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
         </li>
