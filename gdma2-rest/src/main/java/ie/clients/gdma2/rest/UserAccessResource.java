@@ -1,6 +1,5 @@
 package ie.clients.gdma2.rest;
 
-import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 
@@ -10,7 +9,9 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -58,7 +59,16 @@ public class UserAccessResource extends BaseDataTableResource {
 		
 	}
 	
+	@RequestMapping(value="save", method=RequestMethod.POST)
+	void saveUserAccess(@RequestBody UserAccess userAccess){
+		logger.debug("saveUserAccess for table ans user: " + userAccess.getTable().getName() + ", " + userAccess.getUser().getUserName());
+		serviceFacade.getMetadataService().saveUserAccess(userAccess);
+	}
 	
-
+	@RequestMapping(value="delete/{id}", method = RequestMethod.DELETE)
+	void deleteUserAccess(@PathVariable("id") Integer id){
+		logger.debug("deleteUserAccess: " + id);
+		serviceFacade.getMetadataService().deleteUserAccess(id);
+	}
 	
 }

@@ -14,7 +14,8 @@ public interface MetaDataService {
 
 	/*Connection Type*/
 	public List<ConnectionType> getAllConnectionTypes();
-	//TODO public PaginatedTableResponse
+	public PaginatedTableResponse<ConnectionType> getConnectionTypeTable(
+			String searchValue, String orderByColumn, String orderByDirection,int startIndex, int length);
 	public void saveConnectionType(ConnectionType connectionType);
 	public void deleteConnectionType(Integer id);
 	
@@ -22,7 +23,6 @@ public interface MetaDataService {
 	public List<Server> getAllServers();
 	public PaginatedTableResponse<Server> getServers(String matching, String orderBy,
 			String orderDirection, int startIndex, int length);
-
 	public void saveServer(Server server);
 	public void deleteServer(int id);
 	public void deleteServer(Server server);
@@ -35,7 +35,6 @@ public interface MetaDataService {
 	public Long countTablesForServer(Integer serverId);
 	public PaginatedTableResponse<Table> getTablesForServer(Integer serverId, String matching, String orderBy,
 			String orderDirection, int startIndex, int length );
-
 	public void saveTable(Table table);
 	public void deleteTable(int id);
 	
@@ -43,46 +42,31 @@ public interface MetaDataService {
 	public List<User> getAllUsers();
 	public List<User> getAllActiveUsers();
 	public List<User> findByUserNameIgnoreCase(String userName);
-	
 	public List<User> saveUsers(List<User> userList);
-	/*TODO check is saving single user is needed or can be done via saveUsers()*/
-	public void saveUser(User user);
-	public void deleteUser(int id);
-
 	public PaginatedTableResponse<User> getUsers(String matching, String orderBy,
 			String orderDirection, int startIndex, int length);
+	public void saveUser(User user);
+	public void deleteUser(int id);
+	
 	
 	/*Column*/
 	public List<Column> getAllColumns();//TODO delete, just for initail repos testing
 	public List<Column> findByTableIdAndActiveTrue(Integer tableId);
-	
-	
 	public PaginatedTableResponse<Column> getColumnsForTable(Integer tableId, String matching, String orderBy,
 			String orderDirection, int startIndex, int length);
-	
 	public void deleteColumn(int id);
 	public void deleteColumn(Column column); /*TODO check if needed*/ 
 	
 	public List<Column>saveColumns(List<Column> columnList);
 	/*TODO check is saving single user is needed or can be done via saveColums()*/
-	
 	/* public Set<Column> getColumnsForTable(Long serverId, Long tableId); //see GdmaAdminAjaxFacade.getColumnsForTable */
 	
 	
 	/*UserAccess*/
-	/*Server*/
 	public List<UserAccess> getAllUserAccess();
 	public PaginatedTableResponse<UserAccess> getUserAccessForTable(Integer tableId, String matching, String orderBy,
 			String orderDirection, int startIndex, int length);
-	
-
-	
-	
-	/*
 	public void saveUserAccess(UserAccess userAccess);
-	public void deleteUserAccess(int id);
-	public void deleteUserAccess(UserAccess userAccess);
-	*/
-	
+	public void deleteUserAccess(Integer id);
 	
 }

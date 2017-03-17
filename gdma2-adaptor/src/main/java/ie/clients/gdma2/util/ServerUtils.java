@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class ServerUtils {
-	
+
 	private static Logger logger = LoggerFactory.getLogger(ServerUtils.class);
 
 	/*
@@ -45,14 +45,14 @@ public class ServerUtils {
 
 	}
 
-	
-	
+
+
 
 	/** Called from 
 	 * 	 GdmaAdminAjaxFacade:
 	 * 
 	 * 		Only called from admin and it's a special case. We need to re-sync the
-     * 		columns before calling it, just to ensure that the list is current
+	 * 		columns before calling it, just to ensure that the list is current
 	 * 		
 	 * 				 public Set<Column> getColumnsForTable(Long serverId, Long tableId) {
 	 * 						
@@ -67,7 +67,6 @@ public class ServerUtils {
 	public void resyncColumnList(Server server, Table table) {
 
 	}
-
 
 
 }

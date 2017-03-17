@@ -25,7 +25,7 @@ public class ConnectionType extends BaseEntity {
 	private String name;
 
 	@javax.persistence.Column(name = "SELECT_GET_TABLES", nullable = false)
-	private String SQLGetTables;
+	private String sqlGetTables;
 
 	@javax.persistence.Column(name = "CONNECTION_CLASS", nullable = false)
 	private String connectionClass;
@@ -37,13 +37,13 @@ public class ConnectionType extends BaseEntity {
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	public String getSQLGetTables() {
-		return SQLGetTables;
+	
+	public String getSqlGetTables() {
+		return sqlGetTables;
 	}
 
-	public void setSQLGetTables(String getTables) {
-		SQLGetTables = getTables;
+	public void setSqlGetTables(String sqlGetTables) {
+		this.sqlGetTables = sqlGetTables;
 	}
 
 	public String getConnectionClass() {
@@ -67,9 +67,10 @@ public class ConnectionType extends BaseEntity {
 		return name.hashCode();
 	}
 
+	@Override
 	public String toString() {
-		return "ConnectionType [name=" + name + ", SQLGetTables="
-				+ SQLGetTables + ", connectionClass=" + connectionClass
+		return "ConnectionType [name=" + name + ", sqlGetTables="
+				+ sqlGetTables + ", connectionClass=" + connectionClass
 				+ ", getId()=" + getId() + "]";
 	}
 

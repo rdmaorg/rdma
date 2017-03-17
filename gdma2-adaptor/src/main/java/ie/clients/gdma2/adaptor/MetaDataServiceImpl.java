@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,17 +33,46 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		return IteratorUtils.toList(repositoryManager.getConnectionTypeRepository().findAll().iterator());
 	}
 
+	@Override
+	public PaginatedTableResponse<ConnectionType> getConnectionTypeTable(String searchValue, String orderByColumn, String orderByDirection,
+			int startIndex, int length) {
+
+		logger.debug("getConnectionTypeTable");
+		long total = repositoryManager.getConnectionTypeRepository().count();
+		long filtered = 0;
+
+		List<ConnectionType> connectionTypes = null;
+
+		if(StringUtils.isBlank(searchValue)){
+			filtered = total;
+			PageRequest pagingRequest = getPagingRequest(orderByColumn, orderByDirection, startIndex, length, total);
+			Page<ConnectionType> connectionTypePages = repositoryManager.getConnectionTypeRepository().findAll(pagingRequest);
+			connectionTypes = connectionTypePages.getContent();
+		} else {
+			String match = "%" +searchValue.trim().toUpperCase() + "%";
+			filtered = repositoryManager.getConnectionTypeRepository().getCountMatching(match);
+			PageRequest pagingRequest = getPagingRequest(orderByColumn, orderByDirection, startIndex, length, total);
+			connectionTypes =  repositoryManager.getConnectionTypeRepository().getMatchingConnectionTypes(match, pagingRequest);
+		}
+
+		logger.debug("Search ConnectionType: Search: " + searchValue + ", Total: " + total + ", Filtered: " + filtered
+				+ ", Result Count: " + connectionTypes.size());
+
+		return getPaginatedTableResponse(connectionTypes != null ? connectionTypes : new ArrayList<ConnectionType>(), total, filtered);
+	}
+
+
 	@Transactional
 	@Override
 	public void saveConnectionType(ConnectionType connectionType) {
 		repositoryManager.getConnectionTypeRepository().save(connectionType);
 	}
-	
+
 	@Transactional
 	@Override
 	public void deleteConnectionType(Integer id) {
 		repositoryManager.getConnectionTypeRepository().delete(id);
-		
+
 	}
 
 
@@ -88,8 +118,8 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	public void saveServer(Server server) {
 		repositoryManager.getServerRepository().save(server);
 	}
-	
-	
+
+
 	@Transactional
 	@Override
 	public void deleteServer(int id) {
@@ -362,7 +392,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	public PaginatedTableResponse<UserAccess> getUserAccessForTable(
 			Integer tableId, String matching, String orderBy,String orderDirection, int startIndex, int length) {
 
-		logger.info("getUserAccessForTable" + tableId);
+		logger.info("getUserAccessForTable with id: " + tableId);
 
 		//TODO see complete impl of GdmaAdminAjaxFacade.getAccessListForTable(Long tableId) add make complete logic  */ 
 		/* load table and all users, iterrate over each user
@@ -386,13 +416,17 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		table = repositoryManager.getTableRepository().findOne(tableId);
 		//TODO if(null == table)
 		if(StringUtils.isBlank(matching)){
-			total = repositoryManager.getColumnRepository().countColumnsForTable(table.getId());
-			logger.debug("Total count UserAccess for table, no search:" + total);
+			total = repositoryManager.getUserAccessRepository().countUserAccessForTable(table.getId());
+			logger.debug("Total count UserAccess for tableId:" + tableId  + ", no search:" + total);
 			filtered = total;
 			logger.debug("findALL...getPagingRequest():");
 			PageRequest pagingRequest = getPagingRequest(orderBy, orderDirection, startIndex, length, total);
-			Page<UserAccess> userAccessPages = repositoryManager.getUserAccessRepository().findAll(pagingRequest);
-			userAccessListForTable = userAccessPages.getContent();
+
+			//Page<UserAccess> userAccessPages = repositoryManager.getUserAccessRepository().findAll(pagingRequest);
+			//Page<UserAccess> userAccessPages = repositoryManager.getUserAccessRepository().findPaginatedUserAccessByTable(tableId, pagingRequest);
+			//userAccessListForTable = userAccessPages.getContent();
+
+			userAccessListForTable  = repositoryManager.getUserAccessRepository().findPaginatedUserAccessByTable(tableId, pagingRequest);
 			logger.debug("userAccess entries found: " + (null != userAccessListForTable ? userAccessListForTable.size() : "0"));
 		} else {
 			String match = "%" + matching.trim().toUpperCase() + "%";
@@ -412,14 +446,18 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 	}
 
+	@Transactional
+	@Override
+	public void saveUserAccess(UserAccess userAccess) {
+		repositoryManager.getUserAccessRepository().save(userAccess);
 
+	}
 
-	
-
-
-
-
-
+	@Transactional
+	@Override
+	public void deleteUserAccess(Integer id) {
+		repositoryManager.getUserAccessRepository().delete(id);
+	}
 
 
 }

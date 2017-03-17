@@ -5,10 +5,12 @@ import java.util.List;
 import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.UserAccess;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.query.Param;
 
 public interface UserAccessRepository extends PagingAndSortingRepository<UserAccess, Integer> {
 
@@ -37,15 +39,26 @@ public interface UserAccessRepository extends PagingAndSortingRepository<UserAcc
     //4.   public void saveAccessList(UserAccess userAccess) {
     */
 
+	
+		
 	/*count all UserAccess entries for table*/
 	@Query("select count(ua) from UserAccess ua where ua.table.id = ?1")
 	public long countUserAccessForTable(Integer id);
 
+	
+//	@Query("SELECT c FROM Child c WHERE c.parent.id=:parentId")
+//	public Page<Child> findByParentId(@Param("parentId") Long parentId, Pageable page);
+@Query("select ua from UserAccess ua where ua.table.id = ?1")
+	public List<UserAccess> findPaginatedUserAccessByTable(Integer tableId, Pageable pageable);
+	
 	@Query("select count(ua) from UserAccess ua where upper(ua.user.userName) like ?1")
 	public long getCountMatching(String matching);
 
 	@Query("select ua from UserAccess ua where upper(ua.user.userName) like ?1")
 	public List<UserAccess> getMatchingUserAccesses(String match, Pageable pageable);
+
+
+	
 	
 	/*
 	@Query("select s from Server s where upper(s.name) like ?1 or upper(s.username) like ?1 or upper(s.connectionUrl) like ?1 or upper(s.connectionType.name) like ?1 or upper(s.prefix) like ?1 ")

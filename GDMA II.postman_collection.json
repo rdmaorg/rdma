@@ -298,6 +298,70 @@
 				"description": "length 40 (all in DB)"
 			},
 			"response": []
+		},
+		{
+			"name": "Connection type - list (select all)",
+			"request": {
+				"url": "http://localhost:8080/gdma2/rest/connection/list",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Connection - GET paginated",
+			"request": {
+				"url": "http://localhost:8080/gdma2/rest/connection/table?order[0][column]=3&order[0][dir]=desc",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": "oder by connectionClass DESC"
+			},
+			"response": []
+		},
+		{
+			"name": "Connection Type GET (search paginated)",
+			"request": {
+				"url": "http://localhost:8080/gdma2/rest/connection/table?search[value]=SYSOBJECTS&length=2&order[0][column]=1&order[0][dir]=desc\t",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": "search[value]:SYSOBJECTS\norder by :name desc\nlentgh = 2\t"
+			},
+			"response": []
+		},
+		{
+			"name": "Connection POST - save",
+			"request": {
+				"url": "http://localhost:8080/gdma2/rest/connection/save",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"name\": \"TEST SAVE Postgres 9.6.2 JDBC\",\n\"sqlGetTables\": \"select * from information_schema.tables WHERE table_schema='public'\",\n\"connectionClass\": \"org.postgresql.Driver\"\n}"
+				},
+				"description": ""
+			},
+			"response": []
+		},
+		{
+			"name": "Connection DELETE",
+			"request": {
+				"url": "http://localhost:8080/gdma2/rest/connection/delete/13",
+				"method": "DELETE",
+				"header": [],
+				"body": {},
+				"description": "Delete 13"
+			},
+			"response": []
 		}
 	]
 }
