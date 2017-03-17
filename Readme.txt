@@ -323,6 +323,7 @@ INSERT INTO "column_gdma2" VALUES (nextval('seq_column_gdma2'), false, 'column a
 
 
 
+
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',5,10);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',2,2);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',1,8);
@@ -331,7 +332,6 @@ INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_inser
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',2,9);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',1,2);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',6,3);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',4,3);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',4,2);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',6,1);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',1,10);
@@ -339,7 +339,6 @@ INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_inser
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',4,4);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',6,7);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',2,8);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',4,6);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',6,8);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',2,6);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',6,9);
@@ -348,82 +347,36 @@ INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_inser
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',3,6);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',3,10);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',6,10);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',1,8);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',1,1);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',5,8);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',5,4);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',1,8);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',1,4);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',3,7);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',6,4);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',3,2);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',5,4);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',1,9);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',4,8);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',6,1);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',3,4);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',6,2);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',2,10);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',6,3);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',1,7);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',1,9);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',1,2);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',4,1);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',4,10);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',5,5);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',2,2);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',4,1);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',4,7);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',6,2);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',3,10);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',2,8);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',2,2);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',6,5);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',1,9);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',5,2);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',4,9);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',6,7);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',1,5);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',5,6);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',3,5);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',1,7);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',4,7);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',5,2);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',2,7);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',2,7);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',4,5);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',3,9);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',4,3);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',2,8);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',1,1);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',6,7);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',6,9);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',2,9);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',2,10);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',3,8);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',3,6);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',3,1);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',2,2);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',2,5);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',5,5);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',2,5);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',6,6);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',2,6);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',5,6);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',2,10);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',4,2);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',4,5);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',1,10);
 INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',2,4);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',6,8);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',1,4);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',2,6);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',3,5);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'false','false','false','false',4,7);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',6,5);
-INSERT INTO "user_table_access_gdma2" (id,allow_delete,allow_display,allow_insert,allow_update,table_id,user_id ) VALUES (nextval('seq_user_table_access_gdma2'),'true','true','true','true',1,2);
-
-
 
 =====
 

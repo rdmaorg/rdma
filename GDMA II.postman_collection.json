@@ -300,6 +300,37 @@
 			"response": []
 		},
 		{
+			"name": "Acces POST - save",
+			"request": {
+				"url": "http://localhost:8080/gdma2/rest/access/save",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n\t  \"allowDisplay\": true,\r\n      \"allowUpdate\": true,\r\n      \"allowInsert\": true,\r\n      \"allowDelete\": false,\r\n      \"user\": {\r\n        \"id\": 6,\r\n        \"firstName\": \"Tracy\",\r\n        \"lastName\": \"Guidry\",\r\n        \"userName\": \"Tracy.M.Guidry@mailinator.com\",\r\n        \"domain\": \"verizon.com\",\r\n        \"admin\": true,\r\n        \"locked\": true,\r\n        \"active\": true,\r\n        \"userAccess\": []\r\n      },\r\n      \"table\":  {\r\n\t\t\"id\": 1,\r\n\t\t\"name\": \"USER_VIDEO\",\r\n\t\t\"active\": true,\r\n\t\t\"server\": {\r\n\t\t  \"id\": 2,\r\n\t\t  \"name\": \"TEST POSTGRES SERVER 2\",\r\n\t\t  \"username\": \"postgres11\",\r\n\t\t  \"password\": \"12345678\",\r\n\t\t  \"connectionUrl\": \"jdbc:pgsql://localhost:5432/gdma21\",\r\n\t\t  \"prefix\": \"public\",\r\n\t\t  \"active\": true,\r\n\t\t  \"alias\": \"TEST alias2\",\r\n\t\t  \"connectionType\": {\r\n\t\t\t\"id\": 1,\r\n\t\t\t\"name\": \"Postgres 9.6.2 JDBC\",\r\n\t\t\t\"sqlGetTables\": \"select * from information_schema.tables WHERE table_schema='public'\",\r\n\t\t\t\"connectionClass\": \"org.postgresql.Driver\"\r\n\t\t  },\r\n\t\t  \"tables\": [],\r\n\t\t  \"connected\": false,\r\n\t\t  \"lastError\": \"\"\r\n\t\t},\r\n\t\t\"alias\": \"table alias1\",\r\n\t\t\"columns\": [],\r\n\t\t\"userAccess\": []\r\n\t }\r\n}\r\n    "
+				},
+				"description": "must be created for non-existing pair(tableId,user_id)\nor unique constraint will be violated with msg:\n\n\tCaused by: org.postgresql.util.PSQLException: ERROR: duplicate key value violates unique constraint \"uk_k4hbqphgoq06d0becg2oj8v7n\"\n\n\tDetail: Key (user_id, table_id)=(6, 1) already exists.\n\n"
+			},
+			"response": []
+		},
+		{
+			"name": "Access DELETE 54",
+			"request": {
+				"url": "http://localhost:8080/gdma2/rest/access/delete/54",
+				"method": "DELETE",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
 			"name": "Connection type - list (select all)",
 			"request": {
 				"url": "http://localhost:8080/gdma2/rest/connection/list",

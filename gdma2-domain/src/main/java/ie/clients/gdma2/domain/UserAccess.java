@@ -1,29 +1,20 @@
 package ie.clients.gdma2.domain;
 
 import javax.persistence.Entity;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.UniqueConstraint;
 
 import com.avnet.cs.commons.dao.BaseEntity;
 
 @Entity
-@javax.persistence.Table(name = "USER_TABLE_ACCESS_GDMA2")
+@javax.persistence.Table(name = "USER_TABLE_ACCESS_GDMA2", uniqueConstraints = {
+			@UniqueConstraint(columnNames={"USER_ID","TABLE_ID"})
+		})
 @SequenceGenerator(initialValue = 1, name = "idgen", sequenceName = "SEQ_USER_TABLE_ACCESS_GDMA2", allocationSize = 1)
 public class UserAccess extends BaseEntity {
 	
-	/*TODO uniqueConstraints={@UniqueConstraint(columnNames = {"user.user_id" , "table.table_id"})}
-	 * */
-	
-	/*openQ instead of having PK and sequnece generator from BaseEntity, to have composite primary key (user_id, table_id):
-	 * 
-	 * no - @SequenceGenerator
-	 * public class UserAccess implements Serializable 
-	 * 
-	 * put  @Id
-	 * on User and Table 
-	 * */
 	
 	@javax.persistence.Column(name = "ALLOW_DISPLAY", nullable = false)
 	private boolean allowDisplay = false;
@@ -139,8 +130,17 @@ public class UserAccess extends BaseEntity {
 		} else if (!user.equals(other.user))
 			return false;
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "UserAccess [allowDisplay=" + allowDisplay + ", allowUpdate="
+				+ allowUpdate + ", allowInsert=" + allowInsert
+				+ ", allowDelete=" + allowDelete + ", user=" + user
+				+ ", table=" + table + ", getId()=" + getId() + "]";
 	} 
     
+	
     
     
 }
