@@ -87,5 +87,10 @@ public class ServerResource extends BaseDataTableResource {
 		serviceFacade.getMetadataService().deleteServer(id);
 	}
 	
+	@RequestMapping(value = "/metadata/{id}")
+	public void getTableMetadataForServer(@PathVariable("id") Integer serverId){
+		logger.info("getTableMetadataForServer:" + serverId);
+		serviceFacade.getMetadataService().getTablesMetadataForServerServer(serverId);
+	}
 	
 }

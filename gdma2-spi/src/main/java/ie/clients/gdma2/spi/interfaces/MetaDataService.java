@@ -26,16 +26,17 @@ public interface MetaDataService {
 	public void saveServer(Server server);
 	public void deleteServer(int id);
 	public void deleteServer(Server server);
+	public Server findOne(Integer serverId);
 	
 	/*Tables*/
-	public Server findOne(Integer serverId);
+	
 	public List<Table> getAllTables();
 	public List<Table> findTablesByServerId(Integer serverId);
 	public List<Table> findByServerIdAndActiveTrue(Integer serverId);
 	public Long countTablesForServer(Integer serverId);
 	public PaginatedTableResponse<Table> getTablesForServer(Integer serverId, String matching, String orderBy,
 			String orderDirection, int startIndex, int length );
-	public void saveTable(Table table);
+	public Table saveTable(Table table);
 	public void deleteTable(int id);
 	
 	/*User*/
@@ -68,5 +69,7 @@ public interface MetaDataService {
 			String orderDirection, int startIndex, int length);
 	public void saveUserAccess(UserAccess userAccess);
 	public void deleteUserAccess(Integer id);
+
 	
+	public void getTablesMetadataForServerServer(Integer serverId);
 }

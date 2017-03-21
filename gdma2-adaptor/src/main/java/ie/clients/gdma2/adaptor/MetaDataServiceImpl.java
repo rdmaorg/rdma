@@ -8,9 +8,13 @@ import ie.clients.gdma2.domain.User;
 import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 import ie.clients.gdma2.spi.interfaces.MetaDataService;
+import ie.clients.gdma2.util.ServerUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
+import javax.sql.DataSource;
 
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -18,7 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -211,9 +215,8 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 	@Transactional
 	@Override
-	public void saveTable(Table table) {
-		repositoryManager.getTableRepository().save(table);
-
+	public Table saveTable(Table table) {
+		return repositoryManager.getTableRepository().save(table);
 	}
 
 	@Transactional
@@ -457,6 +460,78 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	@Override
 	public void deleteUserAccess(Integer id) {
 		repositoryManager.getUserAccessRepository().delete(id);
+	}
+
+	/**
+	 * for URL 
+	 * http://localhost:8080/gdma2/rest/server/metadata/4
+	 * 
+	 * gets all tables and related columns for server = 4, 
+	 * using metadata creates Tables and Columns in metadata DB
+	 * 
+	 * CONSIDER:
+	
+	 1. One DB Server can contain many DBs, have this in mind when registering URL in Column: 	server_gdma2.url
+	  	(dbname 'gdma20' as part of DB URL : "jdbc:pgsql://localhost:5432/gdma20" stored in Server table)
+	 
+	 2. "ConnectionType" is used per each server to get DB vendor specific "SHOW tables" SQL
+	 
+	 3. User registered in Server DB table with: 
+	 	server_gdma2.username
+		server_gdma2.password
+ 		must have 'SHOW tables' rights invoked (Column : connection_types_gdma2.select_get_tables)
+ 		
+	 5. Using proper DriverClass from ConnectioType user connects to server (Column : connection_types_gdma2.connection_class)  
+	 
+	 	Using this registered data from Server and ConnectionType - DataSource is created and JdbcTemplate using it
+	 	 
+	 6. Once connected user needs to execute 'SHOW TABLES' SQL and obtain Set of DB Table names from remote DB server
+	 
+	 7. Then iteration over Set of Table Name and using ResultSet to get 'Metadata' on DB Columns 
+	 
+	 8. Creating Set of Columns per each Table with specifics : PK or not, Size, ...othe constraints. 
+	 
+	 10. Iterate over Table Name set. Save Table to Medatada DB, then use saved Table to save Columns (TODO consider TRANSATION ) 
+  
+	 
+	 * 	 */
+	@Override
+	public void getTablesMetadataForServerServer(Integer serverId) {
+		logger.info("getTablesMetadataForServerServer");
+
+		Server server = repositoryManager.getServerRepository().findOne(serverId);
+		DataSource dataSourceForServer = ServerUtils.getDataSourceForServer(server);
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSourceForServer);
+
+		String sqlGetTables = server.getConnectionType().getSqlGetTables(); /*SHOW TABLES*/
+		List<String> tableNames = ServerUtils.getSqlGetTables(jdbcTemplate, sqlGetTables);
+
+
+		for (String tableName : tableNames) {
+			Set<Column> tableColumns = ServerUtils.getTableColumns(jdbcTemplate, tableName);
+
+			//persist new Table Entity with Set<Column>
+			Table table = new Table();
+			table.setServer(server);
+			table.setName(tableName);
+			table.setAlias(tableName);
+			table.setColumns(tableColumns);
+			//TODO table.setActive(active); SET default TRUE/FALSE in Entity itself
+
+			//transactional //TODO MAKE COMPLETE OPERATION TRANSACTIONAL - if saving columns fails, tables is still persisted!!!
+			//SAVE table first so tableId can be used when saving columns - TODO CONSIDER CASCADING !!
+			Table savedTable = saveTable(table); //
+			//TODO TEST DOUBLE SAVE !!! should tableName or (serverName, table name) be unique?
+
+			//persist columns
+			for (Column column : tableColumns) {
+				column.setTable(savedTable);
+			}
+			List<Column> columnList = new ArrayList<Column>(tableColumns);
+			saveColumns(columnList);
+
+		}
+
 	}
 
 
