@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head th:replace="inc/header"></head>
+<body class="skin-blue sidebar-mini sidebar-collapse">
+	<div class="wrapper">
+		<header th:replace="inc/contentHeader"></header>
+		<aside th:replace="inc/leftPanel"></aside>
+		<div class="content-wrapper" style="min-height: 368px;">
+		  <!-- Content Header (Page header) -->
+		  <section class="content-header">
+				<h1 th:text="#{view.user.heading}">Hello world</h1>
+				<div class="row">
+					<div class="col-md-12">
+						<button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal"><i class="fa fa-database"></i> Insert Table</button>
+					</div>					
+					<div th:replace="inc/modalServer"></div>
+				</div>
+		  </section>
+		  <!-- Main content -->
+		  <section class="content">	
+					<table id="tbl_user" class="table table-striped dt-responsive" cellspacing="0" width="100%">
+						<thead>
+							<tr>
+								<th width="10%" th:text="#{view.user.table.heading.id}"></th>
+								<th width="15%" th:text="#{view.user.table.heading.firstName}"></th>
+								<th width="10%" th:text="#{view.user.table.heading.lastName}"></th>
+								<th width="10%" th:text="#{view.user.table.heading.userName}"></th>
+								<th width="20%" th:text="#{view.user.table.heading.domain}"></th>
+								<th width="15%" th:text="#{view.user.table.heading.admin}"></th>
+								<th width="10%" th:text="#{view.user.table.heading.locked}"></th>
+								<th width="10%" th:text="#{view.user.table.heading.active}"></th>
+								<th width="10%" th:text="#{view.user.table.heading.userAccess}"></th>
+							</tr>
+						</thead>
+					</table>
+			</section>
+		</div>
+
+		<footer th:replace="inc/footer"></footer>
+		<aside th:replace="inc/rightPanel"></aside>
+	</div>
+	<script th:src="@{/public/main/page/users.js}"></script>
+
+</body>
+</html>

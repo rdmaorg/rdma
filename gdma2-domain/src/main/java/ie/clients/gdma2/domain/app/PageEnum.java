@@ -5,6 +5,7 @@ public enum PageEnum {
 
 	HOME("/", "Home", ApplicationRoleEnum.APPLICATION.role()),
 	ADMIN_SERVER("/server", "Server", ApplicationRoleEnum.APPLICATION_ADMIN_SERVER.role()),
+	ADMIN_USER("/user", "User", ApplicationRoleEnum.APPLICATION_ADMIN_SERVER.role()),
 	LOGOUT("/logout", "Logout", ""), 
 	CAS_LOGIN("/login/cas", "Login", ""), 
 	CAS_LOGOUT("/logout/cas", "Logout", "");
