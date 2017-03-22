@@ -20,6 +20,7 @@
 	<link th:href="@{/public/lib/datatable/css/dataTables.bootstrap.css}" rel="stylesheet" />
 	<link th:href="@{/public/lib/datatable/css/responsive.dataTables.min.css}" rel="stylesheet" />
 	<link th:href="@{/public/lib/datatable/css/fixedHeader.dataTables.min.css}" rel="stylesheet" />
+	<link th:href="@{/public/lib/spinner/css/spinners.css}" rel="stylesheet" />
     
     <!--[if (lt IE 9) & (!IEMobile)]>
 		<script th:src="@{/public/lib/html5support/js/selectivizr-min.js}"></script>
@@ -37,6 +38,10 @@
     <script th:src="@{/public/lib/moment/js/moment.js}"></script>
     <script th:src="@{/public/lib/datatable/js/dataTables.moment.sorting.datetime.js}"></script>
     <script th:src="@{/public/lib/datatable/js/dataTables.responsive.min.js}"></script>
+    <script th:src="@{/public/lib/messages/js/alerts.js}"></script>
+    <script th:src="@{/public/lib/messages/js/loading.js}"></script>
+
+	<script th:src="@{/public/main/js/errorHandler.js?v=}+#{app.version}"></script>
 
     <script th:src="@{/public/main/js/util.js}"></script>
     <script th:src="@{/public/main/js/util.format.js}"></script>

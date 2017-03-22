@@ -15,9 +15,13 @@ var restUri = {
 	},
 	table:{
 		list: getRestBaseUri() + '/table/list',
+		list_for_server: getRestBaseUri() + '/table/server/{serverId}/active',
 		table: getRestBaseUri() + '/table/table',
 		save: getRestBaseUri() + '/table/save'
+	},
+	connection:{
+		list: getRestBaseUri() + '/connection/list',
+		table: getRestBaseUri() + '/connection/table',
+		save: getRestBaseUri() + '/connection/save'
 	}
 };
-
-
