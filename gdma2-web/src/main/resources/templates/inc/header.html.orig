@@ -1,0 +1,54 @@
+<head xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <link rel="icon" th:href="@{/public/main/images/icons/favicon.ico}"/>
+
+	<meta name="description" content="GDMA by Avnet Clients Solutions." />
+
+    <title th:text="${@environment.getProperty('application.name')}"></title>
+	<!-- All JavaScript at the bottom, except for Modernizr which enables HTML5 elements and feature detects -->
+	<script th:src="@{/public/lib/html5support/js/modernizr-2.6.2.js}"></script>
+    
+    
+	<link th:href="@{/public/lib/bootstrap/css/bootstrap.css}" rel="stylesheet"/>
+	<link th:href="@{/public/lib/adminlte/css/AdminLTE.min.css}" rel="stylesheet"/>
+	<link th:href="@{/public/lib/adminlte/css/_all-skins.min.css}" rel="stylesheet"/>
+	<link th:href="@{/public/lib/fontawesome/css/font-awesome.min.css}" rel="stylesheet"/>
+	<!-- link th:href="@{/public/lib/bootstrap/css/bootstrap-theme-darkly.css}" rel="stylesheet"/ -->
+	<link th:href="@{/public/lib/jquery/css/jquery.validate.css}" rel="stylesheet"/>
+	<link th:href="@{/public/lib/datatable/css/dataTables.bootstrap.css}" rel="stylesheet" />
+	<link th:href="@{/public/lib/datatableEditor/css/buttons.dataTables.min.css}" rel="stylesheet" />
+	<link th:href="@{/public/lib/datatableEditor/css/editor.dataTables.css}" rel="stylesheet" />
+	<link th:href="@{/public/lib/datatable/css/responsive.dataTables.min.css}" rel="stylesheet" />
+	<link th:href="@{/public/lib/datatable/css/fixedHeader.dataTables.min.css}" rel="stylesheet" />
+    
+    <!--[if (lt IE 9) & (!IEMobile)]>
+		<script th:src="@{/public/lib/html5support/js/selectivizr-min.js}"></script>
+	    <script th:src="@{/public/lib/html5support/js/json3.min.js}"></script>
+	    <script th:src="@{/public/lib/html5support/js/respond.min.js}"></script>
+	<![endif]-->
+    
+    <script th:src="@{/public/lib/jquery/js/jquery.js}"></script>
+    <script th:src="@{/public/lib/jquery/js/jquery.validate.min.js}"></script>
+    <script th:src="@{/public/lib/bootstrap/js/bootstrap.js}"></script>
+    <script th:src="@{/public/lib/adminlte/js/adminLte.min.js}"></script>
+    <script th:src="@{/public/lib/datatable/js/jquery.dataTables.min.js}"></script>
+    <script th:src="@{/public/lib/datatable/js/dataTables.buttons.min.js}"></script>
+    <script th:src="@{/public/lib/datatable/js/dataTables.select.min.js}"></script>
+    <script th:src="@{/public/lib/datatableEditor/js/dataTables.editor.js}"></script>
+    <script th:src="@{/public/lib/datatable/js/dataTables.bootstrap.js}"></script>
+    <script th:src="@{/public/lib/datatable/js/dataTables.fixedHeader.js}"></script>
+    <script th:src="@{/public/lib/moment/js/moment.js}"></script>
+    <script th:src="@{/public/lib/datatable/js/dataTables.moment.sorting.datetime.js}"></script>
+    <script th:src="@{/public/lib/datatable/js/dataTables.responsive.min.js}"></script>
+
+    <script th:src="@{/public/main/js/util.js}"></script>
+    <script th:src="@{/public/main/js/util.format.js}"></script>
+    <script th:src="@{/public/main/js/util.web.js}"></script>
+
+    <script th:src="@{/public/main/js/rest.resources.js}"></script>
+    <script th:src="@{/public/main/js/datatable.js}"></script>    
+    
+	    
+</head>

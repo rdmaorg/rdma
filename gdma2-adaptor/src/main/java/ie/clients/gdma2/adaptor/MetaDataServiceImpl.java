@@ -8,21 +8,19 @@ import ie.clients.gdma2.domain.User;
 import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 import ie.clients.gdma2.spi.interfaces.MetaDataService;
-import ie.clients.gdma2.util.ServerUtils;
+import ie.clients.gdma2.util.DynamicDAO;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import javax.sql.DataSource;
-
 import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,7 +28,19 @@ import org.springframework.transaction.annotation.Transactional;
 public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataService {
 	private static final Logger logger = LoggerFactory.getLogger(MetaDataServiceImpl.class);
 
+	@Autowired
+	private DynamicDAO dynamicDAO;
+	
+	public DynamicDAO getDynamicDAO() {
+		return dynamicDAO;
+	}
 
+	public void setDynamicDAO(DynamicDAO dynamicDAO) {
+		this.dynamicDAO = dynamicDAO;
+	}
+
+	
+	
 	/*Connection type section*/
 	@Override
 	public List<ConnectionType> getAllConnectionTypes() {
@@ -500,15 +510,14 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		logger.info("getTablesMetadataForServerServer");
 
 		Server server = repositoryManager.getServerRepository().findOne(serverId);
-		DataSource dataSourceForServer = ServerUtils.getDataSourceForServer(server);
-		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSourceForServer);
-
-		String sqlGetTables = server.getConnectionType().getSqlGetTables(); /*SHOW TABLES*/
-		List<String> tableNames = ServerUtils.getSqlGetTables(jdbcTemplate, sqlGetTables);
-
-
+		String sqlGetTables = server.getConnectionType().getSqlGetTables(); 
+		 
+		/*GET TABLES FOR SERVER*/
+		List<String> tableNames = dynamicDAO.getSqlGetTables(server, sqlGetTables);
+		
 		for (String tableName : tableNames) {
-			Set<Column> tableColumns = ServerUtils.getTableColumns(jdbcTemplate, tableName);
+			/*GET COLUMNS FOR TABLE*/
+			Set<Column> tableColumns = dynamicDAO.getTableColumns(server, tableName); 
 
 			//persist new Table Entity with Set<Column>
 			Table table = new Table();
