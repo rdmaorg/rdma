@@ -11,6 +11,7 @@ import ie.clients.gdma2.spi.interfaces.MetaDataService;
 import ie.clients.gdma2.util.DynamicDAO;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -506,7 +507,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	 
 	 * 	 */
 	@Override
-	public void getTablesMetadataForServerServer(Integer serverId) {
+	public Server getTablesMetadataForServerServer(Integer serverId) {
 		logger.info("getTablesMetadataForServerServer");
 
 		Server server = repositoryManager.getServerRepository().findOne(serverId);
@@ -538,10 +539,25 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			}
 			List<Column> columnList = new ArrayList<Column>(tableColumns);
 			saveColumns(columnList);
-
+			
 		}
-
+		//refresh server to get new tables and columns
+		Server populatedServer = repositoryManager.getServerRepository().findOne(serverId);
+		return populatedServer;
 	}
 
+	/**
+	 * Admin only: synch and return active tables for server after synch with remote DB*/
+	@Override
+	public List<Table> synchTablesForServer(Integer serverId) {
+		logger.info("synchTablesForServer");
+		//load only server and connection type
+		Server server = repositoryManager.getServerRepository().findOne(serverId);
+		//loading tables for server
+		List<Table> tableList = repositoryManager.getTableRepository().findByServerId(server.getId());
+		Set<Table> tableSet = new HashSet<Table>(tableList);
+		server.setTables(tableSet);
+		return dynamicDAO.getTablesForServerAfterSynch(server);		
+	}
 
 }

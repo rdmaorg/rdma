@@ -28,7 +28,7 @@ public class Table extends BaseEntity {
 	private String name;
 	
 	@javax.persistence.Column(name = "ACTIVE")
-	private boolean active;
+	private boolean active = true;
 	
 	@ManyToOne
 	@JoinColumn(name = "SERVER_ID", nullable = false)

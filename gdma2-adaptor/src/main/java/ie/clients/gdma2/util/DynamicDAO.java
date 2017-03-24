@@ -2,6 +2,7 @@ package ie.clients.gdma2.util;
 
 import ie.clients.gdma2.domain.Column;
 import ie.clients.gdma2.domain.Server;
+import ie.clients.gdma2.domain.Table;
 
 import java.util.List;
 import java.util.Set;
@@ -20,6 +21,8 @@ public interface DynamicDAO {
 	/*GET COLUMNS FOR TABLE*/
 	public Set<Column> getTableColumns(Server server, String tableName);
 	
+	/*GET ACTIVE TABLES FOR SERVER AFTER SYNCH - special case called from Admin module only*/
+	public List<Table> getTablesForServerAfterSynch(Server server);
 	
 	/*  OLD CODE - GDMA 1*/
 	

@@ -407,3 +407,76 @@ TEST URLS
   	USER ACCESS
   		For table '2':
   		http://localhost:8080/gdma2/rest/access/table/2?length=5&search[value]=emma
+  		
+===========
+
+
+
+===============start testing table SYNCH=======================================
+
+
+	****************************************
+	TESTING TABLE SYNCH (used in Admin module)
+	****************************************
+	
+open ADPR_TEST DB
+
+	REGISTER NEW SERVER (id=5)
+
+	POPULATE NEW SERVER INITIALLY WITH TABLES AND COLUMNS:
+	http://localhost:8080/gdma2/rest/server/metadata/5
+
+CHECK RESULT
+	select * from table_gdma2 where server_id = 5;
+	select count(*) from column_gdma2 where table_id in (
+		select id from table_gdma2 where server_id = 5
+      ) /*238*/
+
+/***************************/	
+
+TESTING SYNCH: 
+
+  FOR TEST: 
+	DEACTIVATE some table in GDMA from Initial LOAD
+	DELETE SOME TABLE IN REMOTE ADPR DB
+	ADD new TABLE in REMOTE DB
+	
+THEN RUN:
+	http://localhost:8080/gdma2/rest/server/metadata/tablesynch/5
+
+CHECK RESULT: 	
+ select * from table_gdma2 where server_id = 5;
+
+ select count(*) from column_gdma2 where table_id =378;
+
+EXPECTED RESULT: 
+
+Active Synched table list for serverId = 5;	
+	(Try Postaman : http://localhost:8080/gdma2/rest/table/server/5/active )
+
+Based on Synch Rules explained in detail in DynamicDAOImpl.resyncTableList() you should see :
+ - OLD DB tables (if they where ACTIVE and still exist in REMOTE DB)
+ - OLD DB tables with Timestamp suffix - if they where not Active , also new Rempte DB table name is added now to local
+ - NEW DB tables if they they WHERE not present in local DB and menawhile WHERE created on Remote DB
+
+ Hibernate will perform 2 tables INSERTs (2 new tables, no columns yet) and
+ 2 table Updates -  Existing Tables - deactivated and Name changed
+
+	OPEN Q: How to see Hibenrate ? params in app log??
+ 	
+
+REPEATING TEST: 
+  DELETE ALL ENTRIES ON SERVER to start TEST again
+
+	/*DELETE COLUMNS for all tables for server 5*/
+	delete from column_gdma2 where table_id in (
+		select id from table_gdma2 where server_id = 5
+	)
+	
+	/*DELETE TABLES for server 5*/
+	delete from table_gdma2 where server_id = 5;
+	
+	
+===============end testing TableSync================
+
+  		

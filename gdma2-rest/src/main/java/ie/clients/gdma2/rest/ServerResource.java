@@ -1,6 +1,7 @@
 package ie.clients.gdma2.rest;
 
 import ie.clients.gdma2.domain.Server;
+import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 
 import java.util.List;
@@ -88,9 +89,16 @@ public class ServerResource extends BaseDataTableResource {
 	}
 	
 	@RequestMapping(value = "/metadata/{id}")
-	public void getTableMetadataForServer(@PathVariable("id") Integer serverId){
+	public Server getTableMetadataForServer(@PathVariable("id") Integer serverId){
 		logger.info("getTableMetadataForServer:" + serverId);
-		serviceFacade.getMetadataService().getTablesMetadataForServerServer(serverId);
+		return serviceFacade.getMetadataService().getTablesMetadataForServerServer(serverId);
 	}
+	
+	@RequestMapping(value = "/metadata/tablesynch/{id}")
+	public List<Table> synchTablesForServer(@PathVariable("id") Integer serverId){
+		logger.info("synchTablesForServer: " + serverId);
+		return serviceFacade.getMetadataService().synchTablesForServer(serverId);
+	}
+	
 	
 }

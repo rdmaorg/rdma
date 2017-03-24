@@ -3,6 +3,7 @@ package ie.clients.gdma2.adaptor.repo;
 import java.util.List;
 
 import ie.clients.gdma2.domain.Server;
+import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.UserAccess;
 
 import org.springframework.data.domain.Page;
@@ -48,7 +49,7 @@ public interface UserAccessRepository extends PagingAndSortingRepository<UserAcc
 	
 //	@Query("SELECT c FROM Child c WHERE c.parent.id=:parentId")
 //	public Page<Child> findByParentId(@Param("parentId") Long parentId, Pageable page);
-@Query("select ua from UserAccess ua where ua.table.id = ?1")
+	@Query("select ua from UserAccess ua where ua.table.id = ?1")
 	public List<UserAccess> findPaginatedUserAccessByTable(Integer tableId, Pageable pageable);
 	
 	@Query("select count(ua) from UserAccess ua where upper(ua.user.userName) like ?1")
@@ -57,7 +58,8 @@ public interface UserAccessRepository extends PagingAndSortingRepository<UserAcc
 	@Query("select ua from UserAccess ua where upper(ua.user.userName) like ?1")
 	public List<UserAccess> getMatchingUserAccesses(String match, Pageable pageable);
 
-
+	@Query("select ua from UserAccess ua where ua.table.id = ?1")
+	public List<UserAccess> findByTableId(int tableId);
 	
 	
 	/*
