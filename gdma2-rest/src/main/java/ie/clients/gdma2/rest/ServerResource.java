@@ -1,5 +1,6 @@
 package ie.clients.gdma2.rest;
 
+import ie.clients.gdma2.domain.Column;
 import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
@@ -100,5 +101,13 @@ public class ServerResource extends BaseDataTableResource {
 		return serviceFacade.getMetadataService().synchTablesForServer(serverId);
 	}
 	
+	@RequestMapping(value = "/metadata/columnsynch/server/{server}/table/{table}")
+	public List<Column> synchColumnsForTable(
+			@PathVariable("server") Integer serverId,
+			@PathVariable("table") Integer tableId)
+			{
+		logger.info("synchColumnsForTable, serverId: " + serverId + " , tableId: " + tableId);
+		return serviceFacade.getMetadataService().synchColumnsForTable(serverId, tableId);
+	}
 	
 }

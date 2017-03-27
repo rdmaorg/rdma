@@ -21,8 +21,11 @@ public interface DynamicDAO {
 	/*GET COLUMNS FOR TABLE*/
 	public Set<Column> getTableColumns(Server server, String tableName);
 	
-	/*GET ACTIVE TABLES FOR SERVER AFTER SYNCH - special case called from Admin module only*/
-	public List<Table> getTablesForServerAfterSynch(Server server);
+	/*GET ACTIVE TABLES FOR SERVER AFTER SYNCH - special case called from Admin module ONLY*/
+	public List<Table> getTablesForServerAfterSynch(Integer serverId);
+	
+    /* GET ACTIVE Columns for table - re-sync the columns before calling it, just to ensure that the list is current */ 
+	public List<Column> getColumnsForTableAfterSynch(Integer serverId, Integer tableId);
 	
 	/*  OLD CODE - GDMA 1*/
 	

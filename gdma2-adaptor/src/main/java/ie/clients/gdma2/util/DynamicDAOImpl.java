@@ -6,6 +6,10 @@ import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.UserAccess;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -13,6 +17,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import javax.sql.DataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,13 +72,14 @@ public class DynamicDAOImpl implements DynamicDAO{
 	 * maps column metadata to Column Entity
 	 * creates Set of Column Entities to represent all Columns of Table
 	 * @param Server server 
-	 * @param String table
+	 * @param String tableName
 	 * @return Set of Column Entities
 	 */
 	@Override
-	public Set<Column> getTableColumns(Server server, String table) {
-		logger.info("getTableColumns for table: " + table);
-		String sqlTableMetadata = "select * from " + table + " where 1 = 0";
+	public Set<Column> getTableColumns(Server server, String tableName) {
+		logger.info("getTableColumns for table: " + tableName);
+		//String sqlTableMetadata = "select * from " + tableName + " where 1 = 0";
+		String sqlTableMetadata = SQLUtil.createSelectColumnMetadata(server, tableName);
 		JdbcTemplate jdbcTemplate = dataSourcePool.getJdbcTemplateFromDataDource(server);
 		Set<Column> columns = jdbcTemplate.query(sqlTableMetadata, new ResultSetExtractorColumns());
 
@@ -84,36 +91,32 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 	}
 
+
 	/**
 	 * Synch Tables for selected Server (double clicked Server in Admin Module) between Remote DB server and GDMA DB server 
 	 * After synch is done and new Table set save to DB, retreive that set and return only active ones
 	 * calls helper method resyncTableList that performs synch 
 	 */
-	@Override
-	public List<Table> getTablesForServerAfterSynch(Server server) {
-		logger.info("getTablesForServerAfterSynch: " + server.getName());
+	public List<Table> getTablesForServerAfterSynch(Integer serverId) {
+		logger.info("getTablesForServerAfterSynch, serverId:  " + serverId);
+		//loading only server and connection type
+		Server server = repositoryManager.getServerRepository().findOne(serverId);
+		//loading tables for server
+		List<Table> tableList = repositoryManager.getTableRepository().findByServerId(server.getId());
+		Set<Table> tableSet = new HashSet<Table>(tableList);
+		server.setTables(tableSet);
+
+
 		// TODO use an AOP trigger for this
 		logger.info("starting table SYNCH");
-		
 		//Comment the next line out if moving resynch functionality to the Refresh button
 		resyncTableList(server);
 		logger.info("...table SYNCH ended");
 
-		//reload table list after synch
-		//TODO OPEN Q - after saving TABLE - updating server that contains it
-		List<Table> synchedTableList = repositoryManager.getTableRepository().findByServerId(server.getId());
-		
-		//tables.removeIf((Table table) -> !table.isActive()); // JAVA 8
-		
-		for (Iterator<Table> tablesIterator = synchedTableList.iterator(); tablesIterator.hasNext();) {
-			Table table = tablesIterator.next();
-			if(!table.isActive()){
-				tablesIterator.remove();
-			}
-		}
-		
-		return synchedTableList;
-		
+		List<Table> activeTableList = repositoryManager.getTableRepository().findByServerIdAndActiveTrue(server.getId());
+		//TODO set tables to server parent after synch ?
+		return  activeTableList;
+
 	}
 
 
@@ -128,11 +131,11 @@ public class DynamicDAOImpl implements DynamicDAO{
 	 *  and then iterate over the list of tables form the server object in GDMA DB.
 	 *  It will see if any are missing,. If there is, then it will create a new table object IN GDMA DB and save it.
 	 * 
-	  
-	 	*****************************
+
+	 *****************************
 	  Maintaining list of Tables on Server.
-	  *************************************
-	   		
+	 *************************************
+
 		FIRST TIME: 
 		When Admin user connects to ‘Maintained/REMOTE’ server for the first time, there are no Tables for that Server in ‘Metadata/GDMA’ yet. 
 		App logic is executed – all Tables and their Columns are scanned from ‘REMOTE’ DB and Stored in ‘GDMA’ DB. <BR>
@@ -145,7 +148,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 			Tables names are in synch if Table names are equal and Table in ‘GDMA’ DB is ACTIVE.
 
 			1.1	 TABLE NAMES MATCH 
-				
+
 			 	a)	...and GDMA table is ACTIVE
 					Add existing GDMA table to the result Set of Tables
 
@@ -183,14 +186,14 @@ public class DynamicDAOImpl implements DynamicDAO{
          save     result Set of Tables						
 
 	 */
-	public void resyncTableList(Server server) {
-		
+	private void resyncTableList(Server server) {
+
 		logger.info("resyncTableList: " + server.getId());
 		//TODO define in parent interface??
 
 		//RESULT of synch   
 		Set<Table> tablesSynchResult = new HashSet<Table>(); 
-		
+
 		//GDMA tables list
 		Set<Table> tablesGDMA = server.getTables();
 		logger.info("Number of tables in GDMA: " + tablesGDMA.size());
@@ -198,29 +201,29 @@ public class DynamicDAOImpl implements DynamicDAO{
 		//Remote server table list
 		List<String> tableNameListRemoteDB = getSqlGetTables(server, server.getConnectionType().getSqlGetTables());
 		printRemoteDBTableDetails(tableNameListRemoteDB);
-		
+
 		//LOOP remote DB table names
 		for (String tableNameRemote : tableNameListRemoteDB) {
 			logger.info("checking : tableNameRemote:" + tableNameRemote);
-			
+
 			Table tableGDMA = remoteTableAlreadyExistsInGDMA(tableNameRemote, tablesGDMA);
-			 if(tableGDMA != null) {
+			if(tableGDMA != null) {
 				//1.1	 TABLE NAMES MATCH  - remote DB name found lon local
-				 logger.info("	tableNameRemote:" + tableNameRemote + " is found on local");
-				 resolveTablesWithSameNames(tablesSynchResult, tableGDMA, tableNameRemote, server);
-			 } else {
+				logger.info("	tableNameRemote:" + tableNameRemote + " is found on local");
+				resolveTablesWithSameNames(tablesSynchResult, tableGDMA, tableNameRemote, server);
+			} else {
 				//1.2	NO MATCH - remote DB name not found on local 
-				 logger.info("tableNameRemote:" + tableNameRemote + " not found on local DB");
-					createNewGDMATable(tablesSynchResult, tableNameRemote, server);
-			 }
-			
-			 		
+				logger.info("tableNameRemote:" + tableNameRemote + " not found on local DB");
+				createNewGDMATable(tablesSynchResult, tableNameRemote, server);
+			}
+
+
 		}//for1
 
 		//previous double loop is ended, now compare in other direction to detect GDMA tables that don't exist on remote Server - Deleted
 		logger.info("-----------------");
 		resolveDeletedTables(tablesSynchResult, tablesGDMA, tableNameListRemoteDB, server );
-		
+
 		printSynchResult(tablesSynchResult);
 		//serverDao.save(server);OLD CODE
 		logger.info("saving tablesSynchResult");
@@ -228,16 +231,16 @@ public class DynamicDAOImpl implements DynamicDAO{
 		repositoryManager.getTableRepository().save(tablesSynchResult);
 	}
 
-	 
-    private Table  remoteTableAlreadyExistsInGDMA(String tableNameRemote, Set<Table> tablesGDMA){
-    	for (Table tableGDMA : tablesGDMA) {
+
+	private Table  remoteTableAlreadyExistsInGDMA(String tableNameRemote, Set<Table> tablesGDMA){
+		for (Table tableGDMA : tablesGDMA) {
 			if(tableNameRemote.equalsIgnoreCase(tableGDMA.getName()))
 				return tableGDMA;
 		}
-    	return null;
-    }
-	
-	
+		return null;
+	}
+
+
 	/**
 	 * see above comment: 
 	 * 	1.1 a) ACTIVE
@@ -248,7 +251,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 	 * @param tableNameRemote
 	 * @param server
 	 */
-    private void resolveTablesWithSameNames(Set<Table> tablesSynchResult,
+	private void resolveTablesWithSameNames(Set<Table> tablesSynchResult,
 			Table tableGDMA, String tableNameRemote, Server server) {
 
 		logger.info("resolveTablesWithSameNames: " + tableNameRemote);
@@ -260,7 +263,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 			logger.info("inactive table found: " + tableGDMA.getName());
 			Timestamp currentTimestamp = new java.sql.Timestamp(Calendar.getInstance().getTime().getTime());
 			String timestamp = currentTimestamp.toString();
-			
+
 			//rename inactive table
 			tableGDMA.setName(tableGDMA.getName() + "_" + timestamp);
 			logger.info("inactive table renamed to: " + tableGDMA.getName());
@@ -269,11 +272,11 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 			//add active Table to GDMA
 			createNewGDMATable(tablesSynchResult, tableNameRemote, server);
-			
+
 		}
 
 	}
-	
+
 	/** There is a new DB table on Remote Server, create new Active Table and add to result Table set */
 	private void createNewGDMATable(Set<Table> tablesSynchResult, String tableNameRemote, Server server) {
 		logger.info("createNewGDMATable: " + tableNameRemote);
@@ -299,7 +302,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 	private void resolveDeletedTables(Set<Table> tablesSynchResult,
 			Set<Table> tablesGDMA, List<String> tableNameListRemoteDB, Server server) {
 		logger.info("resolveDeletedTables");
-		
+
 		for(Table tableGDMA : tablesGDMA){
 			boolean nameFound = false;
 
@@ -323,7 +326,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 				logger.info("deleting UserAccess for table: " + tableGDMA.getId());
 				List<UserAccess> userAcceseList = repositoryManager.getUserAccessRepository().findByTableId(tableGDMA.getId());
 				repositoryManager.getUserAccessRepository().delete(userAcceseList);
-				
+
 				//resolve columns
 				resolveColumnsForDeactivatedTable(tableGDMA, server);
 			}	
@@ -340,20 +343,20 @@ public class DynamicDAOImpl implements DynamicDAO{
 	 */
 	private void resolveColumnsForDeactivatedTable(Table tableDeactiveGDMA, Server server) {
 		logger.info("resolveColumnsForDeactivatedTable");
-		
+
 		Set<Column> columnsDeactiveGDMA = tableDeactiveGDMA.getColumns();
 		List<Integer> columnDeactiveIdList = new ArrayList<Integer>();
 		for(Column columnGDMA: columnsDeactiveGDMA){
 			columnDeactiveIdList.add(columnGDMA.getId());
 		}
 
-		
+
 		Set<Table> tablesGDMA = server.getTables();
 
 		for (Table tableGDMA : tablesGDMA) {
 			Set<Column> columnsGDMA = tableGDMA.getColumns();
 			for (Column col : columnsGDMA) {
-				
+
 				for(Integer colDeactiveId : columnDeactiveIdList){
 
 					if (col.getDropDownColumnDisplay() != null && col.getDropDownColumnDisplay().getId() == colDeactiveId){
@@ -378,12 +381,229 @@ public class DynamicDAOImpl implements DynamicDAO{
 			logger.info("remote DB table name: " + tableName);
 		}
 	}
-	
+
 	private void printSynchResult(Set<Table> tablesSynchResult) {
 		logger.info("printSynchResult...");
 		for (Table table : tablesSynchResult) {
 			logger.info("synched table name: " + table.getName());
 		}
-	}	
+	}
+
+
+
+	@Override
+	public List <Column> getColumnsForTableAfterSynch(Integer serverId, Integer tableId) {
+		logger.info("getColumnsForTableAfterSynch, for server: " +  serverId + " and table: " + tableId);
+
+		// TODO use an AOP trigger for this
+		//transient dependecies - load table for server and columns for table, set columns on table
+		Server server = repositoryManager.getServerRepository().findOne(serverId);
+		Table tableGDMA = repositoryManager.getTableRepository().findOne(tableId);
+		Set<Column> columnsGDMA = repositoryManager.getColumnRepository().findByTableId(tableId);
+		tableGDMA.setColumns(columnsGDMA);
+
+		logger.info("starting column SYNCH");
+		resyncColumnList(server, tableGDMA);
+		logger.info("...column SYNCH ended");
+
+		//reload table list after synch
+		//TODO OPEN Q - after saving columns - updating table that contains it ?
+		List<Column> activeColumnList = repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(tableId);
+		return activeColumnList;
+	}
+
+
+
+	
+	/**
+	 * Connect to server, get requested table,  get the list of columns from the remote database
+	 *  and then iterate over the list to see if any are missing,. 
+	 *  If there is, then it will create a new column object and save it to local GDMA table.
+	 *  
+	 * @param server, tableGMDA with loaded column list
+	 * @param tableGDMA
+	 */
+	private void resyncColumnList(Server server, Table tableGDMA) {
+		logger.info("resyncColumnList, for table: " + tableGDMA.getName());
+
+		//RESULT of synch   
+		Set<Column> columnsSynchResult = new HashSet<Column>(); 
+
+		//GDMA column list
+		Set<Column> columnsGDMA = tableGDMA.getColumns();
+		logger.info("Number of columns in GDMA table: " + columnsGDMA.size());
+
+		//Remote server table list
+		//Remote server, column list for table
+		Set<Column> columnsRemote = getTableColumns(server, tableGDMA.getName());
+		logger.info("Number of columns in remote Table: " + columnsRemote.size() );
+		//printRemoteDBTableDetails(tableNameListRemoteDB);
+		for (Column column : columnsRemote) {
+			logger.info("remote column: " + column.getName());
+		}
+		
+	}//end
+		
+		
+		
+		/*
+
+		//end 
+		 tableDao.save(tableGDMA);
+		 
+
+		 
+		
+    	LOG.info("Calling resyncColumnList!!");
+        // TODO tidy all this up !!
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
+        try {
+            DataSource dataSource = dataSourcePool.getTransactionManager(server).getDataSource();
+            // TODO make this better
+            if (dataSource == null)
+                return;
+            connection = dataSource.getConnection();
+
+            statement = connection.createStatement();
+
+            Set<Column> columnsGDMA = tableGDMA.getColumns();
+            // this is used to keep track of the names - so we can check at the
+            // end if we have a column that doesn't exist anymore
+            ArrayList<String> columnNamesRemote = new ArrayList<String>();
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("select * from ");
+            if (StringUtils.hasText(server.getPrefix())) {
+                stringBuilder.append(server.getPrefix());
+                stringBuilder.append('.');
+            }
+            stringBuilder.append(tableGDMA.getName());
+            stringBuilder.append("  where 1 = 0");
+            resultSet = statement.executeQuery(stringBuilder.toString());
+
+            ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+
+            for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
+                String columnNameRemote = resultSetMetaData.getColumnName(i);
+                String tableNameString = resultSetMetaData.getTableName(i);
+                
+                columnNamesRemote.add(columnNameRemote);
+                
+                if (columnNameRemote != null) {
+                    // see if it's already in the list
+                    Column column = getColumn(columnNameRemote, columnsGDMA);
+                    if (column == null) {
+                        // no so create a new column record
+                        column = new Column();
+                        column.setName(columnNameRemote);
+                        column.setColumnType(resultSetMetaData.getColumnType(i));
+                        column.setColumnTypeString(resultSetMetaData.getColumnTypeName(i));
+                        column.setAllowInsert(true);
+                        column.setAllowUpdate(true);
+                        column.setDisplayed(true);
+                        column.setNullable(resultSetMetaData.isNullable(i) == ResultSetMetaData.columnNullable);
+                        column.setSpecial("N");
+
+                        column.setActive(true);
+
+                        column.setColumnSize(resultSetMetaData.getColumnDisplaySize(i));                        
+                        columnsGDMA.add(column);
+                    } else {                    	
+                    	if (columnNameRemote.equals(column.getName()) && tableNameString.equals(tableGDMA.getName().trim()) && column.isActive()) {
+                    		// update type - just in case
+                            column.setColumnType(resultSetMetaData.getColumnType(i));
+                            column.setColumnTypeString(resultSetMetaData.getColumnTypeName(i));
+                            column.setNullable(resultSetMetaData.isNullable(i) == ResultSetMetaData.columnNullable);
+                            column.setColumnSize(resultSetMetaData.getColumnDisplaySize(i));
+                            column.setActive(true);
+                        }else if(columnNameRemote.equals(column.getName()) && tableNameString.equals(tableGDMA.getName().trim()) && !column.isActive()){
+                        	LOG.debug("Server:[" + server.getName() + "], Table:[" + tableGDMA.getName() + "], Column:[ " + column.getName() + " (inactive) found ");
+                        	Timestamp currentTimestamp = new java.sql.Timestamp(Calendar.getInstance().getTime().getTime());
+                        	String timestamp = currentTimestamp.toString();
+
+                        	String inactiveColumnName = column.getName() + "_" + timestamp;
+                        	String activeColumnName = column.getName();
+                        	column.setName(inactiveColumnName);
+                        	column.setActive(false);
+                        	columnsGDMA.add(column);
+                        	Column c = new Column();
+                            c.setName(activeColumnName);
+                            c.setTable(tableGDMA);
+                            c.setActive(true);
+                            c.setAllowInsert(true);
+                            c.setAllowUpdate(true);
+                            c.setDisplayed(true);
+                            c.setColumnType(resultSetMetaData.getColumnType(i));
+                            c.setColumnTypeString(resultSetMetaData.getColumnTypeName(i));
+                            c.setNullable(resultSetMetaData.isNullable(i) == ResultSetMetaData.columnNullable);
+                            c.setColumnSize(resultSetMetaData.getColumnDisplaySize(i));
+                            c.setSpecial("N");
+
+                            columnsGDMA.add(c);                            
+                    	}
+                    }
+                }
+            }
+            //tableDao.save(table);
+            // now sync with column names to make sure none were deleted & reset
+            // the orderby
+            int idx = 0;
+            for (Column columnGDMA : columnsGDMA) {
+                if (!columnNamesRemote.contains(columnGDMA.getName())) {
+                    //columns.remove(column);
+                	columnGDMA.setDisplayed(false);
+                	columnGDMA.setActive(false);
+                	Set<Table> allTables = server.getTables();    		
+            		for(Table t: allTables){
+            			Set<Column> tableColumns = t.getColumns();
+            			for(Column c: tableColumns){
+            				if(c.getDropDownColumnDisplay() != null && (c.getDropDownColumnDisplay().getId() == columnGDMA.getId())){
+            					c.setDropDownColumnStore(null);
+                				c.setDropDownColumnDisplay(null);
+                				tableDao.save(t);
+                				LOG.debug("Removed foreign key reference from column " + c.getName() + " in table " + t.getName());
+                			}  
+                			if(c.getDropDownColumnStore() != null && (c.getDropDownColumnStore().getId() == columnGDMA.getId())){
+                				c.setDropDownColumnStore(null);
+                				c.setDropDownColumnDisplay(null);
+                				tableDao.save(t);
+                				LOG.debug("Removed foreign key reference from column " + c.getName() + " in table " + t.getName());
+                			}                 			            				
+            			}
+            		}
+                } else {
+                    columnGDMA.setOrderby(idx);
+                    idx++;
+                }
+            }
+
+            tableDao.save(tableGDMA);
+        } catch (Throwable e) {
+            LOG.error(e, e);
+            e.printStackTrace();
+        } finally {
+            JdbcUtils.closeResultSet(resultSet);
+            JdbcUtils.closeStatement(statement);
+            JdbcUtils.closeConnection(connection);
+        }
+
+    }
+	*/
+    
+	private Column getColumn(String columnName, Set<Column> columns) {
+        for (Column column : columns) {
+            if (columnName.equals(column.getName())) {
+                return column;
+            }
+        }
+        return null;
+		 
+
+	}
+
+
+
+
 
 }

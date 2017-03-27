@@ -79,5 +79,7 @@ public interface MetaDataService {
 	/* Admin only: synch and return active tables for server after synch with remote DB*/
 	public List<Table> synchTablesForServer(Integer serverId);
 	
+	/* Admin only: synch and return active Columns for selected table on remote server*/
+	public List<Column> synchColumnsForTable(Integer serverId, Integer tableId);
 	
 }

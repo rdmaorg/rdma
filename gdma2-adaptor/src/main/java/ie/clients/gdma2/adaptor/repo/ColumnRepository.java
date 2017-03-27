@@ -3,6 +3,7 @@ package ie.clients.gdma2.adaptor.repo;
 import ie.clients.gdma2.domain.Column;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
@@ -57,6 +58,9 @@ public interface ColumnRepository extends PagingAndSortingRepository<Column, Int
         return activeColumns;
     }
     */
+	
+	/*find all columns for table*/
+	public Set<Column> findByTableId(int tableId);
 	
 	/*find ACTIVE columns for table*/
 	public List<Column> findByTableIdAndActiveTrue(Integer tableId);

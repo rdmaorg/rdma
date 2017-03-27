@@ -551,13 +551,15 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	@Override
 	public List<Table> synchTablesForServer(Integer serverId) {
 		logger.info("synchTablesForServer");
-		//load only server and connection type
-		Server server = repositoryManager.getServerRepository().findOne(serverId);
-		//loading tables for server
-		List<Table> tableList = repositoryManager.getTableRepository().findByServerId(server.getId());
-		Set<Table> tableSet = new HashSet<Table>(tableList);
-		server.setTables(tableSet);
-		return dynamicDAO.getTablesForServerAfterSynch(server);		
+		return dynamicDAO.getTablesForServerAfterSynch(serverId);		
 	}
+
+	@Override
+	public List<Column> synchColumnsForTable(Integer serverId, Integer tableId) {
+		return dynamicDAO.getColumnsForTableAfterSynch(serverId, tableId);
+	}
+
+	
+	/**/
 
 }
