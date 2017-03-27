@@ -21,14 +21,11 @@
 		  </section>
 		  <!-- Main content -->
 			<section class="content">
-				<table id="tbl_connection" class="table table-striped dt-responsive"
+				<table id="tbl_server" class="table table-striped dt-responsive"
 					cellspacing="0" width="100%">
 					<thead>
 						<tr>
-							<th width="10%" th:text="#{view.connection.table.heading.id}"></th>
-							<th width="10%" th:text="#{view.connection.table.heading.name}"></th>
-							<th width="10%" th:text="#{view.connection.table.heading.connectionClass}"></th>
-							<th width="10%" th:text="#{view.connection.table.heading.sqlGetTables}"></th>
+							<th width="10%" th:text="#{view.connection.table.heading}"></th>
 						</tr>
 					</thead>
 				</table>
@@ -37,7 +34,7 @@
 
 		<footer th:replace="inc/footer"></footer>
 		<aside th:replace="inc/rightPanel"></aside>
-		<script th:src="@{/public/main/page/connectionTypes.js}"></script>
+		<script th:src="@{/public/main/page/tables.js}"></script>
 	</div>
 
 </body>
