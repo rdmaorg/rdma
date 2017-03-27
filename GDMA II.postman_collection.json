@@ -28,6 +28,17 @@
 			"response": []
 		},
 		{
+			"name": "Server - GET 1",
+			"request": {
+				"url": "http://localhost:8080/gdma2/rest/server/1",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
 			"name": "SERVER save",
 			"request": {
 				"url": "http://localhost:8080/gdma2/rest/server/save",
@@ -391,6 +402,17 @@
 				"header": [],
 				"body": {},
 				"description": "Delete 13"
+			},
+			"response": []
+		},
+		{
+			"name": "Server - METADATA initial load - no SYNCH",
+			"request": {
+				"url": "http://localhost:8080/gdma2/rest/server/metadata/5",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": "METADATA - Initial load for server with id = 5\nWill load all Tables and Columns - but NO SYNCH\n"
 			},
 			"response": []
 		}
