@@ -1,6 +1,5 @@
 package ie.clients.gdma2.util;
 
-import ie.clients.gdma2.adaptor.MetaDataServiceImpl;
 import ie.clients.gdma2.domain.Server;
 
 import java.util.HashMap;

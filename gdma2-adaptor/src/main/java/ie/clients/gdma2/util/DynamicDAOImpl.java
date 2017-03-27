@@ -142,22 +142,23 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 
 		1. TABLE NAMES COMPARE (REMOTE -> GDMA)  : 
+			Tables names are in synch if Table names are equal and Table in ‘GDMA’ DB is ACTIVE.
 
-			1.1 TABLE NAMES MATCH
+			1.1	 TABLE NAMES MATCH 
+				
+			 	a)	...and GDMA table is ACTIVE
+					Add existing GDMA table to the result Set of Tables
 
-			Tables are in synch if Table names are equal and Table in ‘GDMA’ DB is ACTIVE.
-				1. a)	Add back existing GDMA table to the result Set of Tables
-
-				1. b) If tables names are the same but Table in ‘GDMA’ DB is NOT ACTIVE, then make 2 changes : 
+				 b) ...but ‘GDMA’ Table is NOT ACTIVE, then make 2 changes: 
 
 			 		b1) UPDATE Inactive GDMA table name - add Timestamp suffix : TABLENAME_timestamp and change ACTIVE flag to TRUE <BR>
-					b2) Add back existing GDMA table to the result Set of Tables (now with UPDATEed name)
+					b1) Add back existing GDMA table to the result Set of Tables (now with UPDATEed name)
 
-					b3) Create new Entity Table using name of Remote DB, set serverId, set active to TRUE
-					b4) Add New Table to result Set of Tables 
+					b2) Create new Entity Table using name of Remote DB, set serverId, set active to TRUE
+					b2) Add New Table to result Set of Tables 
 
-			1.1	NO MATCH - 
-				c)  Add New Table to result Set of Tables - Create new Entity Table using name of Remote DB, set serverId, set active to TRUE
+			1.2		NO MATCH - 
+				  Add New Table to result Set of Tables - Create new Entity Table using name of Remote DB, set serverId, set active to TRUE
 
 		2. TABLE NAMES COMPARE (GDMA -> REMOTE), Deleted from GDMA 
 
@@ -184,7 +185,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 	 */
 	public void resyncTableList(Server server) {
 		
-		logger.info("resyncTableList: " + server.getName());
+		logger.info("resyncTableList: " + server.getId());
 		//TODO define in parent interface??
 
 		//RESULT of synch   
@@ -192,34 +193,28 @@ public class DynamicDAOImpl implements DynamicDAO{
 		
 		//GDMA tables list
 		Set<Table> tablesGDMA = server.getTables();
-		logger.info("tablesGDMA.size(): " + tablesGDMA.size());
+		logger.info("Number of tables in GDMA: " + tablesGDMA.size());
 
 		//Remote server table list
-		logger.info("remote server table list:");
 		List<String> tableNameListRemoteDB = getSqlGetTables(server, server.getConnectionType().getSqlGetTables());
-
+		printRemoteDBTableDetails(tableNameListRemoteDB);
+		
 		//LOOP remote DB table names
 		for (String tableNameRemote : tableNameListRemoteDB) {
-			logger.info("tableNameRemote:" + tableNameRemote);
-			boolean nameFound = false;
-
-			for(Table tableGDMA : tablesGDMA){
-				logger.info("        tableGDMA:" + tableGDMA.getName());
-				//1.1 TABLE NAMES MATCH
-				if(tableGDMA.getName().equalsIgnoreCase(tableNameRemote)){
-					logger.info("	tableNameRemote:" + tableNameRemote + " is found on local");
-					nameFound = true; 
-					resolveTablesWithSameNames(tablesSynchResult, tableGDMA, tableNameRemote, server);
-					break;
-				}
-			}//for2
-		
-			//1.1	NO MATCH - remote DB name not found on local 
-			if(!nameFound){
-				logger.info("tableNameRemote:" + tableNameRemote + " not found on local DB");
-				createNewGDMATable(tablesSynchResult, tableNameRemote, server);
-			}
+			logger.info("checking : tableNameRemote:" + tableNameRemote);
 			
+			Table tableGDMA = remoteTableAlreadyExistsInGDMA(tableNameRemote, tablesGDMA);
+			 if(tableGDMA != null) {
+				//1.1	 TABLE NAMES MATCH  - remote DB name found lon local
+				 logger.info("	tableNameRemote:" + tableNameRemote + " is found on local");
+				 resolveTablesWithSameNames(tablesSynchResult, tableGDMA, tableNameRemote, server);
+			 } else {
+				//1.2	NO MATCH - remote DB name not found on local 
+				 logger.info("tableNameRemote:" + tableNameRemote + " not found on local DB");
+					createNewGDMATable(tablesSynchResult, tableNameRemote, server);
+			 }
+			
+			 		
 		}//for1
 
 		//previous double loop is ended, now compare in other direction to detect GDMA tables that don't exist on remote Server - Deleted
@@ -227,21 +222,33 @@ public class DynamicDAOImpl implements DynamicDAO{
 		resolveDeletedTables(tablesSynchResult, tablesGDMA, tableNameListRemoteDB, server );
 		
 		printSynchResult(tablesSynchResult);
-		
 		//serverDao.save(server);OLD CODE
 		logger.info("saving tablesSynchResult");
+		//save RESULT: 
 		repositoryManager.getTableRepository().save(tablesSynchResult);
 	}
 
-	
-	private void printSynchResult(Set<Table> tablesSynchResult) {
-		logger.info("printSynchResult...");
-		for (Table table : tablesSynchResult) {
-			logger.info("synched table name: " + table.getName());
+	 
+    private Table  remoteTableAlreadyExistsInGDMA(String tableNameRemote, Set<Table> tablesGDMA){
+    	for (Table tableGDMA : tablesGDMA) {
+			if(tableNameRemote.equalsIgnoreCase(tableGDMA.getName()))
+				return tableGDMA;
 		}
-	}
-
-	private void resolveTablesWithSameNames(Set<Table> tablesSynchResult,
+    	return null;
+    }
+	
+	
+	/**
+	 * see above comment: 
+	 * 	1.1 a) ACTIVE
+	 *  1.1 b) not ACTIVE
+	 * 
+	 * @param tablesSynchResult
+	 * @param tableGDMA
+	 * @param tableNameRemote
+	 * @param server
+	 */
+    private void resolveTablesWithSameNames(Set<Table> tablesSynchResult,
 			Table tableGDMA, String tableNameRemote, Server server) {
 
 		logger.info("resolveTablesWithSameNames: " + tableNameRemote);
@@ -256,7 +263,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 			
 			//rename inactive table
 			tableGDMA.setName(tableGDMA.getName() + "_" + timestamp);
-			
+			logger.info("inactive table renamed to: " + tableGDMA.getName());
 			//add to result
 			tablesSynchResult.add(tableGDMA);
 
@@ -278,7 +285,8 @@ public class DynamicDAOImpl implements DynamicDAO{
 		tablesSynchResult.add(table);
 	}
 
-	/**
+	/** see above comment: 2. TABLE NAMES COMPARE (GDMA -> REMOTE), Deleted from GDMA  
+	 * 
 	 * search for DELETED tables - if local GDMA table is not anymore in remote table list
 	 * deactivate it, add to result Table set, 
 	 * remove UserAccess, 
@@ -364,6 +372,18 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 	}
 
+	private void printRemoteDBTableDetails(List<String> tableNameListRemoteDB){
+		logger.info("Number of tables in Remote DB: " + tableNameListRemoteDB.size());
+		for(String tableName : tableNameListRemoteDB){
+			logger.info("remote DB table name: " + tableName);
+		}
+	}
 	
+	private void printSynchResult(Set<Table> tablesSynchResult) {
+		logger.info("printSynchResult...");
+		for (Table table : tablesSynchResult) {
+			logger.info("synched table name: " + table.getName());
+		}
+	}	
 
 }
