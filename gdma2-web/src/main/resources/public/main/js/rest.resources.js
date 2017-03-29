@@ -23,5 +23,10 @@ var restUri = {
 		list: getRestBaseUri() + '/connection/list',
 		table: getRestBaseUri() + '/connection/table',
 		save: getRestBaseUri() + '/connection/save'
+	},
+	menu: {
+		user: getRestBaseUri() + '/menu/user',
+		app: getRestBaseUri() + '/menu/app'
 	}
+	
 };
