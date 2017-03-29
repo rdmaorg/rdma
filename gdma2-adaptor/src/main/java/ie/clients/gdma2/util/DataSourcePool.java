@@ -15,7 +15,8 @@ import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Component;
 
 /**
- * http://stackoverflow.com/questions/1336885/how-do-i-manually-configure-a-datasource-in-java
+ * HELP 1 : http://stackoverflow.com/questions/1336885/how-do-i-manually-configure-a-datasource-in-java
+ * HELP 2: http://blog.jhades.org/how-does-spring-transactional-really-work/
  * 
  * We can use 'Commons DBCP2' project.
  * TODO: prepare production ready config !

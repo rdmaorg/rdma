@@ -132,7 +132,7 @@ public class Server extends BaseEntity {
 	public void setTables(Set<Table> tables) {
 		this.tables = tables;
 	}
-
+	
 	public boolean isConnected() {
 		return connected;
 	}

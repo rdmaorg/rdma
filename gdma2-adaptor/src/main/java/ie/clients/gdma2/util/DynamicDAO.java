@@ -24,7 +24,8 @@ public interface DynamicDAO {
 	/*GET ACTIVE TABLES FOR SERVER AFTER SYNCH - special case called from Admin module ONLY*/
 	public List<Table> getTablesForServerAfterSynch(Integer serverId);
 	
-    /* GET ACTIVE Columns for table - re-sync the columns before calling it, just to ensure that the list is current */ 
+    /* GET ACTIVE Columns for table - re-sync the columns for resynched Table from previous step (getTablesForServerAfterSynch()
+     * this call happens after tables have been synched and user select 1 synched Table - special case called from Admin module ONLY */ 
 	public List<Column> getColumnsForTableAfterSynch(Integer serverId, Integer tableId);
 	
 	/*  OLD CODE - GDMA 1*/

@@ -506,6 +506,8 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
   
 	 
 	 * 	 */
+	
+	@Transactional
 	@Override
 	public Server getTablesMetadataForServerServer(Integer serverId) {
 		logger.info("getTablesMetadataForServerServer");
@@ -547,13 +549,43 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	}
 
 	/**
-	 * Admin only: synch and return active tables for server after synch with remote DB*/
+	 * Admin only: synch and return active tables for server after synch with remote DB
+	 * TO support proper loading and transactional saving of all object that are to be changed 
+	 * consider - loading all structures in this method, pass loaded Server to Utility method,
+	 * update server method at very end of logic execution with all child changes within
+	 * save it in Transaction in this class 
+	 * then get synched Active tables from saved server*/
+	@Transactional
 	@Override
 	public List<Table> synchTablesForServer(Integer serverId) {
 		logger.info("synchTablesForServer");
+		
+		/*
+		logger.info("getTablesForServerAfterSynch, serverId:  " + serverId);
+		//loading only server and connection type
+		Server server = repositoryManager.getServerRepository().findOne(serverId);
+		//loading tables for server
+		List<Table> tableList = repositoryManager.getTableRepository().findByServerId(server.getId());
+		Set<Table> tableSet = new HashSet<Table>(tableList);
+		server.setTables(tableSet);
+		
+		TODO : LOAD server -> Tables -> Columns and - User access
+		*
+		*/
+		
+		
+		
 		return dynamicDAO.getTablesForServerAfterSynch(serverId);		
 	}
 
+	/**
+	 * Transactional changes regarding : 
+	 * - after synch there can be: INSERT of new remote columns in local GDMA table 
+	 * - renaming existing columns in local DB - if found inactive
+	 * - for deleted column  - reference getDropDownColumnDisplay and getDropDownColumnStore must be removed from all columns from all Tables on server
+	 *  
+	 */
+	@Transactional
 	@Override
 	public List<Column> synchColumnsForTable(Integer serverId, Integer tableId) {
 		return dynamicDAO.getColumnsForTableAfterSynch(serverId, tableId);

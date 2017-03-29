@@ -22,10 +22,7 @@ public class ResultSetExtractorColumns implements ResultSetExtractor<Set<Column>
 
 	private static final Logger logger = LoggerFactory.getLogger(ResultSetExtractorColumns.class);
 	
-	/**
-	 * 
-	 */
-	@Override
+	//@Override TODO
 	public  Set<Column> extractData(ResultSet rs) throws SQLException, DataAccessException {
 		logger.info("extractData");
 		Set<Column> columns = new HashSet<Column>();
@@ -33,87 +30,61 @@ public class ResultSetExtractorColumns implements ResultSetExtractor<Set<Column>
 		ResultSetMetaData metaData = rs.getMetaData();
 		int columnCount = metaData.getColumnCount();
 		for (int i = 1; i <= columnCount; i++) {//starts from 1 not 0
-			ColumnMetaData columnMetaData = readColumnMetaData(metaData,i);
-			Column column = createColumnEntity(columnMetaData);
+			Column column  = readColumnMetaData(metaData,i);
 			columns.add(column);
 		}
 		return columns;
 	}
-
-	/**
-	 * read ColumnMetaData and create ie.clients.gdma2.domain.Column Entity
-	 * @param columnMetaData
-	 * @return Column
-	 */
-	private Column createColumnEntity(ColumnMetaData columnMetaData) {
-		logger.info("createColumnEntity");
-		/* TODO
-		
-		set table;
-		
-		dropDownColumnDisplay;
-		dropDownColumnStore;
-
-		//none or special type User or special type Date
-		special; NOT NULL
-		
-		private Integer orderby;
-		*/
-		
-		Column column = new Column();
-		
-		column.setName(columnMetaData.getColumnName());
-		column.setColumnType(columnMetaData.getColumnType());
-		column.setColumnTypeString(columnMetaData.getColumnTypeName());
-		
-		//column.setDisplayed(displayed); FALSE by default
-		//column.setAllowInsert(allowInsert); FALSE by default
-		//column.setAllowUpdate(allowUpdate); FALSE by default
-		column.setNullable(columnMetaData.getNullable() == 1 ? false : true);
-		
-		//column.setPrimarykey TODO
-		
-		//none or special type User or special type Date ???
-		column.setSpecial("none");
-		
-		//column.setMinWidth(columnMetaData.getColumnDisplaySize()); TODO
-		//column.setMaxWidth(maxWidth); TODO 
-		column.setColumnSize(columnMetaData.getColumnDisplaySize());
-		
-		return column;
-		
-		
-	}
-
+	
 	/**
 	 * 	Read Column MetaData and crate helper ColumnMetaData object
 	 * first column is 1, the second is 2, ...
+	 * 
+	 * set parent Table later in caller!
+	 * 
 	 * @param metaData
 	 * @param i
-	 * @return ColumnMetaData
+	 * @return Column Entity
 	 * @throws SQLException
 	 */
-	private ColumnMetaData readColumnMetaData(ResultSetMetaData metaData, int i) throws SQLException {
+	private Column readColumnMetaData(ResultSetMetaData metaData, int i) throws SQLException {
+		
 		logger.info("readColumnMetaData");
-		String columnClassName = metaData.getColumnClassName(i);
-		int columnDisplaySize = metaData.getColumnDisplaySize(i);
-		String columnLabel = metaData.getColumnLabel(i);
-		String columnName = metaData.getColumnName(i);
-		int columnType = metaData.getColumnType(i);
-		String columnTypeName = metaData.getColumnTypeName(i);
+		//String columnLabel = metaData.getColumnLabel(i);
+		//boolean autoIncrement = metaData.isAutoIncrement(i);
 		
-		boolean autoIncrement = metaData.isAutoIncrement(i);
-
 		//the nullability status of the given column; one of columnNoNulls, columnNullable or columnNullableUnknown
-		int nullable = metaData.isNullable(i);
+		//int nullable = metaData.isNullable(i);
 		
-		boolean writable = metaData.isWritable(i);
+		//boolean writable = metaData.isWritable(i);
 		
-		ColumnMetaData columnMetaData = new ColumnMetaData(columnClassName,	columnDisplaySize, columnLabel, columnName, columnType,
-				columnTypeName, autoIncrement, nullable, writable);
+		Column col = new Column();
+		//col.setTable();//TODO for all columns in caller method for GDMATable
+		col.setName(metaData.getColumnName(i));
+		col.setAlias(metaData.getColumnName(i));
+		col.setColumnType(metaData.getColumnType(i));
+		col.setColumnTypeString(metaData.getColumnTypeName(i));
 		
-		logger.info(columnMetaData.toString());
-		return columnMetaData;
+		col.setDisplayed(true);
+		col.setAllowInsert(true);
+		col.setAllowUpdate(true);
+		col.setNullable(metaData.isNullable(i) == ResultSetMetaData.columnNullable);
+		
+		//col.setPrimarykey(primarykey); //TODO false by default??
+		
+		col.setSpecial("N");
+		col.setActive(true);
+		col.setColumnSize(metaData.getColumnDisplaySize(i));
+		
+		//TODO ???
+		//col.setMaxWidth(maxWidth);
+		//col.setMinWidth(minWidth);
+		//col.setOrderby(orderby);
+			
+		logger.info(col.toString());
+		return col;
 		
 	}
+	
+//	
 }
