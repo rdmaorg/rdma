@@ -480,3 +480,86 @@ REPEATING TEST:
 ===============end testing TableSync================
 
   		
+  		
+  		
+/*****TESTING COLUMN RESYNCH******/
+
+PRECONDITION: Table resynch is done
+
+		current precondition URL (will be changed): 	
+STEP 1	http://localhost:8080/gdma2/rest/server/metadata/5
+
+---------
+
+STEP 2: Remote tables are not on local, do followling changes before column resynch: 
+
+Column resyng URL:
+	URL: http://localhost:8080/gdma2/rest/server/metadata/columnsynch/server/5/table/490
+
+
+
+	GDMA table					REMOTE table
+	-----------------------------------------------
+1.	A (active)							A(exists)
+	Update A:	.setColumnType
+			setColTypeStr
+			Nullable
+			ColSize
+			active
+
+For test: after Table resynch, change values of 5 columns : setColumnType...to asure code from above is working 
+	
+2. B(not active) 							B(exists)
+ 
+ For test: after Table resynch, Deactivate B
+ 
+ a) Update B: 	
+ 		  add Timestamp to name
+ 		  deactivate
+ 
+ b) Create new B using Remote B from metadata 		  
+
+3.  Non-existing				C (New table)
+
+For test: after Table resynch, create new Column C on remote DB	
+
+	Create C using remote table
+
+4.  D (still exists on local)		Deleted D on Remote
+	
+For test: after Table resynch, Delete D on remote
+	
+	Update D: 
+		setDisplayable(false)
+		setActive(false)
+
+	Set all D's FK dependencies in all tables on server to null for DropDownColumnDisplay and DropDownColumnStore
+
+-------------	
+		
+	
+STEP 3: 
+Column Resynch: 
+	http://localhost:8080/gdma2/rest/server/metadata/5	
+
+-----------
+ HELP SQL : 
+ 
+
+	
+ select * from column_gdma2 where table_id in (
+		select id from table_gdma2 where server_id = 5
+	)
+
+ select * from column_gdma2 where table_id in (
+		select id from table_gdma2 where server_id = 5 
+		and UPPER(name) = UPPER('monday1556')
+	) order by id ;
+
+select id, active, name,allow_insert, allow_update, displayed, is_nullable, order_by, table_id, column_type,column_type_str, is_nullable, column_size from column_gdma2 where table_id in (
+		select id from table_gdma2 where server_id = 5
+			) and table_id = 490 order by id;
+
+  		
+	
+===============end Column resynch==============  		
