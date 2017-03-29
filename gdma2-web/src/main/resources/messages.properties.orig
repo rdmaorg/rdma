@@ -28,7 +28,6 @@ view.user.table.heading.active=Active
 view.user.table.heading.userAccess=User access
 
 #Connection Types
-view.connection.heading=Connection Types
 view.connection.table.heading.id=Id
 view.connection.table.heading.name=Name
 view.connection.table.heading.connectionClass=Connection Class
