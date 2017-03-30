@@ -85,28 +85,44 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 	/**
 	 * Synch Tables for selected Server (double clicked Server in Admin Module) between Remote DB server and GDMA DB server 
-	 * After synch is done and new Table set save to DB, retreive that set and return only active ones
+	 * After synch is done and new Table set save to DB, retrieve that set and return only active ones
 	 * calls helper method resyncTableList that performs synch 
 	 */
-	public List<Table> getTablesForServerAfterSynch(Integer serverId) {
+	public void getTablesForServerAfterSynch(Integer serverId) {
 		logger.info("getTablesForServerAfterSynch, serverId:  " + serverId);
-		//loading only server and connection type
+		//loading only server and connection type, no tables
 		Server server = repositoryManager.getServerRepository().findOne(serverId);
-		//loading tables for server
+		logger.info("server.getTables().size():" + server.getTables().size());
+		
+		
+		//loading tables for server but do not set on server - to cause infinite loop
+		//loaded table list : each table load parent server but that server does not contain table list
 		List<Table> tableList = repositoryManager.getTableRepository().findByServerId(server.getId());
-		Set<Table> tableSet = new HashSet<Table>(tableList);
-		server.setTables(tableSet);
-
+		
+		//Set<Table> tableSet = new HashSet<Table>(tableList);
+		//server.setTables(tableSet);
+		//logger.info("server.getTables().size():" + server.getTables().size());
+		
+		//logger.info("STACK : servet.getTable(): "+ server.getTables()); STACK OVERFLOW  : Server.toString()
 
 		// TODO use an AOP trigger for this
 		logger.info("starting table SYNCH");
 		//Comment the next line out if moving resynch functionality to the Refresh button
-		resyncTableList(server);
+		Set<Table> resyncTableList = resyncTableList(server, tableList);
+		
+		//serverDao.save(server);OLD CODE
+		logger.info("saving tablesSynchResult");
+		//TODO TX !!! save RESULT: - return to metaDataSerice caller where @Transactionl save method is and save there !!! 
+		repositoryManager.getTableRepository().save(resyncTableList);
 		logger.info("...table SYNCH ended");
 
-		List<Table> activeTableList = repositoryManager.getTableRepository().findByServerIdAndActiveTrue(server.getId());
+		//server.setTables(null);
+		
+		
+		
+		//List<Table> activeTableList = repositoryManager.getTableRepository().findByServerIdAndActiveTrue(server.getId());
 		//TODO set tables to server parent after synch ?
-		return  activeTableList;
+		//return  activeTableList;
 
 	}
 
@@ -175,9 +191,10 @@ public class DynamicDAOImpl implements DynamicDAO{
 
         END: 
          save     result Set of Tables						
+	 * @param tableList 
 
 	 */
-	private void resyncTableList(Server server) {
+	private Set<Table> resyncTableList(Server server, List<Table> tableList) {
 
 		logger.info("resyncTableList: " + server.getId());
 		//TODO define in parent interface??
@@ -186,7 +203,9 @@ public class DynamicDAOImpl implements DynamicDAO{
 		Set<Table> tablesSynchResult = new HashSet<Table>(); 
 
 		//GDMA tables list
-		Set<Table> tablesGDMA = server.getTables();
+		//Set<Table> tablesGDMA = server.getTables();
+		Set<Table> tablesGDMA = new HashSet<Table>(tableList);
+		
 		logger.info("Number of tables in GDMA: " + tablesGDMA.size());
 
 		//Remote server table list
@@ -214,12 +233,9 @@ public class DynamicDAOImpl implements DynamicDAO{
 		//previous double loop is ended, now compare in other direction to detect GDMA tables that don't exist on remote Server - Deleted
 		logger.info("-----------------");
 		resolveDeletedTables(tablesSynchResult, tablesGDMA, tableNameListRemoteDB, server );
-
+		
 		printSynchResult(tablesSynchResult);
-		//serverDao.save(server);OLD CODE
-		logger.info("saving tablesSynchResult");
-		//TODO TX !!! save RESULT: - return to metaDataSerice caller where @Transactionl save method is and save there !!! 
-		repositoryManager.getTableRepository().save(tablesSynchResult); 
+		return tablesSynchResult;
 	}
 
 

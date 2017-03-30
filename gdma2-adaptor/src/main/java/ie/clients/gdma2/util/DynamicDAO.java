@@ -22,7 +22,7 @@ public interface DynamicDAO {
 	public Set<Column> getTableColumns(Server server, String tableName);
 	
 	/*GET ACTIVE TABLES FOR SERVER AFTER SYNCH - special case called from Admin module ONLY*/
-	public List<Table> getTablesForServerAfterSynch(Integer serverId);
+	public void getTablesForServerAfterSynch(Integer serverId);
 	
     /* GET ACTIVE Columns for table - re-sync the columns for resynched Table from previous step (getTablesForServerAfterSynch()
      * this call happens after tables have been synched and user select 1 synched Table - special case called from Admin module ONLY */ 

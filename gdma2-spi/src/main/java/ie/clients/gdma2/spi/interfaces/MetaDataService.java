@@ -36,8 +36,12 @@ public interface MetaDataService {
 	public Long countTablesForServer(Integer serverId);
 	public PaginatedTableResponse<Table> getTablesForServer(Integer serverId, String matching, String orderBy,
 			String orderDirection, int startIndex, int length );
+	
 	public Table saveTable(Table table);
 	public void deleteTable(int id);
+	
+	public PaginatedTableResponse<Table> getActiveSynchedTablesForServer(Integer serverId, String matching, String orderBy,
+			String orderDirection, int startIndex, int length );
 	
 	/*User*/
 	public List<User> getAllUsers();

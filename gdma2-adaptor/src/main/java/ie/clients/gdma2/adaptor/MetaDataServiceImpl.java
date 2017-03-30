@@ -11,7 +11,9 @@ import ie.clients.gdma2.spi.interfaces.MetaDataService;
 import ie.clients.gdma2.util.DynamicDAO;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -186,7 +188,10 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			filtered = total;
 
 			logger.debug("findALL...getPagingRequest():");
-			tables = repositoryManager.getTableRepository().findAll(getPagingRequest(orderBy, orderDirection, startIndex, length, total)).getContent();
+			
+			tables = repositoryManager.getTableRepository().findByServerId(serverId,
+					getPagingRequest(orderBy, orderDirection, startIndex, length, total));
+			
 			logger.debug("tables found: " + tables.size());
 		} else {
 			String match = "%" + matching.trim().toUpperCase() + "%";
@@ -204,9 +209,69 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 		return getPaginatedTableResponse(tables != null ? tables : new ArrayList<Table>(), total, filtered);	
 	}
+	
+	@Override
+	public PaginatedTableResponse<Table> getActiveSynchedTablesForServer(Integer serverIdParam,
+			String matching, String orderBy, String orderDirection,
+			int startIndex, int length) {
+	
+		logger.debug("getActiveSynchedTablesForServer");
+	
+		synhronizeTablesForServer(serverIdParam);
+		
+		Server server = null;
+		List<Table> tables = null;
+		long total = 0;
+		long filtered = 0;
 
+		server = repositoryManager.getServerRepository().findOne(serverIdParam);
+		logger.info("server.getTables().size():" + server.getTables().size());
+		int serverId = server.getId();
+		//TODO if(null == server)
 
+		//empty search, select all tables for server
+		if (StringUtils.isBlank(matching)) {
+			total = repositoryManager.getTableRepository().countActiveTablesForServer(serverId);
+			logger.debug("Total active tables, no search:" + total);
+			filtered = total;
 
+			logger.debug("findALL...getPagingRequest():");
+	
+			tables = repositoryManager.getTableRepository().getActivePagableTables(serverId,
+					getPagingRequest(orderBy, orderDirection, startIndex, length, total));
+			
+			
+/*			logger.info("server.getName():" + server.getName());
+			logger.info("server.getTables().size(): " + server.getTables().size());
+			
+			
+			logger.debug("active tables found: " + tables.size());
+			
+			logger.info("------------------");
+			
+			Table table = tables.get(0);
+			//logger.info("table->server->tables size: "  + table.getServer().getTables().size());
+			logger.info("------------------");*/
+		
+			
+		} else {
+			String match = "%" + matching.trim().toUpperCase() + "%";
+			total = repositoryManager.getTableRepository().countTablesForServer(serverId);
+			logger.debug("Total, with search:" + total);
+			filtered = repositoryManager.getTableRepository().getCountMatching(match, serverId);
+
+			tables = repositoryManager.getTableRepository().getMatchingTables(
+					match,serverId,
+					getPagingRequest(orderBy, orderDirection, startIndex, length, total));
+			
+			logger.debug("tables found: " + tables.size());
+			
+		}
+
+		logger.debug("Search Tables: Search: " + matching + ", Total: " + total + ", Filtered: " + filtered	+ ", Result Table Count: " + tables.size());
+
+		return getPaginatedTableResponse(tables != null ? tables : new ArrayList<Table>(), total, filtered);	
+	}
 
 
 	@Override
@@ -572,12 +637,16 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		TODO : LOAD server -> Tables -> Columns and - User access
 		*
 		*/
-		
-		
-		
-		return dynamicDAO.getTablesForServerAfterSynch(serverId);		
+		dynamicDAO.getTablesForServerAfterSynch(serverId);
+		return repositoryManager.getTableRepository().findByServerIdAndActiveTrue(serverId);
 	}
 
+	@Transactional
+	private void synhronizeTablesForServer(Integer serverIdParam) {
+		logger.info("synhronizeTablesForServer");
+		dynamicDAO.getTablesForServerAfterSynch(serverIdParam); 
+	}
+	
 	/**
 	 * Transactional changes regarding : 
 	 * - after synch there can be: INSERT of new remote columns in local GDMA table 
