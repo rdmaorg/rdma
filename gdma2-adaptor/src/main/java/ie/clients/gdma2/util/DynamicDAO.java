@@ -21,8 +21,8 @@ public interface DynamicDAO {
 	/*GET COLUMNS FOR TABLE*/
 	public Set<Column> getTableColumns(Server server, String tableName);
 	
-	/*GET ACTIVE TABLES FOR SERVER AFTER SYNCH - special case called from Admin module ONLY*/
-	public void getTablesForServerAfterSynch(Integer serverId);
+	/*Synch local Tables for Server by calling Remote Server - special case called from Admin module ONLY*/
+	public void synchTablesForServer(Server server, List<Table> tableList);
 	
     /* GET ACTIVE Columns for table - re-sync the columns for resynched Table from previous step (getTablesForServerAfterSynch()
      * this call happens after tables have been synched and user select 1 synched Table - special case called from Admin module ONLY */ 

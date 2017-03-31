@@ -217,7 +217,9 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	
 		logger.debug("getActiveSynchedTablesForServer");
 	
+		//synch tables first
 		synhronizeTablesForServer(serverIdParam);
+		logger.debug("...get Active Synched Tables now");
 		
 		Server server = null;
 		List<Table> tables = null;
@@ -229,7 +231,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		int serverId = server.getId();
 		//TODO if(null == server)
 
-		//empty search, select all tables for server
+		//empty search, select all active tables for server
 		if (StringUtils.isBlank(matching)) {
 			total = repositoryManager.getTableRepository().countActiveTablesForServer(serverId);
 			logger.debug("Total active tables, no search:" + total);
@@ -239,20 +241,6 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	
 			tables = repositoryManager.getTableRepository().getActivePagableTables(serverId,
 					getPagingRequest(orderBy, orderDirection, startIndex, length, total));
-			
-			
-/*			logger.info("server.getName():" + server.getName());
-			logger.info("server.getTables().size(): " + server.getTables().size());
-			
-			
-			logger.debug("active tables found: " + tables.size());
-			
-			logger.info("------------------");
-			
-			Table table = tables.get(0);
-			//logger.info("table->server->tables size: "  + table.getServer().getTables().size());
-			logger.info("------------------");*/
-		
 			
 		} else {
 			String match = "%" + matching.trim().toUpperCase() + "%";
@@ -613,38 +601,37 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		return populatedServer;
 	}
 
-	/**
-	 * Admin only: synch and return active tables for server after synch with remote DB
-	 * TO support proper loading and transactional saving of all object that are to be changed 
-	 * consider - loading all structures in this method, pass loaded Server to Utility method,
-	 * update server method at very end of logic execution with all child changes within
-	 * save it in Transaction in this class 
-	 * then get synched Active tables from saved server*/
-	@Transactional
-	@Override
-	public List<Table> synchTablesForServer(Integer serverId) {
-		logger.info("synchTablesForServer");
-		
-		/*
-		logger.info("getTablesForServerAfterSynch, serverId:  " + serverId);
-		//loading only server and connection type
-		Server server = repositoryManager.getServerRepository().findOne(serverId);
-		//loading tables for server
-		List<Table> tableList = repositoryManager.getTableRepository().findByServerId(server.getId());
-		Set<Table> tableSet = new HashSet<Table>(tableList);
-		server.setTables(tableSet);
-		
-		TODO : LOAD server -> Tables -> Columns and - User access
-		*
-		*/
-		dynamicDAO.getTablesForServerAfterSynch(serverId);
-		return repositoryManager.getTableRepository().findByServerIdAndActiveTrue(serverId);
-	}
 
+	/**
+	 * Admin only: synch and return tables for server after synch 
+	 * <BR>
+	 *  Transactional changes regarding : 
+	 * - after synch there can be: INSERT of new remote table in local GDMA table 
+	 * - Renaming existing tables in local DB - if found inactive
+	 * - for deleted Table and it column that can be FK :  reference getDropDownColumnDisplay and getDropDownColumnStore must be removed from all columns from all Tables on server
+	 * <BR> 
+	 * TROUBLESHOOT @Transient dependency usage: 
+	 * loading server will not load Set<Tables> for it. 
+	 * When tables are loaded, be extra careful: do not server.setTable(loaded table set) 
+	 *  because of two-way dependency : 
+	 *  - logger.info("STACK : servet.getTable(): would cause STACK OVERFLOW  : Server.toString()
+	 *  - also, later, in caller getActiveSynchedTablesForServer(), when
+	 *  			server = repositoryManager.getServerRepository().findOne(serverIdParam);
+	 *    ..you try to load Server again, it will NOT query DB, but it will use cache and return sever with set of tables (see:  hibernate session.load() vs hibernate session.get()) 
+	 *    ...so you will end up with
+	 *    	 server->set of tables-> each table -> server -> set of tables...infinity...
+	 *    ...so response sent to client will be invalid 
+	 *   Always check in app log that if DB call is made  
+	 * @param serverId
+	 */
 	@Transactional
-	private void synhronizeTablesForServer(Integer serverIdParam) {
-		logger.info("synhronizeTablesForServer");
-		dynamicDAO.getTablesForServerAfterSynch(serverIdParam); 
+	private void synhronizeTablesForServer(Integer serverId) {
+		logger.info("synhronizeTablesForServer: " + serverId);
+		
+		//loading only server and connection type, no tables
+		Server server = repositoryManager.getServerRepository().findOne(serverId);
+		List<Table> tableList = repositoryManager.getTableRepository().findByServerId(server.getId());
+		dynamicDAO.synchTablesForServer(server, tableList); 
 	}
 	
 	/**

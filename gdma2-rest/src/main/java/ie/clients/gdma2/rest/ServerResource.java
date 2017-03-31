@@ -102,13 +102,6 @@ public class ServerResource extends BaseDataTableResource {
 		return serviceFacade.getMetadataService().getTablesMetadataForServerServer(serverId);
 	}
 	
-	/*GET ACTIVE TABLES FOR SERVER AFTER SYNCH - special case called from Admin module ONLY*/
-	@RequestMapping(value = "/metadata/tablesynch/{id}")
-	public List<Table> synchTablesForServer(@PathVariable("id") Integer serverId){
-		logger.info("synchTablesForServer: " + serverId);
-		return serviceFacade.getMetadataService().synchTablesForServer(serverId);
-	}
-	
 	/* GET ACTIVE Columns for table - re-sync the columns before calling it, just to ensure that the list is current */
 	@RequestMapping(value = "/metadata/columnsynch/server/{server}/table/{table}")
 	public List<Column> synchColumnsForTable(

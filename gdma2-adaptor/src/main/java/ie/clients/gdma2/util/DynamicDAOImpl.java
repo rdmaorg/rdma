@@ -51,9 +51,6 @@ public class DynamicDAOImpl implements DynamicDAO{
 		logger.info("getSqlGetTables(): " + SqlGetTables + ", for server: " + server.getId());
 		JdbcTemplate jdbcTemplate = dataSourcePool.getJdbcTemplateFromDataDource(server);
 		List<String> tableList  = jdbcTemplate.queryForList(SqlGetTables, String.class);
-		for (String table : tableList) {
-			logger.info("tableName: "  + table);
-		}
 		return tableList;
 	}
 
@@ -75,7 +72,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 		Set<Column> columns = jdbcTemplate.query(sqlTableMetadata, new ResultSetExtractorColumns());
 
 		for (Column column : columns) {
-			logger.info("remote table: " + column.getName());
+			logger.info("remote table column: " + column.getName());
 		}
 		return columns;
 
@@ -85,45 +82,30 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 	/**
 	 * Synch Tables for selected Server (double clicked Server in Admin Module) between Remote DB server and GDMA DB server 
-	 * After synch is done and new Table set save to DB, retrieve that set and return only active ones
-	 * calls helper method resyncTableList that performs synch 
+	 * 
+	 * TROUBLESHOOT @Transient dependency usage: 
+	 * 
+	 * loading server will not load Set<Tables> for it. 
+	 * When tables are loaded, be extra careful: do not server.setTable(loaded table set) 
+	 *  because of two-way dependency : 
+	 *  - logger.info("STACK : servet.getTable(): would cause STACK OVERFLOW  : Server.toString()
+	 *  - also, later, in caller getActiveSynchedTablesForServer(), when
+	 *  			server = repositoryManager.getServerRepository().findOne(serverIdParam);
+	 *    ..you try to load Server again, it will NOT query DB, but it will use cache and return sever with set of tables (see:  hibernate session.load() vs hibernate session.get()) 
+	 *    ...so you will end up with
+	 *    	 server->set of tables-> each table -> server -> set of tables...infinity...
+	 *    ...so response sent to client will be invalid 
+	 *   Always check in app log that if DB call is made  
 	 */
-	public void getTablesForServerAfterSynch(Integer serverId) {
-		logger.info("getTablesForServerAfterSynch, serverId:  " + serverId);
-		//loading only server and connection type, no tables
-		Server server = repositoryManager.getServerRepository().findOne(serverId);
-		logger.info("server.getTables().size():" + server.getTables().size());
-		
-		
-		//loading tables for server but do not set on server - to cause infinite loop
-		//loaded table list : each table load parent server but that server does not contain table list
-		List<Table> tableList = repositoryManager.getTableRepository().findByServerId(server.getId());
-		
-		//Set<Table> tableSet = new HashSet<Table>(tableList);
-		//server.setTables(tableSet);
-		//logger.info("server.getTables().size():" + server.getTables().size());
-		
-		//logger.info("STACK : servet.getTable(): "+ server.getTables()); STACK OVERFLOW  : Server.toString()
-
+	public void synchTablesForServer(Server server, List<Table> tableList) {
 		// TODO use an AOP trigger for this
 		logger.info("starting table SYNCH");
-		//Comment the next line out if moving resynch functionality to the Refresh button
 		Set<Table> resyncTableList = resyncTableList(server, tableList);
-		
 		//serverDao.save(server);OLD CODE
 		logger.info("saving tablesSynchResult");
 		//TODO TX !!! save RESULT: - return to metaDataSerice caller where @Transactionl save method is and save there !!! 
 		repositoryManager.getTableRepository().save(resyncTableList);
 		logger.info("...table SYNCH ended");
-
-		//server.setTables(null);
-		
-		
-		
-		//List<Table> activeTableList = repositoryManager.getTableRepository().findByServerIdAndActiveTrue(server.getId());
-		//TODO set tables to server parent after synch ?
-		//return  activeTableList;
-
 	}
 
 
@@ -197,7 +179,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 	private Set<Table> resyncTableList(Server server, List<Table> tableList) {
 
 		logger.info("resyncTableList: " + server.getId());
-		//TODO define in parent interface??
+		//TODO define in parent interface, separate SYNHC logic from dynamicDAO logic used for DATA and not ADMIN module??
 
 		//RESULT of synch   
 		Set<Table> tablesSynchResult = new HashSet<Table>(); 
@@ -219,11 +201,11 @@ public class DynamicDAOImpl implements DynamicDAO{
 			Table tableGDMA = remoteTableAlreadyExistsInGDMA(tableNameRemote, tablesGDMA);
 			if(tableGDMA != null) {
 				//1.1	 TABLE NAMES MATCH  - remote DB name found lon local
-				logger.info("	tableNameRemote:" + tableNameRemote + " is found on local");
+				logger.info("	remote table: " + tableNameRemote + " is found on local");
 				resolveTablesWithSameNames(tablesSynchResult, tableGDMA, tableNameRemote, server);
 			} else {
 				//1.2	NO MATCH - remote DB name not found on local 
-				logger.info("tableNameRemote:" + tableNameRemote + " not found on local DB");
+				logger.info("    remote table:" + tableNameRemote + " not found on local DB");
 				createNewGDMATable(tablesSynchResult, tableNameRemote, server);
 			}
 
@@ -334,7 +316,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 				tablesSynchResult.add(tableGDMA);
 
 				//TODO ? Where to place this and  how to make TRANSACTION!?!
-				logger.info("deleting UserAccess for table: " + tableGDMA.getId());
+				logger.info("deleting UserAccess for table: " + tableGDMA.getName());
 				List<UserAccess> userAcceseList = repositoryManager.getUserAccessRepository().findByTableId(tableGDMA.getId());
 				repositoryManager.getUserAccessRepository().delete(userAcceseList);
 
