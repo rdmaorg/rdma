@@ -382,75 +382,31 @@ public class DynamicDAOImpl implements DynamicDAO{
 			logger.info("synched table name: " + table.getName());
 		}
 	}
-
-
+	
 
 	@Override
-	public List <Column> getColumnsForTableAfterSynch(Integer serverId, Integer tableId) {
-		logger.info("getColumnsForTableAfterSynch, for server: " +  serverId + " and table: " + tableId);
-
-		// TODO use an AOP trigger for this
-		//transient dependecies - load all tables for server, get one from the list that needs to be synched, get all it's columns
-		Server server = repositoryManager.getServerRepository().findOne(serverId);
-		List<Table> tableList = repositoryManager.getTableRepository().findByServerId(server.getId());
-		if(tableList == null){
-			throw new NullPointerException("Unexpected error: Table list for server is Empty!");
-		}
-
-		Set<Table> tableSet = new HashSet<Table>(tableList);
-		server.setTables(tableSet);
-
-		Table tableGDMA = null;
-		for (Table table : server.getTables()) {
-			if(table.getId() == tableId.intValue()){
-				tableGDMA = table;
-				break;
-			}
-		}
-
-		if(tableGDMA == null){
-			throw new NullPointerException("Unexpected error: no table with id: " + tableId +  " on server: " + serverId);
-		}
-
-		Set<Column> columnsGDMA = repositoryManager.getColumnRepository().findByTableId(tableId);
-		//if this is done for the first time - column set will be NULL (empty) so during later synched all remote table Columns will be added to table
-		//
-		//if(columnsGDMA == null){ //ALLOW NULL and check it in resych call
-		//	throw new NullPointerException("Unexpected error: no columns for table: " + tableId +  " on server: " + serverId);
-		//}
-
-		tableGDMA.setColumns(columnsGDMA); //can be null
+	public void synchColumnsForTable(Server server, Table table, Set<Column> columns) {
+		logger.info("synchColumnsForTable");
 
 		logger.info("starting column SYNCH");
-		resyncColumnList(server, tableGDMA);
+		Set<Column> resyncColumnList = resyncColumnList(server, table, columns);
 		logger.info("...column SYNCH ended");
 
+		repositoryManager.getColumnRepository().save(resyncColumnList);
 		//reload table list after synch
 		//TODO OPEN Q - after saving columns - updating table that contains it ?
-		List<Column> activeColumnList = repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(tableId);
-		return activeColumnList;
+		
 	}
 
-
-
-
-	/**
-	 * Connect to server, get table list (resynch tables) first anfd then select one table and resynch columns
-	 *  get the list of columns from the remote database
-	 *  using metadata create Colum Entity list to use for compare with existing GDMAColumns  
-	 *  apply biz. rules - the same as for synching tables - see details above
-	 *  
-	 * @param server, tableGMDA with loaded column list
-	 * @param tableGDMA
-	 */
-	private void resyncColumnList(Server server, Table tableGDMA) {
+	
+	
+	private Set<Column> resyncColumnList(Server server, Table tableGDMA, Set<Column> columnsGDMA) {
 		logger.info("resyncColumnList, for table: " + tableGDMA.getName());
 
 		//RESULT of synch   
 		Set<Column> columnsSynchResult = new HashSet<Column>(); 
 
 		//GDMA column list
-		Set<Column> columnsGDMA = tableGDMA.getColumns(); //can be null if this is first time call
 		logger.info("columnsGDMA size: " + ( columnsGDMA == null ? 0 : columnsGDMA.size() ) );
 		
 		//Remote server, column list for table
@@ -485,9 +441,11 @@ public class DynamicDAOImpl implements DynamicDAO{
 		resolveDeletedAndResetedColumns(server,columnsRemote, columnsGDMA, columnsSynchResult);
 
 		//finally save all synched columns
-		repositoryManager.getColumnRepository().save(columnsSynchResult);
+		return columnsSynchResult;
 
 	}//end
+	
+	
 
 
 	/**
@@ -515,7 +473,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 			columnGDMA.setActive(false);
 			
 			//add deactivated table to result table set
-			columnsSynchResult.add(columnGDMA); //will not add existing previosuly deactivated with timestamp added to name
+			columnsSynchResult.add(columnGDMA); //will not add existing previously deactivated with timestamp added to name
 			
 			logger.info(" *** columnsSynchResult : " + columnsSynchResult.size());
 
@@ -573,20 +531,17 @@ public class DynamicDAOImpl implements DynamicDAO{
 			columnsSynchResult.add(columnGDMA);
 			logger.info(" *** columnsSynchResult : " + columnsSynchResult.size());
 			
-			
-			
 		} else {
 			//change name of deactivated and create new using Remote
 			logger.info("... and is inactive column : " + columnGDMA.getName());
 			Timestamp currentTimestamp = new java.sql.Timestamp(Calendar.getInstance().getTime().getTime());
 			String timestamp = currentTimestamp.toString();
 			String inactiveColumnName = columnGDMA.getName() + "_" + timestamp;
+			
 			columnGDMA.setName(inactiveColumnName);
-
 			columnGDMA.setActive(false);
-
-			//columnsGDMA.add(columnGDMA);//ADD
 			columnsSynchResult.add(columnGDMA);
+
 			logger.info(" *** columnsSynchResult : " + columnsSynchResult.size());
 			logger.info("column deactivated and name changed: " + columnGDMA.getName());
 			logger.info("creating new column: " + columnRemote.getName());

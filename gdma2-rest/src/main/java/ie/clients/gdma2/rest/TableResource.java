@@ -81,7 +81,7 @@ public class TableResource extends BaseDataTableResource{
 	
 	/*paginated table list for selected server - ALL Tables*/
 	/*TODO fix URI template*/
-	@RequestMapping(value = "/{id}/metadata/table")
+	@RequestMapping(value = "/{id}/metadata")
 	public PaginatedTableResponse<Table> getActiveSynchedTablesForServer(@PathVariable("id") String serverId,
 			@RequestParam Map<String,String> params){
 		logger.debug("getActiveSynchedTablesForServer");

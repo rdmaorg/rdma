@@ -40,8 +40,7 @@ public interface MetaDataService {
 	public Table saveTable(Table table);
 	public void deleteTable(int id);
 	
-	public PaginatedTableResponse<Table> getActiveSynchedTablesForServer(Integer serverId, String matching, String orderBy,
-			String orderDirection, int startIndex, int length );
+	
 	
 	/*User*/
 	public List<User> getAllUsers();
@@ -57,8 +56,6 @@ public interface MetaDataService {
 	/*Column*/
 	public List<Column> getAllColumns();//TODO delete, just for initail repos testing
 	public List<Column> findByTableIdAndActiveTrue(Integer tableId);
-	public PaginatedTableResponse<Column> getColumnsForTable(Integer tableId, String matching, String orderBy,
-			String orderDirection, int startIndex, int length);
 	public void deleteColumn(int id);
 	public void deleteColumn(Column column); /*TODO check if needed*/ 
 	
@@ -80,7 +77,10 @@ public interface MetaDataService {
 	/*TEST ONLY first Time Tables and Columns creating for selected servers*/
 	public Server getTablesMetadataForServerTestOnly(Integer serverId);
 	
-	/* Admin only: synch and return active Columns for selected table on remote server*/
-	public List<Column> synchColumnsForTable(Integer serverId, Integer tableId);
+	public PaginatedTableResponse<Table> getActiveSynchedTablesForServer(Integer serverId, String matching, String orderBy,
+			String orderDirection, int startIndex, int length );
+	
+	public PaginatedTableResponse<Column> getActiveSynchedColumnsForTable(Integer tableId, String matching, String orderBy,
+			String orderDirection, int startIndex, int length);
 	
 }

@@ -11,9 +11,6 @@ import ie.clients.gdma2.spi.interfaces.MetaDataService;
 import ie.clients.gdma2.util.DynamicDAO;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -391,17 +388,14 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 	/*paginated Columns for table, special case for ADMIN, see: GdmaAdmin.getColumnsForTable*/
 	@Override
-	public PaginatedTableResponse<Column> getColumnsForTable(Integer tableId, String matching, String orderBy, String orderDirection,
-			int startIndex, int length) {
-		logger.info("getColumnsForTable : " + tableId);
+	public PaginatedTableResponse<Column> getActiveSynchedColumnsForTable(
+			Integer tableId, String matching, String orderBy, String orderDirection,int startIndex, int length) {
+		logger.info("getActiveSynchedColumnsForTable : " + tableId);
 
-		/*TODO as precondition, add logic from : public Set<Column> getColumnsForTable(Long serverId, Long tableId) {*/
-		/*
-		Server server = gdmaFacade.getServerDao().get(serverId);
-        Table table = gdmaFacade.getTableDao().get(tableId);
-
-        serverUtil.resyncColumnList(server, table); //SYNCH , after synch return PAGINATED table of ACTIVE columns for Table that was synched and saved
-		 */
+		//synch tables first
+		synhronizeColumnsForTable(tableId);
+		
+		logger.debug("...get ACTIVE Synched Colulmns now");
 
 
 		Table table = null;
@@ -527,6 +521,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	}
 
 	/**
+	 * TEST ONLY!
 	 * for URL 
 	 * http://localhost:8080/gdma2/rest/server/metadata/4
 	 * 
@@ -634,20 +629,25 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		dynamicDAO.synchTablesForServer(server, tableList); 
 	}
 
+	
 	/**
 	 * Transactional changes regarding : 
 	 * - after synch there can be: INSERT of new remote columns in local GDMA table 
 	 * - renaming existing columns in local DB - if found inactive
 	 * - for deleted column  - reference getDropDownColumnDisplay and getDropDownColumnStore must be removed from all columns from all Tables on server
-	 *  
+	 * @param tableId
 	 */
 	@Transactional
-	@Override
-	public List<Column> synchColumnsForTable(Integer serverId, Integer tableId) {
-		return dynamicDAO.getColumnsForTableAfterSynch(serverId, tableId);
+	private void synhronizeColumnsForTable(Integer tableId){
+		logger.info("synhronizeColumnsForTable: " + tableId);
+		
+		Table table = repositoryManager.getTableRepository().findOne(tableId); //loading table, no columns
+		Server server = table.getServer(); //loading only server and connection type, no tables
+		Set<Column> columns = repositoryManager.getColumnRepository().findByTableId(tableId);
+		dynamicDAO.synchColumnsForTable(server, table, columns);
+		
 	}
-
-
-	/**/
+	
+	
 
 }

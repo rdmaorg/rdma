@@ -15,18 +15,19 @@ public interface DynamicDAO {
 	public DataSourcePool getDataSourcePool();
 
 	
-	/*GET TABLES FOR SERVER*/
+	/*Get table names from Remote server - metadata */
 	public List<String> getSqlGetTables(Server server, String sqlGetTables);
 	
-	/*GET COLUMNS FOR TABLE*/
+	/*Get columns from Table on remote Server - metadata */
 	public Set<Column> getTableColumns(Server server, String tableName);
 	
 	/*Synch local Tables for Server by calling Remote Server - special case called from Admin module ONLY*/
 	public void synchTablesForServer(Server server, List<Table> tableList);
 	
-    /* GET ACTIVE Columns for table - re-sync the columns for resynched Table from previous step (getTablesForServerAfterSynch()
-     * this call happens after tables have been synched and user select 1 synched Table - special case called from Admin module ONLY */ 
-	public List<Column> getColumnsForTableAfterSynch(Integer serverId, Integer tableId);
+	/*synch local Colulmns for the Table - special case called from Admin module ONLY and after table synch*/
+	public void synchColumnsForTable(Server server, Table table, Set<Column> columns);
+	
+	 
 	
 	/*  OLD CODE - GDMA 1*/
 	

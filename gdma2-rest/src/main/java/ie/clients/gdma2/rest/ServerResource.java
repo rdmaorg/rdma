@@ -95,22 +95,12 @@ public class ServerResource extends BaseDataTableResource {
 		return serviceFacade.getMetadataService().findOne(serverId);
 	}
 	
-	/*TEST ONLY for initial table load and column metadata load
+	/*TEST ONLY for initial table load and column metadata load (see TableResource)
 	 * first Time Tables and Columns creating for selected servers - NO SYNCH NO ACTIVE! */
 	@RequestMapping(value = "/metadata/{id}")
 	public Server getTableMetadataForServerTestOnly(@PathVariable("id") Integer serverId){
 		logger.info("getTableMetadataForServer:" + serverId);
 		return serviceFacade.getMetadataService().getTablesMetadataForServerTestOnly(serverId);
-	}
-	
-	/* GET ACTIVE Columns for table - re-sync the columns before calling it, just to ensure that the list is current */
-	@RequestMapping(value = "/metadata/columnsynch/server/{server}/table/{table}")
-	public List<Column> synchColumnsForTable(
-			@PathVariable("server") Integer serverId,
-			@PathVariable("table") Integer tableId)
-			{
-		logger.info("synchColumnsForTable, serverId: " + serverId + " , tableId: " + tableId);
-		return serviceFacade.getMetadataService().synchColumnsForTable(serverId, tableId);
 	}
 	
 }

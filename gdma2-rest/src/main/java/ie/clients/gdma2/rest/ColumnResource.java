@@ -34,10 +34,10 @@ public class ColumnResource extends BaseDataTableResource{
 	}
 
 	
-	/*paginated table od collumns for Table
-	 * TODO: add logic in service to synch table before getting Active List<Column> from it - see comments in ColumRepository*/
-	@RequestMapping("table/{id}")
-	PaginatedTableResponse<Column> getColumnsPaginatedTable(@PathVariable("id") Integer tableId, @RequestParam Map<String, String> reqParams){
+	/*paginated active columns for Table - Admin module */ 
+	@RequestMapping("/metadata/table/{id}")
+	PaginatedTableResponse<Column> getPaginatedActiveSynchedColumnsForTable(@PathVariable("id") Integer tableId,
+			@RequestParam Map<String, String> reqParams){
 		logger.debug("getColumnsPaginatedTable");
 		
 		String orderByColumn = "id";
@@ -97,7 +97,7 @@ public class ColumnResource extends BaseDataTableResource{
 		}
 		
 		logger.info("orderByColumn: " + orderByColumn);
-		PaginatedTableResponse<Column> resp = serviceFacade.getMetadataService().getColumnsForTable(
+		PaginatedTableResponse<Column> resp = serviceFacade.getMetadataService().getActiveSynchedColumnsForTable(
 				tableId,
 				getSearchValue(reqParams),
 				orderByColumn,
