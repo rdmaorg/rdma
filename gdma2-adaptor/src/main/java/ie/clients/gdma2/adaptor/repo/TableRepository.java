@@ -26,10 +26,16 @@ public interface TableRepository extends PagingAndSortingRepository<Table, Integ
 	public List<Table> findByServerId(int serverId, Pageable pageable);
 	
 	/*matching = search term, search in all columns of data table on UI*/
-	@Query("select count(t) from Table t where upper(t.name) like ?1 or upper(t.alias) like ?1 or upper(t.server.name) like ?1 and t.server.id = ?2")
+	@Query("select count(t) from Table t "
+			+ " where "
+			+ " (upper(t.name) like ?1 or upper(t.alias) like ?1 or upper(t.server.name) like ?1 )"
+			+ " and t.server.id = ?2")
 	public long getCountMatching(String matching, Integer serverId); //TODO pass serverId
 
-	@Query("select t from Table t where upper(t.name) like ?1  or upper(t.alias) like ?1 or upper(t.server.name) like ?1 and t.server.id = ?2")
+	@Query("select t from "
+			+ " Table t where "
+			+ " (upper(t.name) like ?1  or upper(t.alias) like ?1 or upper(t.server.name) like ?1 )"
+			+ "  and t.server.id = ?2")
 	public List<Table> getMatchingTables(String matching, Integer serverId, Pageable pageable);
 
 	
@@ -43,16 +49,17 @@ public interface TableRepository extends PagingAndSortingRepository<Table, Integ
 	public List<Table> getActivePagableTables(Integer serverId, Pageable pageable);
 	//public List<Table> findByServerIdAndActiveTrue(int serverId, Pageable pageable); works too
 	
-	@Query("select t from Table t where t.active=true and upper(t.name) like ?1  or upper(t.alias) like ?1 or upper(t.server.name) like ?1 and t.server.id = ?2")
+	@Query("select t "
+			+ " from Table t "
+			+ " where t.active = true "
+			+ " and (upper(t.name) like ?1  or upper(t.alias) like ?1 or upper(t.server.name) like ?1 )"
+			+ " and t.server.id = ?2")
 	public List<Table> getActiveMatchingTables(String matching, Integer serverId, Pageable pageable);
 
 	
 	/*find by ServerId and Active - not pageable*/
 	public List<Table> findByServerIdAndActiveTrue(Integer serverId);
 	
-	
-	
-
-	
+		
 }
 

@@ -33,7 +33,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 	@Autowired
 	private DynamicDAO dynamicDAO;
-	
+
 	public DynamicDAO getDynamicDAO() {
 		return dynamicDAO;
 	}
@@ -42,8 +42,8 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		this.dynamicDAO = dynamicDAO;
 	}
 
-	
-	
+
+
 	/*Connection type section*/
 	@Override
 	public List<ConnectionType> getAllConnectionTypes() {
@@ -188,10 +188,10 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			filtered = total;
 
 			logger.debug("findALL...getPagingRequest():");
-			
+
 			tables = repositoryManager.getTableRepository().findByServerId(serverId,
 					getPagingRequest(orderBy, orderDirection, startIndex, length, total));
-			
+
 			logger.debug("tables found: " + tables.size());
 		} else {
 			String match = "%" + matching.trim().toUpperCase() + "%";
@@ -209,18 +209,18 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 		return getPaginatedTableResponse(tables != null ? tables : new ArrayList<Table>(), total, filtered);	
 	}
-	
+
 	@Override
 	public PaginatedTableResponse<Table> getActiveSynchedTablesForServer(Integer serverIdParam,
 			String matching, String orderBy, String orderDirection,
 			int startIndex, int length) {
-	
+
 		logger.debug("getActiveSynchedTablesForServer");
-	
+
 		//synch tables first
 		synhronizeTablesForServer(serverIdParam);
 		logger.debug("...get Active Synched Tables now");
-		
+
 		Server server = null;
 		List<Table> tables = null;
 		long total = 0;
@@ -238,10 +238,10 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			filtered = total;
 
 			logger.debug("findALL...getPagingRequest():");
-	
+
 			tables = repositoryManager.getTableRepository().getActivePagableTables(serverId,
 					getPagingRequest(orderBy, orderDirection, startIndex, length, total));
-			
+
 		} else {
 			String match = "%" + matching.trim().toUpperCase() + "%";
 			total = repositoryManager.getTableRepository().countTablesForServer(serverId);
@@ -251,9 +251,9 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			tables = repositoryManager.getTableRepository().getMatchingTables(
 					match,serverId,
 					getPagingRequest(orderBy, orderDirection, startIndex, length, total));
-			
+
 			logger.debug("tables found: " + tables.size());
-			
+
 		}
 
 		logger.debug("Search Tables: Search: " + matching + ", Total: " + total + ", Filtered: " + filtered	+ ", Result Table Count: " + tables.size());
@@ -403,6 +403,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
         serverUtil.resyncColumnList(server, table); //SYNCH , after synch return PAGINATED table of ACTIVE columns for Table that was synched and saved
 		 */
 
+
 		Table table = null;
 		List<Column> columns = null;
 		long total = 0;
@@ -412,24 +413,23 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		//TODO if(null == table)
 
 		if(StringUtils.isBlank(matching)){
-			total = repositoryManager.getColumnRepository().countColumnsForTable(table.getId());
-			logger.debug("Total count columns for table, no search:" + total);
+			total = repositoryManager.getColumnRepository().countActiveForTable(table.getId());
+			logger.debug("Total Active columns for table, no search:" + total);
 			filtered = total;
-			logger.debug("findALL...getPagingRequest():");
+
+			logger.debug("find all Active columns by table:");
 			PageRequest pagingRequest = getPagingRequest(orderBy, orderDirection, startIndex, length, total);
-			Page<Column> columnPages = repositoryManager.getColumnRepository().findAll(pagingRequest);
-			columns = columnPages.getContent();
+			columns = repositoryManager.getColumnRepository().findActiveforTable(table.getId(), pagingRequest);
 			logger.debug("columns found: " + (null != columns ? columns.size() : "0"));
 		} else {
 			String match = "%" + matching.trim().toUpperCase() + "%";
-
-			total = repositoryManager.getColumnRepository().countColumnsForTable(table.getId());
-			logger.debug("Total count columns for table, with search:" + total);
-			filtered = repositoryManager.getColumnRepository().getCountMatching(match);
+			logger.debug("searching for: " +  match);
+			total = repositoryManager.getColumnRepository().countActiveForTable(table.getId());
+			logger.debug("Total active count columns for table, with search:" + total);
+			filtered = repositoryManager.getColumnRepository().countActiveAndMatchingForTable(match, table.getId());
 			logger.debug("filtered : " + filtered + ", for match: " + match);
 			PageRequest pagingRequest = getPagingRequest(orderBy, orderDirection, startIndex, length, total);
-			columns = repositoryManager.getColumnRepository().getMatchingColumns(match, pagingRequest);
-
+			columns = repositoryManager.getColumnRepository().findActiveAndMatchingforTable(match, table.getId(), pagingRequest);
 		}
 
 		logger.debug("Search Columns: Search: " + matching + ", Total: " + total + ", Filtered: " + filtered
@@ -534,43 +534,43 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	 * using metadata creates Tables and Columns in metadata DB
 	 * 
 	 * CONSIDER:
-	
+
 	 1. One DB Server can contain many DBs, have this in mind when registering URL in Column: 	server_gdma2.url
 	  	(dbname 'gdma20' as part of DB URL : "jdbc:pgsql://localhost:5432/gdma20" stored in Server table)
-	 
+
 	 2. "ConnectionType" is used per each server to get DB vendor specific "SHOW tables" SQL
-	 
+
 	 3. User registered in Server DB table with: 
 	 	server_gdma2.username
 		server_gdma2.password
  		must have 'SHOW tables' rights invoked (Column : connection_types_gdma2.select_get_tables)
- 		
+
 	 5. Using proper DriverClass from ConnectioType user connects to server (Column : connection_types_gdma2.connection_class)  
-	 
+
 	 	Using this registered data from Server and ConnectionType - DataSource is created and JdbcTemplate using it
-	 	 
+
 	 6. Once connected user needs to execute 'SHOW TABLES' SQL and obtain Set of DB Table names from remote DB server
-	 
+
 	 7. Then iteration over Set of Table Name and using ResultSet to get 'Metadata' on DB Columns 
-	 
+
 	 8. Creating Set of Columns per each Table with specifics : PK or not, Size, ...othe constraints. 
-	 
+
 	 10. Iterate over Table Name set. Save Table to Medatada DB, then use saved Table to save Columns (TODO consider TRANSATION ) 
-  
-	 
+
+
 	 * 	 */
-	
+
 	@Transactional
 	@Override
-	public Server getTablesMetadataForServerServer(Integer serverId) {
+	public Server getTablesMetadataForServerTestOnly(Integer serverId) {
 		logger.info("getTablesMetadataForServerServer");
 
 		Server server = repositoryManager.getServerRepository().findOne(serverId);
 		String sqlGetTables = server.getConnectionType().getSqlGetTables(); 
-		 
+
 		/*GET TABLES FOR SERVER*/
 		List<String> tableNames = dynamicDAO.getSqlGetTables(server, sqlGetTables);
-		
+
 		for (String tableName : tableNames) {
 			/*GET COLUMNS FOR TABLE*/
 			Set<Column> tableColumns = dynamicDAO.getTableColumns(server, tableName); 
@@ -594,7 +594,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			}
 			List<Column> columnList = new ArrayList<Column>(tableColumns);
 			saveColumns(columnList);
-			
+
 		}
 		//refresh server to get new tables and columns
 		Server populatedServer = repositoryManager.getServerRepository().findOne(serverId);
@@ -627,13 +627,13 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	@Transactional
 	private void synhronizeTablesForServer(Integer serverId) {
 		logger.info("synhronizeTablesForServer: " + serverId);
-		
+
 		//loading only server and connection type, no tables
 		Server server = repositoryManager.getServerRepository().findOne(serverId);
 		List<Table> tableList = repositoryManager.getTableRepository().findByServerId(server.getId());
 		dynamicDAO.synchTablesForServer(server, tableList); 
 	}
-	
+
 	/**
 	 * Transactional changes regarding : 
 	 * - after synch there can be: INSERT of new remote columns in local GDMA table 
@@ -647,7 +647,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		return dynamicDAO.getColumnsForTableAfterSynch(serverId, tableId);
 	}
 
-	
+
 	/**/
 
 }

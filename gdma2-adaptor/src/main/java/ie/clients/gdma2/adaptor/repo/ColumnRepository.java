@@ -1,6 +1,7 @@
 package ie.clients.gdma2.adaptor.repo;
 
 import ie.clients.gdma2.domain.Column;
+import ie.clients.gdma2.domain.Table;
 
 import java.util.List;
 import java.util.Set;
@@ -26,38 +27,7 @@ public interface ColumnRepository extends PagingAndSortingRepository<Column, Int
 	
 	
 	
-	/**
-     * Only called from admin and it's a special case.
-     * We need to re-sync the columns before calling it, just to ensure that the list is current.
-     * 
-     * mid step: serverUtil.resyncColumnList(server, table):  Use serverId to connect to server and get tables, resynch columns and call tableDao.save(table);  
-     * 
-     * once columns of a table are in a synch - get all ACTIVE columns from synched Table
-     * 
-     * @return
-     */
-     	/*
-	public Set<Column> getColumnsForTable(Long serverId, Long tableId) {
-        // TODO use an AOP trigger for this
-        Server server = gdmaFacade.getServerDao().get(serverId);
-        Table table = gdmaFacade.getTableDao().get(tableId);
-        
-        serverUtil.resyncColumnList(server, table); //SYNCH
-        
-        //GET ALL ACTIVE columns from synchronized table
-         * 
-        Set<Column> activeColumns = new HashSet<Column>();
-        Set<Column> allColumns = table.getColumns();
-        Column[] allColumnsArray = new Column[allColumns.size()];
-        allColumnsArray = allColumns.toArray(allColumnsArray);
-        for(int i = 0; i < allColumnsArray.length; i++){
-        	if (allColumnsArray[i].isActive()) {
-        		activeColumns.add(allColumnsArray[i]);
-            }                 	
-        }       
-        return activeColumns;
-    }
-    */
+	
 	
 	/*find all columns for table*/
 	public Set<Column> findByTableId(int tableId);
@@ -79,10 +49,28 @@ public interface ColumnRepository extends PagingAndSortingRepository<Column, Int
 	public List<Column> getMatchingColumns(String matching, Pageable pageable);
 
 	
+	/*Admin Module Section*/
 	
-	
+	/*-- Count active Columns for Table : Admin module - after synch*/
+	@Query("select count(c) from Column c where c.active = true and c.table.id = ?1")
+	public long countActiveForTable(Integer tableId);	
 
+	/* All Active columns for table : Admin module - after synch*/
+	@Query("select c from Column c where c.active = true and c.table.id = ?1")
+	public List<Column> findActiveforTable(Integer tableId, Pageable pageable);
 	
+	/* count Active and Matching columns for table : Admin module - after synch*/
+	@Query("select count(c) from Column c where "
+			+ " c.active = true "
+			+ " and ( upper(c.name) like ?1 or upper(c.special) like ?1 or upper(c.alias) like ?1 )"
+			+ " and c.table.id = ?2")
+	public long countActiveAndMatchingForTable(String matching, Integer tableId);
 	
+	/* All Active and Matching columns for table : Admin module - after synch*/
+	@Query("select c from Column c where "
+			+ " c.active = true "
+			+ " and (upper(c.name) like ?1 or upper(c.special) like ?1 or upper(c.alias) like ?1 ) "
+			+ " and c.table.id = ?2")
+	public List<Column> findActiveAndMatchingforTable(String matching, Integer tableId, Pageable pageable);
 	
 }

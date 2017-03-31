@@ -77,8 +77,8 @@ public interface MetaDataService {
 	
 	/*DynamicDAO part*/
 	
-	/*first Time Tables and Columns creating for selected servers*/
-	public Server getTablesMetadataForServerServer(Integer serverId);
+	/*TEST ONLY first Time Tables and Columns creating for selected servers*/
+	public Server getTablesMetadataForServerTestOnly(Integer serverId);
 	
 	/* Admin only: synch and return active Columns for selected table on remote server*/
 	public List<Column> synchColumnsForTable(Integer serverId, Integer tableId);
