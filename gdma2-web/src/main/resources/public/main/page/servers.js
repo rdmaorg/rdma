@@ -16,9 +16,11 @@ var configureDataTable = function(){
 			            { "data": "prefix" },
 			            { "data": "active" },
 			            { "data": "active","render" : function(data, type, row){ 	
-			            	return '<button class="btn btn-primary btn-xs editServer" data-serverid="'+ row.id+ '"><span class="glyphicon glyphicon-pencil"></span> Edit</button>'
+			            	return '<button class="btn btn-primary btn-xs editServer" data-serverid="'+ row.id+ '"><i class="fa fa-pencil-square-o"></i> Edit</button>'
 			            	+ '&nbsp;'
-			            	+'<button class="btn btn-warning btn-xs deleteServer" data-serverid="'+ row.id+ '"><span class="glyphicon glyphicon-remove"></span> Delete</button>';
+			            	+'<button class="btn btn-warning btn-xs deleteServer" data-serverid="'+ row.id+ '"><i class="fa fa-trash-o"></i> Delete</button>'
+			            	+ '&nbsp;'
+			            	+'<button class="btn btn-info btn-xs viewServer" data-serverid="'+ row.id+ '"><i class="fa fa-table"></i> Tables</button>'
 			            	} 
 			            }
 			        ]
@@ -31,6 +33,7 @@ var configureDataTable = function(){
 			associateDeleteServer();
 			associateEditServer();
 			associatePostServer();
+			associateViewServer();
 		},
 		error: function(message, e){
 			console.error("ERROR: " + JSON.stringify(e));
@@ -40,8 +43,10 @@ var configureDataTable = function(){
 	
 	tblServerList.off( 'responsive-display');
 	tblServerList.on( 'responsive-display', function ( e, datatable, row) {
-	    associateDeleteServer();
+		associateDeleteServer();
 		associateEditServer();
+		associatePostServer();
+		associateViewServer();
 	} );
 };
 
@@ -73,6 +78,9 @@ var editServer = function(serverId) {
 		$("#prefix").val(data.prefix);
 		$("#active > [value=" + data.active + "]").prop('selected', true);
 		$('#modalServer').modal('show');
+		$("#modalServer").on('shown.bs.modal', function () {
+            $("#name").focus();
+		});
 		associatePostServer();
     }).fail(function(e){
     	handleError('#global-alert', e);
@@ -156,12 +164,30 @@ var associatePostServer = function(){
 	});
 };
 
+//View server tables
+var associateViewServer = function(){
+	$('.viewServer').click(function(){
+ 		var btn = $(this);
+//		var btn = element;
+		console.log("View Server Id " + btn.data('serverid'));
+ 		viewServer(btn.data('serverid'));
+	})
+};
+
+var viewServer = function(serverId) {
+	sessionStorage.setItem("id",serverId);
+	window.location.href = "tables";
+}
+
 $(document).ready(function(){	
 
 	configureDataTable();
 	
 	$("#addServer").click(function(){
 		$("#modalServer").find('form').trigger('reset');
+		$("#modalServer").on('shown.bs.modal', function () {
+            $("#name").focus();
+		});
 	});
 	
 	// Get Connection types
@@ -197,7 +223,7 @@ $(document).ready(function(){
     			showLoading();
         		$.ajax({
         	        type: "get",
-        	        url: mapPathVariablesInUrl(restUri.table.list_for_server, {serverId: server.id}),
+        	        url: mapPathVariablesInUrl(restUri.table.list_for_server_active, {serverId: server.id}),
         	        data: { get_param: 'id' },
         	        success: function(data, textStatus, jqXHR) {
         			$.each(data, function(i, table) {

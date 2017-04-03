@@ -10,7 +10,7 @@
 	      <div th:replace="inc/alerts"></div>	
 		  <!-- Content Header (Page header) -->
 		  <section class="content-header">
-				<h1 th:text="#{view.server.heading}">Connection Types</h1>				
+				<h1 th:text="#{view.table.heading}"></h1>				
 	      		<div th:replace="inc/spinner"></div>
 				<div class="row">
 					<div class="col-md-12">
@@ -21,11 +21,11 @@
 		  </section>
 		  <!-- Main content -->
 			<section class="content">
-				<table id="tbl_server" class="table table-striped dt-responsive"
-					cellspacing="0" width="100%">
+				<table id="tbl_tables" class="table table-striped dt-responsive" cellspacing="0" width="100%">
 					<thead>
 						<tr>
-							<th width="10%" th:text="#{view.connection.table.heading}"></th>
+							<th width="10%" th:text="#{view.table.table.heading.id}"></th>
+							<th width="10%" th:text="#{view.table.table.heading.name}"></th>
 						</tr>
 					</thead>
 				</table>

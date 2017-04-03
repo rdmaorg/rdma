@@ -1,0 +1,19 @@
+.modal-header {
+	background: #3c8dbc;
+}
+
+.modal-title {
+	color:#fff;
+}
+
+.modal-header .close {
+	color:#fff;
+	opacity:1;
+	font-size:28px;
+}
+
+.form-control {
+	-webkit-box-shadow: inset 1px 1px 5px 0px rgba(0,0,0,0.16);
+	-moz-box-shadow: inset 1px 1px 5px 0px rgba(0,0,0,0.16);
+	box-shadow: inset 1px 1px 5px 0px rgba(0,0,0,0.16);
+}

@@ -30,6 +30,9 @@
 			options.serverSide = opts.url || (opts.serverSide && opts.url)? true : false;
 			options.complete = opts.complete? opts.complete : gopts.complete;
 			options.error = opts.error? opts.error : gopts.error;
+			if(opts.dataSrc || opts.dataSrc === ""){
+				options.dataSrc = opts.dataSrc;	
+			}
 		} else {
 			options = gopts;
 		}
@@ -53,12 +56,23 @@
 		};
 		
 		if (opts.serverSide) {
-			$.extend(cfg, {
-				"serverSide" : true,
-				"ajax" : {
-					"url" : opts.url
-				}
-			});
+			if(opts.dataSrc || opts.dataSrc === "") {
+				$.extend(cfg, {
+					"serverSide" : true,
+					"ajax" : {
+						"url" : opts.url,
+						"dataSrc":opts.dataSrc
+					}
+				});
+			} else {			
+				$.extend(cfg, {
+					"serverSide" : true,
+					"ajax" : {
+						"url" : opts.url
+					}
+				});
+			}
+			
 		} else {
 			$.extend(cfg, {
 				"serverSide" : false

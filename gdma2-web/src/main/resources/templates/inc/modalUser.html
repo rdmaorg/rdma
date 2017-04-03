@@ -1,0 +1,94 @@
+<div id="modalUser" class="modal fade" role="dialog" xmlns:th="http://www.thymeleaf.org">
+  <div class="modal-dialog">
+
+    <form data-toggle="validator" id="newUser">
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Insert Server</h4>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+		   <div class="col-sm-offset-2 col-sm-8 col-xs-12">
+		     <div class="form-group ">
+		      <label class="control-label requiredField" for="name">
+		       Name
+		       <span class="asteriskField">
+		        *
+		       </span>
+		      </label>
+		      <input class="form-control" id="name" name="name" type="text" required="required"/>
+		     </div>
+		     <div class="form-group ">
+		      <label class="control-label requiredField" for="lastname">
+		       Last name
+		       <span class="asteriskField">
+		        *
+		       </span>
+		      </label>
+		      <input class="form-control" id="lastname" name="lastname" type="text" required="required"/>
+		     </div>
+		     <div class="form-group ">
+		      <label class="control-label requiredField" for="username">
+		       Username
+		       <span class="asteriskField">
+		        *
+		       </span>
+		      </label>
+		      <input class="form-control" id="username" name="username" type="text" required="required"/>
+		     </div>
+		     <div class="form-group ">
+		      <label class="control-label requiredField" for="url">
+		       Domain
+		       <span class="asteriskField">
+		        *
+		       </span>
+		      </label>
+		      <input class="form-control" id="url" name="url" type="text" required="required"/>
+		     </div>
+			<div class="form-group">
+			  <label class="control-label requiredField" for="admin">
+			  	Admin
+			  </label>
+			  <select class="form-control" id="admin">
+			    <option value="true">true</option>
+			    <option value="false">false</option>
+			  </select>			  
+			</div>
+			<div class="form-group">
+			  <label class="control-label requiredField" for="locked">
+			  	Locked
+			  </label>
+			  <select class="form-control" id="locked">
+			    <option value="true">true</option>
+			    <option value="false">false</option>
+			  </select>			  
+			</div>
+			<div class="form-group">
+			  <label class="control-label requiredField" for="active">
+			  	Active
+			  </label>
+			  <select class="form-control" id="active">
+			    <option value="true">true</option>
+			    <option value="false">false</option>
+			  </select>			  
+			</div>
+			<div class="form-group">
+			  <label class="control-label requiredField" for="useraccess">
+			  	User access
+			  </label>	
+			  <select class="form-control" id="useraccess">
+			  </select>	  
+			</div>
+		   </div>
+		  </div>	
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default btn-lg pull-left" data-dismiss="modal">Cancel</button>					        
+		<button class="btn btn-primary btn-lg" id="Save-user" name="submit" type="submit">Submit</button>
+      </div>
+    </div>
+	</form>
+  </div>
+</div>

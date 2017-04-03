@@ -10,13 +10,13 @@
 	      <div th:replace="inc/alerts"></div>	
 		  <!-- Content Header (Page header) -->
 		  <section class="content-header">
-				<h1 th:text="#{view.user.heading}">Hello world</h1>
+				<h1 th:text="#{view.user.heading}"></h1>
 	      		<div th:replace="inc/spinner"></div>
 				<div class="row">
 					<div class="col-md-12">
-						<button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#myModal"><i class="fa fa-database"></i> Insert Table</button>
+						<button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#modalUser"><i class="fa fa-database"></i> Insert User</button>
 					</div>					
-					<div th:replace="inc/modalServer"></div>
+					<div th:replace="inc/modalUser"></div>
 				</div>
 		  </section>
 		  <!-- Main content -->
@@ -24,15 +24,16 @@
 					<table id="tbl_user" class="table table-striped dt-responsive" cellspacing="0" width="100%">
 						<thead>
 							<tr>
-								<th width="10%" th:text="#{view.user.table.heading.id}"></th>
-								<th width="15%" th:text="#{view.user.table.heading.firstName}"></th>
-								<th width="10%" th:text="#{view.user.table.heading.lastName}"></th>
-								<th width="10%" th:text="#{view.user.table.heading.userName}"></th>
-								<th width="20%" th:text="#{view.user.table.heading.domain}"></th>
-								<th width="15%" th:text="#{view.user.table.heading.admin}"></th>
-								<th width="10%" th:text="#{view.user.table.heading.locked}"></th>
-								<th width="10%" th:text="#{view.user.table.heading.active}"></th>
-								<th width="10%" th:text="#{view.user.table.heading.userAccess}"></th>
+								<th th:text="#{view.user.table.heading.id}"></th>
+								<th th:text="#{view.user.table.heading.firstName}"></th>
+								<th th:text="#{view.user.table.heading.lastName}"></th>
+								<th th:text="#{view.user.table.heading.userName}"></th>
+								<th th:text="#{view.user.table.heading.domain}"></th>
+								<th th:text="#{view.user.table.heading.admin}"></th>
+								<th th:text="#{view.user.table.heading.locked}"></th>
+								<th th:text="#{view.user.table.heading.active}"></th>
+								<th th:text="#{view.user.table.heading.userAccess}"></th>
+								<th th:text="#{view.user.table.heading.buttons}"></th>
 							</tr>
 						</thead>
 					</table>
