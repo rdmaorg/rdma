@@ -95,7 +95,7 @@ public class ServerResource extends BaseDataTableResource {
 		return serviceFacade.getMetadataService().findOne(serverId);
 	}
 	
-	/*TEST ONLY for initial table load and column metadata load (see TableResource)
+	/*TEST ONLY : for initial table load and column metadata load for each table - all in one call 
 	 * first Time Tables and Columns creating for selected servers - NO SYNCH NO ACTIVE! */
 	@RequestMapping(value = "/metadata/{id}")
 	public Server getTableMetadataForServerTestOnly(@PathVariable("id") Integer serverId){

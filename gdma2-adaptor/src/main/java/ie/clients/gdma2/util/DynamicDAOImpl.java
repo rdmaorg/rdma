@@ -82,20 +82,6 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 	/**
 	 * Synch Tables for selected Server (double clicked Server in Admin Module) between Remote DB server and GDMA DB server 
-	 * 
-	 * TROUBLESHOOT @Transient dependency usage: 
-	 * 
-	 * loading server will not load Set<Tables> for it. 
-	 * When tables are loaded, be extra careful: do not server.setTable(loaded table set) 
-	 *  because of two-way dependency : 
-	 *  - logger.info("STACK : servet.getTable(): would cause STACK OVERFLOW  : Server.toString()
-	 *  - also, later, in caller getActiveSynchedTablesForServer(), when
-	 *  			server = repositoryManager.getServerRepository().findOne(serverIdParam);
-	 *    ..you try to load Server again, it will NOT query DB, but it will use cache and return sever with set of tables (see:  hibernate session.load() vs hibernate session.get()) 
-	 *    ...so you will end up with
-	 *    	 server->set of tables-> each table -> server -> set of tables...infinity...
-	 *    ...so response sent to client will be invalid 
-	 *   Always check in app log that if DB call is made  
 	 */
 	public void synchTablesForServer(Server server, List<Table> tableList) {
 		// TODO use an AOP trigger for this
@@ -152,7 +138,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 			1.2		NO MATCH - 
 				  Add New Table to result Set of Tables - Create new Entity Table using name of Remote DB, set serverId, set active to TRUE
 
-		2. TABLE NAMES COMPARE (GDMA -> REMOTE), Deleted from GDMA 
+		2. TABLE NAMES COMPARE (GDMA -> REMOTE), DELETED from GDMA 
 
 		-	DELETED table in ‘Maintained’ DB (still existing in ‘Metadata’ DB) 
 
@@ -200,11 +186,11 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 			Table tableGDMA = remoteTableAlreadyExistsInGDMA(tableNameRemote, tablesGDMA);
 			if(tableGDMA != null) {
-				//1.1	 TABLE NAMES MATCH  - remote DB name found lon local
+				//1.1	 TABLE NAMES MATCH
 				logger.info("	remote table: " + tableNameRemote + " is found on local");
 				resolveTablesWithSameNames(tablesSynchResult, tableGDMA, tableNameRemote, server);
 			} else {
-				//1.2	NO MATCH - remote DB name not found on local 
+				//1.2	NO MATCH  
 				logger.info("    remote table:" + tableNameRemote + " not found on local DB");
 				createNewGDMATable(tablesSynchResult, tableNameRemote, server);
 			}
@@ -214,7 +200,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 		//previous double loop is ended, now compare in other direction to detect GDMA tables that don't exist on remote Server - Deleted
 		logger.info("-----------------");
-		resolveDeletedTables(tablesSynchResult, tablesGDMA, tableNameListRemoteDB, server );
+		resolveDeletedTables(tablesSynchResult, tablesGDMA, tableNameListRemoteDB);
 		
 		printSynchResult(tablesSynchResult);
 		return tablesSynchResult;
@@ -298,7 +284,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 	 * @param server
 	 */
 	private void resolveDeletedTables(Set<Table> tablesSynchResult,
-			Set<Table> tablesGDMA, List<String> tableNameListRemoteDB, Server server) {
+			Set<Table> tablesGDMA, List<String> tableNameListRemoteDB) {
 		logger.info("resolveDeletedTables");
 
 		for(Table tableGDMA : tablesGDMA){
@@ -321,7 +307,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 				repositoryManager.getUserAccessRepository().delete(userAcceseList);
 
 				//resolve columns
-				resolveColumnsForDeactivatedTable(tableGDMA, server);
+				resolveColumnsForDeactivatedTable(tableGDMA, tablesGDMA);
 
 			}//if
 		}//for
@@ -330,40 +316,59 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 	/**
 	 * Iterate over all columns on all tables on server,
-	 *  and see if some column from Deactivated Table above is present there as DropDown column, if so : null them
+	 *  and see if some column from Deactivated Table above is present there as DropDown column, if so : null them 
+	 *  save changes
 	 * @param tableDeactiveGDMA
+	 * @param tablesGDMA 
 	 * @param server
 	 */
-	private void resolveColumnsForDeactivatedTable(Table tableDeactiveGDMA, Server server) {
-		logger.info("resolveColumnsForDeactivatedTable");
+	private void resolveColumnsForDeactivatedTable(Table tableDeactiveGDMA, Set<Table> tablesGDMA) {
+		logger.info("resolveColumnsForDeactivatedTable: " + tableDeactiveGDMA.getName());
 
-		Set<Column> columnsDeactiveGDMA = tableDeactiveGDMA.getColumns();
+		//Set<Column> columnsDeactiveGDMA = tableDeactiveGDMA.getColumns();
+		Set<Column> columnsDeactiveGDMA = repositoryManager.getColumnRepository().findByTableId(tableDeactiveGDMA.getId());
 		List<Integer> columnDeactiveIdList = new ArrayList<Integer>();
 		for(Column columnGDMA: columnsDeactiveGDMA){
 			columnDeactiveIdList.add(columnGDMA.getId());
 		}
 
 		//TODO !!! make sure Server -> table -> columns are loaded because of tranzient nature!
-		Set<Table> tablesGDMA = server.getTables();
-
+		//Set<Table> tablesGDMA = server.getTables();
+		logger.info("Number of tables to check against: " + tablesGDMA.size());
+		
+		//locate if any column of inactive table is maybe FK in any other column of any table on the same server
+		//precondition is that step2 resynch column is done and that columns are already there. 
 		for (Table tableGDMA : tablesGDMA) {
-			Set<Column> columnsGDMA = tableGDMA.getColumns();
+			logger.info("tableGDMA.getName(): " + tableGDMA.getName());
+			
+			logger.info("Loading all columns for table...");
+			//Set<Column> columnsGDMA = tableGDMA.getColumns(); EMPTY !!!
+			Set<Column> columnsGDMA = repositoryManager.getColumnRepository().findByTableId(tableGDMA.getId());
+			
 			for (Column col : columnsGDMA) {
-
+				logger.info("columnsGDMA: " + col.getName());
 				for(Integer colDeactiveId : columnDeactiveIdList){
-
 					if (col.getDropDownColumnDisplay() != null && col.getDropDownColumnDisplay().getId() == colDeactiveId){
+						logger.info("colName: " + col.getName());
 						col.setDropDownColumnDisplay(null);
 						col.setDropDownColumnStore(null);
+						logger.info("Removed foreign key reference from column " + col.getName() + " in table: " + tableGDMA.getName());
 					}
 
 					if(col.getDropDownColumnStore() != null && col.getDropDownColumnStore().getId() == colDeactiveId){
 						col.setDropDownColumnDisplay(null);
 						col.setDropDownColumnStore(null);
+						logger.info("Removed foreign key reference from column " + col.getName() + " in table: " + tableGDMA.getName());
 					}
-					logger.info("Removed foreign key reference from column " + col.getName() + " in table: " + tableGDMA.getName());
+					
 				}//for3
 			}//for2
+			
+			//save all updates columns changed
+			logger.info("saving column updates");
+			repositoryManager.getColumnRepository().save(columnsGDMA);
+			logger.info("...saving ended");
+			
 		}//for1
 
 		//TODO - Persist all columns for all tables on server that where just changed!!! - TX

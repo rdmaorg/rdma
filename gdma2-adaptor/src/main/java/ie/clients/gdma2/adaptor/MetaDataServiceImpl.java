@@ -207,6 +207,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		return getPaginatedTableResponse(tables != null ? tables : new ArrayList<Table>(), total, filtered);	
 	}
 
+	/*TODO decide if synch is going to be call only initially or always - on each search attempt*/
 	@Override
 	public PaginatedTableResponse<Table> getActiveSynchedTablesForServer(Integer serverIdParam,
 			String matching, String orderBy, String orderDirection,
@@ -386,7 +387,9 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 	}
 
-	/*paginated Columns for table, special case for ADMIN, see: GdmaAdmin.getColumnsForTable*/
+	/*paginated Columns for table, special case for ADMIN, see: GdmaAdmin.getColumnsForTable
+	 * TODO decide if synch is going to be call only initially or always - on each search attempt*/
+	
 	@Override
 	public PaginatedTableResponse<Column> getActiveSynchedColumnsForTable(
 			Integer tableId, String matching, String orderBy, String orderDirection,int startIndex, int length) {
