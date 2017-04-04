@@ -190,7 +190,7 @@ $(document).ready(function(){
 		});
 	});
 	
-	// Get Connection types
+	//Get Connection types
 	$.ajax({
         type: "get",
         url: restUri.connection.list,
@@ -249,4 +249,5 @@ $(document).ready(function(){
     }).always(function(){
     	hideLoading();
     });
+	
 });
