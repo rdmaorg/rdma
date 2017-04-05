@@ -10,7 +10,10 @@ RECREATING DB ON LOCAL :
 
 ... use 'create-drop' just this one time, and if DB creation is as expected, comment and use 'update' 
  
+=======
+TOMCAT JNDI:
 
+Place gdma2.xml in {CATALINA.HOME}\conf\Catalina\localhost
 =======
 
 	Hibernate logging:
