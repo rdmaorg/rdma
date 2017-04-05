@@ -418,66 +418,203 @@ TEST URLS
 ===============start testing table SYNCH=======================================
 
 
+	
+	
+	
 	****************************************
 	TESTING TABLE SYNCH (used in Admin module)
 	****************************************
+
+- Use sample MySQL DB with data: sampledatabase.sql
+ 	Run on local - this will create fresh DB and populate it 
+
+- Register MYSQL server in GDMA 2 DB  
 	
-open ADPR_TEST DB
 
-	REGISTER NEW SERVER (id=5)
+	REGISTER NEW SERVER (id=6)
 
-	POPULATE NEW SERVER INITIALLY WITH TABLES AND COLUMNS:
-	http://localhost:8080/gdma2/rest/server/metadata/5
+	TEST ONLY: POPULATE NEW SERVER INITIALLY WITH TABLES AND COLUMNS:
+	http://localhost:8080/gdma2/rest/server/metadata/6
 
 CHECK RESULT
-	select * from table_gdma2 where server_id = 5;
+	select * from table_gdma2 where server_id = 6 order by server_id;
 	select count(*) from column_gdma2 where table_id in (
-		select id from table_gdma2 where server_id = 5
-      ) /*238*/
+		select id from table_gdma2 where server_id = 6
+      ) /*114*/
 
+select * from column_gdma2 where table_id in (
+		select id from table_gdma2 where server_id = 6
+      )
+    
 /***************************/	
 
+--DELETE previous test so there are no tables and coluns for serverid = 6
+--Now As Admin load all tablenames for server and save to local DB: 
+
 TESTING SYNCH: 
+ FIRST TIME: 	
+	SYNCH and ACTIVE paginated table for server (in future call only this directly - it will Initially populcate local server with tables)	
+	http://localhost:8080/gdma2/rest/table/6/metadata?length=100
 
+ NEXT TIME: 
   FOR TEST: 
-	DEACTIVATE some table in GDMA from Initial LOAD
-	DELETE SOME TABLE IN REMOTE ADPR DB
-	ADD new TABLE in REMOTE DB
-	
-THEN RUN:
-	http://localhost:8080/gdma2/rest/server/metadata/tablesynch/5
 
-CHECK RESULT: 	
- select * from table_gdma2 where server_id = 5;
+-----------------------------------------------
 
- select count(*) from column_gdma2 where table_id =378;
+a) INITIAL LOAD: 
 
-EXPECTED RESULT: 
-
-Active Synched table list for serverId = 5;	
-	(Try Postaman : http://localhost:8080/gdma2/rest/table/server/5/active )
-
-Based on Synch Rules explained in detail in DynamicDAOImpl.resyncTableList() you should see :
- - OLD DB tables (if they where ACTIVE and still exist in REMOTE DB)
- - OLD DB tables with Timestamp suffix - if they where not Active , also new Rempte DB table name is added now to local
- - NEW DB tables if they they WHERE not present in local DB and menawhile WHERE created on Remote DB
-
- Hibernate will perform 2 tables INSERTs (2 new tables, no columns yet) and
- 2 table Updates -  Existing Tables - deactivated and Name changed
-
-	OPEN Q: How to see Hibenrate ? params in app log??
+ When synch is called for the first time, and there are no local DB Table yet, all remote Tables will be fetched and stored on local. All are active and aliases = names
  	
+id	active	table_alias	name	server_id
+-------------------------------------------
+643	true	offices	offices	6
+644	true	payments	payments	6
+645	true	orderdetails	orderdetails	6
+646	true	orders	orders	6
+647	true	customers	customers	6
+648	true	productlines	productlines	6
+649	true	employees	employees	6
+650	true	products	products	6
 
-REPEATING TEST: 
+-----------------
+b) POST INITIAL LOAD
+
+			GDMA table								REMOTE table
+			-----------------------------------------------
+scenario 1.	A (active)							A(exists)
+	
+For test: identify local active table that exist on remote
+	Active table with same name found:  + tableGDMA.getName() +  keeping old table
+
+-----------
+
+scenario 2. 	B(not active) 							B(exists)
+ 
+ For test:  2.1  after Table resynch, Deactivate table B on local (example table 'payments' for serverId = 6)
+		    UPDATE public.table_gdma2 SET  active=false 	WHERE name = 'payments' and  server_id = 6;
+		   
+		   2.2  run resynch again :  http://localhost:8080/gdma2/rest/table/6/metadata?length=100
+ 
+ RESULT: 
+ a) Table B: 	
+ 		  added Timestamp to name
+ 		  deactivated
+ 
+ b) New Remote table B created on local 
+ 
+
+	id	active	table_alias							name						server_id
+	--------------------------------------------------------------------------------
+	644	false	payments_2017-04-05 17:42:42.212	payments_2017-04-05 17:42:42.212			6
+	...
+	651	true		payments							payments							6
+
+
+----------------
+
+scenario 3. C (Non-existing)				C (New table)
+
+For test:  3.1 after Table resynch, create new Column C on remote DB	
+
+		CREATE TABLE `new_table_test` (
+			  `id` int(11) NOT NULL,
+			  `name` varchar(45) DEFAULT NULL,
+			  `year` varchar(45) DEFAULT NULL,
+			  PRIMARY KEY (`id`)
+			) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+		 3.2  run resynch again :  http://localhost:8080/gdma2/rest/table/6/metadata?length=100
+	
+	RESULT: There are 9 tables now -  New 'new_table_test' table as table C created on local 
+
+			id	active	table_alias	name	server_id
+		------------------------------------------------------	
+		643	true	offices	offices	6
+		644	false	payments	payments_2017-04-05 17:42:42.212	6
+		645	true	orderdetails	orderdetails	6
+		646	true	orders	orders	6
+		647	true	customers	customers	6
+		648	true	productlines	productlines	6
+		649	true	employees	employees	6
+		650	true	products	products	6
+		651	true	payments	payments	6
+		652	true	new_table_test	new_table_test	6
+
+
+---------
+
+scenario 4   D (still exists on local)		Deleted D on Remote
+	
+For test: after Table resynch, Delete D on remote
+
+PRECINDITION  to test 4) you need to have COLUMNS loaded too so make sure resynch columns is done!
+	
+	TableIds: 
+		643 645 646 647 648 649 650 651 644 652
+
+	select * from table_gdma2 where server_id = 6; /*offices*/
+	select * from table_gdma2 where server_id = 6 and id = 643;
+
+		- Resynch COLUMNS for tables 643, 645, 646, 
+		
+			http://localhost:8080/gdma2/rest/column/metadata/table/643?length=200
+			http://localhost:8080/gdma2/rest/column/metadata/table/645?length=200
+			http://localhost:8080/gdma2/rest/column/metadata/table/646?length=200
+
+		select id, active, name,allow_insert, allow_update, displayed, is_nullable, order_by, table_id, column_type,column_type_str, is_nullable, column_size, dd_lookup_display, dd_lookup_store from column_gdma2 where table_id in (
+		select id from table_gdma2 where server_id = 6
+			) and table_id = 646 order by id; 
+
+
+		- then use some column from 643 e.g. 643.city.id as FK in 
+				645: 	 645.dd_lookup_display = 643.city.id (5259), 645.dd_lookup_store =  643.city.id (5259 )
+				646 : 	 646.dd_lookup_display =  643.city.id (5259)   646.dd_lookup_store =  643.city.id (5259)
+		
+
+		 
+	- Now DELETE table 643 on REMOTE DB (offices)
+	 Hit run resynch TABLES again :  http://localhost:8080/gdma2/rest/table/6/metadata?length=100
+		RESULT: - offices is deaactivated 
+		
+		id	active	table_alias	name	server_id
+		---------------------------------------
+		643	false	offices	offices	6
+
+		
+		- 	Check is FK offices.city.id is gone and now is null other 2 tables: 
+			select id, active, name,allow_insert, allow_update, displayed, is_nullable, order_by, table_id, column_type,column_type_str, is_nullable, column_size, dd_lookup_display, dd_lookup_store from column_gdma2 where table_id in (
+		select id from table_gdma2 where server_id = 5
+			) and table_id = 645 order by id; 
+
+	
+			
+	OVERALL scenario 4 RESULT: 
+	a) 
+		Local DB table D is not in remote table list anymore, deactivating table
+		tableGDMA.setActive(false);
+
+		select * from table_gdma2 where server_id = 6;
+				
+	b) Deleting UserAccess for table D - all user access is deleted (if existing )
+	
+	c) resolveColumnsForDeactivatedTable
+		All columns for all tables on local server as loaded and checked if : 		
+		DropDownColumnDisplay and 		DropDownColumnStore are using D.getId() as FK
+		if so, they are null-ed
+	
+	
+	-----
+	
+	REPEATING TEST: 
   DELETE ALL ENTRIES ON SERVER to start TEST again
 
 	/*DELETE COLUMNS for all tables for server 5*/
 	delete from column_gdma2 where table_id in (
-		select id from table_gdma2 where server_id = 5
+		select id from table_gdma2 where server_id = 6
 	)
 	
 	/*DELETE TABLES for server 5*/
-	delete from table_gdma2 where server_id = 5;
+	delete from table_gdma2 where server_id = 6;
 	
 	
 ===============end testing TableSync================
@@ -485,9 +622,11 @@ REPEATING TEST:
   		
   		
   		
-/*****TESTING COLUMN RESYNCH******/
+		
+		
+		/*****TESTING COLUMN RESYNCH******/
 
-PRECONDITION: Table resynch is done
+		PRECONDITION: Table resynch is done
 
 		current precondition URL (will be changed): 	
 STEP 1	http://localhost:8080/gdma2/rest/server/metadata/5
