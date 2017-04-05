@@ -4,8 +4,8 @@ var configureDataTable = function(){
 	var config={
 	        fixedHeader: true,
 			order: [[ 0, "asc" ]],
-			"lengthMenu": [ [25, 50, 100], [25, 50, 100] ],
-			"columnDefs": [ { "orderable": false, "targets": 9 } ],
+			"lengthMenu": [ [10, 25, 50, 100], [10, 25, 50, 100] ],
+			"columnDefs": [ { "orderable": false, "targets": 8 } ],
 			"columns": [
 			            { "data": "id" },
 			            { "data": "firstName" },
@@ -15,7 +15,6 @@ var configureDataTable = function(){
 			            { "data": "admin" },
 			            { "data": "locked" },
 			            { "data": "active" },
-			            { "data": "userAccess" },
 			            { "data": "active","render" : function(data, type, row){ 	
 			            	return '<button class="btn btn-primary btn-xs editUser" data-userid="'+ row.id+ '"><span class="glyphicon glyphicon-pencil"></span> Edit</button>'
 			            	+ '&nbsp;'
@@ -30,7 +29,7 @@ var configureDataTable = function(){
 		complete: function(){
 			//hideLoading();
 			associateDeleteUser();
-			//associateEditUser();
+			associateEditUser();
 			associatePostUser();
 		},
 		error: function(message, e){
@@ -42,9 +41,49 @@ var configureDataTable = function(){
 	tblUserList.off( 'responsive-display');
 	tblUserList.on( 'responsive-display', function ( e, datatable, row) {
 		associateDeleteUser();
+		associateEditUser();
 		associatePostUser();
 	} );
 };
+
+//Edit user data
+var associateEditUser = function(){
+	$('.editUser').click(function(){
+ 		var btn = $(this);
+//		var btn = element;
+//		console.log("Deleting Server Id " + btn.data('serverid'));
+		editUser(btn.data('userid'));
+	})
+};
+
+var editUser = function(userId) {	
+	showLoading();
+	savedUserID = userId;
+	$.ajax({
+        type: "get",
+        url: mapPathVariablesInUrl(restUri.user.item,{userId: userId}),
+        data: { get_param: 'id,firstName,lastName,userName,domain,admin,locked,active' },
+        contentType: "application/json; charset=utf-8",
+        dataType: 'json'
+    }).done(function(data){		
+		$("#name").val(data.name);
+		$("#lastname").val(data.username);
+		$("#username").val(data.password);
+		$("#url").val(data.connectionUrl);
+		$("#admin > [value=" + data.admin + "]").prop('selected', true);
+		$("#locked > [value=" + data.locked + "]").prop('selected', true);
+		$("#active > [value=" + data.active + "]").prop('selected', true);
+		$('#modalServer').modal('show');
+		$("#modalServer").on('shown.bs.modal', function () {
+            $("#name").focus();
+		});
+		associatePostServer();
+    }).fail(function(e){
+    	handleError('#global-alert', e);
+    }).always(function(){
+    	hideLoading();
+    });		 
+}
 
 //Delete user
 var associateDeleteUser = function(){
@@ -99,7 +138,7 @@ var associatePostUser = function(){
 					$.ajax({
 				        type: "post",
 				        url: restUri.user.save,
-				        data: JSON.stringify({id:savedUserID,firstName:name,lastName:lastname,userName:username,domain:url,admin:admin,locked:locked,active:active,userAccess:access}),
+				        data: JSON.stringify([{id:savedUserID,firstName:name,lastName:lastname,userName:username,domain:url,admin:admin,locked:locked,active:active,userAccess:[]}]),				        
 				        contentType: "application/json; charset=utf-8"
 				    }).done(function(data){
 				    	var table = $('#tbl_user').DataTable();

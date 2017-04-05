@@ -13,6 +13,7 @@ var restUri = {
 	user:{
 		list: getRestBaseUri() + '/user/list',
 		table: getRestBaseUri() + '/user/table',
+		item: getRestBaseUri() + '/user/userName={userId}',
 		save: getRestBaseUri() + '/user/save',
 		del: getRestBaseUri() + '/user/delete/{userId}'
 	},

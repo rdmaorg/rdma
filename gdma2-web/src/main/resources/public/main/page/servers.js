@@ -4,7 +4,7 @@ var configureDataTable = function(){
 	var config={
 	        fixedHeader: true,
 			order: [[ 0, "asc" ]],
-			"lengthMenu": [ [25, 50, 100], [25, 50, 100] ],
+			"lengthMenu": [ [10, 25, 50, 100], [10, 25, 50, 100] ],
 			"columnDefs": [ { "orderable": false, "targets": 8 } ],
 			"columns": [
 			            { "data": "id" },
@@ -141,7 +141,7 @@ var associatePostServer = function(){
 					$.ajax({
 				        type: "post",
 				        url: restUri.server.save,
-				        data: JSON.stringify({id:savedServerID,name:name,username:username,password:password,connectionUrl:url,prefix:prefix,active:active,alias:"AAA","connectionType":{"id":connectionType},"tables":[],"connected":false,"lastError":""}),
+				        data: JSON.stringify({id:savedServerID,name:name,username:username,password:password,connectionUrl:url,prefix:prefix,active:active,alias:"","connectionType":{"id":connectionType},"tables":[],"connected":false,"lastError":""}),
 				        contentType: "application/json; charset=utf-8"
 				    }).done(function(data){
 				    	var table = $('#tbl_server').DataTable();
