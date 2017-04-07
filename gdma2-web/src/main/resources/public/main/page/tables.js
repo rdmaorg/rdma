@@ -8,10 +8,9 @@ var configureDataTable = function(){
 			"columns": [
 			            { "data": "id" },
 			            { "data": "name" },
+			            { "data": "alias" },
+			            { "data": "active" },			            
 			            { "data": "name","render" : function(data, type, row){ 
-			            	console.log(row.id);
-			            	console.log('================= /n');
-			            	console.log(row);
 			            	return '<button class="btn btn-primary btn-xs editTable" data-serverid="'+ row.id+ '"><i class="fa fa-pencil-square-o"></i> Edit Access</button>'
 			            	+ '&nbsp;'
 			            	+'<button class="btn btn-info btn-xs viewColumns" data-serverid="'+ row.id+ '"><i class="fa fa-columns"></i> Columns</button>'
@@ -21,7 +20,7 @@ var configureDataTable = function(){
 	};
 
 	$('#tbl_tables').configureDataTable(config, {
-		url: mapPathVariablesInUrl(restUri.table.list_for_server, {serverId: serverSessionId}),
+		url: mapPathVariablesInUrl(restUri.table.table, {id: serverSessionId}),
 		dataSrc: "",
 		complete: function(){
 //		hideLoading();

@@ -174,7 +174,22 @@ var associateViewServer = function(){
 	})
 };
 
+var syncTables = function(serverId){
+	
+	$.ajax({
+        type: "get",
+        url: mapPathVariablesInUrl(restUri.table.sync_table_server,{serverId: serverId}),
+        contentType: "application/json; charset=utf-8",
+    }).done(function(data){
+    }).fail(function(e){
+    	handleError('#global-alert', e);
+    }).always(function(){
+    	hideLoading();
+    });
+}
+
 var viewServer = function(serverId) {
+	syncTables(serverId);
 	sessionStorage.setItem("id",serverId);
 	window.location.href = "tables";
 }
