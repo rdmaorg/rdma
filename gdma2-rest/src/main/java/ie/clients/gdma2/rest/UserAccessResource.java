@@ -1,5 +1,6 @@
 package ie.clients.gdma2.rest;
 
+import ie.clients.gdma2.domain.User;
 import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 
@@ -59,16 +60,27 @@ public class UserAccessResource extends BaseDataTableResource {
 		
 	}
 	
+	/*TEST ONLY - we will not SAVE single UserAccess, initial saving is done through Load see getAccessListForTable() above*/
 	@RequestMapping(value="save", method=RequestMethod.POST)
 	void saveUserAccess(@RequestBody UserAccess userAccess){
 		logger.debug("saveUserAccess for table ans user: " + userAccess.getTable().getName() + ", " + userAccess.getUser().getUserName());
 		serviceFacade.getMetadataService().saveUserAccess(userAccess);
 	}
 	
+	/*update multiple UserAccess entities*/
+	@RequestMapping(value="update", method = RequestMethod.POST)
+	public List<UserAccess> updateUserAccess(@RequestBody List<UserAccess> userAccessList){
+		logger.debug("updatedUserAccess: list of " + userAccessList.size());
+		return serviceFacade.getMetadataService().saveUserAccessList(userAccessList);
+	}
+	
+	/*TEST ONLY - deletion of UserAccess can happen only during table RESYNCH see resolveDeletedTables() in DynamicDAO*/
 	@RequestMapping(value="delete/{id}", method = RequestMethod.DELETE)
 	void deleteUserAccess(@PathVariable("id") Integer id){
 		logger.debug("deleteUserAccess: " + id);
 		serviceFacade.getMetadataService().deleteUserAccess(id);
 	}
+	
+
 	
 }

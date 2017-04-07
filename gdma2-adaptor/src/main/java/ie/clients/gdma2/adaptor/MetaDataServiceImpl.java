@@ -23,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataService {
@@ -451,14 +452,14 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		return IteratorUtils.toList(repositoryManager.getUserAccessRepository().findAll().iterator());
 	}
 
-	/*paginated table of UserAccess by id or user.userName*/
+	/*GENERATE and LOAD UserAccess list per table: paginated table of UserAccess by tableId*/
 	@Override
 	public PaginatedTableResponse<UserAccess> getUserAccessForTable(
 			Integer tableId, String matching, String orderBy,String orderDirection, int startIndex, int length) {
 
 		logger.info("getUserAccessForTable with id: " + tableId);
 
-		
+
 		//getAccessListForTable(tableId);
 		generateUserAccessListForTable(tableId);
 
@@ -475,10 +476,6 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			filtered = total;
 			logger.debug("findALL...getPagingRequest():");
 			PageRequest pagingRequest = getPagingRequest(orderBy, orderDirection, startIndex, length, total);
-
-			//Page<UserAccess> userAccessPages = repositoryManager.getUserAccessRepository().findAll(pagingRequest);
-			//Page<UserAccess> userAccessPages = repositoryManager.getUserAccessRepository().findPaginatedUserAccessByTable(tableId, pagingRequest);
-			//userAccessListForTable = userAccessPages.getContent();
 
 			userAccessListForTable  = repositoryManager.getUserAccessRepository().findPaginatedUserAccessByTable(tableId, pagingRequest);
 			logger.debug("userAccess entries found: " + (null != userAccessListForTable ? userAccessListForTable.size() : "0"));
@@ -501,174 +498,109 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	}
 
 	/**
-	 * LOADING USER_ACESS table 
+	 * LOADING(SAVING)/UPDATING USER_ACESS table
 	 * 
-	 UserAccess list represents list of all Active users on system and their privileges for selected Active table
+	 *  a) LOADING (SAVING default)
+	 *
+	 * UserAccess list represents list of all Active users on system and their privileges for selected Active table.
+	 * 
+	 * RULE: Entries are NEVER created manually (like use Add button to save 1 UA)
+	 * RULE: Loading - DISPLAY - is Saving/generating NEW UA at the same time
+	 * RULE: Once displayed, if edited, on submit UA list is UPDATED 
+	 * 
+	 * In new version of GDMA, we will create users view to add new and activate/deactivate existing users. 
+	 * 
+	   UA view is never empty - it will always create UA for active users and display then for selected table
+	 LOADING is 2 step process :
+	  - All active Users must be displayed in UA view - so create new UA if needed and saveUA  
+	  - loadUAforTable(talbeId)  - read UA table using parent_id (Table.id)
 	 
-	 If NEW Active tables is added on server (tableId = 77) and there are e.g. 40 Active users: UserAccess list would present:
+	 Initiated from table view. 
+	 TODO: check if there are any Active users in system - if not reject request to display UA and inform Admin to create and Active at least 1 user
+	 
+	 If there is at least 1 Active user: start INITIAL LOAD. it will be expensive - we need to create default UA for every active user, saveAll(UA) 
+	 and then findUAforTable(tableId). Display result to end user as list of all active users for table with all privileges default to FALSE;
+	 
+	 2nd Load
+	 After INITIAL LOAD, some user can be deactivated some new may be added, some are as they were. 
+	   OLD ACTIVE : Recognize previously created UA for active user and skip creating new (this will be just loaded in second step)
+	   DEACTIVATED: TODO: On Deactivating user: define UA -  shall we delete all UA, or set all to FALSE or keep as they are.
+	   NEW ACTIVE: 	Create new UA, set all to false and save. In second step this will be loaded too as active
+	  	 
+
+	  INITIAL LOAD:
+	  If NEW Active tables is added on server (tableId = 77) and there are e.g. 40 Active users: UserAccess list would present:
 	   40 user access rows with all values default to FALSE.
-	   
-	 If some users are later deactivated/activated in Users View or added as new, this logic will load existing user access relations but
-	 new one for new users needs to be created too.     
-	
-	Once ACTIVE table is selected from UI and tableId is set, getAccessListForTable is called. 
-	We always iterate trough complete list of registered users. 
-	
-	We check if UserAccess(tableId, UserId) already exists,
+
+	  LATER LOAD for existing tables and new users:
+	  Once Administrator select Active table and asks for list of UserAccess for all Active users
+	 (assuming that several users can be added/activated meanwhile):
+	   	 this logic will load existing user access relations but new one for new users needs to be created, set default privileges to FALSE
+	   	 and return with already existing once.      
+
+		RULE:	We always iterate trough complete list of registered ACTIVE users. 
+
+		We check if UserAccess(tableId, UserId) already exists,
 		if not :  new empty one is created, this means every user on system will have empty user_access child record to table with selected tableId..
 
 		( Here make sure there is constraint set on unique pair (tableId, userId) on every record in UserAccess Table. )
 
-		If UserAccess does not exist :
-		- create new by using parent keys and set all properties to false
-		- get Table by tableId from table Repositoy and add it to child emptyUserAccess.setTable(table);
-		- add newly created empty child to the parent table (check if bidirection is needed at all)
-			table.getUserAccess().add(emptyUserAccess);
-			user.getUserAccess().add(emptyUserAccess);
-				then save parents
-					repositoryManager.getTableRepository().save(table);
-					repositoryManager.getUserAccessRepository().save(emptyUserAccess);
-					and finally add new userAccess to result list
-				   
-				    userAccessList.add(emptyUserAccess);
+		If UserAccess exists ;
+		 	- skip 
+		Else (new one) : 	
+			- create new by using parent key pair and set all privilege properties to FALSE 
+			- load Table and add it to child emptyUserAccess.setTable(table);
+			- add new UA to result list
+			- save complete list save(userAccessList) at the end;	
 			
+	b) UPDATING 
+		After UA view is loaded and Admin edit values in list, on submit List of UA is sent to be UPDATED
+		use separate REST method to:  POST @RequestBody List<UserAccess> userAccessList
 
-		else : user access exist for table	
-			- load table and set existing userAcces on it
-					table.getUserAccess().add(userAccess);
-			 - save table ?? (check if this can be done in one pass)
-					repositoryManager.getTableRepository().save(table);
-			 - add existing userAccess to result list
-					userAccessList.add(userAccess);
-
-		- at the end result list size must be equal to the number of active users
-
-	
 	 * @param tableId
 	 * @return
 	 */
 	@Transactional
-	public List<UserAccess> getAccessListForTable(Integer tableId) {
-		logger.info("getAccessListForTable");
-		//TODO refactore code: load Table only once and save it only once at the end
-		
-		//List<User> userList = gdmaFacade.getUserDao().get();
-		//List<UserAccess> userAccessList = new ArrayList<UserAccess>();  
-
-		//result:
-		List<UserAccess> userAccessList = new ArrayList<UserAccess>();
-		logger.info("loading all active users...");
-		List<User> userList = repositoryManager.getUserRepository().findByActiveTrue();
-
-		for(User user : userList)
-		{
-			//UserAccess userAccess = gdmaFacade.getUserAccessDao().get(tableId, user.getId());
-			UserAccess userAccess = repositoryManager.getUserAccessRepository().findByTableIdAndUserId(tableId, user.getId());
-			if(userAccess == null)
-			{
-				logger.info("user access does not exist for user: " + user.getId() + ", creating new one");
-				Table table = repositoryManager.getTableRepository().findOne(tableId);
-
-				UserAccess emptyUserAccess = new UserAccess();
-				emptyUserAccess.setUser(user);
-				emptyUserAccess.setUser(user);
-				emptyUserAccess.setTable(table);
-				emptyUserAccess.setAllowDisplay(false);
-				emptyUserAccess.setAllowUpdate(false);
-				emptyUserAccess.setAllowInsert(false);
-				emptyUserAccess.setAllowDelete(false);
-
-
-				//Table table = gdmaFacade.getTableDao().get(tableId);
-				emptyUserAccess.setTable(table);
-				table.getUserAccess().add(emptyUserAccess);
-				repositoryManager.getTableRepository().save(table);
-				//gdmaFacade.getTableDao().save(table);
-
-				repositoryManager.getUserAccessRepository().save(emptyUserAccess);
-				//gdmaFacade.getUserAccessDao().save(emptyUserAccess);
-				//emptyUserAccess.getUser().getUserName();
-				userAccessList.add(emptyUserAccess);
-			}
-			else
-			{
-				logger.info("user access exists for user: " + user.getId());
-				//Table table = gdmaFacade.getTableDao().get(tableId);
-				Table table = repositoryManager.getTableRepository().findOne(tableId);
-				table.getUserAccess().add(userAccess);
-				//gdmaFacade.getTableDao().save(table);
-				logger.info("saving existing user access for table...");
-				repositoryManager.getTableRepository().save(table);
-
-				userAccessList.add(userAccess);
-			}  		
-
-		}
-		logger.info("userAccessList size: " + userAccessList.size());
-		return userAccessList;
-
-	}
-	
-	
-	@Transactional
 	public void generateUserAccessListForTable(Integer tableId) {
 		logger.info("generateUserAccessListForTable");
+		
 		long  total = repositoryManager.getUserAccessRepository().countUserAccessForTable(tableId);
 		logger.info("countUserAccessForTable: " + total);
+		
+		//result list, add new UA and save at the end
 		List<UserAccess> userAccessList = new ArrayList<UserAccess>();
+		
 		logger.info("loading all active users...");
 		List<User> userList = repositoryManager.getUserRepository().findByActiveTrue();
-
-		for(User user : userList)
-		{
-			//UserAccess userAccess = gdmaFacade.getUserAccessDao().get(tableId, user.getId());
+		Table table = repositoryManager.getTableRepository().findOne(tableId);
+		
+		for(User user : userList)	{
 			UserAccess userAccess = repositoryManager.getUserAccessRepository().findByTableIdAndUserId(tableId, user.getId());
-			if(userAccess == null)
-			{
+			if(userAccess != null){
+				logger.info("user access exists for user: " + user.getId());
+			} else {
+				//userAccess == null, create new
 				logger.info("user access does not exist for user: " + user.getId() + ", creating new one");
-				Table table = repositoryManager.getTableRepository().findOne(tableId);
-
+				
 				UserAccess emptyUserAccess = new UserAccess();
-				emptyUserAccess.setUser(user);
+				
 				emptyUserAccess.setUser(user);
 				emptyUserAccess.setTable(table);
+				
 				emptyUserAccess.setAllowDisplay(false);
 				emptyUserAccess.setAllowUpdate(false);
 				emptyUserAccess.setAllowInsert(false);
 				emptyUserAccess.setAllowDelete(false);
 
-
-				//Table table = gdmaFacade.getTableDao().get(tableId);
-				//emptyUserAccess.setTable(table);
-				
-				//table.getUserAccess().add(emptyUserAccess); ???
-				//repositoryManager.getTableRepository().save(table); ???
-				//gdmaFacade.getTableDao().save(table);
-
-				//repositoryManager.getUserAccessRepository().save(emptyUserAccess);
-				//gdmaFacade.getUserAccessDao().save(emptyUserAccess);
-				//emptyUserAccess.getUser().getUserName();
 				userAccessList.add(emptyUserAccess);
 			}
-			else
-			{
-				logger.info("user access exists for user: " + user.getId());
-				//Table table = gdmaFacade.getTableDao().get(tableId);
-				//Table table = repositoryManager.getTableRepository().findOne(tableId);
-				//table.getUserAccess().add(userAccess);
-				//gdmaFacade.getTableDao().save(table);
-				//logger.info("saving existing user access for table...");
-				//repositoryManager.getTableRepository().save(table);
 
-				//userAccessList.add(userAccess);
-			}  		
+		}//for
 
-		}
-		
 		logger.info("userAccessList NEW size: " + userAccessList.size());
-		repositoryManager.getUserAccessRepository().save(userAccessList);
-		
-		
+		if(!userAccessList.isEmpty()){
+			repositoryManager.getUserAccessRepository().save(userAccessList);	
+		}
 
 	}
 
@@ -679,6 +611,13 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		repositoryManager.getUserAccessRepository().save(userAccess);
 
 	}
+	
+	@Transactional
+	@Override
+	public List<UserAccess> saveUserAccessList(List<UserAccess> userAccessList) {
+		return IteratorUtils.toList(repositoryManager.getUserAccessRepository().save(userAccessList).iterator());
+	}
+
 
 	@Transactional
 	@Override
@@ -817,9 +756,10 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	@Override
 	public User findOneUser(int id) {
 		return repositoryManager.getUserRepository().findOne(id);
-		
+
 	}
 
-
+	
+	
 
 }
