@@ -62,6 +62,9 @@ public interface UserAccessRepository extends PagingAndSortingRepository<UserAcc
 	public List<UserAccess> findByTableId(int tableId);
 	
 	
+	/*single user access for user on table (tableId, userId) is unique*/
+	public UserAccess findByTableIdAndUserId(int tableId, int userId);
+	
 	/*
 	@Query("select s from Server s where upper(s.name) like ?1 or upper(s.username) like ?1 or upper(s.connectionUrl) like ?1 or upper(s.connectionType.name) like ?1 or upper(s.prefix) like ?1 ")
 	public List<Server> getMatchingServers(String matching, Pageable pageable);

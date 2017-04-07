@@ -51,6 +51,7 @@ public interface MetaDataService {
 			String orderDirection, int startIndex, int length);
 	public void saveUser(User user);
 	public void deleteUser(int id);
+	public User findOneUser(int id);
 	
 	
 	/*Column*/

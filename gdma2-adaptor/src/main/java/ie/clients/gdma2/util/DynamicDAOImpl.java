@@ -250,6 +250,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 			//rename inactive table
 			tableGDMA.setName(tableGDMA.getName() + "_" + timestamp);
+			tableGDMA.setAlias(tableGDMA.getName() + "_" + timestamp);
 			logger.info("inactive table renamed to: " + tableGDMA.getName());
 			//add to result
 			tablesSynchResult.add(tableGDMA);

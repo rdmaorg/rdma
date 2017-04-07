@@ -8,8 +8,6 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserResource extends BaseDataTableResource{
 
 	private static Logger logger = LoggerFactory.getLogger(UserResource.class);
+	private static final String QUERY_PARAM_USER_USERNAME = "username";
 
 	@RequestMapping("list")
 	public List<User> getAllUsers(){
@@ -39,7 +38,7 @@ public class UserResource extends BaseDataTableResource{
 	public PaginatedTableResponse<User> getUserPaginatedTable(@RequestParam Map<String, String> params){
 		logger.debug("*** getUserPaginatedTable()");
 		String orderByColumn = "id";
-		
+
 		switch (getOrderByColumn(params)) {
 		case 0:
 			orderByColumn = "id";
@@ -66,7 +65,7 @@ public class UserResource extends BaseDataTableResource{
 			orderByColumn = "active";
 			break;
 		}
-		
+
 		logger.debug("orderBy column: " + orderByColumn) ;
 		PaginatedTableResponse<User> paginatedTabRespUsers= serviceFacade.getMetadataService().getUsers(
 				getSearchValue(params), 
@@ -74,32 +73,11 @@ public class UserResource extends BaseDataTableResource{
 				getOrderByDirection(params),
 				getStartIndex(params),
 				getLength(params));
-		
+
 		paginatedTabRespUsers.setDraw(getDraw(params));
 		return paginatedTabRespUsers;
 	}
 
-		
-	/*see 16.3.1 Communicating errors to the client, 404 instead of 200 with empty body. Empty page... */
-	/*	http://localhost:8080/gdma2/rest/user/userName=smith.j	*/
-	@RequestMapping(value="/{userName}", method=RequestMethod.GET)
-	public ResponseEntity<User> findUserByUserName(@PathVariable String userName) {
-		logger.debug("*** findUserByUserName: " + userName);
-		List<User> userList = serviceFacade.getMetadataService().findByUserNameIgnoreCase(userName);
-		
-		User user = null;
-		if(userList != null && !userList.isEmpty()){
-			logger.debug("user found!");
-			user = userList.get(0);
-		} else{
-			logger.debug("user NOT found!");
-		}
-		
-		//TODO error handling and empty values
-		HttpStatus status = user != null ? HttpStatus.OK : HttpStatus.NOT_FOUND;
-		return new ResponseEntity<User>(user, status);
-	}
-	
 	/*save/update multiple users*/
 	/*this will support single user save/update if sent as array of length 1  [ { user }]*/
 	@RequestMapping(value="save", method = RequestMethod.POST)
@@ -107,7 +85,7 @@ public class UserResource extends BaseDataTableResource{
 		logger.debug("*** saveUsers()");
 		return serviceFacade.getMetadataService().saveUsers(users);
 	}
-	
+
 	/*delete - check if needed possibly only deactivation - which will be done via save/update*/
 	@RequestMapping(value = "delete/{id}", method = RequestMethod.DELETE) 
 	public void deleteUser(@PathVariable("id") Integer id){
@@ -115,4 +93,32 @@ public class UserResource extends BaseDataTableResource{
 		serviceFacade.getMetadataService().deleteUser(id);
 	}
 	
+	/*get user by ID: 	http://localhost:8080/gdma2/rest/user/id/4 */
+	@RequestMapping(value = "/id/{id}")
+	public User getUser(@PathVariable("id") Integer userId ){
+		logger.info("getUser: " + userId);
+		return serviceFacade.getMetadataService().findOneUser(userId);
+	}
+
+	/*get users by username: 	http://localhost:8080/gdma2/rest/user/name?username=Maurice.A.Nagata@mailinator.com	*/
+	@RequestMapping(value = "name")
+	public List<User> getByUserName(@RequestParam Map<String, String> params){
+		String userName = getUsernameValue(params);
+		logger.debug("getByUserName: " + userName);
+		//TODO make userName unique in DB???
+		List<User> usersWithSameUserNameList = serviceFacade.getMetadataService().findByUserNameIgnoreCase(userName);
+
+		logger.info("userList size: " + (usersWithSameUserNameList != null ? usersWithSameUserNameList.size() : "0"));
+		for (User user : usersWithSameUserNameList) {
+			logger.info("user: " + user.getUserName());
+		}
+		return usersWithSameUserNameList;
+	}
+
+	protected String getUsernameValue(Map<String, String> reqParams) {
+		String val = (reqParams.get(QUERY_PARAM_USER_USERNAME) == null ? "" : reqParams.get(QUERY_PARAM_USER_USERNAME));
+		logger.info(QUERY_PARAM_USER_USERNAME + ": " + val);
+		return val;
+	}
+
 }
