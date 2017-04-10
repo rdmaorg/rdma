@@ -340,18 +340,41 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	}
 
 
-	@Transactional
-	@Override
-	public void saveUser(User user) {
-		repositoryManager.getUserRepository().save(user);
-
-	}
-
+	/**
+	 * save / update users
+	 * if user is updated and deactivated, delete orphan UserAccess entries on all tables for that user 
+	 * scenarios :
+	 *  S1: create new inactive user - INSERT, skip orphan delete
+	 *  S2: create new active user - INSERT, skip orphan delete
+	 *  S3: update existing user - UPDATE:
+	 *  	S3-1: if user activated - DELETE orphans	
+	 *  	S3-2: 	else any other UPDATE - skip orphan delete
+	 */
 	@Transactional
 	@Override
 	public List<User> saveUsers(List<User> userList) {
+		logger.info("saving/updating users");
+		for(User user: userList){
+			int userId = user.getId(); 
+			logger.info("userId: " +  userId);
+			//check if user is INSERT/UPDATE (-1 is for INSERT)
+			if(userId > 0 ){
+				//update
+				logger.info("existing user is UDPATED");
+				User userBeforeUpdate = repositoryManager.getUserRepository().findOne(userId);
+				//existing user is deactivated
+				if(userBeforeUpdate.isActive() == true && user.isActive() == false){
+					logger.info("user is deactivated, deleting user access");
+					repositoryManager.getUserAccessRepository().deleteForUser(userId);
+				}
+			} else {
+				logger.info("NEW user is saved");
+			}
+		}
+		
 		return IteratorUtils.toList(repositoryManager.getUserRepository().save(userList).iterator());		
 	}
+
 
 	@Transactional
 	@Override
@@ -514,19 +537,19 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	 LOADING is 2 step process :
 	  - All active Users must be displayed in UA view - so create new UA if needed and saveUA  
 	  - loadUAforTable(talbeId)  - read UA table using parent_id (Table.id)
-	 
+
 	 Initiated from table view. 
 	 TODO: check if there are any Active users in system - if not reject request to display UA and inform Admin to create and Active at least 1 user
-	 
+
 	 If there is at least 1 Active user: start INITIAL LOAD. it will be expensive - we need to create default UA for every active user, saveAll(UA) 
 	 and then findUAforTable(tableId). Display result to end user as list of all active users for table with all privileges default to FALSE;
-	 
+
 	 2nd Load
 	 After INITIAL LOAD, some user can be deactivated some new may be added, some are as they were. 
 	   OLD ACTIVE : Recognize previously created UA for active user and skip creating new (this will be just loaded in second step)
 	   DEACTIVATED: TODO: On Deactivating user: define UA -  shall we delete all UA, or set all to FALSE or keep as they are.
 	   NEW ACTIVE: 	Create new UA, set all to false and save. In second step this will be loaded too as active
-	  	 
+
 
 	  INITIAL LOAD:
 	  If NEW Active tables is added on server (tableId = 77) and there are e.g. 40 Active users: UserAccess list would present:
@@ -552,7 +575,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			- load Table and add it to child emptyUserAccess.setTable(table);
 			- add new UA to result list
 			- save complete list save(userAccessList) at the end;	
-			
+
 	b) UPDATING 
 		After UA view is loaded and Admin edit values in list, on submit List of UA is sent to be UPDATED
 		use separate REST method to:  POST @RequestBody List<UserAccess> userAccessList
@@ -563,30 +586,35 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	@Transactional
 	public void generateUserAccessListForTable(Integer tableId) {
 		logger.info("generateUserAccessListForTable");
-		
+
 		long  total = repositoryManager.getUserAccessRepository().countUserAccessForTable(tableId);
-		logger.info("countUserAccessForTable: " + total);
-		
+		logger.info("count UserAccess ForTable: " + total);
+
 		//result list, add new UA and save at the end
 		List<UserAccess> userAccessList = new ArrayList<UserAccess>();
-		
+
 		logger.info("loading all active users...");
 		List<User> userList = repositoryManager.getUserRepository().findByActiveTrue();
 		Table table = repositoryManager.getTableRepository().findOne(tableId);
-		
+
+		if(userList == null || userList.isEmpty()){
+			logger.info("WARING: There are not ACTIVE users. Create and activated a user before trying to create UserAccess to this table!");
+			return;
+		}
+
 		for(User user : userList)	{
 			UserAccess userAccess = repositoryManager.getUserAccessRepository().findByTableIdAndUserId(tableId, user.getId());
 			if(userAccess != null){
 				logger.info("user access exists for user: " + user.getId());
 			} else {
 				//userAccess == null, create new
-				logger.info("user access does not exist for user: " + user.getId() + ", creating new one");
-				
+				logger.info("user access does NOT exist for user: " + user.getId() + ", creating new one");
+
 				UserAccess emptyUserAccess = new UserAccess();
-				
+
 				emptyUserAccess.setUser(user);
 				emptyUserAccess.setTable(table);
-				
+
 				emptyUserAccess.setAllowDisplay(false);
 				emptyUserAccess.setAllowUpdate(false);
 				emptyUserAccess.setAllowInsert(false);
@@ -597,7 +625,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 		}//for
 
-		logger.info("userAccessList NEW size: " + userAccessList.size());
+		logger.info("There have been : " + userAccessList.size() + " users, created/activated before last check");
 		if(!userAccessList.isEmpty()){
 			repositoryManager.getUserAccessRepository().save(userAccessList);	
 		}
@@ -611,7 +639,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		repositoryManager.getUserAccessRepository().save(userAccess);
 
 	}
-	
+
 	@Transactional
 	@Override
 	public List<UserAccess> saveUserAccessList(List<UserAccess> userAccessList) {
@@ -759,7 +787,6 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 	}
 
-	
 	
 
 }

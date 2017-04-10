@@ -229,6 +229,26 @@
 			"response": []
 		},
 		{
+			"name": "Users - UPDATE 3 users",
+			"request": {
+				"url": "http://localhost:8080/gdma2/rest/user/save",
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"description": ""
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n  {\n  \t\"id\":110,\n    \"firstName\": \"Eve FALSE\",\n    \"lastName\": \"October\",\n    \"userName\": \"eve.o\",\n    \"domain\": \"TD\",\n    \"admin\": false,\n    \"locked\": false,\n    \"active\": false,\n    \"userAccess\": []\n  },\n  {\n  \t\"id\":111,\n    \"firstName\": \"marta TRUE\",\n    \"lastName\": \"Band\",\n    \"userName\": \"marta.band\",\n    \"domain\": \"ab\",\n    \"admin\": true,\n    \"locked\": true,\n    \"active\": true,\n    \"userAccess\": []\n  },\n  {\n  \t\"id\":112,\n    \"firstName\": \"Shaun FALSE\",\n    \"lastName\": \"Mills\",\n    \"userName\": \"shaun.m\",\n    \"domain\": \"e\",\n    \"admin\": false,\n    \"locked\": false,\n    \"active\": false,\n    \"userAccess\": []\n  }\n]"
+				},
+				"description": "use Ids from previously SAVEd users\nchange names and ACTIVE flag to test UserAccess"
+			},
+			"response": []
+		},
+		{
 			"name": "Users - update single user",
 			"request": {
 				"url": "http://localhost:8080/gdma2/rest/user/save",
@@ -333,7 +353,18 @@
 			"response": []
 		},
 		{
-			"name": "Acces POST - save",
+			"name": "Access - load and create for table_id =13",
+			"request": {
+				"url": "http://localhost:8080/gdma2/rest/access/table/13?length=200 ",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": "create UserAccess for all active Users for table_id = 13"
+			},
+			"response": []
+		},
+		{
+			"name": "Acces POST - save TEST ONLY",
 			"request": {
 				"url": "http://localhost:8080/gdma2/rest/access/save",
 				"method": "POST",

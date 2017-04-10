@@ -9,6 +9,7 @@ import ie.clients.gdma2.domain.UserAccess;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
@@ -64,6 +65,11 @@ public interface UserAccessRepository extends PagingAndSortingRepository<UserAcc
 	
 	/*single user access for user on table (tableId, userId) is unique*/
 	public UserAccess findByTableIdAndUserId(int tableId, int userId);
+
+	/*delete all userAccess on all tables for given user*/
+	@Modifying
+	@Query("delete from UserAccess ua where ua.user.id = ?1")
+	public void deleteForUser(int id);
 	
 	/*
 	@Query("select s from Server s where upper(s.name) like ?1 or upper(s.username) like ?1 or upper(s.connectionUrl) like ?1 or upper(s.connectionType.name) like ?1 or upper(s.prefix) like ?1 ")

@@ -49,7 +49,7 @@ public interface MetaDataService {
 	public List<User> saveUsers(List<User> userList);
 	public PaginatedTableResponse<User> getUsers(String matching, String orderBy,
 			String orderDirection, int startIndex, int length);
-	public void saveUser(User user);
+	
 	public void deleteUser(int id);
 	public User findOneUser(int id);
 	

@@ -1,6 +1,5 @@
 package ie.clients.gdma2.rest;
 
-import ie.clients.gdma2.domain.User;
 import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 
