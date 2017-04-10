@@ -154,6 +154,28 @@
 			"response": []
 		},
 		{
+			"name": "User getByUsername ",
+			"request": {
+				"url": "http://localhost:8080/gdma2/rest/user/name?username=Maurice.A.Nagata@mailinator.com",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": "username = Maurice.A.Nagata@mailinator.com"
+			},
+			"response": []
+		},
+		{
+			"name": "USER getById 5",
+			"request": {
+				"url": "http://localhost:8080/gdma2/rest/user/id/5",
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"description": ""
+			},
+			"response": []
+		},
+		{
 			"name": "USER get active",
 			"request": {
 				"url": "http://localhost:8080/gdma2/rest/user/listactive",

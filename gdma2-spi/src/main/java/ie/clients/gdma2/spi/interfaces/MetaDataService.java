@@ -51,6 +51,7 @@ public interface MetaDataService {
 			String orderDirection, int startIndex, int length);
 	public void saveUser(User user);
 	public void deleteUser(int id);
+	public User findOneUser(int id);
 	
 	
 	/*Column*/
@@ -69,6 +70,7 @@ public interface MetaDataService {
 	public PaginatedTableResponse<UserAccess> getUserAccessForTable(Integer tableId, String matching, String orderBy,
 			String orderDirection, int startIndex, int length);
 	public void saveUserAccess(UserAccess userAccess);
+	public List<UserAccess> saveUserAccessList(List<UserAccess> userAccessList);
 	public void deleteUserAccess(Integer id);
 
 	

@@ -23,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataService {
@@ -299,7 +300,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 	@Override
 	public List<User> getAllActiveUsers() {
-		return IteratorUtils.toList(repositoryManager.getUserRepository().findByActiveTrue().iterator());
+		return repositoryManager.getUserRepository().findByActiveTrue();
 	}
 
 	@Override
@@ -389,7 +390,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 	/*paginated Columns for table, special case for ADMIN, see: GdmaAdmin.getColumnsForTable
 	 * TODO decide if synch is going to be call only initially or always - on each search attempt*/
-	
+
 	@Override
 	public PaginatedTableResponse<Column> getActiveSynchedColumnsForTable(
 			Integer tableId, String matching, String orderBy, String orderDirection,int startIndex, int length) {
@@ -397,7 +398,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 		//synch tables first
 		synhronizeColumnsForTable(tableId);
-		
+
 		logger.debug("...get ACTIVE Synched Colulmns now");
 
 
@@ -451,26 +452,16 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		return IteratorUtils.toList(repositoryManager.getUserAccessRepository().findAll().iterator());
 	}
 
-	/*paginated table of UserAccess by id or user.userName*/
+	/*GENERATE and LOAD UserAccess list per table: paginated table of UserAccess by tableId*/
 	@Override
 	public PaginatedTableResponse<UserAccess> getUserAccessForTable(
 			Integer tableId, String matching, String orderBy,String orderDirection, int startIndex, int length) {
 
 		logger.info("getUserAccessForTable with id: " + tableId);
 
-		//TODO see complete impl of GdmaAdminAjaxFacade.getAccessListForTable(Long tableId) add make complete logic  */ 
-		/* load table and all users, iterrate over each user
-		 * if 	userAccess for(tableId, userId) does not exist 
-		 *      create one and set default flags to false
-		 *      set if to parent and save if (maybe remove Bidirect...)
-		 *      add to list   
-		 *   else 
-		 *      set to parent if needed
-		 *      add to list
-		 *  
-		 * end: userAccess now exist for tableId and each user     
-		 * 
-		 */
+
+		//getAccessListForTable(tableId);
+		generateUserAccessListForTable(tableId);
 
 		Table table = null;
 		List<UserAccess> userAccessListForTable = null;
@@ -485,10 +476,6 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			filtered = total;
 			logger.debug("findALL...getPagingRequest():");
 			PageRequest pagingRequest = getPagingRequest(orderBy, orderDirection, startIndex, length, total);
-
-			//Page<UserAccess> userAccessPages = repositoryManager.getUserAccessRepository().findAll(pagingRequest);
-			//Page<UserAccess> userAccessPages = repositoryManager.getUserAccessRepository().findPaginatedUserAccessByTable(tableId, pagingRequest);
-			//userAccessListForTable = userAccessPages.getContent();
 
 			userAccessListForTable  = repositoryManager.getUserAccessRepository().findPaginatedUserAccessByTable(tableId, pagingRequest);
 			logger.debug("userAccess entries found: " + (null != userAccessListForTable ? userAccessListForTable.size() : "0"));
@@ -510,12 +497,127 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 	}
 
+	/**
+	 * LOADING(SAVING)/UPDATING USER_ACESS table
+	 * 
+	 *  a) LOADING (SAVING default)
+	 *
+	 * UserAccess list represents list of all Active users on system and their privileges for selected Active table.
+	 * 
+	 * RULE: Entries are NEVER created manually (like use Add button to save 1 UA)
+	 * RULE: Loading - DISPLAY - is Saving/generating NEW UA at the same time
+	 * RULE: Once displayed, if edited, on submit UA list is UPDATED 
+	 * 
+	 * In new version of GDMA, we will create users view to add new and activate/deactivate existing users. 
+	 * 
+	   UA view is never empty - it will always create UA for active users and display then for selected table
+	 LOADING is 2 step process :
+	  - All active Users must be displayed in UA view - so create new UA if needed and saveUA  
+	  - loadUAforTable(talbeId)  - read UA table using parent_id (Table.id)
+	 
+	 Initiated from table view. 
+	 TODO: check if there are any Active users in system - if not reject request to display UA and inform Admin to create and Active at least 1 user
+	 
+	 If there is at least 1 Active user: start INITIAL LOAD. it will be expensive - we need to create default UA for every active user, saveAll(UA) 
+	 and then findUAforTable(tableId). Display result to end user as list of all active users for table with all privileges default to FALSE;
+	 
+	 2nd Load
+	 After INITIAL LOAD, some user can be deactivated some new may be added, some are as they were. 
+	   OLD ACTIVE : Recognize previously created UA for active user and skip creating new (this will be just loaded in second step)
+	   DEACTIVATED: TODO: On Deactivating user: define UA -  shall we delete all UA, or set all to FALSE or keep as they are.
+	   NEW ACTIVE: 	Create new UA, set all to false and save. In second step this will be loaded too as active
+	  	 
+
+	  INITIAL LOAD:
+	  If NEW Active tables is added on server (tableId = 77) and there are e.g. 40 Active users: UserAccess list would present:
+	   40 user access rows with all values default to FALSE.
+
+	  LATER LOAD for existing tables and new users:
+	  Once Administrator select Active table and asks for list of UserAccess for all Active users
+	 (assuming that several users can be added/activated meanwhile):
+	   	 this logic will load existing user access relations but new one for new users needs to be created, set default privileges to FALSE
+	   	 and return with already existing once.      
+
+		RULE:	We always iterate trough complete list of registered ACTIVE users. 
+
+		We check if UserAccess(tableId, UserId) already exists,
+		if not :  new empty one is created, this means every user on system will have empty user_access child record to table with selected tableId..
+
+		( Here make sure there is constraint set on unique pair (tableId, userId) on every record in UserAccess Table. )
+
+		If UserAccess exists ;
+		 	- skip 
+		Else (new one) : 	
+			- create new by using parent key pair and set all privilege properties to FALSE 
+			- load Table and add it to child emptyUserAccess.setTable(table);
+			- add new UA to result list
+			- save complete list save(userAccessList) at the end;	
+			
+	b) UPDATING 
+		After UA view is loaded and Admin edit values in list, on submit List of UA is sent to be UPDATED
+		use separate REST method to:  POST @RequestBody List<UserAccess> userAccessList
+
+	 * @param tableId
+	 * @return
+	 */
+	@Transactional
+	public void generateUserAccessListForTable(Integer tableId) {
+		logger.info("generateUserAccessListForTable");
+		
+		long  total = repositoryManager.getUserAccessRepository().countUserAccessForTable(tableId);
+		logger.info("countUserAccessForTable: " + total);
+		
+		//result list, add new UA and save at the end
+		List<UserAccess> userAccessList = new ArrayList<UserAccess>();
+		
+		logger.info("loading all active users...");
+		List<User> userList = repositoryManager.getUserRepository().findByActiveTrue();
+		Table table = repositoryManager.getTableRepository().findOne(tableId);
+		
+		for(User user : userList)	{
+			UserAccess userAccess = repositoryManager.getUserAccessRepository().findByTableIdAndUserId(tableId, user.getId());
+			if(userAccess != null){
+				logger.info("user access exists for user: " + user.getId());
+			} else {
+				//userAccess == null, create new
+				logger.info("user access does not exist for user: " + user.getId() + ", creating new one");
+				
+				UserAccess emptyUserAccess = new UserAccess();
+				
+				emptyUserAccess.setUser(user);
+				emptyUserAccess.setTable(table);
+				
+				emptyUserAccess.setAllowDisplay(false);
+				emptyUserAccess.setAllowUpdate(false);
+				emptyUserAccess.setAllowInsert(false);
+				emptyUserAccess.setAllowDelete(false);
+
+				userAccessList.add(emptyUserAccess);
+			}
+
+		}//for
+
+		logger.info("userAccessList NEW size: " + userAccessList.size());
+		if(!userAccessList.isEmpty()){
+			repositoryManager.getUserAccessRepository().save(userAccessList);	
+		}
+
+	}
+
+
 	@Transactional
 	@Override
 	public void saveUserAccess(UserAccess userAccess) {
 		repositoryManager.getUserAccessRepository().save(userAccess);
 
 	}
+	
+	@Transactional
+	@Override
+	public List<UserAccess> saveUserAccessList(List<UserAccess> userAccessList) {
+		return IteratorUtils.toList(repositoryManager.getUserAccessRepository().save(userAccessList).iterator());
+	}
+
 
 	@Transactional
 	@Override
@@ -632,7 +734,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		dynamicDAO.synchTablesForServer(server, tableList); 
 	}
 
-	
+
 	/**
 	 * Transactional changes regarding : 
 	 * - after synch there can be: INSERT of new remote columns in local GDMA table 
@@ -643,13 +745,20 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	@Transactional
 	private void synhronizeColumnsForTable(Integer tableId){
 		logger.info("synhronizeColumnsForTable: " + tableId);
-		
+
 		Table table = repositoryManager.getTableRepository().findOne(tableId); //loading table, no columns
 		Server server = table.getServer(); //loading only server and connection type, no tables
 		Set<Column> columns = repositoryManager.getColumnRepository().findByTableId(tableId);
 		dynamicDAO.synchColumnsForTable(server, table, columns);
-		
+
 	}
+
+	@Override
+	public User findOneUser(int id) {
+		return repositoryManager.getUserRepository().findOne(id);
+
+	}
+
 	
 	
 

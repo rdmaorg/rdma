@@ -29,7 +29,7 @@ public interface UserDao {
 public interface UserRepository extends PagingAndSortingRepository<User, Integer>{
 
 	/*find all ACTIVE=true users*/
-	public Iterable<User> findByActiveTrue();
+	public List<User> findByActiveTrue();
 	
 	/*find by userName - will not be called by REST client but authentication services*/
 	/*TODO post execution: also check is user is ACTIVE - or combine e.g. findByUserNameIgnoreCaseAndActiveTrue()*/
