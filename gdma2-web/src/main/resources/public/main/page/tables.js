@@ -20,7 +20,7 @@ var configureDataTable = function(){
 	};
 
 	$('#tbl_tables').configureDataTable(config, {
-		url: mapPathVariablesInUrl(restUri.table.table, {id: serverSessionId}),
+		url: mapPathVariablesInUrl(restUri.table.list_for_server, {serverId: serverSessionId}),
 		dataSrc: "",
 		complete: function(){
 //		hideLoading();

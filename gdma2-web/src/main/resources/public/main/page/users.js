@@ -16,7 +16,7 @@ var configureDataTable = function(){
 			            { "data": "locked" },
 			            { "data": "active" },
 			            { "data": "active","render" : function(data, type, row){ 	
-			            	return '<button class="btn btn-primary btn-xs editUser" data-userid="'+ row.id+ '"><span class="glyphicon glyphicon-pencil"></span> Edit</button>'
+			            	return '<button class="btn btn-primary btn-xs editUser" data-userid="'+ row.id +'"><span class="glyphicon glyphicon-pencil"></span> Edit</button>'
 			            	+ '&nbsp;'
 			            	+'<button class="btn btn-warning btn-xs deleteUser" data-userid="'+ row.id+ '"><span class="glyphicon glyphicon-remove"></span> Delete</button>';
 			            	} 
@@ -51,14 +51,13 @@ var associateEditUser = function(){
 	$('.editUser').click(function(){
  		var btn = $(this);
 //		var btn = element;
-//		console.log("Deleting Server Id " + btn.data('serverid'));
+//		console.log("Deleting Server Id " + btn.data('username'));
 		editUser(btn.data('userid'));
 	})
 };
 
 var editUser = function(userId) {	
 	showLoading();
-	savedUserID = userId;
 	$.ajax({
         type: "get",
         url: mapPathVariablesInUrl(restUri.user.item,{userId: userId}),
@@ -66,18 +65,18 @@ var editUser = function(userId) {
         contentType: "application/json; charset=utf-8",
         dataType: 'json'
     }).done(function(data){		
-		$("#name").val(data.name);
-		$("#lastname").val(data.username);
-		$("#username").val(data.password);
-		$("#url").val(data.connectionUrl);
+		$("#name").val(data.firstName);
+		$("#lastname").val(data.lastName);
+		$("#username").val(data.userName);
+		$("#url").val(data.domain);
 		$("#admin > [value=" + data.admin + "]").prop('selected', true);
 		$("#locked > [value=" + data.locked + "]").prop('selected', true);
 		$("#active > [value=" + data.active + "]").prop('selected', true);
-		$('#modalServer').modal('show');
-		$("#modalServer").on('shown.bs.modal', function () {
+		$('#modalUser').modal('show');
+		$("#modalUser").on('shown.bs.modal', function () {
             $("#name").focus();
 		});
-		associatePostServer();
+		savedUserID = data.id;
     }).fail(function(e){
     	handleError('#global-alert', e);
     }).always(function(){

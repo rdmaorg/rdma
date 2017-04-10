@@ -23,9 +23,7 @@
 					<thead>
 						<tr>
 							<th width="10%" th:text="#{view.table.table.heading.id}"></th>
-							<th width="35%" th:text="#{view.table.table.heading.name}"></th>
-							<th width="20%" th:text="#{view.table.table.heading.alias}"></th>
-							<th width="20%" th:text="#{view.table.table.heading.active}"></th>
+							<th width="65%" th:text="#{view.table.table.heading.name}"></th>
 							<th width="15%" class="bootstro" data-bootstro-content="Edit or Delete a Server connection" 
 								data-bootstro-width="400px" data-bootstro-placement="bottom" 
 								data-bootstro-step="2" th:text="#{view.table.table.heading.buttons}"></th>
