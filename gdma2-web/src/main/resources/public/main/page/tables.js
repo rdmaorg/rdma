@@ -20,7 +20,7 @@ var configureDataTable = function(){
 	};
 
 	$('#tbl_tables').configureDataTable(config, {
-		url: mapPathVariablesInUrl(restUri.table.list_for_server, {serverId: serverSessionId}),
+		url: mapPathVariablesInUrl(restUri.table.table, {id: serverSessionId}),
 		dataSrc: "",
 		complete: function(){
 //		hideLoading();
@@ -30,7 +30,22 @@ var configureDataTable = function(){
 
 
 $(document).ready(function(){
-	configureDataTable();
+	configureDataTable();	
+	//Get Connection types
+	$.ajax({
+        type: "get",
+        url: mapPathVariablesInUrl(restUri.server.item,{serverId: serverSessionId}),
+        data: { get_param: 'name' },
+        contentType: "application/json; charset=utf-8",
+        dataType: 'json'
+    }).done(function(data){
+    	var serverName = data.name;
+    	$("#serverName").html(serverName);
+    }).fail(function(e){
+    	handleError('#global-alert', e);
+    }).always(function(){
+    	hideLoading();
+    });
 	
 	//Get Connection types
 	$.ajax({
