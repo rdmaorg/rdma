@@ -16,6 +16,12 @@
 					<span th:text="#{view.table.heading}"></span>
 				</h1>				
 	      		<div th:replace="inc/spinner"></div>
+	      		<div class="row">
+					<div class="col-md-12">
+						<button type="button" id="addServer" class="btn btn-primary pull-right bootstro" data-bootstro-content="You can connect into a Server" data-bootstro-width="400px" data-bootstro-placement="bottom" data-bootstro-step="1" data-toggle="modal" data-target="#modalServer"><i class="fa fa-database"></i> Insert Server</button>
+					</div>					
+					<div th:replace="inc/modalUserAccess"></div>
+				</div>
 		  </section>
 		  <!-- Main content -->
 			<section class="content">
@@ -32,6 +38,7 @@
 						</tr>
 					</thead>
 				</table>
+				
 			</section>
 		</div>
 

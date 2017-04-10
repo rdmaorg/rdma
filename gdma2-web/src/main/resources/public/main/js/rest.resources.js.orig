@@ -13,16 +13,19 @@ var restUri = {
 	user:{
 		list: getRestBaseUri() + '/user/list',
 		table: getRestBaseUri() + '/user/table',
-		item: getRestBaseUri() + '/user/id/{userId}',
+		item: getRestBaseUri() + '/user/userName={userId}',
 		save: getRestBaseUri() + '/user/save',
 		del: getRestBaseUri() + '/user/delete/{userId}'
 	},
 	table:{
 		list: getRestBaseUri() + '/table/list',
 		list_for_server_active: getRestBaseUri() + '/table/server/{serverId}/active',
-		list_for_server: getRestBaseUri() + '/table/server/{serverId}/table/list',
-		table: getRestBaseUri() + '/table/table',
+		sync_table_server: getRestBaseUri() + '/table/{serverId}/metadata',
+		table: getRestBaseUri() + '/table/server/{id}/table/list',
 		save: getRestBaseUri() + '/table/save'
+	},
+	userAcces:{
+		table: getRestBaseUri() + '/access/table/{id}'
 	},
 	connection:{
 		list: getRestBaseUri() + '/connection/list',

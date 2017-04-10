@@ -24,6 +24,9 @@ var restUri = {
 		table: getRestBaseUri() + '/table/server/{id}/table/list',
 		save: getRestBaseUri() + '/table/save'
 	},
+	userAcces:{
+		table: getRestBaseUri() + '/access/table/{id}'
+	},
 	connection:{
 		list: getRestBaseUri() + '/connection/list',
 		table: getRestBaseUri() + '/connection/table',
