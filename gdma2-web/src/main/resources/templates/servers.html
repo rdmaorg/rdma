@@ -10,7 +10,12 @@
 	      <div th:replace="inc/alerts"></div>	
 		  <!-- Content Header (Page header) -->
 		  <section class="content-header">
-				<h1 th:text="#{view.server.heading}"></h1>				
+				<h2>
+					<span th:text="#{view.home.admin}"></span>
+				</h2>	
+				<h1>
+					<span th:text="#{view.server.heading}"></span>
+				</h1>
 	      		<div th:replace="inc/spinner"></div>
 				<div class="row">
 					<div class="col-md-12">
@@ -32,7 +37,7 @@
 								<th th:text="#{view.server.table.heading.connectionType}"></th>
 								<th th:text="#{view.server.table.heading.prefix}"></th>
 								<th th:text="#{view.server.table.heading.active}"></th>
-								<th class="bootstro" data-bootstro-content="Edit or Delete a Server connection" data-bootstro-width="400px" data-bootstro-placement="bottom" data-bootstro-step="2" th:text="#{view.server.table.heading.buttons}"></th>
+								<th class="bootstro" data-bootstro-content="Edit or Delete a Server connection" data-bootstro-width="400px" data-bootstro-placement="left" data-bootstro-step="2" th:text="#{view.server.table.heading.buttons}"></th>
 							</tr>
 						</thead>
 					</table>

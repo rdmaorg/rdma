@@ -17,3 +17,17 @@
 	-moz-box-shadow: inset 1px 1px 5px 0px rgba(0,0,0,0.16);
 	box-shadow: inset 1px 1px 5px 0px rgba(0,0,0,0.16);
 }
+
+.treeview {
+	cursor: pointer;
+}
+
+.content-header>h1 {
+	font-size:24px;
+	margin-bottom:15px
+	
+}
+.content-header>h2 {
+	font-size:14px;
+	margin-top:0;
+}
