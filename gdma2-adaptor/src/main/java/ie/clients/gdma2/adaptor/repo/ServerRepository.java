@@ -1,12 +1,14 @@
 package ie.clients.gdma2.adaptor.repo;
 
+import ie.clients.gdma2.domain.Server;
+import ie.clients.gdma2.domain.UserAccess;
+
 import java.util.List;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
-
-import ie.clients.gdma2.domain.Server;
+import org.springframework.data.repository.query.Param;
 
 public interface ServerRepository extends PagingAndSortingRepository<Server, Integer> {
 	
@@ -27,4 +29,21 @@ public interface ServerRepository extends PagingAndSortingRepository<Server, Int
 	public List<Server> getServerTableColumnListForDDDropdown();
 	*/
 
+	
+	/*
+	@Query("SELECT t FROM TopupType t join t.topupTypeCategoryPermissions c WHERE (c.enabled = 'true' and LOWER(c.topupCategory.name) = LOWER(:categoryName))")
+	public List<TopupType> findByCategoryPermissionsName(@Param("categoryName") String categoryName);
+	*/
+	
+	/*join from child to parent entities, don't use fetch because of error: 'owner of the fetched association was not present in the select list'*/
+	@Query("select s from UserAccess ua "
+			+ "	inner join ua.user us "
+			+ " inner join ua.table t "
+			+ " inner join t.server s "
+			+ " where UPPER(us.userName) = UPPER(:userName) "
+			+ " and ua.allowDisplay = TRUE "
+			+ " and t.active = TRUE and s.active = TRUE")
+	public List<Server> activeServersWithActiveTablesForUser(@Param("userName") String userName);
+	
+	
 }

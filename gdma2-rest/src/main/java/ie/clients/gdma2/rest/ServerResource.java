@@ -1,8 +1,7 @@
 package ie.clients.gdma2.rest;
 
-import ie.clients.gdma2.domain.Column;
 import ie.clients.gdma2.domain.Server;
-import ie.clients.gdma2.domain.Table;
+import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 
 import java.util.List;
@@ -102,5 +101,10 @@ public class ServerResource extends BaseDataTableResource {
 		logger.info("getTableMetadataForServer:" + serverId);
 		return serviceFacade.getMetadataService().getTablesMetadataForServerTestOnly(serverId);
 	}
-	
+
+	/*list all active servers and active tables for registered user*/
+	@RequestMapping(value = "/data/tables")
+	public List<Server> getActiveTablesForActiveServer(@RequestParam Map<String, String> params){
+		return serviceFacade.getDataModuleService().getServerTableList();
+	}
 }
