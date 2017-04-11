@@ -42,8 +42,9 @@
 		container = jQuery(this);
 		opts = getOptions(opts);
 		var cfg = {
-			"processing" : true,
-			"stateSave" : true,
+		    fixedHeader: true,
+		    "processing" : true,
+			"stateSave" : false,
 			"stateDuration" : -1,
 			"pageLength" : 10,
 			"lengthMenu": [ [10, 25, 50, -1], [10, 25, 50, "All"] ],

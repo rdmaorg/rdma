@@ -2,10 +2,10 @@ var savedServerID = -1;
 var configureDataTable = function(){
 	
 	var config={
-	        fixedHeader: true,
 			order: [[ 0, "asc" ]],
 			"lengthMenu": [ [10, 25, 50, 100], [10, 25, 50, 100] ],
-			"columnDefs": [ { "orderable": false, "targets": 8 } ],
+			"columnDefs": [ { className: "text-center", "targets": [8] },
+			                { "orderable": false, "targets": 8 } ],
 			"columns": [
 			            { "data": "id" },
 			            { "data": "name" },
@@ -111,8 +111,11 @@ var deleteServer = function(serverId) {
         contentType: "application/json; charset=utf-8"
     }).done(function(data){
     	var table = $('#tbl_server').DataTable();
-    	table.destroy();
-    	configureDataTable();
+    	table.draw(false);
+    	$("#global-success").slideDown(500);
+    	window.setTimeout(function() {
+    		$("#global-success").slideUp(500);
+    	}, 4000);
     }).fail(function(e){
     	handleError('#global-alert', e);
     }).always(function(){
@@ -145,8 +148,11 @@ var associatePostServer = function(){
 				        contentType: "application/json; charset=utf-8"
 				    }).done(function(data){
 				    	var table = $('#tbl_server').DataTable();
-				    	table.destroy();
-				    	configureDataTable();
+				    	table.draw(false);
+				    	$("#global-success").slideDown(500);
+				    	window.setTimeout(function() {
+				    		$("#global-success").slideUp(500);
+				    	}, 4000);
 				    	savedServerID = -1;
 				    }).fail(function(e){
 				    	handleError('#global-alert', e);

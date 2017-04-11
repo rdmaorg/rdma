@@ -7,9 +7,10 @@
 		<header th:replace="inc/contentHeader"></header>
 		<aside th:replace="inc/leftPanel"></aside>		
 		<div class="content-wrapper" style="min-height: 368px;">
-	      <div th:replace="inc/alerts"></div>	
 		  <!-- Content Header (Page header) -->
 		  <section class="content-header">
+	      	<div th:replace="inc/alerts"></div>	
+	      	<div th:replace="inc/success"></div>	
 				<h2>
 					<span th:text="#{view.home.admin}"></span>
 				</h2>	

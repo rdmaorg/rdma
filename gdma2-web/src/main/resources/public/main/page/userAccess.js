@@ -1,7 +1,8 @@
 var configureUserAccessDatatable = function(){
 	var config={
 		        fixedHeader: true,
-				"destroy": true,
+				"destroy": true, 
+				"columnDefs": [ { className: "text-center", "targets": [3, 4, 5, 6] } ],
 				"lengthMenu": [ [10, 25, 50, 100], [10, 25, 50, 100] ],
 				"columns": [
 				            { "data": "id" },

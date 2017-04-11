@@ -3,6 +3,7 @@ var configureDataTable = function(){
 	
 	var config={
 	        fixedHeader: true,
+	        stateSave: false,
 			order: [[ 0, "asc" ]],
 			"lengthMenu": [ [10, 25, 50, 100], [10, 25, 50, 100] ],
 			"columnDefs": [ { "orderable": false, "targets": 8 } ],
@@ -94,20 +95,23 @@ var associateDeleteUser = function(){
 			var btn = element;
 //			console.log("Deleting Server Id " + btn.data('serverid'));
 			deleteUser(btn.data('userid'));
+			event.preventDefault();
 		}
 	});
 };
 
 var deleteUser = function(userId) {
-	userId
 	$.ajax({
         type: "delete",
         url: mapPathVariablesInUrl(restUri.user.del,{userId: userId}),
         contentType: "application/json; charset=utf-8"
     }).done(function(data){
     	var table = $('#tbl_user').DataTable();
-    	table.destroy();
-    	configureDataTable();
+    	table.draw(false);
+    	$("#global-success").slideDown(500);
+    	window.setTimeout(function() {
+    		$("#global-success").slideUp(500);
+    	}, 4000);
     }).fail(function(e){
     	handleError('#global-alert', e);
     }).always(function(){
@@ -141,8 +145,11 @@ var associatePostUser = function(){
 				        contentType: "application/json; charset=utf-8"
 				    }).done(function(data){
 				    	var table = $('#tbl_user').DataTable();
-				    	table.destroy();
-				    	configureDataTable();
+				    	table.draw(false);
+				    	$("#global-success").slideDown(500);
+				    	window.setTimeout(function() {
+				    		$("#global-success").slideUp(500);
+				    	}, 4000);
 				    	savedServerID = -1;
 				    }).fail(function(e){
 				    	handleError('#global-alert', e);
@@ -150,6 +157,7 @@ var associatePostUser = function(){
 				    	hideLoading();
 						$('#modalUser').modal('hide');
 				    });
+					event.preventDefault();
 				}
 			});	
 			$(this).confirmation('show');
