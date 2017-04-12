@@ -1,5 +1,11 @@
 var changedCheckboxes = new Object();
 var origCheckboxes = new Object();
+
+var initiateModalUserAccess = function() {
+	changedCheckboxes = new Object();
+	$('#tableName').html('<b>&nbsp'+ selectedTableName+'</b>');
+	configureUserAccessDatatable();
+}
 var configureUserAccessDatatable = function() {
 	var config = {
 		fixedHeader : true,
@@ -70,7 +76,6 @@ var configureUserAccessDatatable = function() {
 			// hideLoading();
 			associateCheckBoxes();
 			associateSaveUserAccess();
-			changedCheckboxes = new Object();
 		},
 		error : function(message, e) {
 			console.error("ERROR: " + JSON.stringify(e));
@@ -131,20 +136,17 @@ var objectChanged = function(origObject, newObject) {
 
 var associateSaveUserAccess = function() {
 	$("#save-userAccess").click(function() {
-		showLoading();
 		var list = getModifiedObjects();
 		if (list.length > 0) {
 			$.ajax({
 				type : "post",
 				url : restUri.userAcces.update,
-				data : list,
+				data : JSON.stringify(list),
 				contentType : "application/json; charset=utf-8"
 			}).done(function(data) {
 
 			}).fail(function(e) {
-				handleError('#global-alert', e);
 			}).always(function() {
-				hideLoading();
 				$('#modalUserAccess').modal('hide');
 			});
 		}
@@ -152,9 +154,11 @@ var associateSaveUserAccess = function() {
 }
 
 var getModifiedObjects = function() {
-	var list = [];
+	var list = new Array();1
+	var i = 0;
 	$.each(changedCheckboxes, function(key, value) {
-		list.push(value);
+		list[i] = value;
+		i++;
 	});
 	return list;
 }
