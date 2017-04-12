@@ -19,7 +19,6 @@ var configureDataTable = function(){
 			            }
 			        ]
 	};
-
 	$('#tbl_tables').configureDataTable(config, {
 		url: mapPathVariablesInUrl(restUri.table.table, {id: serverSessionId}),
 		dataSrc: "",
@@ -34,9 +33,9 @@ var associateEditAcces = function(){
 	$(".editAccess").click(function(){
 		var btn = $(this);
 		selectedTableId = btn.data('tableid');
-		configureUserAccessDatatable();
 		$("#modalUserAccess").find('form').trigger('reset');
 		$('#modalUserAccess').modal('show');
+		configureUserAccessDatatable();
 	});
 	
 }
