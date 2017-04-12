@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.query.Param;
 
 public interface TableRepository extends PagingAndSortingRepository<Table, Integer>{
 
@@ -59,7 +60,19 @@ public interface TableRepository extends PagingAndSortingRepository<Table, Integ
 	
 	/*find by ServerId and Active - not pageable*/
 	public List<Table> findByServerIdAndActiveTrue(Integer serverId);
+
 	
+	
+	/*DATA MODULE section*/
+
+	@Query("select ua.table from UserAccess ua "
+			+ " where UPPER(ua.user.userName) = UPPER(:userName) "
+			+ " and ua.allowDisplay = TRUE "
+			+ " and ua.table.active = TRUE "
+			+ " and ua.table.server.active = TRUE"
+			+ " and ua.table.server.id  = :serverId ")
+	public List<Table> activeTablesOnActiveServerForUser(@Param("userName") String userName, @Param("serverId") Integer serverId);
+
 		
 }
 

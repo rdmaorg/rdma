@@ -2,6 +2,7 @@ package ie.clients.gdma2.spi.interfaces;
 
 import ie.clients.gdma2.domain.Column;
 import ie.clients.gdma2.domain.Server;
+import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.UserAccess;
 
 import java.util.List;
@@ -13,7 +14,14 @@ public interface DataModuleService {
 
 		public void authenticateUser();
 		
-		public List<Server> getServerTableList();
+		
+		
+		/* in GDMA 1, this was: getServerTableList
+		 * 3 actions executed one after one: Return list of all ACTIVE servers 
+		 * where there are ACTIVE tables that user has been granted access by Admin (as precondition)*/
+		public List<Server> getActiveServers();
+		public List<Table> getActiveTables(Integer serverId);
+		public List<Column> getActiveColumns(Integer tableId);
 
 		public UserAccess getUserAccessDetails(Long serverId, Long tableId);
 			
@@ -29,7 +37,11 @@ public interface DataModuleService {
 		public int updateRecords(UpdateRequest updateRequest);
 		*/ 
 
-		public List getDropDownData(Column display, Column store); 
+		public List getDropDownData(Column display, Column store);
+
+
+
+		 
 		
 			
 	

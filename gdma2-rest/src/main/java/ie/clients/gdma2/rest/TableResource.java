@@ -57,15 +57,15 @@ public class TableResource extends BaseDataTableResource{
 			orderByColumn = "alias";
 			break;
 		}
-		
+
 		logger.debug("orderBy column: " + orderByColumn) ;
 
 		PaginatedTableResponse<Table> resp = serviceFacade.getMetadataService().
 				getTablesForServer(srvId, getSearchValue(params), orderByColumn, getOrderByDirection(params),getStartIndex(params), getLength(params));
 
 		resp.setDraw(getDraw(params));
-		
-		
+
+
 		logger.info("------------------");
 		List<Table> data = resp.getData();
 		for(Table table : data){
@@ -73,12 +73,12 @@ public class TableResource extends BaseDataTableResource{
 			logger.info("table->server->tables size: "  + table.getServer().getTables().size());
 		}
 		logger.info("--------------");
-		
+
 		return resp;
 
 	}
-	
-	
+
+
 	/*paginated table list for selected server - ALL Tables*/
 	/*TODO fix URI template*/
 	@RequestMapping(value = "/{id}/metadata")
@@ -86,7 +86,7 @@ public class TableResource extends BaseDataTableResource{
 			@RequestParam Map<String,String> params){
 		logger.debug("getActiveSynchedTablesForServer");
 		logger.debug("serverId: " + serverId);
-		
+
 
 		Integer srvId = Integer.parseInt(serverId);	//TODO handle empty ServerId int val = Integer.parseInt(reqParams.get(QUERY_PARAM_DRAW) == null... 
 
@@ -108,47 +108,54 @@ public class TableResource extends BaseDataTableResource{
 			orderByColumn = "alias";
 			break;
 		}
-		
+
 		logger.debug("orderBy column: " + orderByColumn) ;
 
 		PaginatedTableResponse<Table> resp = serviceFacade.getMetadataService().getActiveSynchedTablesForServer(srvId,
 				getSearchValue(params), orderByColumn, getOrderByDirection(params),	getStartIndex(params), getLength(params));
-		
+
 		resp.setDraw(getDraw(params));
-		
+
 		/*
 		logger.info("------------------");
 		List<Table> data = resp.getData();
 		Table table = data.get(0);
 		logger.info("table->server->tables size: "  + table.getServer().getTables().size());
-		
-		
+
+
 		logger.info("--------------");
-		*/
+		 */
 		return resp;
 
 	}
-	
-	
+
+
 	/*Get active tables for server - but without synch (testing purposes)*/
 	@RequestMapping(value = "/server/{id}/active",method = RequestMethod.GET)
 	public List<Table> findByServerIdAndActiveTrue(@PathVariable("id") Integer serverId){
 		logger.debug("*** findByServerIdAndActiveTrue(), serverId: " +  serverId);
 		return serviceFacade.getMetadataService().findByServerIdAndActiveTrue(serverId);
 	}
-	
+
 	@RequestMapping(value="save", method = RequestMethod.POST)
 	public void saveTable(@RequestBody Table table){
 		logger.debug("*** saveTable: " +  table.getName());
 		serviceFacade.getMetadataService().saveTable(table);
 	}
 
-	
+
 	@RequestMapping(value="delete/{id}", method = RequestMethod.DELETE)
 	public void deleteTable(@PathVariable("id") Integer tableId){
 		logger.debug("*** deleteTable with Id: " +  tableId);
 		serviceFacade.getMetadataService().deleteTable(tableId);
 	}
 
+
+	/*DATA module*/
+	@RequestMapping(value = "/data/server/{id}")
+	public List<Table> activeTablesOnActiveServerForUser(@PathVariable("id") Integer serverId){
+		logger.info("activeTablesOnActiveServerForUser, serverId: " + serverId);
+		return serviceFacade.getDataModuleService().getActiveTables(serverId);
+	}
 
 }

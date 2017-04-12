@@ -66,7 +66,8 @@ public interface UserAccessRepository extends PagingAndSortingRepository<UserAcc
 	/*single user access for user on table (tableId, userId) is unique*/
 	public UserAccess findByTableIdAndUserId(int tableId, int userId);
 
-	/*delete all userAccess on all tables for given user*/
+	/*delete all userAccess on all tables for given user
+	 * called from : deleteUser(userId) and from saveUsers(List<User>) if some user was deactivated*/
 	@Modifying
 	@Query("delete from UserAccess ua where ua.user.id = ?1")
 	public void deleteForUser(int id);

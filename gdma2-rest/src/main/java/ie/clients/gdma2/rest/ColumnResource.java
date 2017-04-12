@@ -124,4 +124,11 @@ public class ColumnResource extends BaseDataTableResource{
 		logger.debug("deleteColumn " + columnId);
 		serviceFacade.getMetadataService().deleteColumn(columnId);
 	}
+	
+	/*get all Active columns for given Active table on Active server, based on userName */
+	@RequestMapping(value = "/data/table/{id}")
+	public List<Column> getActiveColumns(@PathVariable("id") Integer tableId){
+		logger.info("getActiveColumnsForActiveTableOnActiveServer");
+		return serviceFacade.getDataModuleService().getActiveColumns(tableId);
+	}
 }

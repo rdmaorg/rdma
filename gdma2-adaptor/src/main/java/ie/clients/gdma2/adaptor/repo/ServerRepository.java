@@ -1,7 +1,7 @@
 package ie.clients.gdma2.adaptor.repo;
 
 import ie.clients.gdma2.domain.Server;
-import ie.clients.gdma2.domain.UserAccess;
+import ie.clients.gdma2.domain.Table;
 
 import java.util.List;
 
@@ -36,14 +36,18 @@ public interface ServerRepository extends PagingAndSortingRepository<Server, Int
 	*/
 	
 	/*join from child to parent entities, don't use fetch because of error: 'owner of the fetched association was not present in the select list'*/
-	@Query("select s from UserAccess ua "
-			+ "	inner join ua.user us "
-			+ " inner join ua.table t "
-			+ " inner join t.server s "
-			+ " where UPPER(us.userName) = UPPER(:userName) "
+//	@Query("select s from UserAccess ua "
+//			+ "	inner join ua.user us "
+//			+ " inner join ua.table t "
+//			+ " inner join t.server s "
+//			+ " where UPPER(us.userName) = UPPER(:userName) "
+//			+ " and ua.allowDisplay = TRUE "
+//			+ " and t.active = TRUE and s.active = TRUE")
+	@Query("select distinct ua.table.server from UserAccess ua "
+			+ " where UPPER(ua.user.userName) = UPPER(:userName) "
 			+ " and ua.allowDisplay = TRUE "
-			+ " and t.active = TRUE and s.active = TRUE")
+			+ " and ua.table.active = TRUE "
+			+ " and ua.table.server.active = TRUE ")
 	public List<Server> activeServersWithActiveTablesForUser(@Param("userName") String userName);
-	
 	
 }

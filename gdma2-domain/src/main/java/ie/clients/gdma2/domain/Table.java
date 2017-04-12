@@ -3,14 +3,9 @@ package ie.clients.gdma2.domain;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 
 import com.avnet.cs.commons.dao.BaseEntity;
@@ -30,6 +25,7 @@ public class Table extends BaseEntity {
 	@javax.persistence.Column(name = "ACTIVE")
 	private boolean active = true;
 	
+	//@JsonIgnore
 	@ManyToOne
 	@JoinColumn(name = "SERVER_ID", nullable = false)
 	private Server server;
