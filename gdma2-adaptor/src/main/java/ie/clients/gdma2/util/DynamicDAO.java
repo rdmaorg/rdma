@@ -7,6 +7,8 @@ import ie.clients.gdma2.domain.Table;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.data.domain.PageRequest;
+
 
 public interface DynamicDAO {
 
@@ -29,8 +31,14 @@ public interface DynamicDAO {
 	
 	 
 	
+	/*DATA module*/
+		
 	/*  OLD CODE - GDMA 1*/
-	
+
+
+	public List<Column> getColumnData(Integer tableId, String matching,
+			int orderByColumnID, String orderDirection, int startIndex,
+			int length);
 	
 	/*
 	public PaginatedResponse get(PaginatedRequest paginatedRequest);

@@ -6,6 +6,7 @@ import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.UserAccess;
 
+import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -17,7 +18,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
+import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 @Repository
 public class DynamicDAOImpl implements DynamicDAO{
@@ -173,7 +177,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 		//GDMA tables list
 		//Set<Table> tablesGDMA = server.getTables();
 		Set<Table> tablesGDMA = new HashSet<Table>(tableList);
-		
+
 		logger.info("Number of tables in GDMA: " + tablesGDMA.size());
 
 		//Remote server table list
@@ -201,7 +205,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 		//previous double loop is ended, now compare in other direction to detect GDMA tables that don't exist on remote Server - Deleted
 		logger.info("-----------------");
 		resolveDeletedTables(tablesSynchResult, tablesGDMA, tableNameListRemoteDB);
-		
+
 		printSynchResult(tablesSynchResult);
 		return tablesSynchResult;
 	}
@@ -336,16 +340,16 @@ public class DynamicDAOImpl implements DynamicDAO{
 		//TODO !!! make sure Server -> table -> columns are loaded because of tranzient nature!
 		//Set<Table> tablesGDMA = server.getTables();
 		logger.info("Number of tables to check against: " + tablesGDMA.size());
-		
+
 		//locate if any column of inactive table is maybe FK in any other column of any table on the same server
 		//precondition is that step2 resynch column is done and that columns are already there. 
 		for (Table tableGDMA : tablesGDMA) {
 			logger.info("tableGDMA.getName(): " + tableGDMA.getName());
-			
+
 			logger.info("Loading all columns for table...");
 			//Set<Column> columnsGDMA = tableGDMA.getColumns(); EMPTY !!!
 			Set<Column> columnsGDMA = repositoryManager.getColumnRepository().findByTableId(tableGDMA.getId());
-			
+
 			for (Column col : columnsGDMA) {
 				logger.info("columnsGDMA: " + col.getName());
 				for(Integer colDeactiveId : columnDeactiveIdList){
@@ -361,15 +365,15 @@ public class DynamicDAOImpl implements DynamicDAO{
 						col.setDropDownColumnStore(null);
 						logger.info("Removed foreign key reference from column " + col.getName() + " in table: " + tableGDMA.getName());
 					}
-					
+
 				}//for3
 			}//for2
-			
+
 			//save all updates columns changed
 			logger.info("saving column updates");
 			repositoryManager.getColumnRepository().save(columnsGDMA);
 			logger.info("...saving ended");
-			
+
 		}//for1
 
 		//TODO - Persist all columns for all tables on server that where just changed!!! - TX
@@ -388,7 +392,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 			logger.info("synched table name: " + table.getName());
 		}
 	}
-	
+
 
 	@Override
 	public void synchColumnsForTable(Server server, Table table, Set<Column> columns) {
@@ -401,11 +405,11 @@ public class DynamicDAOImpl implements DynamicDAO{
 		repositoryManager.getColumnRepository().save(resyncColumnList);
 		//reload table list after synch
 		//TODO OPEN Q - after saving columns - updating table that contains it ?
-		
+
 	}
 
-	
-	
+
+
 	private Set<Column> resyncColumnList(Server server, Table tableGDMA, Set<Column> columnsGDMA) {
 		logger.info("resyncColumnList, for table: " + tableGDMA.getName());
 
@@ -414,7 +418,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 		//GDMA column list
 		logger.info("columnsGDMA size: " + ( columnsGDMA == null ? 0 : columnsGDMA.size() ) );
-		
+
 		//Remote server, column list for table
 		Set<Column> columnsRemote = getTableColumns(server, tableGDMA.getName());
 
@@ -450,8 +454,8 @@ public class DynamicDAOImpl implements DynamicDAO{
 		return columnsSynchResult;
 
 	}//end
-	
-	
+
+
 
 
 	/**
@@ -474,13 +478,13 @@ public class DynamicDAOImpl implements DynamicDAO{
 		for (Column columnGDMA : nonExisingtColumns) {
 			//columns.remove(column);
 			logger.info("columnGDMA: " + columnGDMA.getName());
-			
+
 			columnGDMA.setDisplayed(false);
 			columnGDMA.setActive(false);
-			
+
 			//add deactivated table to result table set
 			columnsSynchResult.add(columnGDMA); //will not add existing previously deactivated with timestamp added to name
-			
+
 			logger.info(" *** columnsSynchResult : " + columnsSynchResult.size());
 
 			Set<Table> allTables = server.getTables();
@@ -533,17 +537,17 @@ public class DynamicDAOImpl implements DynamicDAO{
 			columnGDMA.setNullable(columnRemote.isNullable());
 			columnGDMA.setColumnSize(columnRemote.getColumnSize());
 			columnGDMA.setActive(true);
-			
+
 			columnsSynchResult.add(columnGDMA);
 			logger.info(" *** columnsSynchResult : " + columnsSynchResult.size());
-			
+
 		} else {
 			//change name of deactivated and create new using Remote
 			logger.info("... and is inactive column : " + columnGDMA.getName());
 			Timestamp currentTimestamp = new java.sql.Timestamp(Calendar.getInstance().getTime().getTime());
 			String timestamp = currentTimestamp.toString();
 			String inactiveColumnName = columnGDMA.getName() + "_" + timestamp;
-			
+
 			columnGDMA.setName(inactiveColumnName);
 			columnGDMA.setActive(false);
 			columnsSynchResult.add(columnGDMA);
@@ -551,7 +555,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 			logger.info(" *** columnsSynchResult : " + columnsSynchResult.size());
 			logger.info("column deactivated and name changed: " + columnGDMA.getName());
 			logger.info("creating new column: " + columnRemote.getName());
-			
+
 			boolean addSuccess = columnsSynchResult.add(columnRemote);
 			logger.info("addSuccess:" + addSuccess);
 			logger.info(" *** columnsSynchResult : " + columnsSynchResult.size());
@@ -578,7 +582,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 				nonExistingColumns.add(colGDMA);
 			};
 		}
-		
+
 		logger.info("nonExisingtColumns size: " + ( nonExistingColumns == null ? 0 : nonExistingColumns.size() ) );
 		return nonExistingColumns;
 	}
@@ -591,6 +595,176 @@ public class DynamicDAOImpl implements DynamicDAO{
 		}
 		return false;
 	}
+
+
+	/*  DATA MODULE SECTION*/
+
+	/* make sure if original is generic or just for columns
+	 * TODO define and send FILTERs to this method
+	 * decide where to initiate all Entities - here or in caller
+	 * make sure what is orderByColumnID */
+	
+	@Override
+	public List<Column> getColumnData(Integer tableId, String matching,
+			int orderByColumnID, String orderDirection, int startIndex,
+			int length) {
+	
+		
+		Table table = repositoryManager.getTableRepository().findOne(tableId);
+		logger.info("DynamicDaoIMPL: getColumnData");
+		Server server2 = table.getServer();
+		//table 
+		Column sortedByColumnId = (orderByColumnID == 0 ? null : repositoryManager.getColumnRepository().findOne(orderByColumnID));
+		//dir
+		List<Filter> filters = new ArrayList<Filter>(); //TODO Open Q
+		String sql = SQLUtil.createSelect(server2, table, sortedByColumnId, orderDirection, filters);
+		//String sql = SqlUtil.createSelect(server, table, sortedByColumnId, dir, paginatedRequest.getFilters());
+		
+		logger.info("sql created: " + sql);
+
+		PreparedStatementCreatorFactory psc = new PreparedStatementCreatorFactory(sql);
+
+		declareSqlParameters(psc, filters, server2);
+
+		psc.setResultSetType(ResultSet.TYPE_SCROLL_INSENSITIVE);
+		psc.setUpdatableResults(false);
+
+		// don't need transacton manager for lookup
+		//JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSourcePool.getTransactionManager(server).getDataSource());
+		JdbcTemplate jdbcTemplate = dataSourcePool.getJdbcTemplateFromDataDource(server2);
+		
+		//PaginatedResponse paginatedResponse = new PaginatedResponse();
+
+		final List<Object> params = convertFiltersToSqlParameterValues(filters);
+		logger.info("params: " +  params);
+		
+		//paginatedResponse.setRecords((List) jdbcTemplate.query(psc.newPreparedStatementCreator(params), new PagedResultSetExtractor(new RowMapper(),
+			//	paginatedRequest.getRecordOffset(), paginatedRequest.getRowsPerPage())));
+
+		
+		
+		List records =  (List)jdbcTemplate.query(psc.newPreparedStatementCreator(params), new PagedResultSetExtractor(new RowMapper(),
+			startIndex, length));
+
+		//getPaginatedTableResponse(records != null ? records : new ArrayList<ConnectionType>(), total, filtered);
+		//getPaginatedTableResponse(records != null ? records : new ArrayList<ConnectionType>(), 10, 10);
+		
+		
+
+		try{
+			List records2 =  (List)jdbcTemplate.query(psc.newPreparedStatementCreator(params), new PagedResultSetExtractor(new RowMapper(),
+					startIndex, length));
+		}
+		catch (Exception e){
+			logger.error("*****Exception****** e = " + e);
+		}
+
+		/** todo in metadata service after returning List<Entity>
+		paginatedResponse.setTotalRecords(getCount(server, table, paginatedRequest.getFilters()));
+		paginatedResponse.setStartIndex(paginatedRequest.getRecordOffset());
+		paginatedResponse.setKey("" + paginatedRequest.getSortedByColumnId());
+		paginatedResponse.setSortDir(paginatedRequest.getDir());
+
+		return paginatedResponse;
+		*/
+
+		return records;
+
+	}
+
+
+	private void declareSqlParameters(PreparedStatementCreatorFactory psc, List<Filter> filters, Server server) {
+		for (Filter filter : filters) {
+			//if filter is null or blank
+			if ((filter.getFilterOperator() == 8 || filter.getFilterOperator() == 9))
+				continue;
+			if (StringUtils.hasText(filter.getFilterValue())) {
+				//Teradata and Oracle 
+				if (server.getConnectionUrl().contains("jdbc:teradata"))					
+				{                                       
+					if(filter.getColumnType() == 91)
+					{
+						psc.addParameter(new SqlParameter(93));
+					}
+					else
+					{
+						psc.addParameter(new SqlParameter(filter.getColumnType()));
+					}
+				}
+				else
+				{
+					psc.addParameter(new SqlParameter(filter.getColumnType()));
+				}				
+			}
+		}
+	}
+
+	
+	private List<Object> convertFiltersToSqlParameterValues(List<Filter> filters) {
+		final List<Object> params = new ArrayList<Object>();
+		for (Filter filter : filters) {
+			//if ((filter.isNullValue() || filter.isBlank())&&(filter.getFilterValue()== null))
+			if ((filter.getFilterOperator() == 8 || filter.getFilterOperator() == 9))
+				continue;
+			//if (StringUtils.hasText(filter.getFilterValue())) {
+			if (!(filter.getFilterOperator() == 8 || filter.getFilterOperator() == 9)){
+				Object param = filter.getFilterValue();
+				if (SQLUtil.isNumeric(filter.getColumnType())) {
+					logger.info("Number as string as parameter: " + param);
+				} else if (SQLUtil.isDate(filter.getColumnType())) {
+					logger.info("DATE filter detected: " + filter.getFilterValue());
+					try {
+                        param = Formatter.formatDate(Formatter.parseDate(filter.getFilterValue()));
+                        logger.info("Date as parameter: " + param);
+					} catch (Exception ex) {
+						logger.info("Could not parse the date: " + filter.getFilterValue(), ex);
+					}
+                } /*else if (SqlUtil.isDateTime(filter.getColumnType())) {
+                LOG.debug("DATETIME filter detected: " + filter.getFilterValue());
+				try {
+                    param = Formatter.parseDate(filter.getFilterValue());
+					LOG.debug("DATETIME as parameter: " + param);
+				} catch (Exception ex) {
+					LOG.error("Could not parse the DATETIME: " + filter.getFilterValue(), ex);
+				}
+            	}*/else if (SQLUtil.isTime(filter.getColumnType())) {
+                    try {
+                        param = Formatter.parseTime(filter.getFilterValue());
+                        logger.info("Time as parameter: " + param);
+                    } catch (Exception ex) {
+                    	logger.info("Could not parse the time: " + filter.getFilterValue(), ex);
+                    }
+				} else {
+					// For LIKE stmt
+					//deal with "Begins With" filter operator
+					if(filter.getFilterOperator() == 5)
+					{
+						param = param + "%";
+					}
+					//deal with "Contains" filter operator
+					else if(filter.getFilterOperator() == 6)
+					{
+						param = "%" + param + "%";
+					}
+					//deal with "Ends With" filter operator
+					else if(filter.getFilterOperator() == 7)
+					{
+						param = "%" + param;
+					}
+					else
+					{
+						param = param;
+					}
+					logger.info("Generic parameter: " + param);
+				}
+				params.add(param);
+			}
+		}
+		return params;
+	}
+
+	
+	
 
 
 

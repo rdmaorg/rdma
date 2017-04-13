@@ -131,4 +131,35 @@ public class ColumnResource extends BaseDataTableResource{
 		logger.info("getActiveColumnsForActiveTableOnActiveServer");
 		return serviceFacade.getDataModuleService().getActiveColumns(tableId);
 	}
+	
+	
+	/*DATA MODULE*/
+	
+	/*paginated active columns wit data for : Active server, active table Table, logged in user with UserAccess.allowDisplay = true  */ 
+	@RequestMapping("/data/read/table/{id}")
+	PaginatedTableResponse<Column> getColumnData(@PathVariable("id") Integer tableId,
+			@RequestParam Map<String, String> reqParams){
+		logger.debug("getColumnsPaginatedTable");
+		
+		//  order[0][column]:1
+		//String orderByColumn = "id";
+		
+		//values are not 0,1,2... but 0, column1PK, column2PK like : 0,12,14,478
+		int orderByColumnID = getOrderByColumn(reqParams);
+		
+		logger.info("orderByColumn, column PK: " + orderByColumnID);
+		PaginatedTableResponse<Column> resp = serviceFacade.getMetadataService().getColumnData(
+				tableId,
+				getSearchValue(reqParams),
+				orderByColumnID,
+				getOrderByDirection(reqParams),
+				getStartIndex(reqParams),
+				getLength(reqParams));
+		
+		resp.setDraw(getDraw(reqParams));
+		logger.debug("getColumnsPaginatedTable ended");
+		return resp;
+	}
+	
+	
 }

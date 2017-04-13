@@ -85,6 +85,9 @@ public interface MetaDataService {
 	public PaginatedTableResponse<Column> getActiveSynchedColumnsForTable(Integer tableId, String matching, String orderBy,
 			String orderDirection, int startIndex, int length);
 	
+	/*DATA Module part*/
+	public PaginatedTableResponse<Column> getColumnData(Integer tableId, String matching, int orderByColumnID,
+			String orderDirection, int startIndex, int length);
 	
 	
 }
