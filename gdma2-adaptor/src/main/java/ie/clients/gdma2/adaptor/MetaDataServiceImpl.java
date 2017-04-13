@@ -379,6 +379,8 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	@Transactional
 	@Override
 	public void deleteUser(int id) {
+		//DELETE USER_ACCESS first or FK constraint will be violeted for all existing UI.user_id = id of deleted user
+		repositoryManager.getUserAccessRepository().deleteForUser(id);
 		repositoryManager.getUserRepository().delete(id);
 
 	}

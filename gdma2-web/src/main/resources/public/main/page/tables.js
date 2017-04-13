@@ -6,6 +6,7 @@ var configureDataTable = function(){
 	        fixedHeader: true,
 			order: [[ 0, "asc" ]],
 			"columnDefs": [ { className: "text-center", "targets": [4] },{ "orderable": false, "targets": 4 }  ],
+			serverside: true,
 			"lengthMenu": [ [10, 25, 50, 100], [10, 25, 50, 100] ],
 			"columns": [
 			            { "data": "id" },
@@ -34,7 +35,7 @@ var associateEditAcces = function(){
 	$(".editAccess").click(function(){
 		var btn = $(this);
 		selectedTableId = btn.data('tableid');
-		configureUserAccessDatatable();
+		selectedTableName = btn.data('tablename');
 		$("#modalUserAccess").find('form').trigger('reset');
 		$('#modalUserAccess').modal('show');
 	});

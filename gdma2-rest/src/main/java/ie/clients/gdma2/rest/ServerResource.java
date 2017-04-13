@@ -105,6 +105,6 @@ public class ServerResource extends BaseDataTableResource {
 	/*list all active servers and active tables for registered user*/
 	@RequestMapping(value = "/data/tables")
 	public List<Server> getActiveTablesForActiveServer(@RequestParam Map<String, String> params){
-		return serviceFacade.getDataModuleService().getServerTableList();
+		return serviceFacade.getDataModuleService().getActiveServers();
 	}
 }

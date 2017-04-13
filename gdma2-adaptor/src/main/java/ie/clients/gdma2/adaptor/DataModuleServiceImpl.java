@@ -2,6 +2,7 @@ package ie.clients.gdma2.adaptor;
 
 import ie.clients.gdma2.domain.Column;
 import ie.clients.gdma2.domain.Server;
+import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.spi.interfaces.DataModuleService;
 
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 public class DataModuleServiceImpl extends BaseServiceImpl implements DataModuleService{
 	
 	private static final Logger logger = LoggerFactory.getLogger(DataModuleServiceImpl.class);
+	private static final String TEST_USERNAME = "Elizabeth.H.Anderson@mailinator.com";
 	
 	@Override
 	public void authenticateUser() {
@@ -22,19 +24,44 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 		logger.info("authenticateUser");
 		
 	}
+	
+		
 	/*precondition - get user and userName from user registration service*/
 	@Override
-	public List<Server> getServerTableList() {
-		logger.info("getServerTableList" );
+	public List<Server> getActiveServers() {
+		logger.info("getActiveServers" );
 		authenticateUser(); //TODO
 		logger.info("provide proper userName first" );
-		String userNameDummy = "Elizabeth.H.Anderson@mailinator.com";
-		logger.info("using TEST user from local DB: " + userNameDummy );
-		return repositoryManager.getServerRepository().activeServersWithActiveTablesForUser(userNameDummy);
+		logger.info("using TEST user from local DB: " + TEST_USERNAME );
+		List<Server> servers = repositoryManager.getServerRepository().activeServersWithActiveTablesForUser(TEST_USERNAME);
+		return servers;
+	}
+	
+	/*precondition - get user and userName from user registration service
+	 * precondition -  getActiveServers() executed with success before this step*/
+	@Override
+	public List<Table> getActiveTables(Integer serverId) {
+		logger.info("getActiveTables");
+		authenticateUser(); //TODO
+		logger.info("provide proper userName first" );
+		logger.info("using TEST user from local DB: " + TEST_USERNAME );
+		return repositoryManager.getTableRepository().activeTablesOnActiveServerForUser(TEST_USERNAME, serverId);
+		
+	}
+
+	/*precondition - get user and userName from user registration service
+	 * precondition -  getActiveServers() getActiveTables and executed with success before this step*/
+	@Override
+	public List<Column> getActiveColumns(Integer tableId) {
+		logger.info("getActiveColumns");
+		authenticateUser(); //TODO
+		logger.info("provide proper userName first" );
+		logger.info("using TEST user from local DB: " + TEST_USERNAME );
+		return repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(tableId);
+		
 	}
 
 	
-
 	@Override
 	public UserAccess getUserAccessDetails(Long serverId, Long tableId) {
 		// TODO Auto-generated method stub
@@ -55,6 +82,11 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 		authenticateUser();
 		return null;
 	}
+
+
+
+
+
 
 	
 	

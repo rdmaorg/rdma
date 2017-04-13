@@ -30,7 +30,8 @@ var restUri = {
 		item: getRestBaseUri() + '/column/table/{id}/active'
 	},
 	userAcces:{
-		table: getRestBaseUri() + '/access/table/{id}'
+		table: getRestBaseUri() + '/access/table/{id}',
+		update: getRestBaseUri() + '/access/update'
 	},
 	connection:{
 		list: getRestBaseUri() + '/connection/list',
