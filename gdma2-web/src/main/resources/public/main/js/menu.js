@@ -89,10 +89,12 @@ $(document).ready(function(){
     		$("#server" + server.id + "").one("mouseenter",function(){
     			tablesId();
     		});
-    		$("#server" + server.id + " .serverN").one("click",function(){
-				sessionStorage.setItem("id",server.id);
-				window.location.href = "tables";
-    		});
+    		
+    		// Link to server tables
+    		//$("#server" + server.id + " .serverN").one("click",function(){
+			//	sessionStorage.setItem("id",server.id);
+			//	window.location.href = "tables";
+    		//});
     	});
     	
     }).fail(function(e){

@@ -7,28 +7,29 @@
 		<header th:replace="inc/contentHeader"></header>
 		<aside th:replace="inc/leftPanel"></aside>		
 		<div class="content-wrapper" style="min-height: 368px;">
-	      <div th:replace="inc/alerts"></div>	
 		  <!-- Content Header (Page header) -->
 		  <section class="content-header">
-				<h1 th:text="#{view.server.heading}">Connection Types</h1>				
+	      	<div th:replace="inc/alerts"></div>	
+	      	<div th:replace="inc/success"></div>	
+				<h2>
+					<a th:href="@{/server}" th:text="#{view.server.heading}"></a>
+					<i class="fa fa-angle-double-right" aria-hidden="true"></i>
+					<span id="serverName"></span>
+				</h2>							
+		  		<h1><span th:text="#{view.column.heading}"></span></h1>	
 	      		<div th:replace="inc/spinner"></div>
-				<div class="row">
-					<div class="col-md-12">
-						<button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#modalServer"><i class="fa fa-database"></i> Insert Server</button>
-					</div>					
-					<div th:replace="inc/modalServer"></div>
-				</div>
 		  </section>
 		  <!-- Main content -->
 			<section class="content">
-				<table id="tbl_server" class="table table-striped dt-responsive"
-					cellspacing="0" width="100%">
+				<table id="tbl_column" class="table table-striped dt-responsive" cellspacing="0" width="100%">
 					<thead>
 						<tr>
-							<th width="10%" th:text="#{view.connection.table.heading}"></th>
+							<th width="10%" th:text="#{view.column.table.heading.id}"></th>
+							<th width="35%" th:text="#{view.column.table.heading.name}"></th>
 						</tr>
 					</thead>
 				</table>
+				
 			</section>
 		</div>
 

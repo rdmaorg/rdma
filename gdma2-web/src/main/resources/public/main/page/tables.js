@@ -23,7 +23,6 @@ var configureDataTable = function(){
 
 	$('#tbl_tables').configureDataTable(config, {
 		url: mapPathVariablesInUrl(restUri.table.table, {id: serverSessionId}),
-		dataSrc: "",
 		complete: function(){
 //		hideLoading();
 			associateEditAcces();

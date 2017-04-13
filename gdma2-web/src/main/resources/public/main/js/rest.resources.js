@@ -24,6 +24,11 @@ var restUri = {
 		table: getRestBaseUri() + '/table/server/{id}/table/list',
 		save: getRestBaseUri() + '/table/save'
 	},
+	column:{
+		list: getRestBaseUri() + '/column/list',
+		table: getRestBaseUri() + '/column/metadata/table/{id}',
+		item: getRestBaseUri() + '/column/table/{id}/active'
+	},
 	userAcces:{
 		table: getRestBaseUri() + '/access/table/{id}'
 	},
