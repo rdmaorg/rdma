@@ -3,10 +3,12 @@ var origCheckboxes = new Object();
 
 var initiateModalUserAccess = function() {
 	changedCheckboxes = new Object();
-	$('#tableName').html('<b>&nbsp'+ selectedTableName+'</b>');
+	$('#tableName').html('<b>&nbsp' + selectedTableName + '</b>');
 	configureUserAccessDatatable();
 }
+
 var configureUserAccessDatatable = function() {
+	var changedCheckboxes = new Object();
 	var config = {
 		fixedHeader : true,
 		"page" : 0,
@@ -135,26 +137,47 @@ var objectChanged = function(origObject, newObject) {
 }
 
 var associateSaveUserAccess = function() {
-	$("#save-userAccess").click(function() {
-		var list = getModifiedObjects();
-		if (list.length > 0) {
-			$.ajax({
-				type : "post",
-				url : restUri.userAcces.update,
-				data : JSON.stringify(list),
-				contentType : "application/json; charset=utf-8"
-			}).done(function(data) {
-
-			}).fail(function(e) {
-			}).always(function() {
-				$('#modalUserAccess').modal('hide');
+	var form = $("#editUserAccess");
+	form.validate();
+	$("#save-userAccess").click(function(e) {
+		if (form.valid()) {
+			$(this).confirmation({
+				placement : "left",
+				btnOkLabel : "Edit user access",
+				onConfirm : function(event, element) {
+					showLoading();
+					var list = getModifiedObjects();
+					if (list.length > 0) {
+						$.ajax({
+							type : "post",
+							url : restUri.userAcces.update,
+							data : JSON.stringify(list),
+							contentType : "application/json; charset=utf-8"
+						}).done(function(data) {
+							$("#global-success").slideDown(500);
+					    	window.setTimeout(function() {
+					    		$("#global-success").slideUp(500);
+					    	}, 4000);
+						}).fail(function(e) {
+							handleError('#global-alert', e);
+						}).always(function() {
+							hideLoading();
+							$('#modalUserAccess').modal('hide');
+							
+						});
+					}
+				}
 			});
+			$(this).confirmation('show');
+		} else {
+			$(this).confirmation('destroy');
 		}
+		e.preventDefault();
 	});
 }
 
 var getModifiedObjects = function() {
-	var list = new Array();1
+	var list = new Array();
 	var i = 0;
 	$.each(changedCheckboxes, function(key, value) {
 		list[i] = value;

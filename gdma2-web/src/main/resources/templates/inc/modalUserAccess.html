@@ -7,17 +7,12 @@
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal">&times;</button>
-					<h4 class="modal-title" th:text="#{view.modal.user.access.title}"></h4>
+					<h4 class="modal-title">
+						<span th:text="#{view.modal.user.access.title}"> - </span>
+						<span id="tableName"></span>
+					</h4>
 				</div>
 				<div class="modal-body">
-					<section class="content-header">
-						<div class="row">
-							<div class="col-xs-12">
-								<span th:text="#{view.modal.user.access.title}"></span> <span
-									id="tableName"></span>
-							</div>
-						</div>
-					</section>
 					<div class="row">
 						<div class="col-xs-12">
 							<div class="form-group ">
@@ -45,8 +40,7 @@
 						data-dismiss="modal">
 						<span th:text="#{view.modal.user.access.btn.cancel}"></span>
 					</button>
-					<button class="btn btn-primary btn-lg" id="save-userAccess"
-						name="submit" type="submit">
+					<button class="btn btn-primary btn-lg" id="save-userAccess" name="submit" type="submit">
 						<span th:text="#{view.modal.user.access.btn.save}"></span>
 					</button>
 				</div>
