@@ -20,7 +20,7 @@ var configureDataTable = function(){
 			            	+ '&nbsp;'
 			            	+'<button class="btn btn-warning btn-xs deleteServer" data-serverid="'+ row.id+ '"><i class="fa fa-trash-o"></i> Delete</button>'
 			            	+ '&nbsp;'
-			            	+'<button class="btn btn-info btn-xs viewServer" data-serverid="'+ row.id+ '"><i class="fa fa-table"></i> Tables</button>'
+			            	+'<button class="btn btn-info btn-xs viewServer" data-serverid="'+ row.id+ '" data-servername="'+ row.name + '"><i class="fa fa-table"></i> Tables</button>'
 			            	} 
 			            }
 			        ]
@@ -174,7 +174,7 @@ var associatePostServer = function(){
 var associateViewServer = function(){
 	$('.viewServer').click(function(){
  		var btn = $(this);
- 		viewServer(btn.data('serverid'));
+ 		viewServer(btn.data('serverid'),btn.data('servername'));
 	})
 };
 
@@ -192,9 +192,10 @@ var syncTables = function(serverId){
     });
 }
 
-var viewServer = function(serverId) {
+var viewServer = function(serverId,serverName) {
 	syncTables(serverId);
 	sessionStorage.setItem("id",serverId);
+	sessionStorage.setItem("name",serverName);
 	window.location.href = "tables";
 }
 

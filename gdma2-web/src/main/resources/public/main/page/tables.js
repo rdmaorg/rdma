@@ -1,4 +1,5 @@
 var serverSessionId = sessionStorage.getItem("id");
+var serverSessionName = sessionStorage.getItem("name");
 var selectedTableId = -1;
 var configureDataTable = function(){
 	
@@ -16,7 +17,7 @@ var configureDataTable = function(){
 			            { "data": "name","render" : function(data, type, row){ 
 			            	return '<button class="btn btn-primary btn-xs editAccess" data-tableid="'+ row.id+ '" data-tablename="'+ row.name +'" ><i class="fa fa-pencil-square-o"></i> Edit Access</button>'
 			            	+ '&nbsp;'
-			            	+'<button class="btn btn-info btn-xs viewColumns" data-tableid="'+ row.id+ '"><i class="fa fa-columns"></i> Columns</button>'
+			            	+'<button class="btn btn-info btn-xs viewColumns" data-tableid="'+ row.id+ '" data-tablename="'+ row.name +'"><i class="fa fa-columns"></i> Columns</button>'
 			            	} 
 			            }
 			        ]
@@ -48,31 +49,19 @@ var associateEditAcces = function(){
 var associateViewTable = function(){
 	$('.viewColumns').click(function(){
  		var btn = $(this);
- 		viewTable(btn.data('tableid'));
+ 		viewTable(btn.data('tableid'),btn.data('tablename'));
 	})
 };
 
-var viewTable = function(serverId) {
+var viewTable = function(serverId,tableName) {
 	sessionStorage.setItem("idTable",serverId);
+	sessionStorage.setItem("nameTable",tableName);
 	window.location.href = "columns";
 }
 
 $(document).ready(function(){
 	configureDataTable();	
 
-	$.ajax({
-        type: "get",
-        url: mapPathVariablesInUrl(restUri.server.item,{serverId: serverSessionId}),
-        data: { get_param: 'name' },
-        contentType: "application/json; charset=utf-8",
-        dataType: 'json'
-    }).done(function(data){
-    	var serverName = data.name;
-    	$("#serverName").html(serverName);
-    }).fail(function(e){
-    	handleError('#global-alert', e);
-    }).always(function(){
-    	hideLoading();
-    });	
+    $("#serverName").html(serverSessionName);
 	
 });
