@@ -11,16 +11,13 @@
 		  <section class="content-header">
 	      	<div th:replace="inc/alerts"></div>	
 	      	<div th:replace="inc/success"></div>	
-				<h2>
-					<span th:text="#{view.home.admin}"></span>
-				</h2>	
 				<h1>
 					<span th:text="#{view.user.heading}"></span>
 				</h1>
 	      		<div th:replace="inc/spinner"></div>
 				<div class="row">
 					<div class="col-md-12">
-						<button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#modalUser"><i class="fa fa-database"></i> Insert User</button>
+						<button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#modalUser"><i class="fa fa-user-circle-o" aria-hidden="true"></i> Insert User</button>
 					</div>					
 					<div th:replace="inc/modalUser"></div>
 				</div>

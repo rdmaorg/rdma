@@ -12,22 +12,34 @@
 		          <h3 class="control-sidebar-heading">Admin Settings</h3>
 		
 		          <div class="form-group">
-		            <h3>
-		              Manage Servers         
-		            </h3>
-		            <p>
-		              Insert/Remove/Edit servers
-		            </p>
-		            <a class="btn btn-primary btn-block btn-sm" th:href="@{/server}">Servers</a>
+			        <a class="btn btn-primary btn-block btn-sm" th:href="@{/server}">
+			            <h3>
+			              <i class="fa fa-server" aria-hidden="true"></i><br/>Servers         
+			            </h3>
+			            <p>
+			              Insert/Remove/Edit servers
+			            </p>
+		            </a>
 		          </div>
 		          <div class="form-group">
-		            <h3>
-		              Manage Users         
-		            </h3>
-		            <p>
-		              Insert/Remove/Edit users permissions
-		            </p>
-		            <a class="btn btn-primary btn-block btn-sm" th:href="@{/user}">Users</a>
+		            <a class="btn btn-primary btn-block btn-sm" th:href="@{/user}">
+			            <h3>
+			              <i class="fa fa-user-circle-o" aria-hidden="true"></i><br/>Users         
+			            </h3>
+			            <p>
+			              Insert/Remove/Edit permissions
+			            </p>
+		            </a>
+		          </div>
+		          <div class="form-group">
+		            <a class="btn btn-primary btn-block btn-sm" th:href="@{/connections}">
+			            <h3>			              
+		          			<i class="fa fa-plug" aria-hidden="true"></i><br/>Connection Types       
+			            </h3>
+			            <p>
+			              Insert/Remove/Edit Connections
+			            </p>
+		            </a>
 		          </div>
 		      </div>
 		      <!-- /.tab-pane -->

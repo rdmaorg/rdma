@@ -25,6 +25,20 @@
     text-align: center;
 }
 
+.btn h3 {
+    margin: 10px 0;
+    font-size: 18px;
+}
+
+.btn h3 i {
+    font-size: 32px;
+}
+
+.navbar .btn-info {
+	padding: 5px !important;
+    margin: 10px !important;
+}
+
 .modal-title {
 	color:#fff;
 }
