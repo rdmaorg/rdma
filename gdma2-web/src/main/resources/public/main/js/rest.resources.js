@@ -36,7 +36,8 @@ var restUri = {
 	connection:{
 		list: getRestBaseUri() + '/connection/list',
 		table: getRestBaseUri() + '/connection/table',
-		save: getRestBaseUri() + '/connection/save'
+		save: getRestBaseUri() + '/connection/save',
+		del: getRestBaseUri() + '/connection/delete/{id}'
 	},
 	menu: {
 		user: getRestBaseUri() + '/menu/user',

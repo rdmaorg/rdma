@@ -14,9 +14,7 @@ var configureDataTable = function() {
 				{"data" : "active", "render" : function(data, type, row) {
 						return '<button class="btn btn-primary btn-xs editConnection"><i class="fa fa-pencil-square-o"></i> Edit</button>'
 								+ '&nbsp;'
-								+ '<button class="btn btn-warning btn-xs deleteServer" data-connectionId="'
-								+ row.id
-								+ '"><i class="fa fa-trash-o"></i> Delete</button>';
+								+ '<button class="btn btn-warning btn-xs deleteConnection" data-connectionid="'+ row.id+ '"><i class="fa fa-trash-o"></i> Delete</button>';
 					}
 				}
 
@@ -27,6 +25,7 @@ var configureDataTable = function() {
 		url : restUri.connection.table,
 		complete : function() {
 			associateEditButton();
+			associateDeleteButton();
 		}
 	});
 };
@@ -56,9 +55,41 @@ var associateInsertButton = function(){
 		$("#modalConnectionType").on('shown.bs.modal', function () {
 			$("#name").focus();
 		});
+		associatePostConnection();
 	});
 }
 
+var associateDeleteButton = function(){
+	$('.deleteConnection').confirmation({
+		placement : "left",
+		btnOkLabel : "Delete Connection",
+		onConfirm : function(event, element) {
+			// var btn = $(this);
+			var btn = element;
+			// console.log("Deleting Server Id " + btn.data('serverid'));
+			deleteConnection(btn.data('connectionid'));
+		}
+	});
+}
+
+var deleteConnection = function(connectionId){
+	$.ajax({
+        type: "delete",
+        url: mapPathVariablesInUrl(restUri.connection.del,{id: connectionId}),
+        contentType: "application/json; charset=utf-8"
+    }).done(function(data){
+    	table.draw(false);
+    	$("#global-success").slideDown(500);
+    	window.setTimeout(function() {
+    		$("#global-success").slideUp(500);
+    	}, 4000);
+    }).fail(function(e){
+    	handleError('#global-alert', e);
+    }).always(function(){
+    	hideLoading();
+    });	
+	
+}
 var resetModalValidatorEvent = function(){
 	$("#modalConnectionType").on('hide.bs.modal', function() {
 		var validator = $("#newConnectionType").validate();
