@@ -9,6 +9,7 @@ public enum PageEnum {
 	ADMIN_CONNECTIONS("/connections", "Connections", ApplicationRoleEnum.APPLICATION_ADMIN_CONNECTION.role()),
 	ADMIN_TABLE("/tables", "Tables", ApplicationRoleEnum.APPLICATION_ADMIN_TABLE.role()),
 	ADMIN_COLUMNS("/columns", "Columns", ApplicationRoleEnum.APPLICATION_ADMIN_COLUMNS.role()),
+	ERROR("/public/error", "Error", ""),
 	LOGOUT("/logout", "Logout", ""), 
 	CAS_LOGIN("/login/cas", "Login", ""), 
 	CAS_LOGOUT("/logout/cas", "Logout", "");

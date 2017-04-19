@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head th:replace="inc/header"></head>
+<body class="skin-blue sidebar-mini sidebar-collapse">
+	<div class="wrapper">
+		<div class="content-wrapper" style="min-height: 368px;">
+	
+		  <!-- Main content -->
+		  <section class="content">			
+			<div id="error-alert" class="alert alert-danger" role="alert" xmlns:th="http://www.thymeleaf.org">
+			  <button type="button" class="close" aria-label="Close">&times;</button>
+			  <span th:text="#{'view.error.'+${param.reasonCode[0]}}" th:unless="${param.reasonCode == null}">Information goes here</span>
+			</div>
+		  </section>
+		  <!-- /.content -->
+		</div>	
+		<footer th:replace="inc/footer"></footer>
+	</div>
+	<script th:src="@{/public/main/page/error.js}"></script>
+
+</body>
+</html>

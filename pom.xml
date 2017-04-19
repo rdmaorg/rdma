@@ -42,7 +42,26 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
-		<!-- 
+		<!-- Include some default rest resources for monitoring -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- Thymeleaf -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+
+
+		<!-- Spring/Thymeleaf Security -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
@@ -108,25 +127,12 @@
 			<artifactId>spring-security-core</artifactId>
 			<version>${spring.security.version}</version>
 		</dependency>
-		 -->
-		<!-- Include some default rest resources for monitoring -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>
 
-		<!-- Thymeleaf -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-thymeleaf</artifactId>
-		</dependency>
-		
-		<!-- 
 		<dependency>
 			<groupId>org.thymeleaf.extras</groupId>
 			<artifactId>thymeleaf-extras-springsecurity4</artifactId>
 		</dependency>
-		 -->
+
 
 		<!-- Log4J -->
 		<dependency>
@@ -150,12 +156,19 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-log4j</artifactId>
-			<version>1.3.8.RELEASE</version>
 		</dependency>
+
+		<!-- ehcache for Caching -->
 		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
+			<groupId>net.sf.ehcache</groupId>
+			<artifactId>ehcache</artifactId>
+			<version>2.9.1</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- Utils -->
@@ -182,29 +195,42 @@
 			<version>3.2.2</version>
 		</dependency>
 
-		<!-- JUnit -->
+		<!-- JUnit - Testing -->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-logging</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 
-	<!--MySQL support  -->
-	 <dependency>
-        <groupId>mysql</groupId>
-        <artifactId>mysql-connector-java</artifactId>
-    </dependency>
-	
-	<!-- Apache Commons DBCP 2.0 -  implements Database Connection Pooling, see : http://commons.apache.org/proper/commons-dbcp/
-	DBCP 2 compiles and runs under Java 7 only (JDBC 4.1) -->
-	<dependency>
-	    <groupId>org.apache.commons</groupId>
-	    <artifactId>commons-dbcp2</artifactId>
-	    <version>2.0</version> 
-	</dependency>
-	
+		<!--MySQL support -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+		</dependency>
+
+		<!-- Apache Commons DBCP 2.0 - implements Database Connection Pooling, 
+			see : http://commons.apache.org/proper/commons-dbcp/ DBCP 2 compiles and 
+			runs under Java 7 only (JDBC 4.1) -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-dbcp2</artifactId>
+			<version>2.0</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
 	</dependencies>
 
 	<profiles>
@@ -222,6 +248,12 @@
 			<properties>
 				<db.jndi>java:comp/env/jdbc/gdma</db.jndi>
 				<log.location>${d}{catalina.home}/logs</log.location>
+				<spring.jmx.enabled>true</spring.jmx.enabled>
+				<!-- Security -->
+				<app.protocol>https</app.protocol>
+				<app.hostname>localhost</app.hostname>
+				<cas.hostname>localhost</cas.hostname>
+				<spring.profiles>localCachingCas</spring.profiles>
 			</properties>
 			<dependencies>
 				<!-- Removing embedded tomcat -->
@@ -237,6 +269,10 @@
 			<properties>
 				<db.jndi>java:jboss/datasources/gdma</db.jndi>
 				<log.location>${d}{jboss.server.log.dir}</log.location>
+				<!-- Security -->
+				<app.hostname>localhost:8080</app.hostname>
+				<infinispan.cache.jndi.url>java:jboss/infinispan/container/sso</infinispan.cache.jndi.url>
+				<spring.profiles>wildflyDistributedCachingCas</spring.profiles>
 			</properties>
 			<dependencies>
 				<!-- Removing embedded tomcat -->
@@ -270,6 +306,22 @@
 		<!-- Dialect to be configured in the client specific profile -->
 		<db.hibernate.dialect>org.hibernate.dialect.PostgreSQL9Dialect</db.hibernate.dialect>
 
+		<spring.jmx.enabled>false</spring.jmx.enabled>
+
+		<!-- Security -->
+		<app.hostname>localhost</app.hostname>
+		<app.protocol>https</app.protocol>
+
+		<cas.hostname>localhost</cas.hostname>
+		<cas.path>/cas</cas.path>
+		<cas.proxyReceptorUrl>/login/cas/proxyreceptor</cas.proxyReceptorUrl>
+		<cas.entryPoint>/cas/login</cas.entryPoint>
+		<cas.logoutPath>/cas/logout</cas.logoutPath>
+
+		<infinispan.cache.jndi.url>java:jboss/infinispan/container/sso</infinispan.cache.jndi.url>
+		<spring.profiles>localCachingCas</spring.profiles>
+
+		<!-- Generic -->
 		<test.skip>true</test.skip>
 		<application.debug>true</application.debug>
 		<spring.security.version>4.2.1.RELEASE</spring.security.version>
@@ -286,5 +338,7 @@
 		<module>gdma2-rest</module>
 		<module>gdma2-adaptor</module>
 		<module>gdma2-domain</module>
+		<module>gdma2-security-cas</module>
+		<module>gdma2-config</module>
 	</modules>
 </project>

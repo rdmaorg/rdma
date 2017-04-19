@@ -55,6 +55,7 @@ public class MvcConfig extends WebMvcAutoConfigurationAdapter {
 		registry.addViewController(PageEnum.ADMIN_CONNECTIONS.path()).setViewName("connectionTypes");
 		registry.addViewController(PageEnum.ADMIN_TABLE.path()).setViewName("tables");
 		registry.addViewController(PageEnum.ADMIN_COLUMNS.path()).setViewName("columns");
+		registry.addViewController(PageEnum.ERROR.path()).setViewName("error");
 	}
 
 	@Override

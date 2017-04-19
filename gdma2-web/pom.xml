@@ -71,5 +71,10 @@
 			<artifactId>gdma2-rest</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>ie.clients.gdma</groupId>
+			<artifactId>gdma2-security-cas</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 	</dependencies>
 </project>
