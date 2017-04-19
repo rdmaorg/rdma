@@ -1,4 +1,40 @@
-$(document).ready(function(){	
+$(document).ready(function(){
+
+	//Get User Menu
+	$.ajax({
+        type: "get",
+        url: restUri.menu.user,
+        data: { get_param: 'data' },
+        contentType: "application/json; charset=utf-8",
+        dataType: 'json'
+    }).done(function(data){	
+		$(".user-menu span").html(data[0].name);
+    	$.each(data[0].children, function(i, menu) {
+    		$('<a href="/gdma2'+ menu.view +'" class="btn btn-default btn-flat">'+ menu.name +'</a>').appendTo(".user-footer");
+    	});
+
+    }).fail(function(e){
+    	handleError('#global-alert', e);
+    }).always(function(){
+    });
+	
+	//Get Admin Menu
+	$.ajax({
+        type: "get",
+        url: restUri.menu.app,
+        data: { get_param: 'data' },
+        contentType: "application/json; charset=utf-8",
+        dataType: 'json'
+    }).done(function(data){	
+		$("#btn-admin span").html(data[0].name);
+    	$.each(data[0].children, function(i, menu) {
+    		$('<div class="form-group"><a class="btn btn-primary btn-block btn-sm" href="/gdma2'+ menu.view +'"><h3><i class="fa '+ menu.iconClass +'" aria-hidden="true"></i><br>'+ menu.name +'</h3><p>'+ menu.description +'</p></a></div>').appendTo("#control-sidebar-settings-tab");	
+    	});
+    }).fail(function(e){
+    	handleError('#global-alert', e);
+    }).always(function(){
+    });
+	
 	//Get Connection types
 	$.ajax({
         type: "get",
