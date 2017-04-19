@@ -11,7 +11,7 @@ var configureDataTable = function() {
 				{ "data" : "name" },
 				{ "data" : "connectionClass" },
 				{ "data" : "sqlGetTables"},
-				{"data" : "active", "render" : function(data, type, row) {
+				{"data" : "active","orderable": false, className: "text-center", "render" : function(data, type, row) {
 						return '<button class="btn btn-primary btn-xs editConnection"><i class="fa fa-pencil-square-o"></i> Edit</button>'
 								+ '&nbsp;'
 								+ '<button class="btn btn-warning btn-xs deleteConnection" data-connectionid="'+ row.id+ '"><i class="fa fa-trash-o"></i> Delete</button>';
