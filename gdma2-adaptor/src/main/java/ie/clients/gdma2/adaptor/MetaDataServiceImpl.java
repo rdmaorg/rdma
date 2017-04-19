@@ -9,6 +9,7 @@ import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 import ie.clients.gdma2.spi.interfaces.MetaDataService;
 import ie.clients.gdma2.util.DynamicDAO;
+import ie.clients.gdma2.util.HashUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -358,6 +359,15 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			int userId = user.getId(); 
 			logger.info("userId: " +  userId);
 			//check if user is INSERT/UPDATE (-1 is for INSERT)
+
+			//TODO: Uncomment the following to set the SHA-1 encoded password for the user
+			//DB will always contain hashed password
+			//Handle the user update scenario in which if password is not changed, then it should not be re-encoded
+			//This is to allow local storage of password when not connecting to external authentication provider like LDAP or Active Directory
+//			if(StringUtils.isNotBlank(user.getPassword())){
+//				user.setPassword(HashUtil.hash(user.getPassword()));
+//			}
+			
 			if(userId > 0 ){
 				//update
 				logger.info("existing user is UDPATED");

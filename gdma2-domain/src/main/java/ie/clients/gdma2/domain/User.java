@@ -41,7 +41,10 @@ public class User extends BaseEntity {
 	//@OneToMany(mappedBy="gdmaUser")
 	@javax.persistence.Transient
     private Set<UserAccess> userAccess = new LinkedHashSet<UserAccess>();
-    
+
+	@javax.persistence.Column(name = "USER_PASSWORD")
+    private String password;
+
 	/*
 	@ManyToMany(cascade = CascadeType.MERGE, mappedBy = "users")
 	private List<Table> tables;
@@ -112,7 +115,15 @@ public class User extends BaseEntity {
         this.userAccess = userAccess;
     }
     
-    public boolean equals(Object other) {
+    public String getPassword() {
+		return password;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public boolean equals(Object other) {
         if (this == other)
             return true;
         if (!(other instanceof User))
