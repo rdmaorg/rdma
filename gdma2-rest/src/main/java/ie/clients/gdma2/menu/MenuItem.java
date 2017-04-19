@@ -12,8 +12,28 @@ public class MenuItem {
 	private String directUrl;
 
 	private String authority;
+	
+	private String description;
+	
+	private String iconClass;
 
 	private List<MenuItem> children;
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public String getIconClass() {
+		return iconClass;
+	}
+
+	public void setIconClass(String iconClass) {
+		this.iconClass = iconClass;
+	}
 
 	public MenuItem name(String name) {
 		this.name = name;
@@ -32,6 +52,15 @@ public class MenuItem {
 
 	public MenuItem directUrl(String directUrl) {
 		this.directUrl = directUrl;
+		return this;
+	}
+	public MenuItem description(String description) {
+		this.description = description;
+		return this;
+	}
+
+	public MenuItem iconClass(String iconClass) {
+		this.iconClass = iconClass;
 		return this;
 	}
 

@@ -270,7 +270,8 @@
 				<db.jndi>java:jboss/datasources/gdma</db.jndi>
 				<log.location>${d}{jboss.server.log.dir}</log.location>
 				<!-- Security -->
-				<app.hostname>localhost:8080</app.hostname>
+				<app.hostname>localhost</app.hostname>
+				<cas.hostname>localhost</cas.hostname>
 				<infinispan.cache.jndi.url>java:jboss/infinispan/container/sso</infinispan.cache.jndi.url>
 				<spring.profiles>wildflyDistributedCachingCas</spring.profiles>
 			</properties>
