@@ -70,6 +70,8 @@ var editServer = function(serverId) {
         contentType: "application/json; charset=utf-8",
         dataType: 'json'
     }).done(function(data){
+    	var validator = $( "#newServer" ).validate();
+    	validator.destroy();
 		$("#name").val(data.name);
 		$("#username").val(data.username);
 		$("#password").val(data.password);
@@ -205,10 +207,13 @@ $(document).ready(function(){
 	
 	$("#addServer").click(function(){
 		$("#modalServer").find('form').trigger('reset');
-		$("#modalServer").on('shown.bs.modal', function () {
-            $("#name").focus();
-		});
+        $("#name").focus();
 	});
+	
+	$("#modalServer").on('hide.bs.modal', function() {
+		var validator = $( "#newServer" ).validate();
+		validator.destroy();
+    })
 	
 	// Cookie help tutorial    
     //var exist = $.cookie('endHelper');

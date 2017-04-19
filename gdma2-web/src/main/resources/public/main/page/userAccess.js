@@ -29,6 +29,7 @@ var configureUserAccessDatatable = function() {
 				},
 				{
 					"data" : "allowDisplay",
+					"className": "text-center",
 					"orderable" : false,
 					"render" : function(data, type, row) {
 						var checked = verifyIfisChecked(row, "allowDisplay") ? ' checked'
@@ -40,6 +41,7 @@ var configureUserAccessDatatable = function() {
 				},
 				{
 					"data" : "allowUpdate",
+					"className": "text-center",
 					"orderable" : false,
 					"render" : function(data, type, row) {
 						var checked = verifyIfisChecked(row, "allowUpdate") ? ' checked'
@@ -50,6 +52,7 @@ var configureUserAccessDatatable = function() {
 				},
 				{
 					"data" : "allowInsert",
+					"className": "text-center",
 					"orderable" : false,
 					"render" : function(data, type, row) {
 						var checked = verifyIfisChecked(row, "allowInsert") ? ' checked'
@@ -60,6 +63,7 @@ var configureUserAccessDatatable = function() {
 				},
 				{
 					"data" : "allowDelete",
+					"className": "text-center",
 					"orderable" : false,
 					"render" : function(data, type, row) {
 						var checked = verifyIfisChecked(row, "allowDelete") ? ' checked'

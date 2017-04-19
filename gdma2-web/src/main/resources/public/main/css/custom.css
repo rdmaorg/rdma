@@ -7,6 +7,36 @@
     overflow: auto;
 }
 
+.skin-blue .sidebar-menu>li>.treeview-menu {
+	max-height: 250px;
+    overflow-y: auto;
+}
+
+.modal-body label.error {
+	font-size: 11px;
+    color: rgba(255,0,0,0.6);
+    position: absolute;
+    right: 10px;
+    top: 35px;
+    font-style: italic;
+}
+
+.modal-body .form-group  {
+	position:relative;
+}
+
+.sidebar-mini.sidebar-collapse .sidebar-menu>li:hover>.treeview-menu {
+	width:249px;
+}
+
+.treeview-menu::-webkit-scrollbar {
+    width: 5px;
+}
+ 
+.treeview-menu::-webkit-scrollbar-thumb {
+  background-color:#3c8dbc;
+}
+
 .filterinput {
 	background: rgba(255,255,255,0.2);
     border: none;
