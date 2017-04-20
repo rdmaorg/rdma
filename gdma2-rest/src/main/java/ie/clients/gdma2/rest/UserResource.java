@@ -83,6 +83,7 @@ public class UserResource extends BaseDataTableResource{
 	@RequestMapping(value="save", method = RequestMethod.POST)
 	public List<User> saveUsers(@RequestBody List<User> users){
 		logger.debug("*** saveUsers()");
+		//TODO: Empty the password
 		return serviceFacade.getMetadataService().saveUsers(users);
 	}
 
@@ -97,7 +98,9 @@ public class UserResource extends BaseDataTableResource{
 	@RequestMapping(value = "/id/{id}")
 	public User getUser(@PathVariable("id") Integer userId ){
 		logger.info("getUser: " + userId);
-		return serviceFacade.getMetadataService().findOneUser(userId);
+		User u= serviceFacade.getMetadataService().findOneUser(userId);
+		u.setPassword("");//Emptying the password
+		return u;
 	}
 
 	/*get users by username: 	http://localhost:8080/gdma2/rest/user/name?username=Maurice.A.Nagata@mailinator.com	*/
@@ -110,6 +113,7 @@ public class UserResource extends BaseDataTableResource{
 
 		logger.info("userList size: " + (usersWithSameUserNameList != null ? usersWithSameUserNameList.size() : "0"));
 		for (User user : usersWithSameUserNameList) {
+			user.setPassword("");//Emptying the password
 			logger.info("user: " + user.getUserName());
 		}
 		return usersWithSameUserNameList;

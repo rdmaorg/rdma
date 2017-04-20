@@ -295,13 +295,26 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 	@Override
 	public List<User> getAllUsers() {
-		return IteratorUtils.toList(repositoryManager.getUserRepository().findAll().iterator());
-
+		List<User> users =  IteratorUtils.toList(repositoryManager.getUserRepository().findAll().iterator());
+		//Emptying the password
+		if(users!=null){
+			for(User u: users){
+				u.setPassword("");
+			}
+		}
+		return users;
 	}
 
 	@Override
 	public List<User> getAllActiveUsers() {
-		return repositoryManager.getUserRepository().findByActiveTrue();
+		List<User> users =  repositoryManager.getUserRepository().findByActiveTrue();
+		//Emptying the password
+		if(users!=null){
+			for(User u: users){
+				u.setPassword("");
+			}
+		}
+		return users;
 	}
 
 	@Override
@@ -325,6 +338,12 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			logger.debug("Total, with search:" + total);
 			PageRequest pagingRequest = getPagingRequest(orderBy, orderDirection, startIndex, length, total);
 			users = repositoryManager.getUserRepository().getMatchingUsers(match, pagingRequest);
+		}
+		//Emptying the password
+		if(users!=null){
+			for(User u: users){
+				u.setPassword("");
+			}
 		}
 		logger.debug("Search Users: Search: " + matching + ", Total: " + total + ", Filtered: " + filtered
 				+ ", Result Count: " + users.size());
