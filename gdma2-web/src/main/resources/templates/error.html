@@ -12,6 +12,11 @@
 			  <button type="button" class="close" aria-label="Close">&times;</button>
 			  <span th:text="#{'view.error.'+${param.reasonCode[0]}}" th:unless="${param.reasonCode == null}">Information goes here</span>
 			</div>
+			<div class="row">
+				<div class="col-md-12">
+					<a class="btn btn-primary" th:href="@{/logout}">Logout</a>
+				</div>
+			</div>
 		  </section>
 		  <!-- /.content -->
 		</div>	

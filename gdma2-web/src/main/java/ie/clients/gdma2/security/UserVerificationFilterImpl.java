@@ -99,7 +99,7 @@ public class UserVerificationFilterImpl extends GenericFilterBean implements Use
 					response.sendRedirect(url);
 				}
 
-				if (!u.isEnabled()) {
+				if (!u.isActive()) {
 					url = getRedirectUrl(url, "02");
 					logger.info("Account is not enabled, redirecting to information page [" + url + "].");
 					response.sendRedirect(url);

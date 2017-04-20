@@ -35,7 +35,7 @@ public class UserAuthDetail extends User {
 	}
 
 
-	public boolean isEnabled() {
+	public boolean isActive() {
 		return (user != null ? user.isActive() : super.isEnabled());
 	}
 
