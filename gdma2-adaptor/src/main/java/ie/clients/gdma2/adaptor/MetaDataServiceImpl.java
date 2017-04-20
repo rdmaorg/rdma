@@ -383,9 +383,9 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			//DB will always contain hashed password
 			//Handle the user update scenario in which if password is not changed, then it should not be re-encoded
 			//This is to allow local storage of password when not connecting to external authentication provider like LDAP or Active Directory
-//			if(StringUtils.isNotBlank(user.getPassword())){
-//				user.setPassword(HashUtil.hash(user.getPassword()));
-//			}
+			if(StringUtils.isNotBlank(user.getPassword())){
+				user.setPassword(HashUtil.hash(user.getPassword()));
+			}
 			
 			if(userId > 0 ){
 				//update

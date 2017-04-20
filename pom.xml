@@ -313,6 +313,8 @@
 		<app.hostname>localhost</app.hostname>
 		<app.protocol>https</app.protocol>
 
+		<authentication.local>false</authentication.local>
+
 		<cas.hostname>localhost</cas.hostname>
 		<cas.path>/cas</cas.path>
 		<cas.proxyReceptorUrl>/login/cas/proxyreceptor</cas.proxyReceptorUrl>
