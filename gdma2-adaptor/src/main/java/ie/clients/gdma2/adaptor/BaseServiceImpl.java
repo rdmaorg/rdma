@@ -11,11 +11,14 @@ import org.springframework.data.domain.Sort.Order;
 
 import ie.clients.gdma2.adaptor.repo.RepositoryManager;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
+import ie.clients.gdma2.spi.interfaces.UserContextProvider;
 
 public abstract class BaseServiceImpl {
 
 	@Autowired
 	protected RepositoryManager repositoryManager;
+	@Autowired
+	protected UserContextProvider userContextProvider;
 	
 	protected PageRequest getPagingRequest(String orderBy, String orderDirection, int startIndex, int length,
 			long totalRecords) {

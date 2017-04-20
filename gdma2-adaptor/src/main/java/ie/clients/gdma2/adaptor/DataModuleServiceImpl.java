@@ -32,8 +32,9 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 		logger.info("getActiveServers" );
 		authenticateUser(); //TODO
 		logger.info("provide proper userName first" );
-		logger.info("using TEST user from local DB: " + TEST_USERNAME );
-		List<Server> servers = repositoryManager.getServerRepository().activeServersWithActiveTablesForUser(TEST_USERNAME);
+		logger.info("using TEST user from local DB: " + userContextProvider.getLoggedInUserName() );
+//		List<Server> servers = repositoryManager.getServerRepository().activeServersWithActiveTablesForUser(TEST_USERNAME);
+		List<Server> servers = repositoryManager.getServerRepository().activeServersWithActiveTablesForUser(userContextProvider.getLoggedInUserName());
 		return servers;
 	}
 	
@@ -44,8 +45,9 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 		logger.info("getActiveTables");
 		authenticateUser(); //TODO
 		logger.info("provide proper userName first" );
-		logger.info("using TEST user from local DB: " + TEST_USERNAME );
-		return repositoryManager.getTableRepository().activeTablesOnActiveServerForUser(TEST_USERNAME, serverId);
+		logger.info("using TEST user from local DB: " + userContextProvider.getLoggedInUserName() );
+//		return repositoryManager.getTableRepository().activeTablesOnActiveServerForUser(TEST_USERNAME, serverId);
+		return repositoryManager.getTableRepository().activeTablesOnActiveServerForUser(userContextProvider.getLoggedInUserName(), serverId);
 		
 	}
 
@@ -56,7 +58,7 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 		logger.info("getActiveColumns");
 		authenticateUser(); //TODO
 		logger.info("provide proper userName first" );
-		logger.info("using TEST user from local DB: " + TEST_USERNAME );
+		logger.info("using TEST user from local DB: " + userContextProvider.getLoggedInUserName() );
 		return repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(tableId);
 		
 	}
