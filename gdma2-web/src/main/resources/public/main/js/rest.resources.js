@@ -4,6 +4,7 @@ var restUri = {
 //		user : getRestBaseUri() + '/menu/user'
 //	},
 	server:{
+		data: getRestBaseUri() + '/server/data/tables',
 		list: getRestBaseUri() + '/server/list',
 		table: getRestBaseUri() + '/server/table',
 		item: getRestBaseUri() + '/server/{serverId}',

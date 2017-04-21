@@ -1,5 +1,10 @@
 $(document).ready(function(){
+	buildDataModuleMenu();
+});
 
+
+
+var buildDataModuleMenu = function(){
 	//Get User Menu
 	$.ajax({
         type: "get",
@@ -57,12 +62,12 @@ $(document).ready(function(){
     $.ajax({
         type: "get",
         asyn: false,
-        url: restUri.server.table,
+        url: restUri.server.data,
         data: { get_param: 'data' },
         contentType: "application/json; charset=utf-8",
         dataType: 'json'
     }).done(function(data){
-    	$.each(data.data, function(i, server) {
+    	$.each(data, function(i, server) {
     		$("<li id='server" + server.id + "' class='treeview'><a><i class='fa fa-database'></i><span class='serverN'> " + server.name + " </span><span class='pull-right-container'><i class='fa fa-angle-left pull-right'></i></span></a><ul id='list" + server.id + "' class='treeview-menu'><div id='header" + server.id + "'></div></ul></li>").appendTo(".sidebar-menu");
     		function tablesId() {
     			showLoading();
@@ -139,4 +144,4 @@ $(document).ready(function(){
     	hideLoading();
     });
     
-});
+}

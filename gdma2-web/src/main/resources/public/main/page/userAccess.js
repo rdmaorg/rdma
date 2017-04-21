@@ -13,6 +13,9 @@ var configureUserAccessDatatable = function() {
 		fixedHeader : true,
 		"page" : 0,
 		"stateSave" : false,
+		"oLanguage": {
+	         "sSearch": "Search by username:"
+	     },
 		"destroy" : true,
 		"columns" : [
 				{
