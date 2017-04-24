@@ -170,7 +170,25 @@ var associatePostUser = function(){
 	});
 };
 
+var associateInsertButton = function(){
+	$("#inserUser").click(function(){
+		$("#modalUser").find('form').trigger('reset');
+		$("#modalUser").on('shown.bs.modal', function () {
+			$("#name").focus();
+		});
+		associatePostUser();
+	});
+}
+
+var resetModalValidatorEvent = function(){
+	$("#modalUser").on('hide.bs.modal', function() {
+		var validator = $("#newUser").validate();
+		validator.destroy();
+	});
+}
 
 $(document).ready(function(){
 	configureDataTable();	
+	associateInsertButton();
+	resetModalValidatorEvent();
 });
