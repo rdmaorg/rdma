@@ -292,28 +292,35 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 	/*USER*/
 
-	@Override
-	public List<User> getAllUsers() {
-		List<User> users =  IteratorUtils.toList(repositoryManager.getUserRepository().findAll().iterator());
-		//Emptying the password
-		if(users!=null){
+	//Emptying the passwords
+	private List<User> emptyPasswords(List<User> users){
+		if( users != null && !users.isEmpty()){
 			for(User u: users){
+				logger.debug("emptyPasswords executed");
 				u.setPassword("");
 			}
 		}
-		return users;
+		return users; 
+	}
+
+	private User emptyPassword(User user){
+		if( user != null) {
+			logger.debug("emptyPassword executed");
+			user.setPassword("");
+		}
+		return user; 
+	}
+
+	@Override
+	public List<User> getAllUsers() {
+		List<User> users =  IteratorUtils.toList(repositoryManager.getUserRepository().findAll().iterator());
+		return emptyPasswords(users);
 	}
 
 	@Override
 	public List<User> getAllActiveUsers() {
 		List<User> users =  repositoryManager.getUserRepository().findByActiveTrue();
-		//Emptying the password
-		if(users!=null){
-			for(User u: users){
-				u.setPassword("");
-			}
-		}
-		return users;
+		return emptyPasswords(users);
 	}
 
 	@Override
@@ -339,11 +346,8 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			users = repositoryManager.getUserRepository().getMatchingUsers(match, pagingRequest);
 		}
 		//Emptying the password
-		if(users!=null){
-			for(User u: users){
-				u.setPassword("");
-			}
-		}
+		emptyPasswords(users);
+
 		logger.debug("Search Users: Search: " + matching + ", Total: " + total + ", Filtered: " + filtered
 				+ ", Result Count: " + users.size());
 
@@ -354,8 +358,8 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 	@Override
 	public List<User> findByUserNameIgnoreCase(String userName) {
-		return 	IteratorUtils.toList(repositoryManager.getUserRepository().findByUserNameIgnoreCase(userName).iterator());
-
+		List<User> users = IteratorUtils.toList(repositoryManager.getUserRepository().findByUserNameIgnoreCase(userName).iterator());
+		return emptyPasswords(users);
 	}
 
 
@@ -368,6 +372,21 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	 *  S3: update existing user - UPDATE:
 	 *  	S3-1: if user activated - DELETE orphans	
 	 *  	S3-2: 	else any other UPDATE - skip orphan delete
+	 *  
+	 *  S4 authentication section: 
+	 *   if internal DB authentication provider is used :
+	 *    - User View will contain additional column in UI - userPassword
+	 *    - on backend there is additional Entity field User.password and in DB : users_gdma2.user_password
+	 *    
+	 *   S4.1 On INSERT, we need to encode password taken from UI and save to DB
+	 *    Saved password is never to be show on UI - TODO : make all loading passwords in all methods BLANK
+	 *    
+	 *    If User is UPDATEed in UI and userPassword field is UPDATEed then backend must: 
+	 *   S4-2:	 check if password is blank, if not  re-encode new password and store it
+	 *   S4-3 :							    else skip password rencoding  
+	 *   
+	 *   at the end save all users and return user list with empty passwords
+	 *    
 	 */
 	@Transactional
 	@Override
@@ -382,25 +401,42 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			//DB will always contain hashed password
 			//Handle the user update scenario in which if password is not changed, then it should not be re-encoded
 			//This is to allow local storage of password when not connecting to external authentication provider like LDAP or Active Directory
-			if(StringUtils.isNotBlank(user.getPassword())){
-				user.setPassword(HashUtil.hash(user.getPassword()));
-			}
-			
-			if(userId > 0 ){
-				//update
-				logger.info("existing user is UDPATED");
+
+
+			//INSERT
+			if(userId < 0 ){
+				//S4.1 INSERT
+				logger.info("INSERTing new user");
+				if(StringUtils.isNotBlank(user.getPassword())){
+					logger.info("creating hash password");
+					user.setPassword(HashUtil.hash(user.getPassword()));
+				}	
+			} else {
+				//UPDATE
+				logger.info("UDPATing existing user");
 				User userBeforeUpdate = repositoryManager.getUserRepository().findOne(userId);
-				//existing user is deactivated
+				
+				//S3 check - existing user is deactivated
 				if(userBeforeUpdate.isActive() == true && user.isActive() == false){
 					logger.info("user is deactivated, deleting user access");
 					repositoryManager.getUserAccessRepository().deleteForUser(userId);
 				}
-			} else {
-				logger.info("NEW user is saved");
+				
+				//S4-2 and S4-3
+				if(StringUtils.isNotBlank(user.getPassword())){
+					if(userBeforeUpdate.getPassword().equals(user.getPassword())){
+						logger.info("skip password re-encoding");
+					} else {
+						logger.info("password was updated: re-encoding new pass: ");
+						user.setPassword(HashUtil.hash(user.getPassword()));
+					}
+					
+				}	
 			}
 		}
-		
-		return IteratorUtils.toList(repositoryManager.getUserRepository().save(userList).iterator());		
+
+		 List<User> savedUsers = IteratorUtils.toList(repositoryManager.getUserRepository().save(userList).iterator());	
+		 return emptyPasswords(savedUsers);
 	}
 
 
@@ -813,63 +849,63 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 	@Override
 	public User findOneUser(int id) {
-		return repositoryManager.getUserRepository().findOne(id);
-
+		User user = repositoryManager.getUserRepository().findOne(id);
+		return emptyPassword(user);
 	}
 
-	
+
 	/*DATA module section*/
-	
+
 	@Override
 	public PaginatedTableResponse<Column> getColumnData(Integer tableId, String matching, int orderByColumnID, String orderDirection,
 			int startIndex, int length) {
-		
-		
-			logger.info("getColumnData : " + tableId);
 
-			Table table = null;
-			List<Column> columns = null;
-			long total = 0;
-			long filtered = 0;
 
-			table = repositoryManager.getTableRepository().findOne(tableId);
-			
-			//TODO if(null == table)
+		logger.info("getColumnData : " + tableId);
 
-			if(StringUtils.isBlank(matching)){
-				total = repositoryManager.getColumnRepository().countActiveForTable(table.getId());
-				logger.debug("Total Active columns for table, no search:" + total);
-				filtered = total;
+		Table table = null;
+		List<Column> columns = null;
+		long total = 0;
+		long filtered = 0;
 
-				logger.debug("find all Active columns by table:");
-				//PageRequest pagingRequest = getPagingRequest(orderBy, orderDirection, startIndex, length, total);
-				
-					//columns = repositoryManager.getColumnRepository().findActiveforTable(table.getId(), pagingRequest);
-				columns = dynamicDAO.getColumnData(tableId, matching, orderByColumnID, orderDirection,
-						startIndex, length);
-						
-				
-				logger.debug("columns found: " + (null != columns ? columns.size() : "0"));
-			} else {
-				String match = "%" + matching.trim().toUpperCase() + "%";
-				logger.debug("searching for: " +  match);
-				
-				/*
+		table = repositoryManager.getTableRepository().findOne(tableId);
+
+		//TODO if(null == table)
+
+		if(StringUtils.isBlank(matching)){
+			total = repositoryManager.getColumnRepository().countActiveForTable(table.getId());
+			logger.debug("Total Active columns for table, no search:" + total);
+			filtered = total;
+
+			logger.debug("find all Active columns by table:");
+			//PageRequest pagingRequest = getPagingRequest(orderBy, orderDirection, startIndex, length, total);
+
+			//columns = repositoryManager.getColumnRepository().findActiveforTable(table.getId(), pagingRequest);
+			columns = dynamicDAO.getColumnData(tableId, matching, orderByColumnID, orderDirection,
+					startIndex, length);
+
+
+			logger.debug("columns found: " + (null != columns ? columns.size() : "0"));
+		} else {
+			String match = "%" + matching.trim().toUpperCase() + "%";
+			logger.debug("searching for: " +  match);
+
+			/*
 				total = repositoryManager.getColumnRepository().countActiveForTable(table.getId());
 				logger.debug("Total active count columns for table, with search:" + total);
 				filtered = repositoryManager.getColumnRepository().countActiveAndMatchingForTable(match, table.getId());
 				logger.debug("filtered : " + filtered + ", for match: " + match);
 				PageRequest pagingRequest = getPagingRequest(orderBy, orderDirection, startIndex, length, total);
 				columns = repositoryManager.getColumnRepository().findActiveAndMatchingforTable(match, table.getId(), pagingRequest);
-				*/
-			}
+			 */
+		}
 
-			logger.debug("Search Columns: Search: " + matching + ", Total: " + total + ", Filtered: " + filtered
-					+ ", Result Count: " + ((columns != null) ? columns.size() : "0"));
+		logger.debug("Search Columns: Search: " + matching + ", Total: " + total + ", Filtered: " + filtered
+				+ ", Result Count: " + ((columns != null) ? columns.size() : "0"));
 
-			return getPaginatedTableResponse(columns != null ? columns : new ArrayList<Column>(), total, filtered);
-		
-		
+		return getPaginatedTableResponse(columns != null ? columns : new ArrayList<Column>(), total, filtered);
+
+
 	}
 
 

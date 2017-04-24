@@ -98,9 +98,7 @@ public class UserResource extends BaseDataTableResource{
 	@RequestMapping(value = "/id/{id}")
 	public User getUser(@PathVariable("id") Integer userId ){
 		logger.info("getUser: " + userId);
-		User u= serviceFacade.getMetadataService().findOneUser(userId);
-		u.setPassword("");//Emptying the password
-		return u;
+		return serviceFacade.getMetadataService().findOneUser(userId);
 	}
 
 	/*get users by username: 	http://localhost:8080/gdma2/rest/user/name?username=Maurice.A.Nagata@mailinator.com	*/
@@ -109,14 +107,7 @@ public class UserResource extends BaseDataTableResource{
 		String userName = getUsernameValue(params);
 		logger.debug("getByUserName: " + userName);
 		//TODO make userName unique in DB???
-		List<User> usersWithSameUserNameList = serviceFacade.getMetadataService().findByUserNameIgnoreCase(userName);
-
-		logger.info("userList size: " + (usersWithSameUserNameList != null ? usersWithSameUserNameList.size() : "0"));
-		for (User user : usersWithSameUserNameList) {
-			user.setPassword("");//Emptying the password
-			logger.info("user: " + user.getUserName());
-		}
-		return usersWithSameUserNameList;
+		 return serviceFacade.getMetadataService().findByUserNameIgnoreCase(userName);
 	}
 
 	protected String getUsernameValue(Map<String, String> reqParams) {
