@@ -24,7 +24,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestBody;
 
 @Service
 public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataService {
@@ -539,7 +538,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			logger.debug("Total count UserAccess for table, with search:" + total);
 			filtered = repositoryManager.getUserAccessRepository().getCountMatching(match);
 			PageRequest pagingRequest = getPagingRequest(orderBy, orderDirection, startIndex, length, total);
-			userAccessListForTable =  repositoryManager.getUserAccessRepository().getMatchingUserAccesses(match, pagingRequest);
+			userAccessListForTable =  repositoryManager.getUserAccessRepository().getMatchingUserAccesses(match, tableId,pagingRequest);
 
 		}
 

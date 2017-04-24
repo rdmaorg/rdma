@@ -56,9 +56,9 @@ public interface UserAccessRepository extends PagingAndSortingRepository<UserAcc
 	@Query("select count(ua) from UserAccess ua where upper(ua.user.userName) like ?1")
 	public long getCountMatching(String matching);
 
-	@Query("select ua from UserAccess ua where upper(ua.user.userName) like ?1")
-	public List<UserAccess> getMatchingUserAccesses(String match, Pageable pageable);
-
+	@Query("select ua from UserAccess ua where upper(ua.user.userName) like ?1 and ua.table.id = ?2")
+	public List<UserAccess> getMatchingUserAccesses(String match, Integer tableId, Pageable pageable);
+	
 	@Query("select ua from UserAccess ua where ua.table.id = ?1")
 	public List<UserAccess> findByTableId(int tableId);
 	
