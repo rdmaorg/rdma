@@ -8,13 +8,11 @@ import ie.clients.gdma2.domain.UserAccess;
 import java.util.List;
 
 /**corresponds to GdmaAjaxFacade in GMDA I, contains operations for working with DATA module, not Admin module
- * GDMA I : before execution each operation calls authecticateUser() to check user in Session*/
+ * GDMA I : before execution each operation calls authecticateUser() to check user in Session
+ * GDMA II: CAS used for authentication, every operation will simply call UserContextProvider to get authenticated user*/
 
 public interface DataModuleService {
 
-		public void authenticateUser();
-		
-		
 		
 		/* in GDMA 1, this was: getServerTableList
 		 * 3 actions executed one after one: Return list of all ACTIVE servers 
