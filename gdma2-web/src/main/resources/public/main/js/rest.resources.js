@@ -20,7 +20,7 @@ var restUri = {
 	},
 	table:{
 		list: getRestBaseUri() + '/table/list',
-		list_for_server_active: getRestBaseUri() + '/table/server/{serverId}/active',
+		list_for_server_active: getRestBaseUri() + '/table/data/server/{id}',
 		sync_table_server: getRestBaseUri() + '/table/{serverId}/metadata',
 		table: getRestBaseUri() + '/table/server/{id}/table/list',
 		save: getRestBaseUri() + '/table/save'

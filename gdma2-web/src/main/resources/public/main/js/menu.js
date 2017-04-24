@@ -73,7 +73,7 @@ var buildDataModuleMenu = function(){
     			showLoading();
         		$.ajax({
         	        type: "get",
-        	        url: mapPathVariablesInUrl(restUri.table.list_for_server_active, {serverId: server.id}),
+        	        url: mapPathVariablesInUrl(restUri.table.list_for_server_active, {id: server.id}),
         	        data: { get_param: 'id' },
         	        success: function(data, textStatus, jqXHR) {
         			$.each(data, function(i, table) {
