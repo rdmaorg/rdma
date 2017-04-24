@@ -17,8 +17,6 @@ var configureDataTable = function(){
 			            { "data": "active" },			            
 			            { "data": "name","render" : function(data, type, row){ 
 			            	return '<button class="btn btn-primary btn-xs editAccess" data-tableid="'+ row.id+ '" data-tablename="'+ row.name +'" ><i class="fa fa-pencil-square-o"></i> Edit Access</button>'
-			            	+ '&nbsp;'
-			            	+'<button class="btn btn-info btn-xs viewColumns" data-tableid="'+ row.id+ '" data-tablename="'+ row.name +'"><i class="fa fa-columns"></i> Columns</button>'
 			            	} 
 			            }
 			        ]

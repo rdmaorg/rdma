@@ -25,7 +25,7 @@
 	  <ul class="nav navbar-nav pull-right">
         <li class="dropdown user user-menu">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">          
-            <span class="hidden-xs">John Doe</span>
+            <span class="hidden-xs"></span>
           </a>
           <ul class="dropdown-menu dropdown-menu-right">
             <!-- Menu Footer-->
@@ -34,7 +34,7 @@
           </ul>
         </li>
         <li sec:authorize="hasAuthority('GDMA_ADMIN')">
-          <a href="#" class="btn btn-info" data-toggle="control-sidebar"><i class="fa fa-gears"></i> <span th:text="#{view.menu.configuration}"></span></a>
+          <a href="#" class="btn btn-info" id="btn-admin" data-toggle="control-sidebar"><i class="fa fa-gears"></i> <span></span></a>
         </li>
       </ul>
   </nav>
