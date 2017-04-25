@@ -29,16 +29,25 @@ var configureUserAccessDatatable = function() {
 					"data" : "user.firstName",
 					"orderable" : false,
 					"defaultContent" : ""
+				},{
+					"data" : "fullAccess",
+					"className": "text-center",
+					"orderable" : false,
+					"render" : function(data, type, row) {
+						var checked = isAllChecked(row) ? ' checked'	: '';
+						origCheckboxes[row.id] = row;
+						return '<input id="'+ row.id +'fullA" class="allowFullAccess" data-id="' + row.id
+								+ '" type="checkbox"' + checked + '>';
+					}
 				},
 				{
 					"data" : "allowDisplay",
 					"className": "text-center",
 					"orderable" : false,
 					"render" : function(data, type, row) {
-						var checked = verifyIfisChecked(row, "allowDisplay") ? ' checked'
+						var checked = isChecked(row, "allowDisplay") ? ' checked'
 								: '';
-						origCheckboxes[row.id] = row;
-						return '<input class="allowDisplay" data-id="' + row.id
+						return '<input id="'+ row.id +'allowD"  class="allowDisplay" data-id="' + row.id
 								+ '" type="checkbox"' + checked + '>';
 					}
 				},
@@ -47,9 +56,9 @@ var configureUserAccessDatatable = function() {
 					"className": "text-center",
 					"orderable" : false,
 					"render" : function(data, type, row) {
-						var checked = verifyIfisChecked(row, "allowUpdate") ? ' checked'
+						var checked = isChecked(row, "allowUpdate") ? ' checked'
 								: '';
-						return '<input class="allowUpdate" data-id="' + row.id
+						return '<input  id="'+ row.id +'allowU" class="allowUpdate" data-id="' + row.id
 								+ '" type="checkbox"' + checked + '>';
 					}
 				},
@@ -58,9 +67,9 @@ var configureUserAccessDatatable = function() {
 					"className": "text-center",
 					"orderable" : false,
 					"render" : function(data, type, row) {
-						var checked = verifyIfisChecked(row, "allowInsert") ? ' checked'
+						var checked = isChecked(row, "allowInsert") ? ' checked'
 								: '';
-						return '<input class="allowInsert" data-id="' + row.id
+						return '<input id="'+ row.id +'allowI" class="allowInsert" data-id="' + row.id
 								+ '" type="checkbox"' + checked + '>';
 					}
 				},
@@ -69,9 +78,9 @@ var configureUserAccessDatatable = function() {
 					"className": "text-center",
 					"orderable" : false,
 					"render" : function(data, type, row) {
-						var checked = verifyIfisChecked(row, "allowDelete") ? ' checked'
+						var checked = isChecked(row, "allowDelete") ? ' checked'
 								: '';
-						return '<input class="allowDelete" data-id="' + row.id
+						return '<input id="'+ row.id +'allowDel" class="allowDelete" data-id="' + row.id
 								+ '" type="checkbox"' + checked + '>';
 					}
 				} ]
@@ -93,7 +102,18 @@ var configureUserAccessDatatable = function() {
 	});
 }
 
-var verifyIfisChecked = function(row, rule) {
+var isAllChecked = function(row){
+	var rules = {
+			allowDisplay: 'allowDisplay',
+			allowUpdate: 'allowUpdate',
+			allowInsert: 'allowInsert',
+			allowDelete: 'allowDelete'
+	};
+	return isChecked(row,rules.allowDisplay) && isChecked(row,rules.allowUpdate) 
+			&& isChecked(row,rules.allowInsert) && isChecked(row,rules.allowDelete);
+}
+
+var isChecked = function(row, rule) {
 	if (changedCheckboxes[row.id]) {
 		return changedCheckboxes[row.id][rule];
 	} else {
@@ -106,9 +126,11 @@ var associateCheckBoxes = function() {
 	associateCheckbox("allowUpdate");
 	associateCheckbox("allowInsert");
 	associateCheckbox("allowDelete");
+	associateCheckboxFullAccess();
 }
 
 var associateCheckbox = function(rule) {
+	$('.' + rule).off('change');
 	$('.' + rule).change(function(e) {
 		var ck = $(e.target);
 		var object = origCheckboxes[ck.data('id')];
@@ -123,11 +145,68 @@ var associateCheckbox = function(rule) {
 				delete changedCheckboxes[object.id];
 			}
 		} else {
-			// clone the object for mantain the original for comparation
+			// clone the object for maintain the original for comparison
 			changedCheckboxes[object.id] = jQuery.extend({}, object);
 			changedCheckboxes[object.id][rule] = ck[0].checked;
 		}
+		verifyFullAccess(ck.data('id'));
 	});
+}
+
+var associateCheckboxFullAccess = function(){
+	$('.allowFullAccess').off('change');
+	$('.allowFullAccess').change(function(e) {
+		console.log("checked" + new Date().getDate());
+		var rules = {
+			allowDisplay: 'allowDisplay',
+			allowUpdate: 'allowUpdate',
+			allowInsert: 'allowInsert',
+			allowDelete: 'allowDelete'
+		};
+		var ck = $(e.target);
+		var object = origCheckboxes[ck.data('id')];
+		if (changedCheckboxes[object.id]) {
+			var objAux = changedCheckboxes[object.id];
+			objAux[rules.allowDisplay] = ck[0].checked;
+			objAux[rules.allowUpdate] = ck[0].checked;
+			objAux[rules.allowInsert] = ck[0].checked;
+			objAux[rules.allowDelete] = ck[0].checked;
+			// verify if the object was changed or not for save only
+			// modified objects
+			if (objectChanged(object, objAux)) {
+				changedCheckboxes[object.id][rules.allowDisplay] = ck[0].checked;
+				changedCheckboxes[object.id][rules.allowUpdate] = ck[0].checked;
+				changedCheckboxes[object.id][rules.allowInsert] = ck[0].checked;
+				changedCheckboxes[object.id][rules.allowDelete] = ck[0].checked;
+			} else {
+				delete changedCheckboxes[object.id];
+			}
+		} else {
+			// clone the object for maintain the original for comparison
+			changedCheckboxes[object.id] = jQuery.extend({}, object);
+			changedCheckboxes[object.id][rules.allowDisplay] = ck[0].checked;
+			changedCheckboxes[object.id][rules.allowUpdate] = ck[0].checked;
+			changedCheckboxes[object.id][rules.allowInsert] = ck[0].checked;
+			changedCheckboxes[object.id][rules.allowDelete] = ck[0].checked;
+		}
+		selectAllCheckBoxes(ck.data('id'),ck[0].checked);
+	});
+}
+
+var verifyFullAccess = function(id){
+	if($("#"+id+"allowD")[0].checked && $("#"+id+"allowU")[0].checked &&
+			$("#"+id+"allowI")[0].checked && $("#"+id+"allowDel")[0].checked){
+		$("#"+id+"fullA").prop( "checked", true );
+	} else {
+		$("#"+id+"fullA").prop( "checked", false );
+	}
+}
+
+var selectAllCheckBoxes = function(id,check){
+	$("#"+id+"allowD").prop( "checked", check );
+	$("#"+id+"allowU").prop( "checked", check );
+	$("#"+id+"allowI").prop( "checked", check );
+	$("#"+id+"allowDel").prop( "checked", check );
 }
 
 var objectChanged = function(origObject, newObject) {
@@ -144,41 +223,44 @@ var objectChanged = function(origObject, newObject) {
 }
 
 var associateSaveUserAccess = function() {
-	var form = $("#editUserAccess");
-	form.validate();
 	$("#save-userAccess").click(function(e) {
-		if (form.valid()) {
-			$(this).confirmation({
-				placement : "left",
-				btnOkLabel : "Edit user access",
-				onConfirm : function(event, element) {
-					showLoading();
-					var list = getModifiedObjects();
-					if (list.length > 0) {
-						$.ajax({
-							type : "post",
-							url : restUri.userAcces.update,
-							data : JSON.stringify(list),
-							contentType : "application/json; charset=utf-8"
-						}).done(function(data) {
-							$("#global-success").slideDown(500);
-					    	window.setTimeout(function() {
-					    		$("#global-success").slideUp(500);
-					    	}, 4000);
-						}).fail(function(e) {
-							handleError('#global-alert', e);
-						}).always(function() {
-							hideLoading();
-							$('#modalUserAccess').modal('hide');
-							
-						});
-					}
+		$(this).confirmation({
+			placement : "left",
+			btnOkLabel : "Edit user access",
+			onConfirm : function(event, element) {
+				showLoading();
+				var list = getModifiedObjects();
+				if (list.length > 0) {
+					console.log(list);
+					$.ajax({
+						type : "post",
+						url : restUri.userAcces.update,
+						data : JSON.stringify(list),
+						contentType : "application/json; charset=utf-8"
+					}).done(function(data) {
+						buildDataModuleMenu();
+						$("#global-success").slideDown(500);
+				    	window.setTimeout(function() {
+				    		$("#global-success").slideUp(500);
+				    	}, 4000);
+					}).fail(function(e) {
+						handleError('#global-alert', e);
+					}).always(function() {
+						hideLoading();
+						$('#modalUserAccess').modal('hide');
+						
+					});
+				} else {
+					$('#modalUserAccess').modal('hide');
+					$("#global-success").slideDown(500);
+			    	window.setTimeout(function() {
+			    		$("#global-success").slideUp(500);
+			    	}, 4000);
+			    	hideLoading();
 				}
-			});
-			$(this).confirmation('show');
-		} else {
-			$(this).confirmation('destroy');
-		}
+			}
+		});
+		$(this).confirmation('show');
 		e.preventDefault();
 	});
 }
