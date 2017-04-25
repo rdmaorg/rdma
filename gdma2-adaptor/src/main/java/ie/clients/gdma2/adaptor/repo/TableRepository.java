@@ -1,5 +1,6 @@
 package ie.clients.gdma2.adaptor.repo;
 
+import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.Table;
 
 import java.util.List;
@@ -73,6 +74,12 @@ public interface TableRepository extends PagingAndSortingRepository<Table, Integ
 			+ " and ua.table.server.id  = :serverId ")
 	public List<Table> activeTablesOnActiveServerForUser(@Param("userName") String userName, @Param("serverId") Integer serverId);
 
+	/*part of getDropDown logic - get table for colulmn*/
+	@Query("select distinct c.table from Column c "
+			+"  where c.table.active = TRUE "
+			+ " and c.id = ?1")
+	public Table activeTableForColumn(Integer columnId);
+	
 		
 }
 

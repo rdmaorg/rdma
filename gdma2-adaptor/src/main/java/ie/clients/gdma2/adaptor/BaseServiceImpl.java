@@ -12,11 +12,16 @@ import org.springframework.data.domain.Sort.Order;
 import ie.clients.gdma2.adaptor.repo.RepositoryManager;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 import ie.clients.gdma2.spi.interfaces.UserContextProvider;
+import ie.clients.gdma2.util.DynamicDAO;
 
 public abstract class BaseServiceImpl {
 
 	@Autowired
 	protected RepositoryManager repositoryManager;
+	
+	@Autowired
+	protected DynamicDAO dynamicDAO;
+	
 	@Autowired
 	protected UserContextProvider userContextProvider;
 	

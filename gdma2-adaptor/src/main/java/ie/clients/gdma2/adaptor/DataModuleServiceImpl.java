@@ -64,13 +64,28 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 		return null;
 	}
 
+	
+	@Override
+	public List<Column> getDropdownData(Integer displayColumnId,Integer storeColumnId) {
+		
+		logger.info("getDropdownData");
+		logger.info("user: " + userContextProvider.getLoggedInUserName());
+		Column displayColumn = repositoryManager.getColumnRepository().findOne(displayColumnId);
+		Column storeColumn = repositoryManager.getColumnRepository().findOne(storeColumnId);
+		
+		List dropDownData = dynamicDAO.getDropDownData(displayColumn, storeColumn);
+		
+		return null;
+	}
+
+	/*
 	@Override
 	public List getDropDownData(Column display, Column store) {
 		// TODO Auto-generated method stub
 		
 		return null;
 	}
-
+	*/
 
 
 

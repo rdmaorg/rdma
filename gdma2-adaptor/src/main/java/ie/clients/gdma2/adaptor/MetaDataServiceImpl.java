@@ -8,7 +8,6 @@ import ie.clients.gdma2.domain.User;
 import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 import ie.clients.gdma2.spi.interfaces.MetaDataService;
-import ie.clients.gdma2.util.DynamicDAO;
 import ie.clients.gdma2.util.HashUtil;
 
 import java.util.ArrayList;
@@ -19,7 +18,6 @@ import org.apache.commons.collections.IteratorUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -27,21 +25,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataService {
+	
 	private static final Logger logger = LoggerFactory.getLogger(MetaDataServiceImpl.class);
 
-	@Autowired
-	private DynamicDAO dynamicDAO;
-
-	public DynamicDAO getDynamicDAO() {
-		return dynamicDAO;
-	}
-
-	public void setDynamicDAO(DynamicDAO dynamicDAO) {
-		this.dynamicDAO = dynamicDAO;
-	}
-
-
-
+	
 	/*Connection type section*/
 	@Override
 	public List<ConnectionType> getAllConnectionTypes() {

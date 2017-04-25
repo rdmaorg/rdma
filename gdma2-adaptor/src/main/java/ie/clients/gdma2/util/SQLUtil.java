@@ -56,6 +56,8 @@ public class SQLUtil {
 		return stringBuilder.toString();
 	}
 
+	/* input : 2 columns (PK of columns) coming from UI
+	 * select Customers.storeColumn, Customers.displayColumn from prefix.Customer order by Customers.displayColumn asc*/
 	public static String createDropDownSelect(Server server, Table table, Column display, Column store) {
 
 		StringBuilder stringBuilder = new StringBuilder(60);

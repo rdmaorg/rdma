@@ -10,6 +10,7 @@ import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -603,13 +604,13 @@ public class DynamicDAOImpl implements DynamicDAO{
 	 * TODO define and send FILTERs to this method
 	 * decide where to initiate all Entities - here or in caller
 	 * make sure what is orderByColumnID */
-	
+
 	@Override
 	public List<Column> getColumnData(Integer tableId, String matching,
 			int orderByColumnID, String orderDirection, int startIndex,
 			int length) {
-	
-		
+
+
 		Table table = repositoryManager.getTableRepository().findOne(tableId);
 		logger.info("DynamicDaoIMPL: getColumnData");
 		Server server2 = table.getServer();
@@ -619,7 +620,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 		List<Filter> filters = new ArrayList<Filter>(); //TODO Open Q
 		String sql = SQLUtil.createSelect(server2, table, sortedByColumnId, orderDirection, filters);
 		//String sql = SqlUtil.createSelect(server, table, sortedByColumnId, dir, paginatedRequest.getFilters());
-		
+
 		logger.info("sql created: " + sql);
 
 		PreparedStatementCreatorFactory psc = new PreparedStatementCreatorFactory(sql);
@@ -632,24 +633,24 @@ public class DynamicDAOImpl implements DynamicDAO{
 		// don't need transacton manager for lookup
 		//JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSourcePool.getTransactionManager(server).getDataSource());
 		JdbcTemplate jdbcTemplate = dataSourcePool.getJdbcTemplateFromDataDource(server2);
-		
+
 		//PaginatedResponse paginatedResponse = new PaginatedResponse();
 
 		final List<Object> params = convertFiltersToSqlParameterValues(filters);
 		logger.info("params: " +  params);
-		
-		//paginatedResponse.setRecords((List) jdbcTemplate.query(psc.newPreparedStatementCreator(params), new PagedResultSetExtractor(new RowMapper(),
-			//	paginatedRequest.getRecordOffset(), paginatedRequest.getRowsPerPage())));
 
-		
-		
+		//paginatedResponse.setRecords((List) jdbcTemplate.query(psc.newPreparedStatementCreator(params), new PagedResultSetExtractor(new RowMapper(),
+		//	paginatedRequest.getRecordOffset(), paginatedRequest.getRowsPerPage())));
+
+
+
 		List records =  (List)jdbcTemplate.query(psc.newPreparedStatementCreator(params), new PagedResultSetExtractor(new RowMapper(),
-			startIndex, length));
+				startIndex, length));
 
 		//getPaginatedTableResponse(records != null ? records : new ArrayList<ConnectionType>(), total, filtered);
 		//getPaginatedTableResponse(records != null ? records : new ArrayList<ConnectionType>(), 10, 10);
-		
-		
+
+
 
 		try{
 			List records2 =  (List)jdbcTemplate.query(psc.newPreparedStatementCreator(params), new PagedResultSetExtractor(new RowMapper(),
@@ -666,7 +667,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 		paginatedResponse.setSortDir(paginatedRequest.getDir());
 
 		return paginatedResponse;
-		*/
+		 */
 
 		return records;
 
@@ -699,7 +700,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 		}
 	}
 
-	
+
 	private List<Object> convertFiltersToSqlParameterValues(List<Filter> filters) {
 		final List<Object> params = new ArrayList<Object>();
 		for (Filter filter : filters) {
@@ -714,12 +715,12 @@ public class DynamicDAOImpl implements DynamicDAO{
 				} else if (SQLUtil.isDate(filter.getColumnType())) {
 					logger.info("DATE filter detected: " + filter.getFilterValue());
 					try {
-                        param = Formatter.formatDate(Formatter.parseDate(filter.getFilterValue()));
-                        logger.info("Date as parameter: " + param);
+						param = Formatter.formatDate(Formatter.parseDate(filter.getFilterValue()));
+						logger.info("Date as parameter: " + param);
 					} catch (Exception ex) {
 						logger.info("Could not parse the date: " + filter.getFilterValue(), ex);
 					}
-                } /*else if (SqlUtil.isDateTime(filter.getColumnType())) {
+				} /*else if (SqlUtil.isDateTime(filter.getColumnType())) {
                 LOG.debug("DATETIME filter detected: " + filter.getFilterValue());
 				try {
                     param = Formatter.parseDate(filter.getFilterValue());
@@ -728,43 +729,88 @@ public class DynamicDAOImpl implements DynamicDAO{
 					LOG.error("Could not parse the DATETIME: " + filter.getFilterValue(), ex);
 				}
             	}*/else if (SQLUtil.isTime(filter.getColumnType())) {
-                    try {
-                        param = Formatter.parseTime(filter.getFilterValue());
-                        logger.info("Time as parameter: " + param);
-                    } catch (Exception ex) {
-                    	logger.info("Could not parse the time: " + filter.getFilterValue(), ex);
-                    }
-				} else {
-					// For LIKE stmt
-					//deal with "Begins With" filter operator
-					if(filter.getFilterOperator() == 5)
-					{
-						param = param + "%";
-					}
-					//deal with "Contains" filter operator
-					else if(filter.getFilterOperator() == 6)
-					{
-						param = "%" + param + "%";
-					}
-					//deal with "Ends With" filter operator
-					else if(filter.getFilterOperator() == 7)
-					{
-						param = "%" + param;
-					}
-					else
-					{
-						param = param;
-					}
-					logger.info("Generic parameter: " + param);
-				}
+            		try {
+            			param = Formatter.parseTime(filter.getFilterValue());
+            			logger.info("Time as parameter: " + param);
+            		} catch (Exception ex) {
+            			logger.info("Could not parse the time: " + filter.getFilterValue(), ex);
+            		}
+            	} else {
+            		// For LIKE stmt
+            		//deal with "Begins With" filter operator
+            		if(filter.getFilterOperator() == 5)
+            		{
+            			param = param + "%";
+            		}
+            		//deal with "Contains" filter operator
+            		else if(filter.getFilterOperator() == 6)
+            		{
+            			param = "%" + param + "%";
+            		}
+            		//deal with "Ends With" filter operator
+            		else if(filter.getFilterOperator() == 7)
+            		{
+            			param = "%" + param;
+            		}
+            		else
+            		{
+            			param = param;
+            		}
+            		logger.info("Generic parameter: " + param);
+            	}
 				params.add(param);
 			}
 		}
 		return params;
 	}
 
-	
-	
+	/*
+	 * get Data for dropdown columns
+	 * 
+	 * in GDMA1 this is all 1 call when fetching DATA for columns of table:  
+	 * GdmaAjax.getUserAccessDetails.dwr - Gets user access for Active table and logged in User
+
+	  GdmaAjax.getTableDetails.dwr
+
+	GdmaAjax.getDropDownData.dwr  (3 calls - 1 per each column)
+	GdmaAjax.getDropDownData.dwr
+	GdmaAjax.getDropDownData.dwr
+
+	GdmaAjax.getData.dwr
+	 * */
+	@Override
+	public List getDropDownData(Column display, Column store) {
+		logger.info("dynamicDao: getDropDownData");
+		//get server by column
+		//Server server = gdmaFacade.getServerDao().getByColumn(store.getId());
+		Server server = repositoryManager.getServerRepository().activeServerWithActiveTableForColumn(store.getId());
+		//open Q - both columns belong to same table?
+		Table table = repositoryManager.getTableRepository().activeTableForColumn(store.getId());
+		//String sql = SqlUtil.createDropDownSelect(server, server.getTables().iterator().next(), display, store);
+		String sql = SQLUtil.createDropDownSelect(server, table, display, store);
+
+		logger.info("sql created: " + sql);
+
+		PreparedStatementCreatorFactory psc = new PreparedStatementCreatorFactory(sql);
+		psc.setResultSetType(ResultSet.TYPE_SCROLL_INSENSITIVE);
+		psc.setUpdatableResults(false);
+
+		// don't need transacton manager for lookup
+		//JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSourcePool.getTransactionManager(server).getDataSource());
+		JdbcTemplate jdbcTemplate = dataSourcePool.getJdbcTemplateFromDataDource(server);
+
+		//PaginatedResponse paginatedResponse = new PaginatedResponse();
+
+		//todo see ResultSetExtractorColumns and use it instead  
+		List list = (List)jdbcTemplate.query(psc.newPreparedStatementCreator(Collections.EMPTY_LIST), new RowMapper());
+		for (Object object : list) {
+			logger.info("list members: " + object.toString());
+		}
+		return list; 
+	}
+
+
+
 
 
 

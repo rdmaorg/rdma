@@ -35,7 +35,12 @@ public interface DataModuleService {
 		public int updateRecords(UpdateRequest updateRequest);
 		*/ 
 
-		public List getDropDownData(Column display, Column store);
+		
+		
+		public List<Column> getDropdownData(Integer displayColumnId,
+				Integer storeColumnId);
+		
+		//public List getDropDownData(Column display, Column store);
 
 
 

@@ -19,22 +19,24 @@ import org.springframework.jdbc.support.JdbcUtils;
  * 
  */
 public class RowMapper implements org.springframework.jdbc.core.RowMapper {
-    private static Logger LOG = Logger.getLogger(RowMapper.class);
+    
+	private static Logger LOG = Logger.getLogger(RowMapper.class);
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.springframework.jdbc.core.RowMapper#mapRow(java.sql.ResultSet,
-     * int)
+    /**
+     * return List of objects representing all values in one column of resultset
      */
     @SuppressWarnings("unchecked")
     public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-        ResultSetMetaData rsmd = rs.getMetaData();
+        
+    	ResultSetMetaData rsmd = rs.getMetaData();
         int columnCount = rsmd.getColumnCount();
+        
         List columnValues = new ArrayList(columnCount + 1);
         columnValues.add(BigInteger.valueOf(rowNum));
+        
         for (int i = 1; i <= columnCount; i++) {
-            columnValues.add(JdbcUtils.getResultSetValue(rs, i));
+            columnValues.add(JdbcUtils.getResultSetValue(rs, i)); 
+            //Object obj = rs.getObject(index); //starting 1... Generically fetches value on unknown type in column=> Object is used
         }
         return columnValues;
     }

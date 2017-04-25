@@ -144,7 +144,7 @@ public class ColumnResource extends BaseDataTableResource{
 		//  order[0][column]:1
 		//String orderByColumn = "id";
 		
-		//values are not 0,1,2... but 0, column1PK, column2PK like : 0,12,14,478
+		//values are not 0,1,2... but 0, column1 PK, column2 PK like : 0,12,14,478
 		int orderByColumnID = getOrderByColumn(reqParams);
 		
 		logger.info("orderByColumn, column PK: " + orderByColumnID);
@@ -161,5 +161,9 @@ public class ColumnResource extends BaseDataTableResource{
 		return resp;
 	}
 	
-	
+	@RequestMapping(value = "/data/dropdown/display/{did}/store/{sid}")
+	public List<Column> getDropdownData(@PathVariable("did") Integer displayColumnId, @PathVariable("sid") Integer storeColumnId){
+		logger.info("getDropdownData for display column: " + displayColumnId + ", and store column: " + storeColumnId);
+		return serviceFacade.getDataModuleService().getDropdownData(displayColumnId, storeColumnId);
+	}
 }

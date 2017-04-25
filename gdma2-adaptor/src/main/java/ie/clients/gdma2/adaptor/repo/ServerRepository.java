@@ -50,4 +50,12 @@ public interface ServerRepository extends PagingAndSortingRepository<Server, Int
 			+ " and ua.table.server.active = TRUE ")
 	public List<Server> activeServersWithActiveTablesForUser(@Param("userName") String userName);
 	
+	
+	/*part of getDropDown logic - get server by column*/
+	@Query("select distinct c.table.server from Column c "
+			+"  where c.table.active = TRUE "
+			+ " and c.table.server.active = TRUE"
+			+ " and c.id = ?1")
+	public Server activeServerWithActiveTableForColumn(Integer columnId);
+	
 }

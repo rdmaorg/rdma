@@ -73,7 +73,7 @@ public interface DynamicDAO {
 	 *            the column to store
 	 * @return
 	 */
-	//public List getDropDownData(Column display, Column store);
+	public List getDropDownData(Column display, Column store);
 
 	/**
 	 * Get the list of columns for a select through the SQL Console
