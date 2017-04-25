@@ -149,6 +149,7 @@ var associateCheckbox = function(rule) {
 			changedCheckboxes[object.id] = jQuery.extend({}, object);
 			changedCheckboxes[object.id][rule] = ck[0].checked;
 		}
+		//method to verify if need check Full Access checkbox or not
 		verifyFullAccess(ck.data('id'));
 	});
 }
@@ -156,7 +157,6 @@ var associateCheckbox = function(rule) {
 var associateCheckboxFullAccess = function(){
 	$('.allowFullAccess').off('change');
 	$('.allowFullAccess').change(function(e) {
-		console.log("checked" + new Date().getDate());
 		var rules = {
 			allowDisplay: 'allowDisplay',
 			allowUpdate: 'allowUpdate',
@@ -231,7 +231,6 @@ var associateSaveUserAccess = function() {
 				showLoading();
 				var list = getModifiedObjects();
 				if (list.length > 0) {
-					console.log(list);
 					$.ajax({
 						type : "post",
 						url : restUri.userAcces.update,
