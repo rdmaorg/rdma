@@ -488,7 +488,9 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 			logger.info(" *** columnsSynchResult : " + columnsSynchResult.size());
 
-			Set<Table> allTables = server.getTables();
+			List<Table> allTablesOnServer = repositoryManager.getTableRepository().findByServerId(server.getId());
+			Set<Table> allTables = new HashSet<Table>(allTablesOnServer);
+			
 			for (Table t : allTables) {
 				Set<Column> tableColumns = t.getColumns();
 
