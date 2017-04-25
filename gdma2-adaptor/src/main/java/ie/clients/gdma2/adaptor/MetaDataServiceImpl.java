@@ -428,15 +428,24 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 						logger.info("skip password re-encoding");
 					} else {
 						logger.info("password was updated: re-encoding new pass: ");
+//						logger.info("password was updated: re-encoding new pass: " + user.getPassword());
 						user.setPassword(HashUtil.hash(user.getPassword()));
+//						logger.info("password was updated: re-encoded new pass: " + user.getPassword());
 					}
 					
 				}	
 			}
 		}
 
-		 List<User> savedUsers = IteratorUtils.toList(repositoryManager.getUserRepository().save(userList).iterator());	
-		 return emptyPasswords(savedUsers);
+		 List<User> savedUsers = IteratorUtils.toList(repositoryManager.getUserRepository().save(userList).iterator());
+		//We can't empty the password until the transaction is over, otherwise empty password is stored in DB.
+		 //The solution is either empty the password in UserResource() or return a deep copy of the list.
+		 //To create a deep copy, we can use BeanTransformation project which uses dozer as underlying framework.
+		 //Here without emptying the password, this method is returning hashed password.
+		 //This isn't so bad either, because the hashed password can only be seen by the user who saved the password.
+		 //In subsequent calls, the password will be empty anyway.
+//		 return emptyPasswords(savedUsers); 
+		 return savedUsers;
 	}
 
 

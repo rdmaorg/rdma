@@ -134,7 +134,7 @@ var associatePostUser = function(){
 					var name = $("#name").val();
 					var lastname = $("#lastname").val();
 					var username = $("#username").val();
-					var pass = $("#password").val();
+					var pass = ($("#password").val()?$("#password").val():""); //Avoiding undefined when the field is not present in case when authentication.local = false
 					var url = $("#url").val();
 					var admin = $("#admin").val();
 					var locked = $("#locked").val();
