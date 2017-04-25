@@ -605,7 +605,12 @@ public class DynamicDAOImpl implements DynamicDAO{
 	/* make sure if original is generic or just for columns
 	 * TODO define and send FILTERs to this method
 	 * decide where to initiate all Entities - here or in caller
-	 * make sure what is orderByColumnID */
+	 * make sure what is orderByColumnID
+	 * 
+	 *  TODO filters
+	 *  TODO pagination
+	 *  
+	 *  https://localhost/gdma2/rest/column/data/read/table/630*/
 
 	@Override
 	public List<Column> getColumnData(Integer tableId, String matching,
@@ -616,10 +621,16 @@ public class DynamicDAOImpl implements DynamicDAO{
 		Table table = repositoryManager.getTableRepository().findOne(tableId);
 		logger.info("DynamicDaoIMPL: getColumnData");
 		Server server2 = table.getServer();
+		
+		//TODO check conditions : does column need to be active...
+		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(table.getId());
+		table.setColumns(new HashSet(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change this and pass colums to utility method themselves
+		
 		//table 
 		Column sortedByColumnId = (orderByColumnID == 0 ? null : repositoryManager.getColumnRepository().findOne(orderByColumnID));
 		//dir
 		List<Filter> filters = new ArrayList<Filter>(); //TODO Open Q
+		
 		String sql = SQLUtil.createSelect(server2, table, sortedByColumnId, orderDirection, filters);
 		//String sql = SqlUtil.createSelect(server, table, sortedByColumnId, dir, paginatedRequest.getFilters());
 

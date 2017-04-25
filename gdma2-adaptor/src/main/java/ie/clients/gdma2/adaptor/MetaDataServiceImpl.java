@@ -850,7 +850,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	}
 
 
-	/*DATA module section*/
+	/*DATA module section - getting DISPLAYABLE columns DATA for selected table*/
 
 	@Override
 	public PaginatedTableResponse<Column> getColumnData(Integer tableId, String matching, int orderByColumnID, String orderDirection,

@@ -135,7 +135,8 @@ public class ColumnResource extends BaseDataTableResource{
 	
 	/*DATA MODULE*/
 	
-	/*paginated active columns wit data for : Active server, active table Table, logged in user with UserAccess.allowDisplay = true  */ 
+	/*paginated active columns wit data for : Active server, active table Table, logged in user with UserAccess.allowDisplay = true  */
+	/* https://localhost/gdma2/rest/column/data/read/table/630  */
 	@RequestMapping("/data/read/table/{id}")
 	PaginatedTableResponse<Column> getColumnData(@PathVariable("id") Integer tableId,
 			@RequestParam Map<String, String> reqParams){

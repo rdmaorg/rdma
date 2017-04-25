@@ -14,7 +14,7 @@ import org.springframework.jdbc.support.JdbcUtils;
 
 /**
  * Utility method to map a row in a result set to a list of objects.
- * 
+ * see: http://stackoverflow.com/questions/15118630/some-doubts-about-rowmapper-use-in-jdbc-in-a-spring-framework-application
  * @author Ronan Gill
  * 
  */
