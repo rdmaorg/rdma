@@ -31,6 +31,7 @@ var buildDataModuleMenu = function(){
         contentType: "application/json; charset=utf-8",
         dataType: 'json'
     }).done(function(data){	
+		$("#btn-admin span").html(data[0].name);
     	$.each(data[0].children, function(i, menu) {
     		$('<div class="form-group"><a class="btn btn-primary btn-block btn-sm" href="/gdma2'+ menu.view +'"><h3><i class="fa '+ menu.iconClass +'" aria-hidden="true"></i><br>'+ menu.name +'</h3><p>'+ menu.description +'</p></a></div>').appendTo("#control-sidebar-settings-tab");	
     	});
@@ -66,7 +67,6 @@ var buildDataModuleMenu = function(){
         contentType: "application/json; charset=utf-8",
         dataType: 'json'
     }).done(function(data){
-    	$(".sidebar-menu").html('<li class="header">SERVER LIST</li>');
     	$.each(data, function(i, server) {
     		$("<li id='server" + server.id + "' class='treeview'><a><i class='fa fa-database'></i><span class='serverN'> " + server.name + " </span><span class='pull-right-container'><i class='fa fa-angle-left pull-right'></i></span></a><ul id='list" + server.id + "' class='treeview-menu'><div id='header" + server.id + "'></div></ul></li>").appendTo(".sidebar-menu");
     		function tablesId() {

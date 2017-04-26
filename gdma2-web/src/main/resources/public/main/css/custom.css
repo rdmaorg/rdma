@@ -2,6 +2,13 @@
 	height: auto;
 }
 
+.dropdown-menu.dropdown-menu-right {
+    padding: 10px !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background: rgb(54,127,170) !important;
+}
+
 .modal-header {
 	background: #3c8dbc;
 }
