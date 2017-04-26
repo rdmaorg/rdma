@@ -150,61 +150,24 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	}
 
 	@Override
-	public PaginatedTableResponse<Table> getTablesForServer(Integer serverIdParam,
-			String matching, String orderBy, String orderDirection,
-			int startIndex, int length) {
-
-		logger.debug("Param ServerId: " + serverIdParam);
-		logger.debug("getTablesForServer");
-
-		Server server = null;
-		List<Table> tables = null;
-		long total = 0;
-		long filtered = 0;
-
-		server = repositoryManager.getServerRepository().findOne(serverIdParam);
-		int serverId = server.getId();
-		//TODO if(null == server)
-
-		//empty search, select all tables for server
-		if (StringUtils.isBlank(matching)) {
-			total = repositoryManager.getTableRepository().countTablesForServer(serverId);
-			logger.debug("Total, no search:" + total);
-			filtered = total;
-
-			logger.debug("findALL...getPagingRequest():");
-
-			tables = repositoryManager.getTableRepository().findByServerId(serverId,
-					getPagingRequest(orderBy, orderDirection, startIndex, length, total));
-
-			logger.debug("tables found: " + tables.size());
-		} else {
-			String match = "%" + matching.trim().toUpperCase() + "%";
-			total = repositoryManager.getTableRepository().countTablesForServer(serverId);
-			logger.debug("Total, with search:" + total);
-			filtered = repositoryManager.getTableRepository().getCountMatching(match, serverId);
-
-			tables = repositoryManager.getTableRepository().getMatchingTables(
-					match,serverId,
-					getPagingRequest(orderBy, orderDirection, startIndex, length, total));
-
-		}
-
-		logger.debug("Search Tables: Search: " + matching + ", Total: " + total + ", Filtered: " + filtered	+ ", Result Table Count: " + tables.size());
-
-		return getPaginatedTableResponse(tables != null ? tables : new ArrayList<Table>(), total, filtered);	
+	public List<Table> getRemoteServerTableMetadata(Integer serverId) {
+		//call synnch logic, perform complete synch and transactional save to local DB, then load all previously inserted
+		synhronizeTablesForServer(serverId);
+		return IteratorUtils.toList(repositoryManager.getTableRepository().findAll().iterator());
 	}
+
 
 	/*TODO decide if synch is going to be call only initially or always - on each search attempt*/
 	@Override
-	public PaginatedTableResponse<Table> getActiveSynchedTablesForServer(Integer serverIdParam,
+	public PaginatedTableResponse<Table> getActiveLocalTablesForServer(Integer serverIdParam,
 			String matching, String orderBy, String orderDirection,
 			int startIndex, int length) {
 
-		logger.debug("getActiveSynchedTablesForServer");
+		logger.debug("getActiveSynchedTablesForServer: " + serverIdParam);
 
 		//synch tables first
-		synhronizeTablesForServer(serverIdParam);
+		//synhronizeTablesForServer(serverIdParam); THIS IS DONE SEPARATELLY
+		
 		logger.debug("...get Active Synched Tables now");
 
 		Server server = null;
@@ -230,11 +193,11 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 		} else {
 			String match = "%" + matching.trim().toUpperCase() + "%";
-			total = repositoryManager.getTableRepository().countTablesForServer(serverId);
+			total = repositoryManager.getTableRepository().countActiveTablesForServer(serverId);
 			logger.debug("Total, with search:" + total);
 			filtered = repositoryManager.getTableRepository().getCountMatching(match, serverId);
 
-			tables = repositoryManager.getTableRepository().getMatchingTables(
+			tables = repositoryManager.getTableRepository().getActiveMatchingTables(
 					match,serverId,
 					getPagingRequest(orderBy, orderDirection, startIndex, length, total));
 
@@ -448,6 +411,13 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	/*COLUMN section*/
 
 	@Override
+	public List<Column> getRemoteTableColumnsMetadata(Integer tableId) {
+		synhronizeColumnsForTable(tableId); 
+		return IteratorUtils.toList(repositoryManager.getColumnRepository().findByTableId(tableId).iterator());
+	}
+
+	
+	@Override
 	public List<Column> getAllColumns() {
 		return IteratorUtils.toList(repositoryManager.getColumnRepository().findAll().iterator());
 	}
@@ -456,6 +426,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	@Transactional
 	@Override
 	public List<Column> saveColumns(List<Column> columnList) {
+		
 		return IteratorUtils.toList(repositoryManager.getColumnRepository().save(columnList).iterator());
 	}
 
@@ -477,12 +448,12 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	 * TODO decide if synch is going to be call only initially or always - on each search attempt*/
 
 	@Override
-	public PaginatedTableResponse<Column> getActiveSynchedColumnsForTable(
+	public PaginatedTableResponse<Column> getActiveLocalColumnsForTable(
 			Integer tableId, String matching, String orderBy, String orderDirection,int startIndex, int length) {
 		logger.info("getActiveSynchedColumnsForTable : " + tableId);
 
 		//synch tables first
-		synhronizeColumnsForTable(tableId);
+		//synhronizeColumnsForTable(tableId); IS NOW PERFORMED SEPARATELLY
 
 		logger.debug("...get ACTIVE Synched Colulmns now");
 
@@ -756,6 +727,11 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		logger.info("getTablesMetadataForServerServer");
 
 		Server server = repositoryManager.getServerRepository().findOne(serverId);
+		if(server == null){
+			logger.error("server: " + serverId +  " does not exist!");
+			return null; //TODO define how to return unexpected values to UI 
+		}
+		
 		String sqlGetTables = server.getConnectionType().getSqlGetTables(); 
 
 		/*GET TABLES FOR SERVER*/
@@ -764,7 +740,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		for (String tableName : tableNames) {
 			/*GET COLUMNS FOR TABLE*/
 			Set<Column> tableColumns = dynamicDAO.getTableColumns(server, tableName); 
-
+			logger.info("columns fetched, creating and saving table: " + tableName + "  and it's columns");
 			//persist new Table Entity with Set<Column>
 			Table table = new Table();
 			table.setServer(server);
@@ -903,6 +879,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 
 	}
+
 
 
 }

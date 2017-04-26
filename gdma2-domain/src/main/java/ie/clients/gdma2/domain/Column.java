@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.UniqueConstraint;
 
 import com.avnet.cs.commons.dao.BaseEntity;
 
@@ -16,7 +17,9 @@ import com.avnet.cs.commons.dao.BaseEntity;
  * 
  */
 @Entity
-@javax.persistence.Table(name = "COLUMN_GDMA2")
+@javax.persistence.Table(name = "COLUMN_GDMA2", uniqueConstraints = {
+		@UniqueConstraint(columnNames={"NAME","table_id"})
+	})
 @SequenceGenerator(initialValue = 1, name = "idgen", sequenceName = "SEQ_COLUMN_GDMA2", allocationSize = 1)
 public class Column extends BaseEntity{
 

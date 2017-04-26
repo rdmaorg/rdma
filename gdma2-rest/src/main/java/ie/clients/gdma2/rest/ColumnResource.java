@@ -27,16 +27,25 @@ public class ColumnResource extends BaseDataTableResource{
 		return serviceFacade.getMetadataService().getAllColumns();
 	}
 	
-	@RequestMapping(value = "table/{id}/active")
-	public List<Column> findByTableIdAndActiveTrue(@PathVariable("id") Integer tableId){
-		logger.info("findByTableIdAndActiveTrue, tableId: " + tableId);
-		return serviceFacade.getMetadataService().findByTableIdAndActiveTrue(tableId);
+	
+	/*METADATA - fetch Columns from remote DB Table and save to local, then
+	 * return ALL saved columns to UI for that table (not just ACTIVE), NO pagination
+	 * http://localhost/gdma2/rest/column/metadata/table/11?length=100 */
+	@RequestMapping(value = "/metadata/table/{id}")
+	public List<Column> getRemoteTableColumnsMetadata(@PathVariable("id") String tableId,
+			@RequestParam Map<String,String> params){
+
+		logger.info("getRemoteTableColumnsMetadata, tableId: " + tableId);
+		Integer tabId = Integer.parseInt(tableId); 
+		return serviceFacade.getMetadataService().getRemoteTableColumnsMetadata(tabId);
 	}
 
 	
-	/*paginated active columns for Table - Admin module */ 
-	@RequestMapping("/metadata/table/{id}")
-	PaginatedTableResponse<Column> getPaginatedActiveSynchedColumnsForTable(@PathVariable("id") Integer tableId,
+	/*ACTIVE column list for selected ACTIVE table - Admin module : from local DB */
+	/* 		 http://localhost/gdma2/rest/column/table/6  	*/
+	/*		 http://localhost/gdma2/rest/column/table/6?order[0][column]=1&search[value]=ord      */
+	@RequestMapping("/table/{id}")
+	PaginatedTableResponse<Column> getActiveLocalColumnsForTable(@PathVariable("id") Integer tableId,
 			@RequestParam Map<String, String> reqParams){
 		logger.debug("getColumnsPaginatedTable");
 		
@@ -97,7 +106,7 @@ public class ColumnResource extends BaseDataTableResource{
 		}
 		
 		logger.info("orderByColumn: " + orderByColumn);
-		PaginatedTableResponse<Column> resp = serviceFacade.getMetadataService().getActiveSynchedColumnsForTable(
+		PaginatedTableResponse<Column> resp = serviceFacade.getMetadataService().getActiveLocalColumnsForTable(
 				tableId,
 				getSearchValue(reqParams),
 				orderByColumn,
@@ -110,6 +119,12 @@ public class ColumnResource extends BaseDataTableResource{
 		return resp;
 	}
 	
+	/*TESTING ONLY : Get active columns for table - no metadata synch, no pagination*/
+	@RequestMapping(value = "table/{id}/active")
+	public List<Column> findByTableIdAndActiveTrue(@PathVariable("id") Integer tableId){
+		logger.info("findByTableIdAndActiveTrue, tableId: " + tableId);
+		return serviceFacade.getMetadataService().findByTableIdAndActiveTrue(tableId);
+	}
 	
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	public List<Column> saveColumns(@RequestBody List<Column> columnList){

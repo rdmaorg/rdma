@@ -6,7 +6,10 @@ import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.UserAccess;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -76,13 +79,62 @@ public class DynamicDAOImpl implements DynamicDAO{
 		JdbcTemplate jdbcTemplate = dataSourcePool.getJdbcTemplateFromDataDource(server);
 		Set<Column> columns = jdbcTemplate.query(sqlTableMetadata, new ResultSetExtractorColumns());
 
+		determinePrimaryKey(jdbcTemplate, tableName, columns);
+
 		for (Column column : columns) {
-			logger.info("remote table column: " + column.getName());
+			logger.info("remote table column: " + column.getName() + ", is PK: " + column.isPrimarykey());
 		}
 		return columns;
 
 
 	}
+
+	/*
+	 * determine PK,
+	 * by default Column.primarykey = false;
+	 * in caller  - ResultSetExtractorColumns PK could now be determined (only combination of isAutoincrement + isNotNull could be used there
+	 * as criteria)
+	 *   so another approach is to use DatabaseMetaData from connection
+	 *  //TODO make sure handling exceptions and see if connection closing is needed here or DS takes care of it
+	 * */
+	private void determinePrimaryKey(JdbcTemplate jdbcTemplate,
+			String tableName, Set<Column> columns)  {
+		logger.info("determinePrimaryKey");
+		Connection connection = null;
+		try {
+			connection = jdbcTemplate.getDataSource().getConnection();
+			DatabaseMetaData meta = connection.getMetaData();
+			ResultSet primaryKeysRS = meta.getPrimaryKeys(null, null, tableName);
+
+			while(primaryKeysRS.next()){
+				String columnNamePK = primaryKeysRS.getString("COLUMN_NAME");
+				logger.info("PK column found: " + columnNamePK);
+				for (Column column : columns) {
+					if( columnNamePK.equalsIgnoreCase(column.getName())){
+						column.setPrimarykey(true);
+					}
+				}
+			}
+		} catch (SQLException e) {
+			logger.error("Error while getting PK column  " + e);
+			//TODO !!!
+		} 
+		finally {
+			//without this block code hangs at connection = jdbcTemplate.getDataSource().getConnection(); after several ittrations
+			if (connection != null){
+				try {
+					connection.close();
+				} catch (SQLException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
+
+
+	}
+
+
 
 
 	/**
@@ -490,7 +542,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 			List<Table> allTablesOnServer = repositoryManager.getTableRepository().findByServerId(server.getId());
 			Set<Table> allTables = new HashSet<Table>(allTablesOnServer);
-			
+
 			for (Table t : allTables) {
 				Set<Column> tableColumns = t.getColumns();
 
@@ -617,35 +669,34 @@ public class DynamicDAOImpl implements DynamicDAO{
 			int orderByColumnID, String orderDirection, int startIndex,
 			int length) {
 
-
-		Table table = repositoryManager.getTableRepository().findOne(tableId);
 		logger.info("DynamicDaoIMPL: getColumnData");
-		Server server2 = table.getServer();
-		
+		Table table = repositoryManager.getTableRepository().findOne(tableId);
+		Server server = table.getServer();
+
 		//TODO check conditions : does column need to be active...
 		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(table.getId());
 		table.setColumns(new HashSet(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change this and pass colums to utility method themselves
-		
+
 		//table 
 		Column sortedByColumnId = (orderByColumnID == 0 ? null : repositoryManager.getColumnRepository().findOne(orderByColumnID));
 		//dir
 		List<Filter> filters = new ArrayList<Filter>(); //TODO Open Q
-		
-		String sql = SQLUtil.createSelect(server2, table, sortedByColumnId, orderDirection, filters);
+
+		String sql = SQLUtil.createSelect(server, table, sortedByColumnId, orderDirection, filters);
 		//String sql = SqlUtil.createSelect(server, table, sortedByColumnId, dir, paginatedRequest.getFilters());
 
 		logger.info("sql created: " + sql);
 
 		PreparedStatementCreatorFactory psc = new PreparedStatementCreatorFactory(sql);
 
-		declareSqlParameters(psc, filters, server2);
+		declareSqlParameters(psc, filters, server);
 
 		psc.setResultSetType(ResultSet.TYPE_SCROLL_INSENSITIVE);
 		psc.setUpdatableResults(false);
 
 		// don't need transacton manager for lookup
 		//JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSourcePool.getTransactionManager(server).getDataSource());
-		JdbcTemplate jdbcTemplate = dataSourcePool.getJdbcTemplateFromDataDource(server2);
+		JdbcTemplate jdbcTemplate = dataSourcePool.getJdbcTemplateFromDataDource(server);
 
 		//PaginatedResponse paginatedResponse = new PaginatedResponse();
 

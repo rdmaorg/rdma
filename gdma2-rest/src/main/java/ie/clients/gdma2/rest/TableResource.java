@@ -5,7 +5,6 @@ import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,64 +28,25 @@ public class TableResource extends BaseDataTableResource{
 		return serviceFacade.getMetadataService().getAllTables();
 	}
 
-	/*paginated table list for selected server - ALL Tables*/
-	/*TODO fix URI template*/
-	@RequestMapping(value = "/server/{id}/table/list")
-	public PaginatedTableResponse<Table> getPaginatedTableByServer(@PathVariable("id") String serverId,
+	/*METADATA - fetch Tables from remote DB and save to local, return ALL saved Tables to UI (not just ACTIve), NO pagination
+	 * http://localhost/gdma2/rest/table/6/metadata?length=100 */
+	@RequestMapping(value = "/{id}/metadata")
+	public List<Table> getRemoteServerTableMetadata(@PathVariable("id") String serverId,
 			@RequestParam Map<String,String> params){
-		logger.debug("getTablesPaginatedTable()");
-		/*order[0][column]:4*/
 
-		Integer srvId = Integer.parseInt(serverId);	//TODO handle empty ServerId int val = Integer.parseInt(reqParams.get(QUERY_PARAM_DRAW) == null... 
-
-		String orderByColumn = "id";
-		switch(getOrderByColumn(params)){
-		case 0: //by id
-			orderByColumn = "id";
-			break;
-		case 1: //by name
-			orderByColumn = "name";
-			break;
-		case 2: //by active
-			orderByColumn = "active";
-			break;
-		case 3: 
-			orderByColumn = "server.name";
-			break;
-		case 4:
-			orderByColumn = "alias";
-			break;
-		}
-
-		logger.debug("orderBy column: " + orderByColumn) ;
-
-		PaginatedTableResponse<Table> resp = serviceFacade.getMetadataService().
-				getTablesForServer(srvId, getSearchValue(params), orderByColumn, getOrderByDirection(params),getStartIndex(params), getLength(params));
-
-		resp.setDraw(getDraw(params));
-
-
-		logger.info("------------------");
-		List<Table> data = resp.getData();
-		for(Table table : data){
-			logger.info(table.toString());
-			logger.info("table->server->tables size: "  + table.getServer().getTables().size());
-		}
-		logger.info("--------------");
-
-		return resp;
-
+		logger.info("getRemoteServerTableMetadata, serverId: " + serverId);
+		Integer srvId = Integer.parseInt(serverId); 
+		return serviceFacade.getMetadataService().getRemoteServerTableMetadata(srvId);
 	}
 
 
-	/*paginated table list for selected server - ALL Tables*/
-	/*TODO fix URI template*/
-	@RequestMapping(value = "/{id}/metadata")
-	public PaginatedTableResponse<Table> getActiveSynchedTablesForServer(@PathVariable("id") String serverId,
+	/*ACTIVE table list for selected server - paginated from local DB
+	 * 		 http://localhost/gdma2/rest/table/server/6  	*/
+	/*		 https://localhost/gdma2/rest/table/server/6?order[0][column]=1&search[value]=ord      */
+	@RequestMapping(value = "/server/{id}")
+	public PaginatedTableResponse<Table> getActiveLocalTablesForServer(@PathVariable("id") String serverId,
 			@RequestParam Map<String,String> params){
-		logger.debug("getActiveSynchedTablesForServer");
-		logger.debug("serverId: " + serverId);
-
+		logger.info("getActiveLocalTablesForServer: " + serverId);
 
 		Integer srvId = Integer.parseInt(serverId);	//TODO handle empty ServerId int val = Integer.parseInt(reqParams.get(QUERY_PARAM_DRAW) == null... 
 
@@ -109,28 +69,18 @@ public class TableResource extends BaseDataTableResource{
 			break;
 		}
 
-		logger.debug("orderBy column: " + orderByColumn) ;
+		logger.info("orderBy column: " + orderByColumn) ;
 
-		PaginatedTableResponse<Table> resp = serviceFacade.getMetadataService().getActiveSynchedTablesForServer(srvId,
+		PaginatedTableResponse<Table> resp = serviceFacade.getMetadataService().getActiveLocalTablesForServer(srvId,
 				getSearchValue(params), orderByColumn, getOrderByDirection(params),	getStartIndex(params), getLength(params));
 
 		resp.setDraw(getDraw(params));
-
-		/*
-		logger.info("------------------");
-		List<Table> data = resp.getData();
-		Table table = data.get(0);
-		logger.info("table->server->tables size: "  + table.getServer().getTables().size());
-
-
-		logger.info("--------------");
-		 */
 		return resp;
 
 	}
 
 
-	/*Get active tables for server - but without synch (testing purposes)*/
+	/*TESTING ONLY : Get active tables for server - but without synch */
 	@RequestMapping(value = "/server/{id}/active",method = RequestMethod.GET)
 	public List<Table> findByServerIdAndActiveTrue(@PathVariable("id") Integer serverId){
 		logger.debug("*** findByServerIdAndActiveTrue(), serverId: " +  serverId);

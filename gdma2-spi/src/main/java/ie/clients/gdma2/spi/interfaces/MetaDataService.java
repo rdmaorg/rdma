@@ -34,12 +34,14 @@ public interface MetaDataService {
 	public List<Table> findTablesByServerId(Integer serverId);
 	public List<Table> findByServerIdAndActiveTrue(Integer serverId);
 	public Long countTablesForServer(Integer serverId);
-	public PaginatedTableResponse<Table> getTablesForServer(Integer serverId, String matching, String orderBy,
-			String orderDirection, int startIndex, int length );
-	
 	public Table saveTable(Table table);
 	public void deleteTable(int id);
 	
+	public PaginatedTableResponse<Table> getActiveLocalTablesForServer(Integer serverId, String matching, String orderBy,
+			String orderDirection, int startIndex, int length );
+	
+	/*metadata*/
+	public List<Table> getRemoteServerTableMetadata(Integer serverId);
 	
 	
 	/*User*/
@@ -64,6 +66,11 @@ public interface MetaDataService {
 	/*TODO check is saving single user is needed or can be done via saveColums()*/
 	/* public Set<Column> getColumnsForTable(Long serverId, Long tableId); //see GdmaAdminAjaxFacade.getColumnsForTable */
 	
+	public PaginatedTableResponse<Column> getActiveLocalColumnsForTable(Integer tableId, String matching, String orderBy,
+			String orderDirection, int startIndex, int length);
+	
+	/*metadata*/
+	public List<Column> getRemoteTableColumnsMetadata(Integer tableId);
 	
 	/*UserAccess*/
 	public List<UserAccess> getAllUserAccess();
@@ -79,11 +86,6 @@ public interface MetaDataService {
 	/*TEST ONLY first Time Tables and Columns creating for selected servers*/
 	public Server getTablesMetadataForServerTestOnly(Integer serverId);
 	
-	public PaginatedTableResponse<Table> getActiveSynchedTablesForServer(Integer serverId, String matching, String orderBy,
-			String orderDirection, int startIndex, int length );
-	
-	public PaginatedTableResponse<Column> getActiveSynchedColumnsForTable(Integer tableId, String matching, String orderBy,
-			String orderDirection, int startIndex, int length);
 	
 	/*DATA Module part*/
 	public PaginatedTableResponse<Column> getColumnData(Integer tableId, String matching, int orderByColumnID,

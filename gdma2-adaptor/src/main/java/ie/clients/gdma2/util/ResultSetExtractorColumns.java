@@ -42,6 +42,8 @@ public class ResultSetExtractorColumns implements ResultSetExtractor<Set<Column>
 	 * 
 	 * set parent Table later in caller!
 	 * 
+	 * see GDMA1: ServerUtil.resyncColumnList
+	 * 
 	 * @param metaData
 	 * @param i
 	 * @return Column Entity

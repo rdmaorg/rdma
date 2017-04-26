@@ -19,14 +19,23 @@ public interface TableRepository extends PagingAndSortingRepository<Table, Integ
 	 * https://www.petrikainulainen.net/programming/spring-framework/spring-data-jpa-tutorial-part-seven-pagination/
 	 * */
 
+	/*TESTING PURPOSE*/
+	/*find by ServerId and Active - not pageable*/
+	public List<Table> findByServerIdAndActiveTrue(Integer serverId);
 	public List<Table> findByServerId(int serverId);
+
+	
 	
 	@Query("select count(t) from Table t where t.server.id = ?1")
 	public long countTablesForServer(Integer serverId);
 	
 	/*find by ServerId - pageable*/
 	public List<Table> findByServerId(int serverId, Pageable pageable);
+
 	
+	
+	
+	/*TODO not active - DELETE if not needed!*/
 	/*matching = search term, search in all columns of data table on UI*/
 	@Query("select count(t) from Table t "
 			+ " where "
@@ -34,6 +43,7 @@ public interface TableRepository extends PagingAndSortingRepository<Table, Integ
 			+ " and t.server.id = ?2")
 	public long getCountMatching(String matching, Integer serverId); //TODO pass serverId
 
+	/*TODO not active - DELETE if not needed!*/
 	@Query("select t from "
 			+ " Table t where "
 			+ " (upper(t.name) like ?1  or upper(t.alias) like ?1 or upper(t.server.name) like ?1 )"
@@ -41,16 +51,18 @@ public interface TableRepository extends PagingAndSortingRepository<Table, Integ
 	public List<Table> getMatchingTables(String matching, Integer serverId, Pageable pageable);
 
 	
-	/*--ACTIVE TABLES for Admin module - after synch*/
-	/*count Active tables for server*/
+	
+	
+	/*--ACTIVE TABLES for Admin module - after synch, on local */
 	@Query("select count(t) from Table t where t.active = true and t.server.id = ?1")
 	public long countActiveTablesForServer(Integer serverId);
 	
-	/*find by ServerId and Active -  pageable*/
+	/*active Tables for server - Pageable - after synch, on local */
 	@Query("select t from Table t where t.active= true and t.server.id = ?1")
 	public List<Table> getActivePagableTables(Integer serverId, Pageable pageable);
 	//public List<Table> findByServerIdAndActiveTrue(int serverId, Pageable pageable); works too
 	
+	/*active Tables for server with search - Pageable - after synch, on local */
 	@Query("select t "
 			+ " from Table t "
 			+ " where t.active = true "
@@ -59,8 +71,7 @@ public interface TableRepository extends PagingAndSortingRepository<Table, Integ
 	public List<Table> getActiveMatchingTables(String matching, Integer serverId, Pageable pageable);
 
 	
-	/*find by ServerId and Active - not pageable*/
-	public List<Table> findByServerIdAndActiveTrue(Integer serverId);
+	
 
 	
 	
