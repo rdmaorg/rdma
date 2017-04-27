@@ -13,16 +13,24 @@ var configureDataTable = function(){
 			            { "data": "id" },
 			            { "data": "name" },
 			            { "data": "alias" },
-			            { "data": "active" },			            
+			            { "data": "active" ,"render" : function(data, type, row){ 
+				            	if(row.active){
+				            		return '<i class="fa fa-check-circle active-icon" aria-hidden="true"></i>';
+				            	} else {
+				            		return '<i class="fa fa-times-circle inactive-icon" aria-hidden="true"></i>';
+				            	}
+			            	} 
+			            },			            
 			            { "data": "name","render" : function(data, type, row){ 
-			            	return '<button class="btn btn-primary btn-xs editAccess" data-tableid="'+ row.id+ '" data-tablename="'+ row.name +'" ><i class="fa fa-pencil-square-o"></i> Edit Access</button>'
+			            	var disabled = row.active ? '': ' disabled';
+			            	return '<button class="btn btn-primary btn-xs editAccess" data-tableid="'+ row.id+ '" data-tablename="'+ row.name +'"'+ disabled +'><i class="fa fa-pencil-square-o"></i> Edit Access</button>'
 			            	+ '&nbsp;'
-			            	+'<button class="btn btn-info btn-xs viewColumns" data-tableid="'+ row.id+ '" data-tablename="'+ row.name +'"><i class="fa fa-columns"></i> Columns</button>'
+			            	+'<button class="btn btn-info btn-xs viewColumns" data-tableid="'+ row.id+ '" data-tablename="'+ row.name +'"'+ disabled +'><i class="fa fa-columns"></i> Columns</button>'
 			            	} 
 			            }
 			        ]
 	};
-
+	
 	$('#tbl_tables').configureDataTable(config, {
 		url: mapPathVariablesInUrl(restUri.table.table, {id: serverSessionId}),
 		complete: function(){

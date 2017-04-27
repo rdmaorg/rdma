@@ -21,8 +21,8 @@ var restUri = {
 	table:{
 		list: getRestBaseUri() + '/table/list',
 		list_for_server_active: getRestBaseUri() + '/table/data/server/{id}',
-		sync_table_server: getRestBaseUri() + '/table/{serverId}/metadata',
-		table: getRestBaseUri() + '/table/server/{id}/table/list',
+		sync_table_server: getRestBaseUri() + '/table/{id}/metadata',
+		table: getRestBaseUri() + '/table/server/{id}',
 		save: getRestBaseUri() + '/table/save'
 	},
 	column:{

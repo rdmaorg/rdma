@@ -184,7 +184,7 @@ var syncTables = function(serverId){
 	
 	$.ajax({
         type: "get",
-        url: mapPathVariablesInUrl(restUri.table.sync_table_server,{serverId: serverId}),
+        url: mapPathVariablesInUrl(restUri.table.sync_table_server,{id: serverId}),
         contentType: "application/json; charset=utf-8",
     }).done(function(data){
     }).fail(function(e){

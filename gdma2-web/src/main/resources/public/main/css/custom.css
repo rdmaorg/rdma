@@ -80,6 +80,11 @@
     margin: 10px !important;
 }
 
+.btn-primary:disabled,
+.btn-info:disabled {
+    opacity: 0.5;
+}
+
 .modal-title {
 	color:#fff;
 }
@@ -120,4 +125,14 @@ table.table-condensed {
 .content-header>h2 {
 	font-size:14px;
 	margin-top:0;
+}
+
+.active-icon {
+	color: #5cd65c;
+	font-size: 21px;
+}
+
+.inactive-icon {
+	color: #ff471a;
+	font-size: 21px;
 }
