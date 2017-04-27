@@ -14,7 +14,14 @@ var configureDataTable = function(){
 			            { "data": "connectionUrl" },
 			            { "data": "connectionType.name", "defaultContent": "" },
 			            { "data": "prefix" },
-			            { "data": "active" },
+			            { "data": "active" ,"render" : function(data, type, row){ 
+				            	if(row.active){
+				            		return '<i class="fa fa-check-circle active-icon" aria-hidden="true"></i>';
+				            	} else {
+				            		return '<i class="fa fa-times-circle inactive-icon" aria-hidden="true"></i>';
+				            	}
+		            		} 
+			            },			        
 			            { "data": "active","render" : function(data, type, row){ 	
 			            	return '<button class="btn btn-primary btn-xs editServer" data-serverid="'+ row.id+ '"><i class="fa fa-pencil-square-o"></i> Edit</button>'
 			            	+ '&nbsp;'

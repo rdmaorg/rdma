@@ -133,6 +133,6 @@ table.table-condensed {
 }
 
 .inactive-icon {
-	color: #ff471a;
+	color: rgba(255,0,0,.5);
 	font-size: 21px;
 }

@@ -13,9 +13,30 @@ var configureDataTable = function(){
 			            { "data": "lastName" },
 			            { "data": "userName" },
 			            { "data": "domain" },
-			            { "data": "admin" },
-			            { "data": "locked" },
-			            { "data": "active" },
+			            { "data": "admin" ,"render" : function(data, type, row){ 
+				            	if(row.admin){
+				            		return '<i class="fa fa-check-circle active-icon" aria-hidden="true"></i>';
+				            	} else {
+				            		return '<i class="fa fa-times-circle inactive-icon" aria-hidden="true"></i>';
+				            	}
+			            	} 
+			            },
+			            { "data": "locked" ,"render" : function(data, type, row){ 
+				            	if(row.locked){
+				            		return '<i class="fa fa-check-circle active-icon" aria-hidden="true"></i>';
+				            	} else {
+				            		return '<i class="fa fa-times-circle inactive-icon" aria-hidden="true"></i>';
+				            	}
+			            	} 
+			            },	
+			            { "data": "active" ,"render" : function(data, type, row){ 
+				            	if(row.active){
+				            		return '<i class="fa fa-check-circle active-icon" aria-hidden="true"></i>';
+				            	} else {
+				            		return '<i class="fa fa-times-circle inactive-icon" aria-hidden="true"></i>';
+				            	}
+			            	} 
+			            },			        
 			            { "data": "active","render" : function(data, type, row){ 	
 			            	return '<button class="btn btn-primary btn-xs editUser" data-userid="'+ row.id +'"><span class="glyphicon glyphicon-pencil"></span> Edit</button>'
 			            	+ '&nbsp;'
