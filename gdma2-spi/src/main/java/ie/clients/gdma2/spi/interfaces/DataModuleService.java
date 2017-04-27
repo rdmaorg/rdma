@@ -21,8 +21,8 @@ public interface DataModuleService {
 		public List<Table> getActiveTables(Integer serverId);
 		public List<Column> getActiveColumns(Integer tableId);
 
+		/*are this to needed???*/
 		public UserAccess getUserAccessDetails(Long serverId, Long tableId);
-			
 		public List<Server> getTableDetails(Long serverId, Long tableId);
 		
 		/*
@@ -40,12 +40,9 @@ public interface DataModuleService {
 		public List<Column> getDropdownData(Integer displayColumnId,
 				Integer storeColumnId);
 		
-		//public List getDropDownData(Column display, Column store);
 
-
-
-		 
-		
+		/*add record to the table */
+		public void addRecord(Integer tableId);
 			
 	
 	

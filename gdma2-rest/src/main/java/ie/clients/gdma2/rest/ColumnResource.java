@@ -42,8 +42,8 @@ public class ColumnResource extends BaseDataTableResource{
 
 	
 	/*ACTIVE column list for selected ACTIVE table - Admin module : from local DB */
-	/* 		 http://localhost/gdma2/rest/column/table/6  	*/
-	/*		 http://localhost/gdma2/rest/column/table/6?order[0][column]=1&search[value]=ord      */
+	/* 		 http://localhost/gdma2/rest/column/table/11  	*/
+	/*		 http://localhost/gdma2/rest/column/table/11?order[0][column]=1&search[value]=addr      */
 	@RequestMapping("/table/{id}")
 	PaginatedTableResponse<Column> getActiveLocalColumnsForTable(@PathVariable("id") Integer tableId,
 			@RequestParam Map<String, String> reqParams){
@@ -181,5 +181,13 @@ public class ColumnResource extends BaseDataTableResource{
 	public List<Column> getDropdownData(@PathVariable("did") Integer displayColumnId, @PathVariable("sid") Integer storeColumnId){
 		logger.info("getDropdownData for display column: " + displayColumnId + ", and store column: " + storeColumnId);
 		return serviceFacade.getDataModuleService().getDropdownData(displayColumnId, storeColumnId);
+	}
+	
+	@RequestMapping("/data/add/table/{id}")
+	public void addColumnData(@PathVariable("id") Integer tableId, @RequestParam Map<String, String> reqParams){
+		logger.info("addColumnData for table: " + tableId);
+		
+		//void methods not orderding no paginated response
+		serviceFacade.getDataModuleService().addRecord(tableId);
 	}
 }

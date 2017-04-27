@@ -47,6 +47,8 @@ public interface DynamicDAO {
 
 	public void addRecord(UpdateRequest updateRequest);
 	*/
+	/*DATA module - add record to the table */
+	public void addRecord(UpdateDataRequest updateRequest);
 	
 	/**
 	 * Update one or more records

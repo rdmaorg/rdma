@@ -5,6 +5,8 @@ import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.spi.interfaces.DataModuleService;
+import ie.clients.gdma2.util.ColumnDataUpdate;
+import ie.clients.gdma2.util.UpdateDataRequest;
 
 import java.util.List;
 
@@ -74,23 +76,25 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 		Column storeColumn = repositoryManager.getColumnRepository().findOne(storeColumnId);
 		
 		List dropDownData = dynamicDAO.getDropDownData(displayColumn, storeColumn);
-		
+		//TODO
 		return null;
 	}
 
-	/*
+
+
 	@Override
-	public List getDropDownData(Column display, Column store) {
-		// TODO Auto-generated method stub
+	public void addRecord(Integer tableId) {
+		logger.info("addRecord");
+		logger.info("user: " + userContextProvider.getLoggedInUserName());
 		
-		return null;
+		//create UpdateRequest
+		UpdateDataRequest updateReq = new UpdateDataRequest();
+		//updateReq.setServerId(serverId);
+		updateReq.setTableId(tableId);
+		// TODO coming from UI updateReq.setUpdates(List<List<ColumnDataUpdate>> updates);
+		dynamicDAO.addRecord(updateReq);
+		
 	}
-	*/
 
-
-
-
-
-	
 	
 }

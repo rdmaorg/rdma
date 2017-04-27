@@ -14,6 +14,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,7 +25,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
 import org.springframework.jdbc.core.SqlParameter;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.StringUtils;
 
 @Repository
@@ -662,6 +665,8 @@ public class DynamicDAOImpl implements DynamicDAO{
 	 *  TODO filters
 	 *  TODO pagination
 	 *  
+	 *  old app: GdmaAjaxFacade.getData
+	 *  
 	 *  https://localhost/gdma2/rest/column/data/read/table/630*/
 
 	@Override
@@ -874,7 +879,130 @@ public class DynamicDAOImpl implements DynamicDAO{
 	}
 
 
+	/*TRANSACTIONALLY INSERT data from Column data grid to REMOTE DB 
+	 * 
+	 * TODO: define incoming object and what needs to be returned to UI
+	 * 
+	 * OLD app: void	GdmaAjaxFacade.addRecord(UpdateRequest updateRequest), do auth user 
+	 * */
 
+	//@Auditable
+	@Override
+	public void addRecord(UpdateDataRequest updateRequest) {
+		logger.info("addRecord");
+
+		//Server server = repositoryManager.getServerRepository().findOne(updateRequest.getServerId()); REMOVED param from UI call
+		Table table = repositoryManager.getTableRepository().findOne(updateRequest.getTableId());
+		Server server = table.getServer();
+		updateRequest.setServerId(server.getId());
+		
+		
+		if( null == server || null == table){
+			logger.error("Server or table does not exist!");
+			return; //TODO 
+		}
+
+		List<List<ColumnDataUpdate>> columnsUpdate = updateRequest.getUpdates();
+
+		DataSourceTransactionManager transactionManager = dataSourcePool.getTransactionManager(server);
+		TransactionTemplate txTemplate = new TransactionTemplate(transactionManager);
+
+		txTemplate.execute(new org.springframework.transaction.support.TransactionCallbackWithoutResult() {
+			@Override
+			protected void doInTransactionWithoutResult(org.springframework.transaction.TransactionStatus status) {
+
+				for (List<ColumnDataUpdate> colList : columnsUpdate) {
+
+					//create new list of columns loaded from DB, use columnType to convert new value and create paremeters 
+					//then handle SPECIAL columns and create INSERT 
+					List<Column> columns = new ArrayList<Column>();
+					final List parameters = new ArrayList();
+
+					for (ColumnDataUpdate col : colList) {
+						//Column column = gdmaFacade.getColumnDao().get(columnUpdate.getColumnId());
+						Column column = repositoryManager.getColumnRepository().findOne(col.getColumnId());
+
+						if(server.getConnectionUrl().toLowerCase().contains(("teradata").toLowerCase()) 
+								&& column.isPrimarykey() && col.getNewColumnValue().equals("")){
+
+						}else{
+							columns.add(column);
+							parameters.add(SQLUtil.convertToType(col.getNewColumnValue(), column.getColumnType()));
+						}
+					}
+
+					handleSpecialColumns(table.getColumns(), columns, parameters);
+					final String sql = SQLUtil.createInsertStatement(server, table, columns);
+
+					logger.info("sql: " + sql);
+					logger.info("parameters: "  + parameters);
+
+
+					JdbcTemplate jdbcTemplate = new JdbcTemplate(transactionManager.getDataSource());
+					jdbcTemplate.update(sql, parameters.toArray());
+
+				}
+
+			}
+		});//inner class impl
+
+	}
+
+
+
+	/**
+	 * TODO handle Special case and user auth
+	 * @param set
+	 * @param columns
+	 * @param parameters
+	 */
+	@SuppressWarnings("unchecked")
+	private void handleSpecialColumns(Set<Column> set, List<Column> columns, List parameters) {
+		for (Column column : set) {
+			if (StringUtils.hasText(column.getSpecial())) {
+
+				if ("U".equals(column.getSpecial())) {
+
+					String user = "";
+
+					//TODO logger.info("user: " + userContextProvider.getLoggedInUserName());
+					/*
+					SecurityContext securityContext = SecurityContextHolder.getContext();
+					Authentication authentication = securityContext.getAuthentication();
+
+					 */
+					if( 1==1 ){
+						/*
+						if (authentication != null && authentication.getPrincipal() instanceof User) {
+							user = ((User) authentication.getPrincipal()).getUserName();
+						 */
+					} else {
+						user = "UNKNOWN";
+					}
+					// first see if by error the column is already included
+					if (columns.contains(column)) {
+						int index = columns.indexOf(column);
+						parameters.set(index, SQLUtil.convertToType(user, column.getColumnType()));
+					} else {
+						columns.add(column);
+						parameters.add(SQLUtil.convertToType(user, column.getColumnType()));
+					}
+				} else if ("D".equals(column.getSpecial())) {
+					// first see if by error the column is already included
+					if (columns.contains(column)) {
+						int index = columns.indexOf(column);
+						parameters.set(index, SQLUtil.convertToType(Formatter.formatDate(new Date()), column.getColumnType()));
+					} else {
+						columns.add(column);
+						// can't be guaranteed that the column is a dated column
+						// so convert to string
+						parameters.add(SQLUtil.convertToType(Formatter.formatDate(new Date()), column.getColumnType()));
+					}
+				}
+			}
+		}
+
+	}
 
 
 
