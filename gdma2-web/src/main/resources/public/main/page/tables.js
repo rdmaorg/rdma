@@ -57,10 +57,24 @@ var associateEditAcces = function(){
 var associateViewTable = function(){
 	$('.viewColumns').click(function(){
  		var btn = $(this);
+ 		syncColumns(btn.data('tableid'));
  		viewTable(btn.data('tableid'),btn.data('tablename'));
 	})
 };
 
+var syncColumns = function(tableId){
+	
+	$.ajax({
+        type: "get",
+        url: mapPathVariablesInUrl(restUri.column.sync,{id: tableId}),
+        contentType: "application/json; charset=utf-8",
+    }).done(function(data){
+    }).fail(function(e){
+    	handleError('#global-alert', e);
+    }).always(function(){
+    	hideLoading();
+    });
+} 
 var viewTable = function(serverId,tableName) {
 	sessionStorage.setItem("idTable",serverId);
 	sessionStorage.setItem("nameTable",tableName);
