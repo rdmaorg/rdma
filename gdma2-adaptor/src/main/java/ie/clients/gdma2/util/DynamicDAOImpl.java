@@ -743,6 +743,19 @@ public class DynamicDAOImpl implements DynamicDAO{
 	}
 
 
+	public Long getCount(Server server, Table table, List<Filter> filters) {
+		// TODO optimise!!
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSourcePool.getTransactionManager(server).getDataSource());
+		final String sql = SQLUtil.createCount(server, table, filters);
+		logger.error("getCount sql: " + sql);
+
+		//DEPRICATED return jdbcTemplate.queryForLong(sql, convertFiltersToSqlParameterValues(filters).toArray());
+		// NOW: jdbcTemplate.queryForObject(sql, Long.class);
+
+		return	jdbcTemplate.queryForObject(sql, convertFiltersToSqlParameterValues(filters).toArray(), Long.class); 
+
+	}
+
 	private void declareSqlParameters(PreparedStatementCreatorFactory psc, List<Filter> filters, Server server) {
 		for (Filter filter : filters) {
 			//if filter is null or blank
@@ -879,8 +892,12 @@ public class DynamicDAOImpl implements DynamicDAO{
 	}
 
 
-	/*TRANSACTIONALLY INSERT data from Column data grid to REMOTE DB 
+	/*TRANSACTIONALLY INSERT multiple rows INTO remote DB
 	 * 
+	 * PROBLEM 1: is remote table ID PK autoincrement? If not... we need to either use sequencer - which we don't have or
+	 * create new PK id using application logic - take existing id+1???
+	 * 
+	 * Problem 2: composite PK - example DB 'classicmodels' see TABLE 'orderdetails'  PRIMARY KEY ('orderNumber','productCode')
 	 * TODO: define incoming object and what needs to be returned to UI
 	 * 
 	 * OLD app: void	GdmaAjaxFacade.addRecord(UpdateRequest updateRequest), do auth user 
@@ -895,39 +912,45 @@ public class DynamicDAOImpl implements DynamicDAO{
 		Table table = repositoryManager.getTableRepository().findOne(updateRequest.getTableId());
 		Server server = table.getServer();
 		updateRequest.setServerId(server.getId());
-		
-		
+		logger.info("server and table set");
+
+
 		if( null == server || null == table){
 			logger.error("Server or table does not exist!");
 			return; //TODO 
 		}
 
 		List<List<ColumnDataUpdate>> columnsUpdate = updateRequest.getUpdates();
-
+		
 		DataSourceTransactionManager transactionManager = dataSourcePool.getTransactionManager(server);
 		TransactionTemplate txTemplate = new TransactionTemplate(transactionManager);
-
+		logger.info("transactionManager obtained");
+		
 		txTemplate.execute(new org.springframework.transaction.support.TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(org.springframework.transaction.TransactionStatus status) {
-
+				logger.info("doInTransactionWithoutResult");
 				for (List<ColumnDataUpdate> colList : columnsUpdate) {
-
+					logger.info("1: iterrate in colUpdateList");
 					//create new list of columns loaded from DB, use columnType to convert new value and create paremeters 
 					//then handle SPECIAL columns and create INSERT 
 					List<Column> columns = new ArrayList<Column>();
 					final List parameters = new ArrayList();
 
 					for (ColumnDataUpdate col : colList) {
+						logger.info("2: single col update....");
 						//Column column = gdmaFacade.getColumnDao().get(columnUpdate.getColumnId());
 						Column column = repositoryManager.getColumnRepository().findOne(col.getColumnId());
-
+						logger.info("3: colId from request found in DB: " + column.getId() + ", colName: " + column.getName());
+						
 						if(server.getConnectionUrl().toLowerCase().contains(("teradata").toLowerCase()) 
 								&& column.isPrimarykey() && col.getNewColumnValue().equals("")){
 
 						}else{
 							columns.add(column);
+							logger.info("4: params...");
 							parameters.add(SQLUtil.convertToType(col.getNewColumnValue(), column.getColumnType()));
+							logger.info("5: ...params converted");
 						}
 					}
 
@@ -939,7 +962,10 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 
 					JdbcTemplate jdbcTemplate = new JdbcTemplate(transactionManager.getDataSource());
+					//JdbcTemplate jdbcTemplate = dataSourcePool.getJdbcTemplateFromDataDource(server);
+					logger.info("6: UPDATE...");
 					jdbcTemplate.update(sql, parameters.toArray());
+					logger.info("6: ..UPDATE end");
 
 				}
 
@@ -958,11 +984,12 @@ public class DynamicDAOImpl implements DynamicDAO{
 	 */
 	@SuppressWarnings("unchecked")
 	private void handleSpecialColumns(Set<Column> set, List<Column> columns, List parameters) {
+		logger.info("handleSpecialColumns");
 		for (Column column : set) {
 			if (StringUtils.hasText(column.getSpecial())) {
 
 				if ("U".equals(column.getSpecial())) {
-
+					logger.info("special column is U");
 					String user = "";
 
 					//TODO logger.info("user: " + userContextProvider.getLoggedInUserName());
@@ -988,6 +1015,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 						parameters.add(SQLUtil.convertToType(user, column.getColumnType()));
 					}
 				} else if ("D".equals(column.getSpecial())) {
+					logger.info("special column is D");
 					// first see if by error the column is already included
 					if (columns.contains(column)) {
 						int index = columns.indexOf(column);

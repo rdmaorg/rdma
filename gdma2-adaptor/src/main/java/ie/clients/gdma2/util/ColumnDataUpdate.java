@@ -32,5 +32,11 @@ public class ColumnDataUpdate {
 		this.oldColumnValue = oldColumnValue;
 	}
 
-
+	/*
+	public ColumnDataUpdate(Integer id, String newVal, String oldVal) {
+		this.columnId = id;
+		this.newColumnValue = newVal;
+		this.oldColumnValue = oldVal;
+	}
+	*/
 }

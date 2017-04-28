@@ -52,7 +52,7 @@ public class GDMAApp extends SpringBootServletInitializer {
     }
     */
 	
-	
+	/*
 	@Bean
 	public CommonsRequestLoggingFilter requestLoggingFilter() {
 	   
@@ -62,47 +62,9 @@ public class GDMAApp extends SpringBootServletInitializer {
 	    crlf.setIncludeClientInfo(true);
 	    crlf.setIncludeQueryString(true);
 	    crlf.setIncludePayload(true);
-	    
-	    /*get all servers*/
-	    /*
-	    logger.error("************* requestLoggingFilter():");
-	    List<Server> allServers =  mtdService().getAllServers();
-		logger.error("************* SERVER_COUNT:" + allServers.size());
-		System.out.println("************* SERVER_COUNT:" + allServers.size());
-		*/
-		
-	    
-	    /*findOne  server*/
-	    /*
-	    Integer serverId = 2;
-		logger.error("************* requestLoggingFilter():");
-	    Server serverFound = mtdService().findOne(2);
-		logger.error("************* SERVER_FOUND:" + serverFound.getName());
-		*/
-	    
-	    
-	    
-	    /*get all tables by serverId*/
-	    /*
-	    Integer serverId = 2;
-		logger.error("************* requestLoggingFilter():");
-	     List<Table> tableList = mtdService().findTablesByServerId(serverId);
-		logger.error("************* SERVER_FOUND:" + tableList.size());
-	    */
-		
-		
-	    /*count tabels for server*/
-	    /*
-	    Integer serverId = 2;
-		logger.error("************* requestLoggingFilter():");
-	     Long tableNumber = mtdService().countTablesForServer(serverId);
-		logger.error("************* SERVER : " + serverId + ", NUMBER OF TABLES _FOUND:" + tableNumber);
-	    */
-		 
-		//repositoryManager.getServerRepository().findOne(serverId);
-		
+	
 	    return crlf;
 	}
-
+*/
 	
 }

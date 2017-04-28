@@ -183,6 +183,10 @@ public class ColumnResource extends BaseDataTableResource{
 		return serviceFacade.getDataModuleService().getDropdownData(displayColumnId, storeColumnId);
 	}
 	
+	/*serverId = 6 tableId= 43 user is active and has userAccess to table with active columns
+	 * 
+	 * first READ: 			https://localhost/gdma2/rest/column/data/read/table/83 
+	 * then try to add: 	https://localhost/gdma2/rest/column/data/add/table/83	*/
 	@RequestMapping("/data/add/table/{id}")
 	public void addColumnData(@PathVariable("id") Integer tableId, @RequestParam Map<String, String> reqParams){
 		logger.info("addColumnData for table: " + tableId);
