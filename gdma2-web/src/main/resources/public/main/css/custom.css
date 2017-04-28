@@ -36,6 +36,10 @@
 	position:relative;
 }
 
+.bootstrap-switch .bootstrap-switch-handle-on,.bootstrap-switch .bootstrap-switch-handle-off,.bootstrap-switch {
+	border-radius:0;
+}
+
 .sidebar-mini.sidebar-collapse .sidebar-menu>li:hover>.treeview-menu {
 	width:249px;
 }
@@ -83,6 +87,15 @@
 .btn-primary:disabled,
 .btn-info:disabled {
     opacity: 0.5;
+}
+
+table thead tr {
+    background: rgba(60, 141, 188, 1);
+    color: #fff;
+}
+
+.table-hover > tbody > tr:hover {
+    background: rgba(60, 141, 188, .2);	
 }
 
 .modal-title {

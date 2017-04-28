@@ -5,8 +5,8 @@ var configureDataTable = function(){
 	
 	var config={
 	        fixedHeader: true,
-			order: [[ 0, "asc" ]],
-			"columnDefs": [ { className: "text-center", "targets": [4] },{ "orderable": false, "targets": 4 }  ],
+			order: [[ 1, "asc" ]],
+			"columnDefs": [ { className: "text-center", "targets": [3,4] },{ "orderable": false, "targets": 4 }  ],
 			serverside: true,
 			"lengthMenu": [ [10, 25, 50, 100], [10, 25, 50, 100] ],
 			"columns": [

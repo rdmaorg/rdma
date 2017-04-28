@@ -2,9 +2,9 @@ var savedServerID = -1;
 var configureDataTable = function(){
 	
 	var config={
-			order: [[ 0, "asc" ]],
+			order: [[ 1, "asc" ]],
 			"lengthMenu": [ [10, 25, 50, 100], [10, 25, 50, 100] ],
-			"columnDefs": [ { className: "text-center", "targets": [8] },
+			"columnDefs": [ { className: "text-center", "targets": [7,8] },
 			                { "orderable": false, "targets": 8 } ],
 			"columns": [
 			            { "data": "id" },
@@ -85,7 +85,7 @@ var editServer = function(serverId) {
 		$("#url").val(data.connectionUrl);
 		$("#connectionType").val(data.connectionType.id);
 		$("#prefix").val(data.prefix);
-		$("#active > [value=" + data.active + "]").prop('selected', true);
+		$("#active").bootstrapSwitch('state',data.active);
 		$('#modalServer').modal('show');
 		$("#modalServer").on('shown.bs.modal', function () {
             $("#name").focus();
@@ -211,6 +211,8 @@ var viewServer = function(serverId,serverName) {
 $(document).ready(function(){	
 
 	configureDataTable();
+	
+	$("#active").bootstrapSwitch();
 	
 	$("#addServer").click(function(){
 		$("#modalServer").find('form').trigger('reset');

@@ -4,7 +4,7 @@ var configureDataTable = function(){
 	var config={
 	        fixedHeader: true,
 	        stateSave: false,
-			order: [[ 0, "asc" ]],
+			order: [[ 1, "asc" ]],
 			"lengthMenu": [ [10, 25, 50, 100], [10, 25, 50, 100] ],
 			"columnDefs": [ { "orderable": false, "targets": 8 } ],
 			"columns": [

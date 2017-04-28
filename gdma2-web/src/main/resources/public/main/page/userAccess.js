@@ -11,10 +11,11 @@ var configureUserAccessDatatable = function() {
 	var changedCheckboxes = new Object();
 	var config = {
 		fixedHeader : true,
+		order: [[ 1, "asc" ]],
 		"page" : 0,
 		"stateSave" : false,
 		"oLanguage": {
-	         "sSearch": "Search by username:"
+	         "sSearch": "Search:"
 	     },
 		"destroy" : true,
 		"columns" : [
