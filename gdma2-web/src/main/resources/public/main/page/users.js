@@ -92,9 +92,9 @@ var editUser = function(userId) {
 		$("#username").val(data.userName);
 		$("#password").val(data.password);
 		$("#url").val(data.domain);
-		$("#admin > [value=" + data.admin + "]").prop('selected', true);
-		$("#locked > [value=" + data.locked + "]").prop('selected', true);
-		$("#active > [value=" + data.active + "]").prop('selected', true);
+		$("#admin").bootstrapSwitch('state',data.admin);
+		$("#locked").bootstrapSwitch('state',data.locked);
+		$("#active").bootstrapSwitch('state',data.active);
 		$('#modalUser').modal('show');
 		$("#modalUser").on('shown.bs.modal', function () {
             $("#name").focus();
@@ -212,4 +212,8 @@ $(document).ready(function(){
 	configureDataTable();	
 	associateInsertButton();
 	resetModalValidatorEvent();
+
+	$("#active").bootstrapSwitch();
+	$("#admin").bootstrapSwitch();
+	$("#locked").bootstrapSwitch();
 });

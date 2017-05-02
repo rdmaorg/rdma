@@ -36,8 +36,23 @@
 	position:relative;
 }
 
+.bootstrap-switch {
+	display: block;
+}
+
+.bootstrap-switch .bootstrap-switch-label {
+	margin-top: -2px;
+    margin-bottom: -2px;
+}
+
 .bootstrap-switch .bootstrap-switch-handle-on,.bootstrap-switch .bootstrap-switch-handle-off,.bootstrap-switch {
 	border-radius:0;
+}
+
+.bootstrap-switch-label:before {
+    content: "\e055";
+    font-family: 'Glyphicons Halflings';
+    color: rgba(0,0,0,0.1);
 }
 
 .sidebar-mini.sidebar-collapse .sidebar-menu>li:hover>.treeview-menu {
@@ -108,7 +123,7 @@ table thead tr {
 	font-size:28px;
 }
 
-.form-control {
+.form-control,.bootstrap-switch,.bootstrap-switch-handle-off,.bootstrap-switch-handle-on {
 	-webkit-box-shadow: inset 1px 1px 5px 0px rgba(0,0,0,0.16);
 	-moz-box-shadow: inset 1px 1px 5px 0px rgba(0,0,0,0.16);
 	box-shadow: inset 1px 1px 5px 0px rgba(0,0,0,0.16);
@@ -143,9 +158,17 @@ table.table-condensed {
 .active-icon {
 	color: #5cd65c;
 	font-size: 21px;
+	background: #fff;
+    padding: 0px 1px;
+    box-shadow: 0px 0px 3px rgba(0,0,0,.5);
+    border-radius: 16px;
 }
 
 .inactive-icon {
 	color: rgba(255,0,0,.5);
 	font-size: 21px;
+	background: #fff;
+    padding: 0px 1px;
+    box-shadow: 0px 0px 3px rgba(0,0,0,.5);
+    border-radius: 16px;
 }

@@ -32,7 +32,7 @@
           </ul>
         </li>
         <li sec:authorize="hasAuthority('GDMA_ADMIN')">
-          <a href="#" class="btn btn-flat" id="btn-admin" data-toggle="control-sidebar"><i class="fa fa-gears"></i> <span></span></a>
+          <a href="#" class="btn btn-flat" id="btn-admin" data-toggle="control-sidebar"><i class="fa fa-gears"></i> <span th:text="#{view.menu.configuration}"></span></a>
         </li>
       </ul>
   </nav>
