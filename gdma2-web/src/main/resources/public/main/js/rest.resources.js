@@ -29,7 +29,8 @@ var restUri = {
 		sync: getRestBaseUri() + '/column/metadata/table/{id}',
 		list: getRestBaseUri() + '/column/list',
 		table: getRestBaseUri() + '/column/table/{id}',
-		item: getRestBaseUri() + '/column/table/{id}/active'
+		item: getRestBaseUri() + '/column/table/{id}/active',
+		save: getRestBaseUri() + '/column/save'
 	},
 	userAcces:{
 		table: getRestBaseUri() + '/access/table/{id}',
