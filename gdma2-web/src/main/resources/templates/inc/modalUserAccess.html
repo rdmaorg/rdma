@@ -17,7 +17,7 @@
 						<div class="col-xs-12">
 							<div class="form-group ">
 								<table id="tbl_userAccess"
-									class="table table-striped table-hover dt-responsive" cellspacing="0"
+									class="table table-striped table-condensed table-hover dt-responsive" cellspacing="0"
 									width="100%">
 									<thead>
 										<tr>
@@ -37,8 +37,7 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-default btn-lg pull-left"
-						data-dismiss="modal">
+					<button type="button" class="btn btn-default btn-lg pull-left" id="modal-close">
 						<span th:text="#{view.modal.user.access.btn.close}"></span>
 					</button>
 					<button class="btn btn-primary btn-lg" id="save-userAccess" name="submit" type="submit">

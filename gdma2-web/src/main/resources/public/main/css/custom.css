@@ -80,7 +80,7 @@
 #global-alert,#global-success {
 	position: fixed;
     bottom: 0;
-    z-index: 1;
+    z-index: 9999;
     width: 90%;
     text-align: center;
 }
@@ -193,4 +193,5 @@ table.table-condensed {
 .input-edit input {
     height: 22px;
     width: 100%;
+    font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;
 }

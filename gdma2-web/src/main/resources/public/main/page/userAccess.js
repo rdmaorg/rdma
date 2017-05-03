@@ -5,6 +5,7 @@ var initiateModalUserAccess = function() {
 	changedCheckboxes = new Object();
 	$('#tableName').html('<b>&nbsp' + selectedTableName + '</b>');
 	configureUserAccessDatatable();
+	associateSaveUserAccess();
 }
 
 var configureUserAccessDatatable = function() {
@@ -94,7 +95,6 @@ var configureUserAccessDatatable = function() {
 		complete : function() {
 			// hideLoading();
 			associateCheckBoxes();
-			associateSaveUserAccess();
 		},
 		error : function(message, e) {
 			console.error("ERROR: " + JSON.stringify(e));
@@ -227,7 +227,8 @@ var associateSaveUserAccess = function() {
 	$("#save-userAccess").click(function(e) {
 		$(this).confirmation({
 			placement : "left",
-			btnOkLabel : "Edit user access",
+			title : "Save User Access?",
+			btnOkLabel : "Yes",
 			onConfirm : function(event, element) {
 				showLoading();
 				var list = getModifiedObjects();
@@ -247,21 +248,35 @@ var associateSaveUserAccess = function() {
 						handleError('#global-alert', e);
 					}).always(function() {
 						hideLoading();
-						$('#modalUserAccess').modal('hide');
 						
 					});
 				} else {
-					$('#modalUserAccess').modal('hide');
 					$("#global-success").slideDown(500);
 			    	window.setTimeout(function() {
 			    		$("#global-success").slideUp(500);
 			    	}, 4000);
-			    	hideLoading();
 				}
 			}
 		});
 		$(this).confirmation('show');
 		e.preventDefault();
+	});
+	$("#modal-close").click(function(e) {
+		if(!jQuery.isEmptyObject(changedCheckboxes)){
+			$(this).confirmation({
+				placement : "right",
+				title : "Discard unsaved changes?",
+				btnOkLabel : "Yes",
+				onConfirm : function(event, element) {
+					$('#modalUserAccess').modal('hide');
+				}
+			});
+			$(this).confirmation('show');
+		} else {
+			$(this).confirmation('hide');
+			$('#modalUserAccess').modal('hide');
+		}
+		e.preventDefault();		
 	});
 }
 
