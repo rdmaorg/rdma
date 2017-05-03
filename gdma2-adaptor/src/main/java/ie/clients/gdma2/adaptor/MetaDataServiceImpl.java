@@ -25,10 +25,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataService {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(MetaDataServiceImpl.class);
 
-	
+
 	/*Connection type section*/
 	@Override
 	public List<ConnectionType> getAllConnectionTypes() {
@@ -167,7 +167,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 		//synch tables first
 		//synhronizeTablesForServer(serverIdParam); THIS IS DONE SEPARATELLY
-		
+
 		logger.debug("...get Active Synched Tables now");
 
 		Server server = null;
@@ -365,37 +365,37 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 				//UPDATE
 				logger.info("UDPATing existing user");
 				User userBeforeUpdate = repositoryManager.getUserRepository().findOne(userId);
-				
+
 				//S3 check - existing user is deactivated
 				if(userBeforeUpdate.isActive() == true && user.isActive() == false){
 					logger.info("user is deactivated, deleting user access");
 					repositoryManager.getUserAccessRepository().deleteForUser(userId);
 				}
-				
+
 				//S4-2 and S4-3
 				if(StringUtils.isNotBlank(user.getPassword())){
 					if(userBeforeUpdate.getPassword().equals(user.getPassword())){
 						logger.info("skip password re-encoding");
 					} else {
 						logger.info("password was updated: re-encoding new pass: ");
-//						logger.info("password was updated: re-encoding new pass: " + user.getPassword());
+						//						logger.info("password was updated: re-encoding new pass: " + user.getPassword());
 						user.setPassword(HashUtil.hash(user.getPassword()));
-//						logger.info("password was updated: re-encoded new pass: " + user.getPassword());
+						//						logger.info("password was updated: re-encoded new pass: " + user.getPassword());
 					}
-					
+
 				}	
 			}
 		}
 
-		 List<User> savedUsers = IteratorUtils.toList(repositoryManager.getUserRepository().save(userList).iterator());
+		List<User> savedUsers = IteratorUtils.toList(repositoryManager.getUserRepository().save(userList).iterator());
 		//We can't empty the password until the transaction is over, otherwise empty password is stored in DB.
-		 //The solution is either empty the password in UserResource() or return a deep copy of the list.
-		 //To create a deep copy, we can use BeanTransformation project which uses dozer as underlying framework.
-		 //Here without emptying the password, this method is returning hashed password.
-		 //This isn't so bad either, because the hashed password can only be seen by the user who saved the password.
-		 //In subsequent calls, the password will be empty anyway.
-//		 return emptyPasswords(savedUsers); 
-		 return savedUsers;
+		//The solution is either empty the password in UserResource() or return a deep copy of the list.
+		//To create a deep copy, we can use BeanTransformation project which uses dozer as underlying framework.
+		//Here without emptying the password, this method is returning hashed password.
+		//This isn't so bad either, because the hashed password can only be seen by the user who saved the password.
+		//In subsequent calls, the password will be empty anyway.
+		//		 return emptyPasswords(savedUsers); 
+		return savedUsers;
 	}
 
 
@@ -416,7 +416,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		return IteratorUtils.toList(repositoryManager.getColumnRepository().findByTableId(tableId).iterator());
 	}
 
-	
+
 	@Override
 	public List<Column> getAllColumns() {
 		return IteratorUtils.toList(repositoryManager.getColumnRepository().findAll().iterator());
@@ -426,7 +426,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	@Transactional
 	@Override
 	public List<Column> saveColumns(List<Column> columnList) {
-		
+
 		return IteratorUtils.toList(repositoryManager.getColumnRepository().save(columnList).iterator());
 	}
 
@@ -686,16 +686,21 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		repositoryManager.getUserAccessRepository().delete(id);
 	}
 
-	/**
-	 * TEST ONLY!
-	 * for URL 
-	 * http://localhost:8080/gdma2/rest/server/metadata/4
-	 * 
-	 * gets all tables and related columns for server = 4, 
-	 * using metadata creates Tables and Columns in metadata DB
-	 * 
-	 * CONSIDER:
 
+	/* get all tables and columns metadata from remote DB, save it to local DB
+	 * then get saved table list for server*/
+	@Override
+	public List<Table> getMetadata(Integer serverId) {
+		if (getAllTablesAndColumnsMetadata(serverId)){
+			return repositoryManager.getTableRepository().findByServerId(serverId);
+		} else {
+			return null; //TODO
+		}
+		
+	}
+
+
+	/**
 	 1. One DB Server can contain many DBs, have this in mind when registering URL in Column: 	server_gdma2.url
 	  	(dbname 'gdma20' as part of DB URL : "jdbc:pgsql://localhost:5432/gdma20" stored in Server table)
 
@@ -707,35 +712,33 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
  		must have 'SHOW tables' rights invoked (Column : connection_types_gdma2.select_get_tables)
 
 	 5. Using proper DriverClass from ConnectioType user connects to server (Column : connection_types_gdma2.connection_class)  
-
-	 	Using this registered data from Server and ConnectionType - DataSource is created and JdbcTemplate using it
-
-	 6. Once connected user needs to execute 'SHOW TABLES' SQL and obtain Set of DB Table names from remote DB server
-
-	 7. Then iteration over Set of Table Name and using ResultSet to get 'Metadata' on DB Columns 
-
-	 8. Creating Set of Columns per each Table with specifics : PK or not, Size, ...othe constraints. 
-
-	 10. Iterate over Table Name set. Save Table to Medatada DB, then use saved Table to save Columns (TODO consider TRANSATION ) 
-
-
-	 * 	 */
-
+		Using this registered data from Server and ConnectionType - DataSource is created and JdbcTemplate using it
+	6. Once connected user needs to execute 'SHOW TABLES' SQL and obtain Set of DB Table names from remote DB server
+ 	7. Then iteration over Set of Table Name and using ResultSet to get 'Metadata' on DB Columns 
+ 	8. Creating Set of Columns per each Table with specifics : PK or not, Size, ...othe constraints. 
+ 	10. Iterate over Table Name set. Save Table to Medatada DB, then use saved Table to save Columns (all in TRANSATION) 
+	 */
 	@Transactional
-	@Override
-	public Server getTablesMetadataForServerTestOnly(Integer serverId) {
-		logger.info("getTablesMetadataForServerServer");
+	public boolean getAllTablesAndColumnsMetadata(Integer serverId) {
+		logger.info("getAllTablesAndColumnsMetadata for server : "  + serverId);
+
+		boolean isMetadaFetchSuccess = false;
 
 		Server server = repositoryManager.getServerRepository().findOne(serverId);
 		if(server == null){
 			logger.error("server: " + serverId +  " does not exist!");
-			return null; //TODO define how to return unexpected values to UI 
+			return isMetadaFetchSuccess; //TODO define how to return unexpected values to UI 
 		}
-		
+
 		String sqlGetTables = server.getConnectionType().getSqlGetTables(); 
 
 		/*GET TABLES FOR SERVER*/
 		List<String> tableNames = dynamicDAO.getSqlGetTables(server, sqlGetTables);
+
+		if(tableNames == null || tableNames.isEmpty()){
+			logger.error("server: " + serverId +  " does not containt any tables!");
+			return isMetadaFetchSuccess; 
+		}
 
 		for (String tableName : tableNames) {
 			/*GET COLUMNS FOR TABLE*/
@@ -745,26 +748,26 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			Table table = new Table();
 			table.setServer(server);
 			table.setName(tableName);
-			table.setAlias(tableName);
+			table.setAlias(tableName);//initial creation of alias
 			table.setColumns(tableColumns);
-			//TODO table.setActive(active); SET default TRUE/FALSE in Entity itself
+			// table.setActive(active); SET to ACTIVE by default
 
-			//transactional //TODO MAKE COMPLETE OPERATION TRANSACTIONAL - if saving columns fails, tables is still persisted!!!
-			//SAVE table first so tableId can be used when saving columns - TODO CONSIDER CASCADING !!
-			Table savedTable = saveTable(table); //
-			//TODO TEST DOUBLE SAVE !!! should tableName or (serverName, table name) be unique?
+			//Table savedTable = saveTable(table);
+			Table savedTable = repositoryManager.getTableRepository().save(table);
 
 			//persist columns
 			for (Column column : tableColumns) {
 				column.setTable(savedTable);
 			}
 			List<Column> columnList = new ArrayList<Column>(tableColumns);
-			saveColumns(columnList);
+			//saveColumns(columnList);
+			repositoryManager.getColumnRepository().save(columnList);
 
 		}
-		//refresh server to get new tables and columns
-		Server populatedServer = repositoryManager.getServerRepository().findOne(serverId);
-		return populatedServer;
+		isMetadaFetchSuccess =  true;
+		logger.info("metadata fetch is success");
+		return isMetadaFetchSuccess;
+
 	}
 
 
@@ -879,6 +882,8 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 
 	}
+
+	
 
 
 

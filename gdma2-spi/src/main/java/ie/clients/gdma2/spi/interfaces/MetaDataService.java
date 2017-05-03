@@ -82,9 +82,7 @@ public interface MetaDataService {
 
 	
 	/*DynamicDAO part*/
-	
-	/*TEST ONLY first Time Tables and Columns creating for selected servers*/
-	public Server getTablesMetadataForServerTestOnly(Integer serverId);
+	public List<Table> getMetadata(Integer serverId);
 	
 	
 	/*DATA Module part*/

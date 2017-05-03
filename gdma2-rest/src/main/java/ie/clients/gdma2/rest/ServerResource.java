@@ -1,7 +1,7 @@
 package ie.clients.gdma2.rest;
 
 import ie.clients.gdma2.domain.Server;
-import ie.clients.gdma2.domain.UserAccess;
+import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 
 import java.util.List;
@@ -94,14 +94,22 @@ public class ServerResource extends BaseDataTableResource {
 		return serviceFacade.getMetadataService().findOne(serverId);
 	}
 	
-	/*TEST ONLY : for initial table load and column metadata load for each table - all in one call 
-	 * first Time Tables and Columns creating for selected servers - NO SYNCH NO ACTIVE! */
+	/*METADATA section*/
+	
+	/*  Get all table and columns metadata for server - all in one initial load 
+	 will fetch all METADATA for tables and columns from remote DB and store to local GDMA2 DB,
+	All tables and columns ACTIVE,	Columns : primary keys determined.
+		https://localhost/gdma2/rest/server/metadata/6
+	*/
 	@RequestMapping(value = "/metadata/{id}")
-	public Server getTableMetadataForServerTestOnly(@PathVariable("id") Integer serverId){
-		logger.info("getTableMetadataForServer:" + serverId);
-		return serviceFacade.getMetadataService().getTablesMetadataForServerTestOnly(serverId);
+	public List<Table> getMetadata(@PathVariable("id") Integer serverId){
+		logger.info("getMetadata:" + serverId);
+		return serviceFacade.getMetadataService().getMetadata(serverId);
 	}
 
+	
+	/*DATA section*/
+	
 	/*list all active servers and active tables for registered user*/
 	@RequestMapping(value = "/data/tables")
 	public List<Server> getActiveTablesForActiveServer(@RequestParam Map<String, String> params){
