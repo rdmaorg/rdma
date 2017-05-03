@@ -44,17 +44,14 @@
 						</tr>
 					</thead>
 				</table>
-				<div id="buttons-row" style="display: none;" class="row">
-					<div class="col-lg-10"></div>
-					<div class="col-lg-1">
-			        	<button type="button" id="cancel-columns" class="btn btn-default btn-lg pull-left">
-							<spam th:text="#{view.column.btn.cancel}"></spam>
-						</button>					        
-					</div>
-					<div class="col-lg-1">
-						<button class="btn btn-primary btn-lg" id="save-columns" name="submit" type="submit">
-							<spam th:text="#{view.column.btn.save}"></spam>
+				<div id="buttons-row" style="display: none;" class="row buttons-row text-right">
+					<div class="col-lg-12">
+			        	<button type="button" id="cancel-columns" class="btn btn-default">
+							<span th:text="#{view.column.btn.cancel}"></span>
 						</button>
+						<button class="btn btn-primary" id="save-columns" name="submit" type="submit">
+							<span th:text="#{view.column.btn.save}"></span>
+						</button>					        
 					</div>
 				</div>
 			

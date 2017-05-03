@@ -196,6 +196,17 @@ table.table-condensed {
     font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;
 }
 
+.buttons-row {
+	position: fixed;
+    bottom: 50px;
+    background: #222d32;
+    width: 100%;
+    left: 0;
+    margin: 0;
+    padding: 10px;
+    z-index: 10;
+}
+
 td.details-control {
  	color: #5cd65c;
   	cursor: pointer;
