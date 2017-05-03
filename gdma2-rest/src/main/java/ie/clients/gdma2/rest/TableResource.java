@@ -102,6 +102,8 @@ public class TableResource extends BaseDataTableResource{
 
 
 	/*DATA module*/
+	
+	/*	http://localhost/gdma2/rest/table/data/server/6	*/
 	@RequestMapping(value = "/data/server/{id}")
 	public List<Table> activeTablesOnActiveServerForUser(@PathVariable("id") Integer serverId){
 		logger.info("activeTablesOnActiveServerForUser, serverId: " + serverId);

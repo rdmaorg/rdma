@@ -8,7 +8,9 @@ import ie.clients.gdma2.domain.User;
 import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 import ie.clients.gdma2.spi.interfaces.MetaDataService;
+import ie.clients.gdma2.util.EntityUtils;
 import ie.clients.gdma2.util.HashUtil;
+import ie.clients.gdma2.util.SQLUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -423,14 +425,22 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	}
 
 
+	/**
+	 * called from UI to UPDATE columns
+	 * called from resynh logic to UPDATE columns while resolving deleted FK relations
+	 * called from metadata initail load
+	 */
 	@Transactional
 	@Override
 	public List<Column> saveColumns(List<Column> columnList) {
-
+		for (Column column : columnList) {
+			EntityUtils.applyColumnRules(column);
+		}
 		return IteratorUtils.toList(repositoryManager.getColumnRepository().save(columnList).iterator());
 	}
 
 
+	
 	@Transactional
 	@Override
 	public void deleteColumn(int id) {
@@ -696,27 +706,18 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		} else {
 			return null; //TODO
 		}
-		
+
 	}
 
 
 	/**
-	 1. One DB Server can contain many DBs, have this in mind when registering URL in Column: 	server_gdma2.url
-	  	(dbname 'gdma20' as part of DB URL : "jdbc:pgsql://localhost:5432/gdma20" stored in Server table)
-
-	 2. "ConnectionType" is used per each server to get DB vendor specific "SHOW tables" SQL
-
-	 3. User registered in Server DB table with: 
-	 	server_gdma2.username
-		server_gdma2.password
- 		must have 'SHOW tables' rights invoked (Column : connection_types_gdma2.select_get_tables)
-
-	 5. Using proper DriverClass from ConnectioType user connects to server (Column : connection_types_gdma2.connection_class)  
+	1. Using proper DriverClass from ConnectioType user connects to server (Column : connection_types_gdma2.connection_class)  
 		Using this registered data from Server and ConnectionType - DataSource is created and JdbcTemplate using it
-	6. Once connected user needs to execute 'SHOW TABLES' SQL and obtain Set of DB Table names from remote DB server
- 	7. Then iteration over Set of Table Name and using ResultSet to get 'Metadata' on DB Columns 
- 	8. Creating Set of Columns per each Table with specifics : PK or not, Size, ...othe constraints. 
- 	10. Iterate over Table Name set. Save Table to Medatada DB, then use saved Table to save Columns (all in TRANSATION) 
+	2. Once connected user needs to execute 'SHOW TABLES' SQL and obtain Set of DB Table names from remote DB server
+ 	3. Then iteration over Set of Table Names and use ResultSet to get 'Metadata' on DB Columns 
+ 	4. Creating Set of Columns per each Table with specifics : PK or not, Size, ...othe constraints. 
+ 	5. Iterate over Table Name set. Save Table to Medatada DB, then use saved Table to save Columns (all in TRANSATION) 
+    6. apply PK and special rules on columns before saving columns 
 	 */
 	@Transactional
 	public boolean getAllTablesAndColumnsMetadata(Integer serverId) {
@@ -758,6 +759,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			//persist columns
 			for (Column column : tableColumns) {
 				column.setTable(savedTable);
+				EntityUtils.applyColumnRules(column);
 			}
 			List<Column> columnList = new ArrayList<Column>(tableColumns);
 			//saveColumns(columnList);
@@ -883,7 +885,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 	}
 
-	
+
 
 
 

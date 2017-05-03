@@ -127,6 +127,7 @@ public class UpdateDataRequestDummy{
 	/*
 	serverId=6
 	 tableId = 83  name 'new_table_test_autoincrement'
+	 user.username = 804427 has userAccess to tableId = 83
 	 * 
 		 LOCAL METADATA
 		 id	active	column_alias

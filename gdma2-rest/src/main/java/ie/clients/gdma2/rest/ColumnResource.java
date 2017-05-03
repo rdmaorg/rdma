@@ -140,15 +140,17 @@ public class ColumnResource extends BaseDataTableResource{
 		serviceFacade.getMetadataService().deleteColumn(columnId);
 	}
 	
-	/*get all Active columns for given Active table on Active server, based on userName */
+	
+	
+	/*DATA MODULE*/
+	
+	/*get all Active columns for given Active table on Active server, based on userName
+	 * 		http://localhost/gdma2/rest/column/data/table/124  */
 	@RequestMapping(value = "/data/table/{id}")
 	public List<Column> getActiveColumns(@PathVariable("id") Integer tableId){
 		logger.info("getActiveColumnsForActiveTableOnActiveServer");
 		return serviceFacade.getDataModuleService().getActiveColumns(tableId);
 	}
-	
-	
-	/*DATA MODULE*/
 	
 	/*paginated active columns wit data for : Active server, active table Table, logged in user with UserAccess.allowDisplay = true  */
 	/* https://localhost/gdma2/rest/column/data/read/table/630  */
@@ -178,7 +180,7 @@ public class ColumnResource extends BaseDataTableResource{
 	}
 	
 	@RequestMapping(value = "/data/dropdown/display/{did}/store/{sid}")
-	public List<Column> getDropdownData(@PathVariable("did") Integer displayColumnId, @PathVariable("sid") Integer storeColumnId){
+	public List getDropdownData(@PathVariable("did") Integer displayColumnId, @PathVariable("sid") Integer storeColumnId){
 		logger.info("getDropdownData for display column: " + displayColumnId + ", and store column: " + storeColumnId);
 		return serviceFacade.getDataModuleService().getDropdownData(displayColumnId, storeColumnId);
 	}

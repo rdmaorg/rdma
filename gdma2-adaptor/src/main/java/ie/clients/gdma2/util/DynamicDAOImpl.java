@@ -427,6 +427,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 			//save all updates columns changed
 			logger.info("saving column updates");
+			//EntityUtils.applyColumnRules(columnsGDMA);//no column rules needed here
 			repositoryManager.getColumnRepository().save(columnsGDMA);
 			logger.info("...saving ended");
 
@@ -852,13 +853,18 @@ public class DynamicDAOImpl implements DynamicDAO{
 	 * in GDMA1 this is all 1 call when fetching DATA for columns of table:  
 	 * GdmaAjax.getUserAccessDetails.dwr - Gets user access for Active table and logged in User
 
-	  GdmaAjax.getTableDetails.dwr
+	GdmaAjax.getTableDetails.dwr
+	GdmaAjax.getData.dwr
 
 	GdmaAjax.getDropDownData.dwr  (3 calls - 1 per each column)
 	GdmaAjax.getDropDownData.dwr
 	GdmaAjax.getDropDownData.dwr
 
-	GdmaAjax.getData.dwr
+	sql created: SELECT customers.city, customers.country FROM customers ORDER BY customers.country asc
+		list members: [0, Melbourne, Australia]
+		list members: [1, Chatswood, Australia]
+		list members: [2, North Sydney, Australia]
+
 	 * */
 	@Override
 	public List getDropDownData(Column display, Column store) {

@@ -110,9 +110,18 @@ public class ServerResource extends BaseDataTableResource {
 	
 	/*DATA section*/
 	
-	/*list all active servers and active tables for registered user*/
+	/*Regular user: list all active servers for user after login.
+	 * User needs to have userAccess to Active tables on this server to get result: 
+	 * 		http://localhost/gdma2/rest/server/data/tables 
+	 * 
+	 * ...After this call user can calls a list of active tables on one of the servers: 
+	 *	 	http://localhost/gdma2/rest/table/data/server/6
+	 * ...and then user can call for a column list of table  
+	 * 		http://localhost/gdma2/rest/column/data/table/124
+	 * ....
+	 */
 	@RequestMapping(value = "/data/tables")
-	public List<Server> getActiveTablesForActiveServer(@RequestParam Map<String, String> params){
+	public List<Server> getActiveServersContainingActiveTablesForUser(@RequestParam Map<String, String> params){
 		return serviceFacade.getDataModuleService().getActiveServers();
 	}
 }

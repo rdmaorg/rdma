@@ -37,8 +37,7 @@ public interface DataModuleService {
 
 		
 		
-		public List<Column> getDropdownData(Integer displayColumnId,
-				Integer storeColumnId);
+		public List getDropdownData(Integer displayColumnId, Integer storeColumnId);
 		
 
 		/*add record to the table */

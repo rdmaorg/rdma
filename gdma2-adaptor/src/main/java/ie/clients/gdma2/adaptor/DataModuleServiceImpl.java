@@ -70,16 +70,16 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 
 
 	@Override
-	public List<Column> getDropdownData(Integer displayColumnId,Integer storeColumnId) {
+	public List getDropdownData(Integer displayColumnId,Integer storeColumnId) {
 
 		logger.info("getDropdownData");
 		logger.info("user: " + userContextProvider.getLoggedInUserName());
 		Column displayColumn = repositoryManager.getColumnRepository().findOne(displayColumnId);
 		Column storeColumn = repositoryManager.getColumnRepository().findOne(storeColumnId);
 
-		List dropDownData = dynamicDAO.getDropDownData(displayColumn, storeColumn);
+		List dropDownDataList = dynamicDAO.getDropDownData(displayColumn, storeColumn);
 		//TODO
-		return null;
+		return dropDownDataList;
 	}
 
 
