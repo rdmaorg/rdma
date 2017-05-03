@@ -1,6 +1,8 @@
 var changedColumns = new Object();
 var origColumns = new Object();
 var table;
+var selectdedColumnId;
+var selectedColumnName;
 var tableSessionId = sessionStorage.getItem("idTable");
 var tableSessionName = sessionStorage.getItem("nameTable");
 var configureDataTable = function(){
@@ -66,12 +68,12 @@ var configureDataTable = function(){
 			            },
 			            { "data": "dropDownColumnDisplay","render" : function(data, type, row){ 
 			            		var value = row.dropDownColumnDisplay === null ? "": row.dropDownColumnDisplay;
-		            			return '<input type="text" class="column-display input-disabled" data-id="' + row.id+ '" value="'+ value +'">' ;
+		            			return '<input type="text" id="columnDisplay'+row.id+'" class="column-display input-disabled" data-id="' + row.id+ '" value="'+ value +'">' ;
 			            	} 
 			            },
 			            { "data": "dropDownColumnStore","render" : function(data, type, row){ 
 			            	 	var value = row.dropDownColumnStore === null ? "": row.dropDownColumnStore;
-		            			return '<input type="text" class="column-store input-disabled" data-id="' + row.id+ '" value="'+ value +'">' ;
+		            			return '<input type="text" id="columnStore'+row.id+'" class="column-store input-disabled" data-id="' + row.id+ '" value="'+ value +'">' ;
 			            	} 
 			            },
 			            { "data": "special","render" : function(data, type, row){ 
@@ -193,7 +195,12 @@ var associateDropDownInputs = function(){
 
 var associateDropDownInput = function(classes){
 	$("."+classes).click(function(e) {
-		
+			var input = $(this);
+			selectdedColumnId = input.data('id');
+			selectedColumnName = origColumns[selectdedColumnId].name;
+			initiateModalDropDownColumns();
+			$("#modalDropDownColumns").find('form').trigger('reset');
+			$('#modalDropDownColumns').modal('show');
 	});
 }
 

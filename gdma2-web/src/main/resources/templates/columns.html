@@ -18,6 +18,9 @@
 				</h2>							
 		  		<h1><span th:text="#{view.column.heading}"></span></h1>	
 	      		<div th:replace="inc/spinner"></div>
+	      		<div class="row">				
+					<div th:replace="inc/modalDropDownColumn"></div>
+				</div>
 		  </section>
 		  <!-- Main content -->
 			<section class="content">
@@ -61,6 +64,7 @@
 		<footer th:replace="inc/footer"></footer>
 		<aside th:replace="inc/rightPanel"></aside>
 		<script th:src="@{/public/main/page/columns.js}"></script>
+		<script th:src="@{/public/main/page/dropDownColumns.js}"></script>
 	</div>
 
 </body>

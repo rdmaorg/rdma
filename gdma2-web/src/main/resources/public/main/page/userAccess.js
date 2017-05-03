@@ -3,13 +3,13 @@ var origCheckboxes = new Object();
 
 var initiateModalUserAccess = function() {
 	changedCheckboxes = new Object();
+	origCheckboxes = new Object();
 	$('#tableName').html('<b>&nbsp' + selectedTableName + '</b>');
 	configureUserAccessDatatable();
 	associateSaveUserAccess();
 }
 
 var configureUserAccessDatatable = function() {
-	var changedCheckboxes = new Object();
 	var config = {
 		fixedHeader : true,
 		order: [[ 1, "asc" ]],

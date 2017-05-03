@@ -195,3 +195,12 @@ table.table-condensed {
     width: 100%;
     font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;
 }
+
+td.details-control {
+ 	color: #5cd65c;
+  	cursor: pointer;
+}
+
+tr.shown td.details-control {
+	color: rgba(255,0,0,.5);
+}
