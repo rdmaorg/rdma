@@ -174,5 +174,23 @@ table.table-condensed {
 }
 
 .input-disabled{
-	background-color: rgb(204, 204, 204);
+    background-color: rgb(204, 204, 204);
+    border-width: 1px;
+    cursor:pointer;
+}
+
+.input-edit {
+    position: relative;
+}
+
+.input-edit.fa.fa-pencil:before {
+    right: 4px;
+    top: 4px;
+    opacity:0.5;
+    position: absolute;
+}
+
+.input-edit input {
+    height: 22px;
+    width: 100%;
 }

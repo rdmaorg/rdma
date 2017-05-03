@@ -80,17 +80,17 @@ var configureDataTable = function(){
 			            },
 			            { "data": "minWidth", "render" : function(data, type, row){ 
 			            	    var value = row.minWidth === null ? "": row.minWidth;
-		            			return '<input type="text" maxlength="3" class="min-width input-disabled" data-id="' + row.id+ '" value="'+ value +'">' ;
+		            			return '<div class="input-edit fa fa-pencil"><input type="text" maxlength="3" class="min-width input-disabled" data-id="' + row.id+ '" value="'+ value +'"></div>' ;
 		            		}			       
 			            },
 			            { "data": "maxWidth", "render" : function(data, type, row){ 
 			            		var value = row.maxWidth === null ? "": row.maxWidth;
-		            			return '<input type="text" maxlength="3" class="max-width input-disabled" data-id="' + row.id+ '" value="'+ value +'">' ;
+		            			return '<div class="input-edit fa fa-pencil"><input type="text" maxlength="3" class="max-width input-disabled" data-id="' + row.id+ '" value="'+ value +'"></div>' ;
 	            			}			 
 			            },
 			            { "data": "columnSize", "render" : function(data, type, row){ 
 			            		var value = row.columnSize === null ? "": row.columnSize;
-		            			return '<input type="text" maxlength="3" class="column-size input-disabled" data-id="' + row.id+ '" value="'+ value +'">' ;
+		            			return '<div class="input-edit fa fa-pencil"><input type="text" maxlength="3" class="column-size input-disabled" data-id="' + row.id+ '" value="'+ value +'"></div>' ;
             				}			 
 			            }
 			        ]
