@@ -47,7 +47,7 @@ var configureUserAccessDatatable = function() {
 					"className": "text-center",
 					"orderable" : false,
 					"render" : function(data, type, row) {
-						var checked = isChecked(row, "allowDisplay") ? ' checked'
+						var checked = isCheckedDisplay(row, "allowDisplay") ? ' checked'
 								: '';
 						return '<input id="'+ row.id +'allowD"  class="allowDisplay" data-id="' + row.id
 								+ '" type="checkbox"' + checked + '>';
@@ -118,6 +118,17 @@ var isChecked = function(row, rule) {
 	if (changedCheckboxes[row.id]) {
 		return changedCheckboxes[row.id][rule];
 	} else {
+		return row[rule];
+	}
+}
+
+var isCheckedDisplay = function(row, rule) {
+	if (changedCheckboxes[row.id]) {
+		return changedCheckboxes[row.id][rule];
+	} else {
+		if(row.allowDisplay || row.allowUpdate || row.allowInsert || row.allowDelete){
+			return true;
+		}
 		return row[rule];
 	}
 }
