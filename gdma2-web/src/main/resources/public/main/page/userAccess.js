@@ -201,6 +201,34 @@ var verifyFullAccess = function(id){
 	} else {
 		$("#"+id+"fullA").prop( "checked", false );
 	}
+
+	if($("#"+id+"allowD")[0].checked){
+		$("#"+id+"fullA").prop( "checked", true );
+	}
+
+	if($("#"+id+"allowU")[0].checked){
+		$("#"+id+"fullA").prop( "checked", true );
+	}
+
+	if($("#"+id+"allowI")[0].checked){
+		$("#"+id+"fullA").prop( "checked", true );
+	}
+
+	if($("#"+id+"allowDel")[0].checked){
+		$("#"+id+"fullA").prop( "checked", true );
+	}
+}
+
+var verifyDisplayAccess = function(id){
+}
+
+var verifyUpdateAccess = function(id){
+}
+
+var verifyInsertAccess = function(id){
+}
+
+var verifyDeleteAccess = function(id){
 }
 
 var selectAllCheckBoxes = function(id,check){
