@@ -216,3 +216,7 @@ table.table-condensed {
 tbody tr.selectable-row-table {
   	cursor: pointer;
 }
+
+.medium-confirm-modal{
+	width: 500px;
+}

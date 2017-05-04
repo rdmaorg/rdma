@@ -68,12 +68,12 @@ var configureDataTable = function(){
 							  }
 			            },
 			            { "data": "dropDownColumnDisplay","render" : function(data, type, row){ 
-			            		var value = row.dropDownColumnDisplay === null ? "": row.dropDownColumnDisplay;
+			            		var value = row.dropDownColumnDisplay === null ? "": row.dropDownColumnDisplay.name;
 		            			return '<input type="text" id="columnDisplay'+row.id+'" class="column-display input-disabled" data-id="' + row.id+ '" value="'+ value +'">' ;
 			            	} 
 			            },
 			            { "data": "dropDownColumnStore","render" : function(data, type, row){ 
-			            	 	var value = row.dropDownColumnStore === null ? "": row.dropDownColumnStore;
+			            	 	var value = row.dropDownColumnStore === null ? "": row.dropDownColumnStore.name;
 		            			return '<input type="text" id="columnStore'+row.id+'" class="column-store input-disabled" data-id="' + row.id+ '" value="'+ value +'">' ;
 			            	} 
 			            },

@@ -1,4 +1,5 @@
 var dropDownTable;
+var columns = new Object();
 var initiateModalDropDownColumns = function() {
 	resetModal();
 	populateSelectServer();
@@ -15,6 +16,7 @@ var populateSelectServer = function(){
         contentType: "application/json; charset=utf-8",
         dataType: 'json'
     }).done(function(data){
+    	$("#select-server").empty();
     	$.each(data, function(i, server) {
     	    $("<option value='" + server.id + "'>" + server.name + "</option>").appendTo("#select-server");
     	});
@@ -45,6 +47,7 @@ var populateSelectTable = function(serverId){
         contentType: "application/json; charset=utf-8",
         dataType: 'json'
     }).done(function(data){
+    	$("#select-table").empty();
     	$.each(data, function(i, server) {
     	    $("<option value='" + server.id + "'>" + server.name + "</option>").appendTo("#select-table");
     	});
@@ -60,6 +63,7 @@ var associateTableChanged = function(){
 	$('#select-table').on('change', function(e) {
 		$("#select_col_display").val(null);
 		$("#select_col_store").val(null);
+		columns = new Object();
 		if($(e.target)[0].value != undefined && $(e.target)[0].value != null){
 			syncColumns($(e.target)[0].value);
 			populateColumnsSelectors($(e.target)[0].value);
@@ -87,13 +91,15 @@ var populateColumnsSelectors = function(tableId){
 	$.ajax({
         type: "get",
         url: mapPathVariablesInUrl(restUri.column.list_active, {id: tableId}),
-        data: { get_param: 'id,name' },
         contentType: "application/json; charset=utf-8",
         dataType: 'json'
     }).done(function(data){
-    	$.each(data, function(i, server) {
-    	    $("<option value='" + server.id + "'>" + server.name + "</option>").appendTo("#select_col_display");
-    	    $("<option value='" + server.id + "'>" + server.name + "</option>").appendTo("#select_col_store");
+    	$("#select_col_display").empty();
+    	$("#select_col_store").empty();
+    	$.each(data, function(i, column) {
+    		columns[column.id] = column;
+    	    $("<option value='" + column.id + "'>" + column.name + "</option>").appendTo("#select_col_display");
+    	    $("<option value='" + column.id + "'>" + column.name + "</option>").appendTo("#select_col_store");
     	});
     }).fail(function(e){
     	handleError('#global-alert', e);
@@ -111,28 +117,28 @@ var associateColumnsChange = function(){
 var associateColumnChanged = function(id){
 	$('#'+id).on('change', function(e) {
 		if($(e.target)[0].value != undefined && $(e.target)[0].value != null){
-			populateColumnsSelectors($(e.target)[0].value);
+//			populateColumnsSelectors($(e.target)[0].value);
 		} 
 		verifySelect();
 	});
 }
 
 var verifySelect = function(){
-	if(($("#select_col_display")[0].value != undefined && $("#select_col_display")[0].value != null)
-			|| ($("#select_col_store")[0].value != undefined && $("#select_col_store")[0].value != null)){
-		$('#dropDownColumn').validate({
-			  rules: {
-				  select_col_display: {
-					  required: true
-			    }
-			  }
-			});
-	} else {
-		var form = $("#dropDownColumn");
-		form.validate();
-		$( "#select_col_display" ).rules( "remove", "required");
-		$( "#select_col_store" ).rules( "remove", "required");
-	}
+//	if(($("#select_col_display")[0].value != undefined && $("#select_col_display")[0].value != null)
+//			|| ($("#select_col_store")[0].value != undefined && $("#select_col_store")[0].value != null)){
+//		$('#dropDownColumn').validate({
+//			  rules: {
+//				  select_col_display: {
+//					  required: true
+//			    }
+//			  }
+//			});
+//	} else {
+//		var form = $("#dropDownColumn");
+//		form.validate();
+//		$( "#select_col_display" ).rules( "remove", "required");
+//		$( "#select_col_store" ).rules( "remove", "required");
+//	}
 }
 
 var associateSaveDropDownColumn = function() {
@@ -143,19 +149,20 @@ var associateSaveDropDownColumn = function() {
 			$(this).confirmation({
 				placement : "left",
 				btnOkLabel : "Edit dropdown columns",
+				class: "medium-confirm-modal",
 				onConfirm : function(event, element) {
 					showLoading();
 					var obj = origColumns[selectdedColumnId];
 					if(changedColumns[obj.id]){
-						changedColumns[obj.id].dropDownColumnDisplay = $("#select_col_display")[0].value;
-						changedColumns[obj.id].dropDownColumnStore = $("#select_col_store")[0].value;
+						changedColumns[obj.id].dropDownColumnDisplay = columns[$("#select_col_display")[0].value];
+						changedColumns[obj.id].dropDownColumnStore = columns[$("#select_col_display")[0].value];
 					} else {
 						changedColumns[obj.id] = jQuery.extend({}, obj);
-						changedColumns[obj.id].dropDownColumnDisplay = $("#select_col_display")[0].value;
-						changedColumns[obj.id].dropDownColumnStore = $("#select_col_store")[0].value;
+						changedColumns[obj.id].dropDownColumnDisplay = columns[$("#select_col_display")[0].value];
+						changedColumns[obj.id].dropDownColumnStore = columns[$("#select_col_display")[0].value];
 					}
-					$('#columnStore'+obj.id).val($("#select_col_store")[0].value);
-					$('#columnDisplay'+obj.id).val($("#select_col_display")[0].value);
+					$('#columnStore'+obj.id).val(changedColumns[obj.id].name);
+					$('#columnDisplay'+obj.id).val(changedColumns[obj.id].name);
 					$('#modalDropDownColumns').modal('hide');
 					resetModal();
 					verifyButtonsRow();
@@ -197,6 +204,7 @@ var associateSaveDropDownColumn = function() {
 }
 
 var resetModal = function(){
+	changedColumns = new Object();
 	$("#dropDownColumn").find('form').trigger('reset');
 	$("#select_col_display").prop('required',false);
 	$("#select_col_store").prop('required',false);
