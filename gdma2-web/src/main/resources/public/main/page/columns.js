@@ -173,8 +173,8 @@ var associateInput = function(input,varName){
 		clicOutInputEvent(e.target);
 		var oldValue = e.target.value;
 		$(this).confirmation({
-			placement : "bottom",
-			btnOkLabel : "Ok",
+			placement : "left",
+			btnOkLabel : "Yes",
 			onConfirm : function(event, element) {
 				$(e.target).addClass("input-disabled");
 				verifyChanges(e,varName);

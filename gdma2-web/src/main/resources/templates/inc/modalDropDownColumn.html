@@ -15,25 +15,21 @@
 				<div class="modal-body">
 					
 					<div class="row">
-						<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-								<label for="select-server">
+						<div class="col-sm-6 col-xs-12">
+							<div class="form-group ">
+								<label for="select-server" class="control-label">
 									<span th:text="#{view.drop_down_column.modal.subtitle.servers}"></span>
 								</label>
-							</div>
-							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 								<select id="select-server" class="form-control">
 									<option value=""></option>
 								</select>
 							</div>
-						</div>
-						<div id="table-control" class="col-lg-6 col-md-6 col-sm-6 col-xs-6" style="display: none;">
-							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-								<label for="select-table">
+						</div>						
+						<div class="col-sm-6 col-xs-12" style="display: none;" id="table-control">
+							<div class="form-group">
+								<label for="select-table" class="control-label">
 									<span th:text="#{view.drop_down_column.modal.subtitle.tables}"></span>
 								</label>
-							</div>
-							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 								<select id="select-table" class="form-control">
 									<option value=""></option>
 								</select>
@@ -41,25 +37,21 @@
 						</div>
 					</div>
 					<div class="row" id="columns-control" style="display: none;">
-						<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-								<label for="select_col_store" class="control-label requiredField">
+						<div class="col-sm-6 col-xs-12">
+							<div class="form-group">
+								<label for="select_col_store" class="control-label control-label requiredField">
 									<span th:text="#{view.drop_down_column.modal.subtitle.col.store}"></span>
 								</label>
-							</div>
-							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 								<select id="select_col_store" class="form-control" required="required">
 									<option value=""></option>
 								</select>
 							</div>
 						</div>
-						<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
-							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+						<div class="col-sm-6 col-xs-12">
+							<div class="form-group">
 								<label for="select_col_display" class="control-label requiredField">
 									<span th:text="#{view.drop_down_column.modal.subtitle.col.display}"></span>
 								</label>
-							</div>
-							<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
 								<select id="select_col_display" name="select_col_display" class="form-control" required="required">
 									<option value=""></option>
 								</select>

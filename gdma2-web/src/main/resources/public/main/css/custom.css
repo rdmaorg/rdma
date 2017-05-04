@@ -184,10 +184,16 @@ table.table-condensed {
 }
 
 .input-edit.fa.fa-pencil:before {
-    right: 4px;
-    top: 4px;
-    opacity:0.5;
+    right: 0px;
+    top: 0px;
+    opacity: 1;
     position: absolute;
+    color: rgba(255,255,255,0.5);
+    background: rgba(60, 141, 188, 1);
+    height: 21px;
+    line-height: 20px;
+    padding: 0 5px;
+    cursor: pointer;
 }
 
 .input-edit input {
