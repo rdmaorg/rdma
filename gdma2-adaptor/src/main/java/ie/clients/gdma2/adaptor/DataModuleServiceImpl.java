@@ -9,7 +9,6 @@ import ie.clients.gdma2.util.ColumnDataUpdate;
 import ie.clients.gdma2.util.UpdateDataRequest;
 import ie.clients.gdma2.util.UpdateDataRequestDummy;
 
-import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -34,8 +33,6 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 		List<Server> servers = repositoryManager.getServerRepository().activeServersWithActiveTablesForUser(userContextProvider.getLoggedInUserName());
 		return servers;
 	}
-
-
 
 	@Override
 	public List<Table> getActiveTables(Integer serverId) {

@@ -668,7 +668,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 	 *  
 	 *  old app: GdmaAjaxFacade.getData
 	 *  
-	 *  https://localhost/gdma2/rest/column/data/read/table/630*/
+	 *  https://localhost/gdma2/rest/column/data/read/table/630 */
 
 	@Override
 	public List<Column> getColumnData(Integer tableId, String matching,
@@ -865,6 +865,8 @@ public class DynamicDAOImpl implements DynamicDAO{
 		list members: [1, Chatswood, Australia]
 		list members: [2, North Sydney, Australia]
 
+	URL: 		http://localhost/gdma2/rest/column/data/dropdown/display/608/store/609
+	
 	 * */
 	@Override
 	public List getDropDownData(Column display, Column store) {

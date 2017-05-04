@@ -18,12 +18,14 @@ public class SQLUtil {
 	private static final Logger logger = LoggerFactory.getLogger(SQLUtil.class);
 
 	/*
-	sql created: 
-	SELECT user_activity.LANGUAGE, user_activity.USER_CV_ID, user_activity.SOURCE_CODE_URL,
-	 user_activity.USER_ID, user_activity.USER_COVER_LETTER_ID, user_activity.CANDIDATE_ID, user_activity.DATE,
-	  user_activity.CANDIDATE_TYPE, user_activity.USER_ACTIVITY_ID, user_activity.JOB_CODE, user_activity.BR_TRANSACTION_ID,
-	   user_activity.TYPE
-	    FROM ADPR_TEST.user_activity
+		URL: https://localhost/gdma2/rest/column/data/read/table/133?order[0][column]=629 
+	
+		SELECT customers.country, customers.city, customers.contactFirstName, customers.postalCode, customers.salesRepEmployeeNumber,
+				customers.customerNumber, customers.customerName, customers.phone, customers.addressLine1, customers.creditLimit, customers.contactLastName, 
+				customers.addressLine2, customers.state 
+				FROM customers 
+				ORDER BY customers.city asc
+	
 	 */
 	public static String createSelect(Server server, Table table, Column sortColumn, String dir, List<Filter> filters) {
 		StringBuilder stringBuilder = new StringBuilder(table.getColumns().size() * 20);

@@ -30,7 +30,8 @@ public class ColumnResource extends BaseDataTableResource{
 	
 	/*METADATA - fetch Columns from remote DB Table and save to local, then
 	 * return ALL saved columns to UI for that table (not just ACTIVE), NO pagination
-	 * http://localhost/gdma2/rest/column/metadata/table/11?length=100 */
+	 * http://localhost/gdma2/rest/column/metadata/table/11?length=100 
+	 * (precondition is that previous table fetch was done)*/
 	@RequestMapping(value = "/metadata/table/{id}")
 	public List<Column> getRemoteTableColumnsMetadata(@PathVariable("id") String tableId,
 			@RequestParam Map<String,String> params){
@@ -144,7 +145,7 @@ public class ColumnResource extends BaseDataTableResource{
 	
 	/*DATA MODULE*/
 	
-	/*get all Active columns for given Active table on Active server, based on userName
+	/*get all Active columns STRUCTURE for given Active table on Active server, based on userName
 	 * 		http://localhost/gdma2/rest/column/data/table/124  */
 	@RequestMapping(value = "/data/table/{id}")
 	public List<Column> getActiveColumns(@PathVariable("id") Integer tableId){
@@ -152,8 +153,8 @@ public class ColumnResource extends BaseDataTableResource{
 		return serviceFacade.getDataModuleService().getActiveColumns(tableId);
 	}
 	
-	/*paginated active columns wit data for : Active server, active table Table, logged in user with UserAccess.allowDisplay = true  */
-	/* https://localhost/gdma2/rest/column/data/read/table/630  */
+	/*paginated active columns DATA for : Active server, active table Table, logged in user with UserAccess.allowDisplay = true  */
+	/* https://localhost/gdma2/rest/column/data/read/table/133?length=20  */
 	@RequestMapping("/data/read/table/{id}")
 	PaginatedTableResponse<Column> getColumnData(@PathVariable("id") Integer tableId,
 			@RequestParam Map<String, String> reqParams){
@@ -179,6 +180,7 @@ public class ColumnResource extends BaseDataTableResource{
 		return resp;
 	}
 	
+	/*	http://localhost/gdma2/rest/column/data/dropdown/display/608/store/609	*/
 	@RequestMapping(value = "/data/dropdown/display/{did}/store/{sid}")
 	public List getDropdownData(@PathVariable("did") Integer displayColumnId, @PathVariable("sid") Integer storeColumnId){
 		logger.info("getDropdownData for display column: " + displayColumnId + ", and store column: " + storeColumnId);

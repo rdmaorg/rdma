@@ -278,7 +278,8 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	@Override
 	public PaginatedTableResponse<User> getUsers(String matching,
 			String orderBy, String orderDirection, int startIndex, int length) {
-		logger.debug("*** getUsers()");
+		
+		logger.info("*** getUsers()");
 		List<User> users = null;
 		long total = 0;
 		long filtered = 0;
@@ -286,21 +287,22 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		if(StringUtils.isBlank(matching)){
 			total = repositoryManager.getUserRepository().count();
 			filtered = total;
-			logger.debug("Total, no search:" + total);
+			logger.info("Total, no search:" + total);
 			PageRequest pagingRequest = getPagingRequest(orderBy, orderDirection, startIndex, length, total);
 			Page<User> userPages = repositoryManager.getUserRepository().findAll(pagingRequest);
 			users = userPages.getContent();
 		} else{
+			total = repositoryManager.getUserRepository().count();
 			String match = "%" + matching.trim().toUpperCase() + "%";
-			total = repositoryManager.getUserRepository().getCountMatching(match);
-			logger.debug("Total, with search:" + total);
+			filtered = repositoryManager.getUserRepository().getCountMatching(match);
+			logger.info("Total, with search:" + total + ", filtered: " + filtered);
 			PageRequest pagingRequest = getPagingRequest(orderBy, orderDirection, startIndex, length, total);
 			users = repositoryManager.getUserRepository().getMatchingUsers(match, pagingRequest);
 		}
 		//Emptying the password
 		emptyPasswords(users);
 
-		logger.debug("Search Users: Search: " + matching + ", Total: " + total + ", Filtered: " + filtered
+		logger.info("Search Users: Search: " + matching + ", Total: " + total + ", Filtered: " + filtered
 				+ ", Result Count: " + users.size());
 
 		return getPaginatedTableResponse( users != null ? users : new ArrayList<User>(), total, filtered);
@@ -454,9 +456,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 	}
 
-	/*paginated Columns for table, special case for ADMIN, see: GdmaAdmin.getColumnsForTable
-	 * TODO decide if synch is going to be call only initially or always - on each search attempt*/
-
+	/*paginated Columns for table, special case for ADMIN, see: GdmaAdmin.getColumnsForTable */
 	@Override
 	public PaginatedTableResponse<Column> getActiveLocalColumnsForTable(
 			Integer tableId, String matching, String orderBy, String orderDirection,int startIndex, int length) {
@@ -465,8 +465,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		//synch tables first
 		//synhronizeColumnsForTable(tableId); IS NOW PERFORMED SEPARATELLY
 
-		logger.debug("...get ACTIVE Synched Colulmns now");
-
+		logger.debug("...get ACTIVE Synched Columns now");
 
 		Table table = null;
 		List<Column> columns = null;
@@ -851,21 +850,20 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 		if(StringUtils.isBlank(matching)){
 			total = repositoryManager.getColumnRepository().countActiveForTable(table.getId());
-			logger.debug("Total Active columns for table, no search:" + total);
+			logger.info("Total Active columns for table, no search:" + total);
 			filtered = total;
 
-			logger.debug("find all Active columns by table:");
+			logger.info("find all Active columns by table:");
 			//PageRequest pagingRequest = getPagingRequest(orderBy, orderDirection, startIndex, length, total);
-
 			//columns = repositoryManager.getColumnRepository().findActiveforTable(table.getId(), pagingRequest);
 			columns = dynamicDAO.getColumnData(tableId, matching, orderByColumnID, orderDirection,
 					startIndex, length);
 
 
-			logger.debug("columns found: " + (null != columns ? columns.size() : "0"));
+			logger.info("columns found: " + (null != columns ? columns.size() : "0"));
 		} else {
 			String match = "%" + matching.trim().toUpperCase() + "%";
-			logger.debug("searching for: " +  match);
+			logger.info("searching for: " +  match);
 
 			/*
 				total = repositoryManager.getColumnRepository().countActiveForTable(table.getId());

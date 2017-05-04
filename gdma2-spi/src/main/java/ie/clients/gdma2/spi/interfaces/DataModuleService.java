@@ -15,8 +15,7 @@ public interface DataModuleService {
 
 		
 		/* in GDMA 1, this was: getServerTableList
-		 * 3 actions executed one after one: Return list of all ACTIVE servers 
-		 * where there are ACTIVE tables that user has been granted access by Admin (as precondition)*/
+		 * Here we use 3 separate actions executed one after one: get servers, get tables for server, get columns for table*/
 		public List<Server> getActiveServers();
 		public List<Table> getActiveTables(Integer serverId);
 		public List<Column> getActiveColumns(Integer tableId);
