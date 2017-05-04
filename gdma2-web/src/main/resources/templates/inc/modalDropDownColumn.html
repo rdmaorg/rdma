@@ -1,6 +1,6 @@
 <div id="modalDropDownColumns" class="modal fade" role="dialog"
 	xmlns:th="http://www.thymeleaf.org">
-	<div class="modal-dialog modal-lg">
+	<div class="modal-dialog">
 
 		<form data-toggle="validator" id="dropDownColumn">
 			<!-- Modal content-->
@@ -15,30 +15,27 @@
 				<div class="modal-body">
 					
 					<div class="row">
-						<div class="col-sm-6 col-xs-12">
+						<div class="col-sm-offset-3 col-sm-6 col-xs-12">
+							<h4 th:text="#{view.drop_down_column.modal.subtitle.servers}"></h4>
 							<div class="form-group ">
-								<label for="select-server" class="control-label">
-									<span th:text="#{view.drop_down_column.modal.subtitle.servers}"></span>
-								</label>
 								<select id="select-server" class="form-control">
 									<option value=""></option>
 								</select>
 							</div>
 						</div>						
-						<div class="col-sm-6 col-xs-12" style="display: none;" id="table-control">
+						<div class="col-sm-offset-3 col-sm-6 col-xs-12" style="display: none;" id="table-control">						
+							<h4 th:text="#{view.drop_down_column.modal.subtitle.tables}"></h4>
 							<div class="form-group">
-								<label for="select-table" class="control-label">
-									<span th:text="#{view.drop_down_column.modal.subtitle.tables}"></span>
-								</label>
 								<select id="select-table" class="form-control">
 									<option value=""></option>
 								</select>
 							</div>
 						</div>
 					</div>
-					<div class="row" id="columns-control" style="display: none;">
-						<div class="col-sm-6 col-xs-12">
+					<div class="row" id="columns-control" style="display: none;">						
+						<div class="col-sm-offset-1 col-sm-5 col-xs-12">
 							<div class="form-group">
+								<hr/>
 								<label for="select_col_store" class="control-label control-label requiredField">
 									<span th:text="#{view.drop_down_column.modal.subtitle.col.store}"></span>
 								</label>
@@ -47,8 +44,9 @@
 								</select>
 							</div>
 						</div>
-						<div class="col-sm-6 col-xs-12">
+						<div class="col-sm-5 col-xs-12">
 							<div class="form-group">
+								<hr/>
 								<label for="select_col_display" class="control-label requiredField">
 									<span th:text="#{view.drop_down_column.modal.subtitle.col.display}"></span>
 								</label>
