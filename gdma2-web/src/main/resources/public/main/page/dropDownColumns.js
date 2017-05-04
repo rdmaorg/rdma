@@ -1,14 +1,36 @@
 var dropDownTable;
 var columns = new Object();
+var selectedDropDownStore = null;
+var selectedDropDownDisplay = null;
 var initiateModalDropDownColumns = function() {
 	resetModal();
 	populateSelectServer();
+	verifyDropDownselected();
 	associateSaveDropDownColumn();
 	$('#columnName').html('<b>&nbsp' + selectedColumnName + '</b>');
-	
+	$('#modalDropDownColumns').modal('show');
+}
+
+var verifyDropDownselected = function(){
+	var obj = origColumns[selectdedColumnId];
+	if(changedColumns[obj.id]){
+		var changed = changedColumns[obj.id];
+		if(changed.dropDownColumnDisplay !== null && changed.dropDownColumnStore !== null){
+			populateSelectTable(changed.dropDownColumnDisplay.table.server.id);
+			populateColumnsSelectors(changed.dropDownColumnDisplay.table.id);
+			selectedDropDownStore = changed.dropDownColumnStore;
+			selectedDropDownDisplay = changed.dropDownColumnDisplay;
+		}
+	} else if(obj.dropDownColumnDisplay !== null && obj.dropDownColumnStore !== null){
+		populateSelectTable(obj.dropDownColumnDisplay.table.server.id);
+		populateColumnsSelectors(obj.dropDownColumnDisplay.table.id);
+		selectedDropDownStore = obj.dropDownColumnStore;
+		selectedDropDownDisplay = obj.dropDownColumnDisplay;
+	}
 }
 
 var populateSelectServer = function(){
+	showLoading();
 	$.ajax({
         type: "get",
         url: restUri.server.list,
@@ -17,9 +39,13 @@ var populateSelectServer = function(){
         dataType: 'json'
     }).done(function(data){
     	$("#select-server").empty();
+    	$('<option value=""></option>').appendTo("#select-server");
     	$.each(data, function(i, server) {
     	    $("<option value='" + server.id + "'>" + server.name + "</option>").appendTo("#select-server");
     	});
+    	if(selectedDropDownDisplay !== null){
+    		$("#select-server").val(selectedDropDownDisplay.table.server.id);
+    	}
     }).fail(function(e){
     	handleError('#global-alert', e);
     }).always(function(){
@@ -31,8 +57,7 @@ var populateSelectServer = function(){
 var associateServerChanged = function(){
 	$('#select-server').on('change', function(e) {
 		if($(e.target)[0].value != undefined && $(e.target)[0].value != null){
-			$('#table-control').show();
-			populateSelectTable($(e.target)[0].value);
+			$.Deferred(populateSelectTable($(e.target)[0].value),$('#table-control').show());
 		} else {
 			$('#table-control').hide();
 		}
@@ -40,6 +65,7 @@ var associateServerChanged = function(){
 }
 
 var populateSelectTable = function(serverId){
+	showLoading();
 	$.ajax({
         type: "get",
         url: mapPathVariablesInUrl(restUri.table.sync_table_server, {id: serverId}),
@@ -48,9 +74,14 @@ var populateSelectTable = function(serverId){
         dataType: 'json'
     }).done(function(data){
     	$("#select-table").empty();
+    	$('<option value=""></option>').appendTo("#select-table");
     	$.each(data, function(i, server) {
     	    $("<option value='" + server.id + "'>" + server.name + "</option>").appendTo("#select-table");
     	});
+    	$('#table-control').show();
+    	if(selectedDropDownDisplay !== null){
+    		$("#select-table").val(selectedDropDownDisplay.table.id);
+    	}
     }).fail(function(e){
     	handleError('#global-alert', e);
     }).always(function(){
@@ -66,8 +97,7 @@ var associateTableChanged = function(){
 		columns = new Object();
 		if($(e.target)[0].value != undefined && $(e.target)[0].value != null){
 			syncColumns($(e.target)[0].value);
-			populateColumnsSelectors($(e.target)[0].value);
-			$('#columns-control').show();
+			$.Deferred(populateColumnsSelectors($(e.target)[0].value), $('#columns-control').show());
 		} else {
 			$('#columns-control').hide();
 		}
@@ -88,6 +118,7 @@ var syncColumns = function(tableId){
 }
 
 var populateColumnsSelectors = function(tableId){
+	showLoading();
 	$.ajax({
         type: "get",
         url: mapPathVariablesInUrl(restUri.column.list_active, {id: tableId}),
@@ -96,11 +127,18 @@ var populateColumnsSelectors = function(tableId){
     }).done(function(data){
     	$("#select_col_display").empty();
     	$("#select_col_store").empty();
+    	$('<option value=""></option>').appendTo("#select_col_display");
+    	$('<option value=""></option>').appendTo("#select_col_store");
     	$.each(data, function(i, column) {
     		columns[column.id] = column;
     	    $("<option value='" + column.id + "'>" + column.name + "</option>").appendTo("#select_col_display");
     	    $("<option value='" + column.id + "'>" + column.name + "</option>").appendTo("#select_col_store");
     	});
+    	$('#columns-control').show();
+    	if(selectedDropDownDisplay !== null){
+    		$("#select_col_display").val(selectedDropDownDisplay.id);
+    		$("#select_col_store").val(selectedDropDownStore.id);
+    	}
     }).fail(function(e){
     	handleError('#global-alert', e);
     }).always(function(){
@@ -153,16 +191,27 @@ var associateSaveDropDownColumn = function() {
 				onConfirm : function(event, element) {
 					showLoading();
 					var obj = origColumns[selectdedColumnId];
+					
 					if(changedColumns[obj.id]){
-						changedColumns[obj.id].dropDownColumnDisplay = columns[$("#select_col_display")[0].value];
-						changedColumns[obj.id].dropDownColumnStore = columns[$("#select_col_display")[0].value];
+						if($("#select_col_display")[0].value === undefined || $("#select_col_display")[0].value === null){
+							setColumnData(obj.id, null, null, "", "");
+						}else {
+							changedColumns[obj.id].dropDownColumnDisplay = columns[$("#select_col_display")[0].value];
+							changedColumns[obj.id].dropDownColumnStore = columns[$("#select_col_store")[0].value];
+							$('#columnStore'+obj.id).val(changedColumns[obj.id].dropDownColumnStore.name);
+							$('#columnDisplay'+obj.id).val(changedColumns[obj.id].dropDownColumnDisplay.name);
+						}
 					} else {
 						changedColumns[obj.id] = jQuery.extend({}, obj);
-						changedColumns[obj.id].dropDownColumnDisplay = columns[$("#select_col_display")[0].value];
-						changedColumns[obj.id].dropDownColumnStore = columns[$("#select_col_display")[0].value];
+						if($("#select_col_display")[0].value === undefined || $("#select_col_display")[0].value === null){
+							setColumnData(obj.id, null, "");
+						} else {
+							changedColumns[obj.id].dropDownColumnDisplay = columns[$("#select_col_display")[0].value];
+							changedColumns[obj.id].dropDownColumnStore = columns[$("#select_col_store")[0].value];
+							$('#columnStore'+obj.id).val(changedColumns[obj.id].dropDownColumnStore.name);
+							$('#columnDisplay'+obj.id).val(changedColumns[obj.id].dropDownColumnDisplay.name);
+						}
 					}
-					$('#columnStore'+obj.id).val(changedColumns[obj.id].dropDownColumnStore.name);
-					$('#columnDisplay'+obj.id).val(changedColumns[obj.id].dropDownColumnDisplay.name);
 					$('#modalDropDownColumns').modal('hide');
 					resetModal();
 					verifyButtonsRow();
@@ -203,13 +252,20 @@ var associateSaveDropDownColumn = function() {
 	
 }
 
+var setColumnData = function(id, value, label){
+	changedColumns[id].dropDownColumnDisplay = value;
+	changedColumns[id].dropDownColumnStore = value;
+	$('#columnStore'+obj.id).val(label);
+	$('#columnDisplay'+obj.id).val(label);
+}
+
 var resetModal = function(){
-	changedColumns = new Object();
+	columns = new Object();
 	$("#dropDownColumn").find('form').trigger('reset');
-	$("#select_col_display").prop('required',false);
-	$("#select_col_store").prop('required',false);
 	$('#table-control').hide();
 	$('#columns-control').hide();
+	selectedDropDownStore = null;
+	selectedDropDownDisplay = null;
 	var form = $("#dropDownColumn").validate();
 	form.destroy();
 }

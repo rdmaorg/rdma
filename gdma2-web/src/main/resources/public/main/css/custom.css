@@ -139,6 +139,7 @@ table.table-condensed {
 
 .hexdots-loader:not(:required) {
 	position:absolute !important;
+    z-index: 1500;
 }
 
 .treeview {

@@ -201,7 +201,6 @@ var associateDropDownInput = function(classes){
 			selectedColumnName = origColumns[selectdedColumnId].name;
 			initiateModalDropDownColumns();
 			$("#modalDropDownColumns").find('form').trigger('reset');
-			$('#modalDropDownColumns').modal('show');
 	});
 }
 
@@ -253,7 +252,7 @@ var postColumnsData = function(){
 		$(this).confirmation({
 			placement : "left",
 			tittle: "Are you sure you wish to save the changed data?",
-			btnOkLabel : "Ok",
+			btnOkLabel : "Yes",
 			onConfirm : function(event, element) {
 				showLoading();
 				var list = getModifiedObjects();
