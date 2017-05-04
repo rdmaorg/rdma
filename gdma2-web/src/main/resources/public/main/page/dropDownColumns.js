@@ -161,8 +161,8 @@ var associateSaveDropDownColumn = function() {
 						changedColumns[obj.id].dropDownColumnDisplay = columns[$("#select_col_display")[0].value];
 						changedColumns[obj.id].dropDownColumnStore = columns[$("#select_col_display")[0].value];
 					}
-					$('#columnStore'+obj.id).val(changedColumns[obj.id].name);
-					$('#columnDisplay'+obj.id).val(changedColumns[obj.id].name);
+					$('#columnStore'+obj.id).val(changedColumns[obj.id].dropDownColumnStore.name);
+					$('#columnDisplay'+obj.id).val(changedColumns[obj.id].dropDownColumnDisplay.name);
 					$('#modalDropDownColumns').modal('hide');
 					resetModal();
 					verifyButtonsRow();
