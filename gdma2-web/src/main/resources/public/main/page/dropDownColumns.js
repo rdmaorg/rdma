@@ -1,151 +1,195 @@
 var dropDownTable;
 var initiateModalDropDownColumns = function() {
-	configureServerDatatable();
+	resetModal();
+	populateSelectServer();
 	associateSaveDropDownColumn();
+	$('#columnName').html('<b>&nbsp' + selectedColumnName + '</b>');
 }
 
-var configureServerDatatable = function() {
-	var config = {
-		fixedHeader : true,
-		order: [[ 1, "asc" ]],
-		"page" : 0,
-		"stateSave" : false,
-		"oLanguage": {
-	         "sSearch": "Search:"
-	     },
-		"destroy" : true,
-		"columns" : [
-				{
-	                "className":      'details-control fa fa-plus-circle',
-	                "orderable":      false,
-	                "data":           null,
-	                "defaultContent": ''
-	            },
-	            {
-	            	"data": "id"
-				},
-				{
-					"data": "name"
-				}
-			]
-	};
-	dropDownTable = $('#tabl_dropdown').configureDataTable(config, {
-		url : restUri.server.table,
-		dataSrc : "",
-		complete : function() {
-			// hideLoading();
-			configureDropDownTable();
-		},
-		error : function(message, e) {
-			console.error("ERROR: " + JSON.stringify(e));
-			handleError('#global-alert', e);
+var populateSelectServer = function(){
+	$.ajax({
+        type: "get",
+        url: restUri.server.list,
+        data: { get_param: 'id,name' },
+        contentType: "application/json; charset=utf-8",
+        dataType: 'json'
+    }).done(function(data){
+    	$.each(data, function(i, server) {
+    	    $("<option value='" + server.id + "'>" + server.name + "</option>").appendTo("#select-server");
+    	});
+    }).fail(function(e){
+    	handleError('#global-alert', e);
+    }).always(function(){
+    	hideLoading();
+    });
+	associateServerChanged();
+}
+
+var associateServerChanged = function(){
+	$('#select-server').on('change', function(e) {
+		if($(e.target)[0].value != undefined && $(e.target)[0].value != null){
+			populateSelectTable($(e.target)[0].value);
+			$('#table-control').show();
+		} else {
+			$('#table-control').hide();
 		}
 	});
 }
 
-
-var configureDropDownTable = function(){
-	 $('#tabl_dropdown tbody').on('click', 'td.details-control', function () {
-        var tr = $(this).closest('tr');
-        var row = dropDownTable.row( tr );
- 
-        if ( row.child.isShown() ) {
-            // This row is already open - close it
-            row.child.hide();
-            tr.removeClass('shown');
-            tr.find("td").removeClass('fa-minus-circle');            
-            tr.find("td").addClass('fa-plus-circle');
-        }
-        else {
-            $.Deferred().done(row.child( createDatatable(row.data(),"datatable-table"+row.data().id)).show(),configureTable(row.data()));
-            tr.addClass('shown');
-            tr.find("td").addClass('fa-minus-circle');            
-            tr.find("td").removeClass('fa-plus-circle');
-        }
-    } );
+var populateSelectTable = function(serverId){
+	$.ajax({
+        type: "get",
+        url: mapPathVariablesInUrl(restUri.table.sync_table_server, {id: serverId}),
+        data: { get_param: 'id,name' },
+        contentType: "application/json; charset=utf-8",
+        dataType: 'json'
+    }).done(function(data){
+    	$.each(data, function(i, server) {
+    	    $("<option value='" + server.id + "'>" + server.name + "</option>").appendTo("#select-table");
+    	});
+    }).fail(function(e){
+    	handleError('#global-alert', e);
+    }).always(function(){
+    	hideLoading();
+    });
+	associateTableChanged();
 }
 
-var createDatatable = function(d, tableId){
-	return '<table id="'+ tableId +'"'+
-				'class="table table-striped table-hover dt-responsive" cellspacing="0"'+
-				'width="100%">'+
-				'<thead>'+
-					'<tr>'+
-						'<th></th>'+
-						'<th>Id</th>'+
-						'<th>Name</th>'+
-					'</tr>'+
-				'</thead>'+
-			'</table>';
-}
-
-var configureTable = function(d) {
-	var config = {
-		fixedHeader : true,
-		order: [[ 1, "asc" ]],
-		"page" : 0,
-		"stateSave" : false,
-		"oLanguage": {
-	         "sSearch": "Search:"
-	     },
-		"destroy" : true,
-		"columns" : [
-				{
-	                "className":      'details-control table',
-	                "orderable":      false,
-	                "data":           null,
-	                "defaultContent": ''
-	            },
-	            {
-	            	"data": "id"
-				},
-				{
-					"data": "name"
-				}
-			]
-	};
-	$('#datatable-table'+ d.id).configureDataTable(config, {
-		url : mapPathVariablesInUrl(restUri.table.table, {id: d.id}),
-		dataSrc : "",
-		complete : function() {
-			// hideLoading();
-		},
-		error : function(message, e) {
-			console.error("ERROR: " + JSON.stringify(e));
-			handleError('#global-alert', e);
+var associateTableChanged = function(){
+	$('#select-table').on('change', function(e) {
+		if($(e.target)[0].value != undefined && $(e.target)[0].value != null){
+			syncColumns($(e.target)[0].value);
+			populateColumnsSelectors($(e.target)[0].value);
+			$('#columns-control').show();
+		} else {
+			$('#columns-control').hide();
 		}
 	});
 }
- var createColumnsDetail = function( d ) {
-    // `d` is the original data object for the row
-    return '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'+
-        '<tr>'+
-            '<td>Column id:</td>'+
-            '<td>'+d.extn+'</td>'+
-        '</tr>'+
-        '<tr>'+
-	        '<td>Column Name:</td>'+
-	        '<td>'+d.name+'</td>'+
-        '</tr>'+
-        '<tr>'+
-            '<td>Extra info:</td>'+
-            '<td>And any further details here (images etc)...</td>'+
-        '</tr>'+
-    '</table>';
+
+var syncColumns = function(tableId){
+	$.ajax({
+		type: "get",
+		url: mapPathVariablesInUrl(restUri.column.sync,{id: tableId}),
+		contentType: "application/json; charset=utf-8",
+	}).done(function(data){
+	}).fail(function(e){
+		handleError('#global-alert', e);
+	}).always(function(){
+		hideLoading();
+	});
 }
- 
+
+var populateColumnsSelectors = function(tableId){
+	$.ajax({
+        type: "get",
+        url: mapPathVariablesInUrl(restUri.column.list_active, {id: tableId}),
+        data: { get_param: 'id,name' },
+        contentType: "application/json; charset=utf-8",
+        dataType: 'json'
+    }).done(function(data){
+    	$.each(data, function(i, server) {
+    	    $("<option value='" + server.id + "'>" + server.name + "</option>").appendTo("#select-col-display");
+    	    $("<option value='" + server.id + "'>" + server.name + "</option>").appendTo("#select-col-store");
+    	});
+    }).fail(function(e){
+    	handleError('#global-alert', e);
+    }).always(function(){
+    	hideLoading();
+    });
+	associateColumnsChange();
+}
+
+var associateColumnsChange = function(){
+	associateColumnChanged("select-col-display");
+	associateColumnChanged("select-col-store");
+}
+
+var associateColumnChanged = function(id){
+	$('#'+id).on('change', function(e) {
+		if($(e.target)[0].value != undefined && $(e.target)[0].value != null){
+			populateColumnsSelectors($(e.target)[0].value);
+		} 
+		verifySelect();
+	});
+}
+
+var verifySelect = function(){
+	if(($("#select-col-display")[0].value != undefined && $("#select-col-display")[0].value != null)
+			|| ($("#select-col-store")[0].value != undefined && $("#select-col-store")[0].value != null)){
+		$("#select-col-display").prop('required',true);
+		$("#select-col-store").prop('required',true);
+	} else {
+		$("#select-col-display").prop('required',false);
+		$("#select-col-store").prop('required',false);
+	}
+	
+}
 var associateSaveDropDownColumn = function() {
+	var form = $("#dropDownColumn");
+	form.validate();
 	$("#save-dropdowncolumn").click(function(e) {
-		$(this).confirmation({
-			placement : "left",
-			btnOkLabel : "Edit dropdown column",
-			onConfirm : function(event, element) {
-				showLoading();
-//				columnDisplay
-				hideLoading();
-			}
-		});
-		$(this).confirmation('show');
+		if(form.valid){
+			$(this).confirmation({
+				placement : "left",
+				btnOkLabel : "Edit dropdown columns",
+				onConfirm : function(event, element) {
+					showLoading();
+					var obj = origColumns[selectdedColumnId];
+					if(changedColumns[obj.id]){
+						changedColumns[obj.id].dropDownColumnDisplay = $("#select-col-display")[0].value;
+						changedColumns[obj.id].dropDownColumnStore = $("#select-col-store")[0].value;
+					} else {
+						changedColumns[obj.id] = jQuery.extend({}, obj);
+						changedColumns[obj.id].dropDownColumnDisplay = $("#select-col-display")[0].value;
+						changedColumns[obj.id].dropDownColumnStore = $("#select-col-store")[0].value;
+					}
+					$('#columnStore'+obj.id).value($("#select-col-display")[0].value);
+					$('#columnDisplay'+obj.id).value($("#select-col-display")[0].value);
+					$('#modalDropDownColumns').modal('hide');
+					resetModal();
+					verifyButtonsRow();
+					$("#global-success").slideDown(500);
+			    	window.setTimeout(function() {
+			    		$("#global-success").slideUp(500);
+			    	}, 4000);
+					hideLoading();
+				}
+			});
+			$(this).confirmation('show');
+		} else {
+			$(this).confirmation('destroy');
+		}
 		e.preventDefault();
 	});
+	
+	$("#close-dropdown").click(function(e) {
+		if(($("#select-col-display")[0].value != undefined && $("#select-col-display")[0].value != null)
+				&& ($("#select-col-store")[0].value != undefined && $("#select-col-store")[0].value != null)){
+			$(this).confirmation({
+				placement : "right",
+				title : "Discard unsaved changes?",
+				btnOkLabel : "Yes",
+				onConfirm : function(event, element) {
+					resetModal();
+					$('#modalDropDownColumns').modal('hide');
+				}
+			});
+			$(this).confirmation('show');
+		} else {
+			resetModal();
+			$(this).confirmation('hide');
+			$('#modalDropDownColumns').modal('hide');
+		}
+		e.preventDefault();		
+	});
+	
+}
+
+var resetModal = function(){
+	$("#dropDownColumn").find('form').trigger('reset');
+	$("#select-col-display").prop('required',false);
+	$("#select-col-store").prop('required',false);
+	$('#table-control').hide();
+	$('#columns-control').hide();
 }

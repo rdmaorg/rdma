@@ -207,11 +207,6 @@ table.table-condensed {
     z-index: 10;
 }
 
-td.details-control {
- 	color: #5cd65c;
+tbody tr.selectable-row-table {
   	cursor: pointer;
-}
-
-tr.shown td.details-control {
-	color: rgba(255,0,0,.5);
 }
