@@ -4,6 +4,7 @@ var table;
 var selectdedColumnId;
 var selectedColumnName;
 var tableSessionId = sessionStorage.getItem("idTable");
+var serverSessionName = sessionStorage.getItem("name");
 var tableSessionName = sessionStorage.getItem("nameTable");
 var configureDataTable = function(){
 	changedColumns = new Object();
@@ -317,6 +318,8 @@ var getModifiedObjects = function() {
 
 $(document).ready(function(){
 	configureDataTable();
+	
+    $("#serverName").html(serverSessionName);
     $("#tableName").html(sessionStorage.getItem("nameTable"));
 	
 });

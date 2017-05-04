@@ -14,7 +14,9 @@
 				<h2>
 					<a th:href="@{/server}" th:text="#{view.server.heading}"></a>
 					<i class="fa fa-angle-double-right" aria-hidden="true"></i>
-					<a th:href="@{/tables}"><span id="tableName"></span></a>
+					<a th:href="@{/tables}"><span id="serverName"></span></a>
+					<i class="fa fa-angle-double-right" aria-hidden="true"></i>
+					<span id="tableName"></span>
 				</h2>							
 		  		<h1><span th:text="#{view.column.heading}"></span></h1>	
 	      		<div th:replace="inc/spinner"></div>
@@ -44,7 +46,7 @@
 						</tr>
 					</thead>
 				</table>
-				<div id="buttons-row" style="display: none;" class="row buttons-row">
+				<div id="buttons-row" style="display: none;" class="row buttons-row text-right">
 					<div class="col-lg-12">
 			        	<button type="button" id="cancel-columns" class="btn btn-default">
 							<span th:text="#{view.column.btn.cancel}"></span>
