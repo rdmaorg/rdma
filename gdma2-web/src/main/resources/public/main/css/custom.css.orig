@@ -1,0 +1,216 @@
+.navbar-nav>.user-menu>.dropdown-menu>li.user-header {
+	height: auto;
+}
+
+.dropdown-menu.dropdown-menu-right {
+    padding: 10px !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background: rgb(54,127,170) !important;
+}
+
+.modal-header {
+	background: #3c8dbc;
+}
+
+.modal-body {
+    max-height: 75vh;
+    overflow: auto;
+}
+
+.skin-blue .sidebar-menu>li>.treeview-menu {
+	max-height: 250px;
+    overflow-y: auto;
+}
+
+.modal-body label.error {
+	font-size: 11px;
+    color: rgba(255,0,0,0.6);
+    position: absolute;
+    right: 10px;
+    top: 35px;
+    font-style: italic;
+}
+
+.modal-body .form-group  {
+	position:relative;
+}
+
+.bootstrap-switch {
+	display: block;
+}
+
+.bootstrap-switch .bootstrap-switch-label {
+	margin-top: -2px;
+    margin-bottom: -2px;
+}
+
+.bootstrap-switch .bootstrap-switch-handle-on,.bootstrap-switch .bootstrap-switch-handle-off,.bootstrap-switch {
+	border-radius:0;
+}
+
+.bootstrap-switch-label:before {
+    content: "\e055";
+    font-family: 'Glyphicons Halflings';
+    color: rgba(0,0,0,0.1);
+}
+
+.sidebar-mini.sidebar-collapse .sidebar-menu>li:hover>.treeview-menu {
+	width:249px;
+}
+
+.treeview-menu::-webkit-scrollbar {
+    width: 5px;
+}
+ 
+.treeview-menu::-webkit-scrollbar-thumb {
+  background-color:#3c8dbc;
+}
+
+.filterinput {
+	background: rgba(255,255,255,0.2);
+    border: none;
+    padding: 5px;
+    color: rgba(255,255,255,0.7);
+    margin: 5px 2%;
+    width: 94%;
+    font-style: italic;
+}
+
+#global-alert,#global-success {
+	position: fixed;
+    bottom: 0;
+    z-index: 9999;
+    width: 90%;
+    text-align: center;
+}
+
+.btn h3 {
+    margin: 10px 0;
+    font-size: 18px;
+}
+
+.btn h3 i {
+    font-size: 32px;
+}
+
+.navbar .btn-info {
+	padding: 5px !important;
+    margin: 10px !important;
+}
+
+.btn-primary:disabled,
+.btn-info:disabled {
+    opacity: 0.5;
+}
+
+table thead tr {
+    background: rgba(60, 141, 188, 1);
+    color: #fff;
+}
+
+.table-hover > tbody > tr:hover {
+    background: rgba(60, 141, 188, .2);	
+}
+
+.modal-title {
+	color:#fff;
+}
+
+.modal-header .close {
+	color:#fff;
+	opacity:1;
+	font-size:28px;
+}
+
+.form-control,.bootstrap-switch,.bootstrap-switch-handle-off,.bootstrap-switch-handle-on {
+	-webkit-box-shadow: inset 1px 1px 5px 0px rgba(0,0,0,0.16);
+	-moz-box-shadow: inset 1px 1px 5px 0px rgba(0,0,0,0.16);
+	box-shadow: inset 1px 1px 5px 0px rgba(0,0,0,0.16);
+}
+
+.dataTable input[type="radio"],.dataTable input[type="checkbox"]{
+	zoom:1.3;
+}
+
+table.table-condensed {
+    font-size: 12px;
+}
+
+.hexdots-loader:not(:required) {
+	position:absolute !important;
+}
+
+.treeview {
+	cursor: pointer;
+}
+
+.content-header>h1 {
+	font-size:24px;
+	margin-bottom:15px
+	
+}
+.content-header>h2 {
+	font-size:14px;
+	margin-top:0;
+}
+
+.active-icon {
+	color: #5cd65c;
+	font-size: 21px;
+	background: #fff;
+    padding: 0px 1px;
+    box-shadow: 0px 0px 3px rgba(0,0,0,.5);
+    border-radius: 16px;
+}
+
+.inactive-icon {
+	color: rgba(255,0,0,.5);
+	font-size: 21px;
+	background: #fff;
+    padding: 0px 1px;
+    box-shadow: 0px 0px 3px rgba(0,0,0,.5);
+    border-radius: 16px;
+}
+
+.input-disabled{
+    background-color: rgb(204, 204, 204);
+    border-width: 1px;
+    cursor:pointer;
+}
+
+.input-edit {
+    position: relative;
+}
+
+.input-edit.fa.fa-pencil:before {
+    right: 4px;
+    top: 4px;
+    opacity:0.5;
+    position: absolute;
+}
+
+.input-edit input {
+    height: 22px;
+    width: 100%;
+    font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;
+}
+
+.buttons-row {
+	position: fixed;
+    bottom: 0px;
+    background: #222d32;
+    width: 100%;
+    left: 0;
+    margin: 0;
+    padding: 10px;
+    z-index: 10;
+}
+
+tbody tr.selectable-row-table {
+  	cursor: pointer;
+}
+
+.medium-confirm-modal{
+	width: 500px;
+}

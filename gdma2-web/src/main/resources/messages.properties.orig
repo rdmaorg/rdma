@@ -88,11 +88,12 @@ view.column.btn.save=Save
 view.column.btn.cancel=Cancel
 
 #DropDownColumn Modal - Column Page
-view.drop_down_column.modal.tittle=Configure Dropdown for Column
-view.drop_down_column.modal.subtitle.servers=1 - Select Server
-view.drop_down_column.modal.subtitle.tables=2 - Select Table
-view.drop_down_column.modal.subtitle.col.store=Column to Store
-view.drop_down_column.modal.subtitle.col.display=Column to Display
+view.drop_down_column.table_server.heading.id=Id
+view.drop_down_column.table_server.heading.name=Server Name
+view.drop_down_column.subtable_table.heading.id=Id
+view.drop_down_column.subtable_table.heading.name=Table Name
+view.drop_down_column.subtable_column.heading.id=Id
+view.drop_down_column.subtable_column.heading.name=Column Name
 view.column.btn.modal.save=Save
 view.column.btn.modal.cancel=Cancel
 
