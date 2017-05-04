@@ -152,6 +152,7 @@ var associateCheckbox = function(rule) {
 		}
 		//method to verify if need check Full Access checkbox or not
 		verifyFullAccess(ck.data('id'));
+		verifyDisplayAccess(ck.data('id'));
 	});
 }
 
@@ -201,34 +202,14 @@ var verifyFullAccess = function(id){
 	} else {
 		$("#"+id+"fullA").prop( "checked", false );
 	}
-
-	if($("#"+id+"allowD")[0].checked){
-		$("#"+id+"fullA").prop( "checked", true );
-	}
-
-	if($("#"+id+"allowU")[0].checked){
-		$("#"+id+"fullA").prop( "checked", true );
-	}
-
-	if($("#"+id+"allowI")[0].checked){
-		$("#"+id+"fullA").prop( "checked", true );
-	}
-
-	if($("#"+id+"allowDel")[0].checked){
-		$("#"+id+"fullA").prop( "checked", true );
-	}
 }
 
 var verifyDisplayAccess = function(id){
-}
-
-var verifyUpdateAccess = function(id){
-}
-
-var verifyInsertAccess = function(id){
-}
-
-var verifyDeleteAccess = function(id){
+	if($("#"+id+"allowU")[0].checked ||	$("#"+id+"allowI")[0].checked || $("#"+id+"allowDel")[0].checked){
+		$("#"+id+"allowD").prop( "checked", true );
+	} else {
+		$("#"+id+"allowD").prop( "checked", false );
+	}
 }
 
 var selectAllCheckBoxes = function(id,check){
@@ -268,6 +249,7 @@ var associateSaveUserAccess = function() {
 						contentType : "application/json; charset=utf-8"
 					}).done(function(data) {
 						buildDataModuleMenu();
+						changedCheckboxes = new Object();
 						$("#global-success").slideDown(500);
 				    	window.setTimeout(function() {
 				    		$("#global-success").slideUp(500);
