@@ -142,6 +142,11 @@ table.table-condensed {
     z-index: 10000;
 }
 
+.modal-content .hexdots-loader {
+	left: 35%;
+    top: 50%;
+}
+
 .treeview {
 	cursor: pointer;
 }

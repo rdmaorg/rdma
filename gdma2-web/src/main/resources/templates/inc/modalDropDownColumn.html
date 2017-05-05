@@ -11,7 +11,7 @@
 						<span th:text="#{view.drop_down_column.modal.tittle}"></span>
 						<span id="columnName"></span>
 					</h4>
-				</div>
+				</div>				
 				<div class="modal-body">
 					<div class="row">
 						<div class="col-sm-offset-3 col-sm-6 col-xs-12">
@@ -30,9 +30,10 @@
 								</select>
 							</div>
 						</div>
-					</div>
+					</div>					
+					<div th:replace="inc/spinnerModal"></div>
 					<div class="row" id="columns-control" style="display: none;">						
-						<div class="col-sm-5 col-xs-12">
+						<div class="col-sm-offset-1 col-sm-5 col-xs-12">
 							<div class="form-group">
 								<hr/>
 								<label for="select_col_display" class="control-label requiredField">
@@ -43,7 +44,7 @@
 								</select>
 							</div>
 						</div>
-						<div class="col-sm-offset-1 col-sm-5 col-xs-12">
+						<div class="col-sm-5 col-xs-12">
 							<div class="form-group">
 								<hr/>
 								<label for="select_col_store" class="control-label control-label requiredField">
@@ -57,9 +58,6 @@
 					</div>
 				</div>
 				<div class="modal-footer">
-					<div class="row">
-						<div th:replace="inc/spinnerModal"></div>
-					</div>
 					<button type="button" id="close-dropdown" class="btn btn-default btn-lg pull-left"
 						data-dismiss="modal">
 						<span th:text="#{view.column.btn.modal.cancel}"></span>
