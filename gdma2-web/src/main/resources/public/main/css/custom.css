@@ -184,7 +184,7 @@ table.table-condensed {
     position: relative;
 }
 
-.input-edit.fa.fa-pencil:before {
+.input-edit.fa.fa-pencil:before,.input-edit.fa.fa-bars:before {
     right: 0px;
     top: 0px;
     opacity: 1;
