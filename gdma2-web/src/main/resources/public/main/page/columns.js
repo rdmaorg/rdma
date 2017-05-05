@@ -68,12 +68,12 @@ var configureDataTable = function(){
 							  }
 			            },
 			            { "data": "dropDownColumnDisplay", "orderable" : false, "render" : function(data, type, row){ 
-			            		var value = row.dropDownColumnDisplay === null ? "": row.dropDownColumnDisplay.name;
+			            		var value = verifyValue(row,"dropDownColumnDisplay") === null ? "": verifyValue(row,"dropDownColumnDisplay").name;
 		            			return '<div class="input-edit fa fa-bars"><input type="text" id="columnDisplay'+row.id+'" class="column-display input-disabled" data-id="' + row.id+ '" value="'+ value +'"></div>' ;
 			            	} 
 			            },
 			            { "data": "dropDownColumnStore", "orderable" : false, "render" : function(data, type, row){ 
-			            	 	var value = row.dropDownColumnStore === null ? "": row.dropDownColumnStore.name;
+			            	 	var value = verifyValue(row,"dropDownColumnStore") === null ? "": verifyValue(row,"dropDownColumnStore").name;
 		            			return '<div class="input-edit fa fa-bars"><input type="text" id="columnStore'+row.id+'" class="column-store input-disabled" data-id="' + row.id+ '" value="'+ value +'"></div>' ;
 			            	} 
 			            },
@@ -113,6 +113,14 @@ var configureDataTable = function(){
 		}
 	});
 };
+
+var verifyValue = function(row, varName){
+	if(changedColumns[row.id]){
+		return changedColumns[row.id][varName];
+	} else {
+		return row[varName];
+	}
+}
 
 var createDropDownSpecial = function(id, value){
 	var select = '<select class="special" id="' + id + '" data-id="' + id + '">';
@@ -175,7 +183,7 @@ var associateInput = function(input,varName){
 		clicOutInputEvent(e.target);
 		var oldValue = e.target.value;
 		$(this).confirmation({
-			placement : "left",
+			placement : "top",
 			btnOkLabel : "Yes",
 			onConfirm : function(event, element) {
 				$(e.target).addClass("input-disabled");

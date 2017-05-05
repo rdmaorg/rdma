@@ -30,7 +30,6 @@ var verifyDropDownselected = function(){
 }
 
 var populateSelectServer = function(){
-	showLoading("#loading-spinner-modal");
 	$.ajax({
         type: "get",
         url: restUri.server.list,
@@ -49,7 +48,6 @@ var populateSelectServer = function(){
     }).fail(function(e){
     	handleError('#global-alert', e);
     }).always(function(){
-    	hideLoading("#loading-spinner-modal");
     });
 	associateServerChanged();
 }
@@ -254,6 +252,7 @@ var setColumnData = function(id, value, label){
 	$('#columnStore'+obj.id).val(label);
 	$('#columnDisplay'+obj.id).val(label);
 }
+
 
 var resetModal = function(){
 	columns = new Object();
