@@ -13,7 +13,6 @@
 					</h4>
 				</div>
 				<div class="modal-body">
-					
 					<div class="row">
 						<div class="col-sm-offset-3 col-sm-6 col-xs-12">
 							<h4 th:text="#{view.drop_down_column.modal.subtitle.servers}"></h4>
@@ -23,6 +22,7 @@
 								</select>
 							</div>
 						</div>						
+						<div th:replace="inc/spinnerModal"></div>
 						<div class="col-sm-offset-3 col-sm-6 col-xs-12" style="display: none;" id="table-control">						
 							<h4 th:text="#{view.drop_down_column.modal.subtitle.tables}"></h4>
 							<div class="form-group">
@@ -33,17 +33,6 @@
 						</div>
 					</div>
 					<div class="row" id="columns-control" style="display: none;">						
-						<div class="col-sm-offset-1 col-sm-5 col-xs-12">
-							<div class="form-group">
-								<hr/>
-								<label for="select_col_store" class="control-label control-label requiredField">
-									<span th:text="#{view.drop_down_column.modal.subtitle.col.store}"></span>
-								</label>
-								<select id="select_col_store" class="form-control" required="required">
-									<option value=""></option>
-								</select>
-							</div>
-						</div>
 						<div class="col-sm-5 col-xs-12">
 							<div class="form-group">
 								<hr/>
@@ -51,6 +40,17 @@
 									<span th:text="#{view.drop_down_column.modal.subtitle.col.display}"></span>
 								</label>
 								<select id="select_col_display" name="select_col_display" class="form-control" required="required">
+									<option value=""></option>
+								</select>
+							</div>
+						</div>
+						<div class="col-sm-offset-1 col-sm-5 col-xs-12">
+							<div class="form-group">
+								<hr/>
+								<label for="select_col_store" class="control-label control-label requiredField">
+									<span th:text="#{view.drop_down_column.modal.subtitle.col.store}"></span>
+								</label>
+								<select id="select_col_store" class="form-control" required="required">
 									<option value=""></option>
 								</select>
 							</div>

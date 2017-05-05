@@ -30,7 +30,7 @@ var verifyDropDownselected = function(){
 }
 
 var populateSelectServer = function(){
-	showLoading();
+	showLoading("#loading-spinner-modal");
 	$.ajax({
         type: "get",
         url: restUri.server.list,
@@ -49,7 +49,7 @@ var populateSelectServer = function(){
     }).fail(function(e){
     	handleError('#global-alert', e);
     }).always(function(){
-    	hideLoading();
+    	hideLoading("#loading-spinner-modal");
     });
 	associateServerChanged();
 }
@@ -65,7 +65,7 @@ var associateServerChanged = function(){
 }
 
 var populateSelectTable = function(serverId){
-	showLoading();
+	showLoading("#loading-spinner-modal");
 	$.ajax({
         type: "get",
         url: mapPathVariablesInUrl(restUri.table.sync_table_server, {id: serverId}),
@@ -85,7 +85,7 @@ var populateSelectTable = function(serverId){
     }).fail(function(e){
     	handleError('#global-alert', e);
     }).always(function(){
-    	hideLoading();
+    	hideLoading("#loading-spinner-modal");
     });
 	associateTableChanged();
 }
@@ -113,12 +113,12 @@ var syncColumns = function(tableId){
 	}).fail(function(e){
 		handleError('#global-alert', e);
 	}).always(function(){
-		hideLoading();
+		hideLoading("#loading-spinner-modal");
 	});
 }
 
 var populateColumnsSelectors = function(tableId){
-	showLoading();
+	showLoading("#loading-spinner-modal");
 	$.ajax({
         type: "get",
         url: mapPathVariablesInUrl(restUri.column.list_active, {id: tableId}),
@@ -142,7 +142,7 @@ var populateColumnsSelectors = function(tableId){
     }).fail(function(e){
     	handleError('#global-alert', e);
     }).always(function(){
-    	hideLoading();
+    	hideLoading("#loading-spinner-modal");
     });
 	associateColumnsChange();
 }
@@ -189,7 +189,7 @@ var associateSaveDropDownColumn = function() {
 				btnOkLabel : "Edit dropdown columns",
 				class: "medium-confirm-modal",
 				onConfirm : function(event, element) {
-					showLoading();
+					showLoading("#loading-spinner-modal");
 					var obj = origColumns[selectdedColumnId];
 					
 					if(changedColumns[obj.id]){
@@ -219,7 +219,7 @@ var associateSaveDropDownColumn = function() {
 			    	window.setTimeout(function() {
 			    		$("#global-success").slideUp(500);
 			    	}, 4000);
-					hideLoading();
+					hideLoading("#loading-spinner-modal");
 				}
 			});
 			$(this).confirmation('show');
