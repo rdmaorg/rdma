@@ -146,7 +146,8 @@ public class ColumnResource extends BaseDataTableResource{
 	/*DATA MODULE*/
 	
 	/*get all Active columns STRUCTURE for given Active table on Active server, based on userName
-	 * 		http://localhost/gdma2/rest/column/data/table/124  */
+	 * 		http://localhost/gdma2/rest/column/data/table/124  
+	 * in GDMA1 : GdmaAjaxFacade.getTableDetails*/
 	@RequestMapping(value = "/data/table/{id}")
 	public List<Column> getActiveColumns(@PathVariable("id") Integer tableId){
 		logger.info("getActiveColumnsForActiveTableOnActiveServer");
@@ -180,7 +181,8 @@ public class ColumnResource extends BaseDataTableResource{
 		return resp;
 	}
 	
-	/*	http://localhost/gdma2/rest/column/data/dropdown/display/608/store/609	*/
+	/*	DISPLAY PURPOSE http://localhost/gdma2/rest/column/data/dropdown/display/608/store/609	
+	 * FOR SAVING DD columns from UI just call existing : saveColumns(@RequestBody List<Column> columnList){ */
 	@RequestMapping(value = "/data/dropdown/display/{did}/store/{sid}")
 	public List getDropdownData(@PathVariable("did") Integer displayColumnId, @PathVariable("sid") Integer storeColumnId){
 		logger.info("getDropdownData for display column: " + displayColumnId + ", and store column: " + storeColumnId);

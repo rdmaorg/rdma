@@ -20,6 +20,10 @@ public class SQLUtil {
 	/*
 		URL: https://localhost/gdma2/rest/column/data/read/table/133?order[0][column]=629 
 	
+	creates SELECT colum_list from TABLE 
+		<where clause using filters > 
+		 <order by clause>
+	
 		SELECT customers.country, customers.city, customers.contactFirstName, customers.postalCode, customers.salesRepEmployeeNumber,
 				customers.customerNumber, customers.customerName, customers.phone, customers.addressLine1, customers.creditLimit, customers.contactLastName, 
 				customers.addressLine2, customers.state 

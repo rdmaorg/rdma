@@ -22,12 +22,14 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 @Repository
@@ -679,6 +681,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 		Table table = repositoryManager.getTableRepository().findOne(tableId);
 		Server server = table.getServer();
 
+
 		//TODO check conditions : does column need to be active...
 		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(table.getId());
 		table.setColumns(new HashSet(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change this and pass colums to utility method themselves
@@ -687,6 +690,13 @@ public class DynamicDAOImpl implements DynamicDAO{
 		Column sortedByColumnId = (orderByColumnID == 0 ? null : repositoryManager.getColumnRepository().findOne(orderByColumnID));
 		//dir
 		List<Filter> filters = new ArrayList<Filter>(); //TODO Open Q
+
+
+		/*test count*/
+		logger.info("test count");
+		Long count = getCount(server, table, filters);
+		logger.info("count: " + count);
+
 
 		String sql = SQLUtil.createSelect(server, table, sortedByColumnId, orderDirection, filters);
 		//String sql = SqlUtil.createSelect(server, table, sortedByColumnId, dir, paginatedRequest.getFilters());
@@ -743,12 +753,12 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 	}
 
-
+	/*	 sql: SELECT count(1)  FROM customers */
 	public Long getCount(Server server, Table table, List<Filter> filters) {
 		// TODO optimise!!
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSourcePool.getTransactionManager(server).getDataSource());
 		final String sql = SQLUtil.createCount(server, table, filters);
-		logger.error("getCount sql: " + sql);
+		logger.info("getCount sql: " + sql);
 
 		//DEPRICATED return jdbcTemplate.queryForLong(sql, convertFiltersToSqlParameterValues(filters).toArray());
 		// NOW: jdbcTemplate.queryForObject(sql, Long.class);
@@ -866,7 +876,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 		list members: [2, North Sydney, Australia]
 
 	URL: 		http://localhost/gdma2/rest/column/data/dropdown/display/608/store/609
-	
+
 	 * */
 	@Override
 	public List getDropDownData(Column display, Column store) {
@@ -929,11 +939,11 @@ public class DynamicDAOImpl implements DynamicDAO{
 		}
 
 		List<List<ColumnDataUpdate>> columnsUpdate = updateRequest.getUpdates();
-		
+
 		DataSourceTransactionManager transactionManager = dataSourcePool.getTransactionManager(server);
 		TransactionTemplate txTemplate = new TransactionTemplate(transactionManager);
 		logger.info("transactionManager obtained");
-		
+
 		txTemplate.execute(new org.springframework.transaction.support.TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(org.springframework.transaction.TransactionStatus status) {
@@ -950,7 +960,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 						//Column column = gdmaFacade.getColumnDao().get(columnUpdate.getColumnId());
 						Column column = repositoryManager.getColumnRepository().findOne(col.getColumnId());
 						logger.info("3: colId from request found in DB: " + column.getId() + ", colName: " + column.getName());
-						
+
 						if(server.getConnectionUrl().toLowerCase().contains(("teradata").toLowerCase()) 
 								&& column.isPrimarykey() && col.getNewColumnValue().equals("")){
 
@@ -1040,6 +1050,172 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 	}
 
+
+
+	//@Auditable TODO
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public int updateRecords(UpdateDataRequest updateRequest ) {
+		logger.info("start column update");
+
+		Table table = repositoryManager.getTableRepository().findOne(updateRequest.getTableId());
+		Server server = table.getServer();
+		updateRequest.setServerId(server.getId());
+		logger.info("server and table set");
+
+		if( null == server || null == table){
+			logger.error("Error while update: server or table does not exist!");
+			return -1; //TODO 
+		}
+
+		List<List<ColumnDataUpdate>> columnsUpdate = updateRequest.getUpdates();
+
+		DataSourceTransactionManager transactionManager = dataSourcePool.getTransactionManager(server);
+		TransactionTemplate txTemplate = new TransactionTemplate(transactionManager);
+		logger.info("transactionManager obtained");
+
+		int countUpd = (Integer) txTemplate.execute(
+				new org.springframework.transaction.support.TransactionCallback() {
+
+					@Override
+					public Object doInTransaction(
+							org.springframework.transaction.TransactionStatus status) {
+
+						logger.info("doInTransaction" +  status + " , start");
+
+						int countUpdated = 0;
+
+						for (List<ColumnDataUpdate> list : columnsUpdate) {
+
+							List<Column> columns = new ArrayList<Column>();
+							final List parameters = new ArrayList();
+							List keys = new ArrayList();
+
+							if (CollectionUtils.isEmpty(list)) {
+								throw new InvalidDataAccessResourceUsageException("Update list is empty");
+							}
+
+							for (ColumnDataUpdate columnUpdate : list) {
+
+								//Column column = gdmaFacade.getColumnDao().get(columnUpdate.getColumnId());
+								Column column = repositoryManager.getColumnRepository().findOne(columnUpdate.getColumnId());
+
+								if (column.isPrimarykey()) {
+									columns.add(column);
+									keys.add(SQLUtil.convertToType(columnUpdate.getOldColumnValue(), column.getColumnType()));
+								} else {
+									if (columnUpdate.getNewColumnValue() != null) {
+										columns.add(column);
+										Object obj = SQLUtil.convertToType(columnUpdate.getNewColumnValue(), column.getColumnType());
+										if (obj == null && !column.isNullable()) {
+											throw new InvalidDataAccessResourceUsageException(
+													"Column " + column.getName() + " can not be set to null and must have a value");
+										}
+										parameters.add(obj);
+										if (obj == null){
+											logger.info("o is null");
+										} else {
+											logger.info("Added parameter " + obj.toString());
+										}
+									}
+								}
+							} //internal for end
+
+							if (CollectionUtils.isEmpty(parameters)) {
+								throw new InvalidDataAccessResourceUsageException("No update values found");
+							}
+
+							if (null == keys || keys.isEmpty()) {
+								throw new InvalidDataAccessResourceUsageException("Update Not possible as no Table Primary Key Set.  Please contact your administrator");
+							}
+
+							handleSpecialColumns(table.getColumns(), columns, parameters);
+
+							parameters.addAll(keys);
+							String sql = SQLUtil.createUpdateStatement(server, table, columns);
+							logger.info("SQL USED: " + sql);
+							logger.info("parameters: " + parameters);
+
+							JdbcTemplate jdbcTemplate = new JdbcTemplate(transactionManager.getDataSource());
+							countUpdated += jdbcTemplate.update(sql, parameters.toArray());
+
+						}//main for
+
+						logger.info("doInTransaction() - end - return value=" + countUpdated);
+						return countUpdated;
+					}	
+
+				});//inner interface impl end
+
+		logger.info("updateRecords() - end - return value=" + countUpd);
+		return countUpd;
+	}
+
+
+
+
+	//@Auditable TODO
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public int deleteRecords(UpdateDataRequest updateRequest) {
+		logger.info("start delete records");
+
+		Table table = repositoryManager.getTableRepository().findOne(updateRequest.getTableId());
+		Server server = table.getServer();
+		updateRequest.setServerId(server.getId());
+		logger.info("server and table set");
+
+		if( null == server || null == table){
+			logger.error("Error while delete: server or table does not exist!");
+			return -1; //TODO 
+		}
+
+		List<List<ColumnDataUpdate>> columnsUpdate = updateRequest.getUpdates();
+
+		DataSourceTransactionManager transactionManager = dataSourcePool.getTransactionManager(server);
+		TransactionTemplate txTemplate = new TransactionTemplate(transactionManager);
+		logger.info("transactionManager obtained");
+
+
+		int countDel = (Integer) txTemplate.execute(new org.springframework.transaction.support.TransactionCallback() {
+
+			@Override
+			public Object doInTransaction(
+					org.springframework.transaction.TransactionStatus status) {
+				int countDeleted = 0;
+				for (List<ColumnDataUpdate> list : columnsUpdate) {
+
+					List<Column> columns = new ArrayList<Column>();
+					final List keys = new ArrayList();
+					if (CollectionUtils.isEmpty(list)) {
+						throw new InvalidDataAccessResourceUsageException("Cannot delete records as this table does not have a primary key set");
+					}
+
+					for (ColumnDataUpdate columnUpdate : list) {
+
+						//Column column = gdmaFacade.getColumnDao().get(columnUpdate.getColumnId());
+						Column column = repositoryManager.getColumnRepository().findOne(columnUpdate.getColumnId());
+						columns.add(column);
+						if (column.isPrimarykey()) {
+							keys.add(SQLUtil.convertToType(columnUpdate.getOldColumnValue(), column.getColumnType()));
+						}
+					}
+
+					final String sql = SQLUtil.createDeleteStatement(server, table, columns);
+					logger.info("Delete SQL used: " + sql);
+					logger.info("Keys-values used : " + keys);
+
+					JdbcTemplate jdbcTemplate = new JdbcTemplate(transactionManager.getDataSource());
+					countDeleted += jdbcTemplate.update(sql, keys.toArray());
+
+				}//for
+
+				return countDeleted;
+			}
+
+		});//inner iterface impl. end
+
+
+		return countDel;
+	}
 
 
 }
