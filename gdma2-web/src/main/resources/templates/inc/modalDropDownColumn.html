@@ -22,7 +22,6 @@
 								</select>
 							</div>
 						</div>						
-						<div th:replace="inc/spinnerModal"></div>
 						<div class="col-sm-offset-3 col-sm-6 col-xs-12" style="display: none;" id="table-control">						
 							<h4 th:text="#{view.drop_down_column.modal.subtitle.tables}"></h4>
 							<div class="form-group">
@@ -58,6 +57,9 @@
 					</div>
 				</div>
 				<div class="modal-footer">
+					<div class="row">
+						<div th:replace="inc/spinnerModal"></div>
+					</div>
 					<button type="button" id="close-dropdown" class="btn btn-default btn-lg pull-left"
 						data-dismiss="modal">
 						<span th:text="#{view.column.btn.modal.cancel}"></span>

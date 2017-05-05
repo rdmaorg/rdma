@@ -109,6 +109,7 @@ var configureDataTable = function(){
 			associateSpecialSelect();
 			postColumnsData();
 			lineExpansionEvent();
+			cancelColumnsEdition();
 		}
 	});
 };
@@ -252,7 +253,7 @@ var postColumnsData = function(){
 	$("#save-columns").click(function(e) {
 		$(this).confirmation({
 			placement : "left",
-			tittle: "Are you sure you wish to save the changed data?",
+			title: "Are you sure you wish to save the changed data?",
 			btnOkLabel : "Yes",
 			onConfirm : function(event, element) {
 				showLoading();
@@ -294,11 +295,13 @@ var cancelColumnsEdition = function(){
 	$("#cancel-columns").click(function(e) {
 		$(this).confirmation({
 			placement : "left",
-			btnOkLabel : "Are you sure you wish to cancel the changes?",
+			title: "Are you sure you wish to cancel the changes?",
+			btnOkLabel : "Yes",
 			onConfirm : function(event, element) {
 				showLoading();
 				changedColumns = new Object();
 				table.draw(false);
+				verifyButtonsRow();
 			   	hideLoading();
 			}
 		});
@@ -325,6 +328,7 @@ var lineExpansionEvent = function(){
     	associateSpecialSelect();
     });
 }
+
 $(document).ready(function(){
 	configureDataTable();
 	

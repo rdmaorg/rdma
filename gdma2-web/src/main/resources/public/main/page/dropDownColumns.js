@@ -215,10 +215,6 @@ var associateSaveDropDownColumn = function() {
 					$('#modalDropDownColumns').modal('hide');
 					resetModal();
 					verifyButtonsRow();
-					$("#global-success").slideDown(500);
-			    	window.setTimeout(function() {
-			    		$("#global-success").slideUp(500);
-			    	}, 4000);
 					hideLoading("#loading-spinner-modal");
 				}
 			});
