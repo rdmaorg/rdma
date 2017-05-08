@@ -56,7 +56,7 @@ public interface DynamicDAO {
 	 * @param updateRequest
 	 * @return the numebr of records updated
 	 */
-	//public int updateRecords(UpdateRequest updateRequest);
+	public int updateRecords(UpdateDataRequest updateRequest);
 
 	/**
 	 * Delete one or more records

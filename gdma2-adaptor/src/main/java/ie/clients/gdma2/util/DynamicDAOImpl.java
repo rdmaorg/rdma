@@ -858,7 +858,11 @@ public class DynamicDAOImpl implements DynamicDAO{
 	}
 
 	/*
-	 * get Data for dropdown columns
+	 * get Data from remote config Tables to be presented as dropdown on UI 
+	 * Precondition: previosly set DD and DS on selected column in Admin/Colums part of app 
+	 * (result is : metadata for selected column now has metadata colum_ID of choosen DD and DS columns)
+	 * 
+	 * BE : while loading data for colum, check in metadata id DD or DS Id is set, if to initiate this logic else skip
 	 * 
 	 * in GDMA1 this is all 1 call when fetching DATA for columns of table:  
 	 * GdmaAjax.getUserAccessDetails.dwr - Gets user access for Active table and logged in User
@@ -995,18 +999,35 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 
 	/**
-	 * TODO handle Special case and user auth
-	 * @param set
+	 * Used during INSERT/UPDATE new Table data records if columns is 'Special' 
+	 * 
+	 * USER - 'U'
+	 * 	get Logged in UserName / or use 'UNKNOWN' ???
+	 *  convert to Object of String type and use as param for PreparedStatement 
+	 *  >> result : save logged in username in remote DB 
+	 * 
+	 * 
+	 * DATE - 'D':
+	 * 
+	 * new java.util.Date()
+	 * 	format to String in format:  String dateFormat = "yyyy-MM-dd";
+	 * get madata Column.getDateType() - must be sort of DATE/TIME type
+	 * convert String dateFormat = "yyyy-MM-dd" into Object of type DATE/TIME
+	 * add to params to be used in PreparedStatement
+	 *  
+	 *  >> result: save current Date in remote DB
+	 * 
+	 * @param metadataColumnSet
 	 * @param columns
 	 * @param parameters
 	 */
 	@SuppressWarnings("unchecked")
-	private void handleSpecialColumns(Set<Column> set, List<Column> columns, List parameters) {
+	private void handleSpecialColumns(Set<Column> metadataColumnSet, List<Column> columns, List parameters) {
 		logger.info("handleSpecialColumns");
-		for (Column column : set) {
-			if (StringUtils.hasText(column.getSpecial())) {
+		for (Column metadataColumn : metadataColumnSet) {
+			if (StringUtils.hasText(metadataColumn.getSpecial())) {
 
-				if ("U".equals(column.getSpecial())) {
+				if ("U".equals(metadataColumn.getSpecial())) {
 					logger.info("special column is U");
 					String user = "";
 
@@ -1025,24 +1046,24 @@ public class DynamicDAOImpl implements DynamicDAO{
 						user = "UNKNOWN";
 					}
 					// first see if by error the column is already included
-					if (columns.contains(column)) {
-						int index = columns.indexOf(column);
-						parameters.set(index, SQLUtil.convertToType(user, column.getColumnType()));
+					if (columns.contains(metadataColumn)) {
+						int index = columns.indexOf(metadataColumn);
+						parameters.set(index, SQLUtil.convertToType(user, metadataColumn.getColumnType()));
 					} else {
-						columns.add(column);
-						parameters.add(SQLUtil.convertToType(user, column.getColumnType()));
+						columns.add(metadataColumn);
+						parameters.add(SQLUtil.convertToType(user, metadataColumn.getColumnType()));
 					}
-				} else if ("D".equals(column.getSpecial())) {
+				} else if ("D".equals(metadataColumn.getSpecial())) {
 					logger.info("special column is D");
 					// first see if by error the column is already included
-					if (columns.contains(column)) {
-						int index = columns.indexOf(column);
-						parameters.set(index, SQLUtil.convertToType(Formatter.formatDate(new Date()), column.getColumnType()));
+					if (columns.contains(metadataColumn)) {
+						int index = columns.indexOf(metadataColumn);
+						parameters.set(index, SQLUtil.convertToType(Formatter.formatDate(new Date()), metadataColumn.getColumnType()));
 					} else {
-						columns.add(column);
+						columns.add(metadataColumn);
 						// can't be guaranteed that the column is a dated column
 						// so convert to string
-						parameters.add(SQLUtil.convertToType(Formatter.formatDate(new Date()), column.getColumnType()));
+						parameters.add(SQLUtil.convertToType(Formatter.formatDate(new Date()), metadataColumn.getColumnType()));
 					}
 				}
 			}
@@ -1051,7 +1072,22 @@ public class DynamicDAOImpl implements DynamicDAO{
 	}
 
 
-
+	/**
+	 * Updates data in remote DB - one SQL UPDATE is executed on each row update 
+	 * Execution rules: 
+	 *  - server and table must exists before update starts
+	 *  - info carrier ColumnDataUpdate needs to have at least 1 entry
+	 *  - table must have PK defined and there has to be PK column in request (checked for oldValue and metadata Type)  
+	 *  - ColumnDataUpdate must have newColumnValue entries 
+	 *  - after newColumnValue data type is converted to the type defined in column metadata, 
+	 *    if dataType cannot be determined AND column cannot be null => irregular situation 
+	 *  - handle special columns : if table being updated contains special columns: 
+	 *  retrieve either username or current date with proper type conversion and and set as values  
+	 *   	
+	 *  
+	 * @param updateRequest
+	 * @return
+	 */
 	//@Auditable TODO
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public int updateRecords(UpdateDataRequest updateRequest ) {
@@ -1080,12 +1116,12 @@ public class DynamicDAOImpl implements DynamicDAO{
 					public Object doInTransaction(
 							org.springframework.transaction.TransactionStatus status) {
 
-						logger.info("doInTransaction" +  status + " , start");
+						logger.info("0: doInTransaction" +  status + " , start");
 
 						int countUpdated = 0;
 
-						for (List<ColumnDataUpdate> list : columnsUpdate) {
-
+						for (List<ColumnDataUpdate> list : columnsUpdate) {//will perform multiple SQL UPDATEs row by row
+							
 							List<Column> columns = new ArrayList<Column>();
 							final List parameters = new ArrayList();
 							List keys = new ArrayList();
@@ -1095,15 +1131,18 @@ public class DynamicDAOImpl implements DynamicDAO{
 							}
 
 							for (ColumnDataUpdate columnUpdate : list) {
-
+								logger.info("1: column list reading");
 								//Column column = gdmaFacade.getColumnDao().get(columnUpdate.getColumnId());
 								Column column = repositoryManager.getColumnRepository().findOne(columnUpdate.getColumnId());
-
+								logger.info("2: local column found by id: " + column.getName());
 								if (column.isPrimarykey()) {
+									logger.info("3: column IS PK! Getting old value from request and type from metadata");
 									columns.add(column);
 									keys.add(SQLUtil.convertToType(columnUpdate.getOldColumnValue(), column.getColumnType()));
 								} else {
+									logger.info("3: column is NOT PK!");
 									if (columnUpdate.getNewColumnValue() != null) {
+										logger.info("4: column, not PK, has NEW value set (but can be null?)");
 										columns.add(column);
 										Object obj = SQLUtil.convertToType(columnUpdate.getNewColumnValue(), column.getColumnType());
 										if (obj == null && !column.isNullable()) {
@@ -1112,32 +1151,41 @@ public class DynamicDAOImpl implements DynamicDAO{
 										}
 										parameters.add(obj);
 										if (obj == null){
-											logger.info("o is null");
+											logger.info("obj of data type is null - problem with data type conversion?");
 										} else {
-											logger.info("Added parameter " + obj.toString());
+											logger.info("New value " + obj.toString());
 										}
 									}
 								}
 							} //internal for end
 
 							if (CollectionUtils.isEmpty(parameters)) {
-								throw new InvalidDataAccessResourceUsageException("No update values found");
+								throw new InvalidDataAccessResourceUsageException("No update values found!");
 							}
 
 							if (null == keys || keys.isEmpty()) {
-								throw new InvalidDataAccessResourceUsageException("Update Not possible as no Table Primary Key Set.  Please contact your administrator");
+								throw new InvalidDataAccessResourceUsageException("Update Not possible as no Table Primary Key Set. Please contact your administrator");
 							}
-
+							logger.info("6: before handling special columns");
+							//TODO !!!
 							handleSpecialColumns(table.getColumns(), columns, parameters);
 
 							parameters.addAll(keys);
+							
 							String sql = SQLUtil.createUpdateStatement(server, table, columns);
-							logger.info("SQL USED: " + sql);
+							logger.info("Update SQL query: " + sql);
 							logger.info("parameters: " + parameters);
-
 							JdbcTemplate jdbcTemplate = new JdbcTemplate(transactionManager.getDataSource());
 							countUpdated += jdbcTemplate.update(sql, parameters.toArray());
 
+							/* for dummy test - 2 rows update
+							Update SQL query: UPDATE new_table_test_autoincrement SET name = ?, year = ? WHERE  (id = ?) 
+							parameters: [cdr_new, 1991, 2]
+							Update SQL query: UPDATE new_table_test_autoincrement SET name = ?, year = ? WHERE  (id = ?) 
+							parameters: [bfg_new, 2009, 3]
+							*/
+
+							
 						}//main for
 
 						logger.info("doInTransaction() - end - return value=" + countUpdated);

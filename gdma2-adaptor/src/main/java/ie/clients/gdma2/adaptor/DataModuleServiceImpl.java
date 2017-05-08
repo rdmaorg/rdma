@@ -92,20 +92,17 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 		//updateReq.setServerId(serverId);
 		//updateReq.setTableId(tableId);
 		// TODO coming from UI updateReq.setUpdates(List<List<ColumnDataUpdate>> updates);
-		
 		//TODO change to real call 
 		
-		
-		dynamicDAO.addRecord(createDummyUpdateReq());
+		dynamicDAO.addRecord(createDummyUpdateReqForAddRecord());
 
 	}
-
 	
 	/**
 	 * 
 	 * @return dummy UpdateDataRequest
 	 */
-	private UpdateDataRequest createDummyUpdateReq(){
+	private UpdateDataRequest createDummyUpdateReqForAddRecord(){
 	
 		UpdateDataRequestDummy dummy = new UpdateDataRequestDummy();
 		//UpdateDataRequest udr = dummy.createDummyAddSingleRecordForTableName_new_table_test(6, 43);
@@ -115,10 +112,41 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 		List<List<ColumnDataUpdate>> updates = udr.getUpdates();
 		for (List<ColumnDataUpdate> list : updates) {
 			 for (ColumnDataUpdate columnDataUpdate : list) {
-				 logger.info("" + columnDataUpdate.getColumnId());
-				 logger.info(columnDataUpdate.getNewColumnValue());
-				 logger.info(columnDataUpdate.getOldColumnValue());
-				
+				 logger.info("" + columnDataUpdate.getColumnId() + "old val:" + columnDataUpdate.getOldColumnValue()
+						 + " , new val: " + columnDataUpdate.getNewColumnValue() );
+				 
+			}
+		}
+		return udr;
+	}
+
+	/*using dummy logic until we define how data is transfered from UI to BE*/
+	@Override
+	public int updateRecord(Integer tableId) {
+		logger.info("updateRecord");
+		logger.info("user: " + userContextProvider.getLoggedInUserName());
+		
+		int updateRecords = dynamicDAO.updateRecords(createDummyUpdateReq());
+		return updateRecords;
+		
+	}
+	
+	/**
+	 * select * from table_gdma2 where name = 'new_table_test_autoincrement'; 	id=136
+	
+	 * @return dummy UpdateDataRequest
+	 */
+	private UpdateDataRequest createDummyUpdateReq(){
+	
+		UpdateDataRequestDummy dummy = new UpdateDataRequestDummy();
+		UpdateDataRequest udr = dummy.createDummyUpdateRequestForAutoIncrementTable_new_table_test_autoincrement(6, 136);
+		
+		logger.info("createDummyUpdateReq: ");
+		List<List<ColumnDataUpdate>> updates = udr.getUpdates();
+		for (List<ColumnDataUpdate> list : updates) {
+			 for (ColumnDataUpdate columnDataUpdate : list) {
+				 logger.info("" + columnDataUpdate.getColumnId() + ", old val: " + columnDataUpdate.getOldColumnValue() + 
+						 " , new val:" + columnDataUpdate.getNewColumnValue());
 			}
 		}
 		return udr;

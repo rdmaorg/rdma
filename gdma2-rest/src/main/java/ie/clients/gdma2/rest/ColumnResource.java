@@ -200,4 +200,11 @@ public class ColumnResource extends BaseDataTableResource{
 		//void methods not orderding no paginated response
 		serviceFacade.getDataModuleService().addRecord(tableId);
 	}
+	
+	@RequestMapping("/data/update/table/{id}")
+	public int updateColumnData(@PathVariable("id") Integer tableId, @RequestParam Map<String,String> reqParams){
+		//TODO - change return type if we need to refresh and return latest data after update
+		logger.info("updateColumnData, table: " + tableId);
+		return serviceFacade.getDataModuleService().updateRecord(tableId);
+	}
 }

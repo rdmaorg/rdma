@@ -73,6 +73,11 @@ public class SQLUtil {
 	/* input : 2 columns (PK of columns) coming from UI
 	 * select Customers.storeColumn, Customers.displayColumn from prefix.Customer order by Customers.displayColumn asc
 	 * 
+	 * Select ALL values from config table on Remote server,  for DD and DS columns:
+	 * 
+	 * SQL Structure: SELECT + ORDER BY
+	 * SELECT table.storeColumn, table.displayColumn from serverPrefix.table order by table.displayColumn asc
+	 * 
 	 * SELECT br_transaction.REQUEST_DATE, br_transaction.STATUS FROM ADPR_TEST.br_transaction ORDER BY br_transaction.STATUS asc;
 	 * */
 	public static String createDropDownSelect(Server server, Table table, Column display, Column store) {
@@ -265,6 +270,16 @@ public class SQLUtil {
 		return sbInsert.toString();
 	}
 
+	/*UPDATE FOR TABLE: 
+	 * new_table_test_autoincrement (
+  			id int(11) NOT NULL AUTO_INCREMENT,
+  			name varchar(45) DEFAULT NULL,
+  			year varchar(45) DEFAULT NULL,
+  		PRIMARY KEY (id)
+  	* 
+  	* Update SQL query: 
+	 * 	UPDATE new_table_test_autoincrement SET name = ?, year = ? WHERE  (id = ?) 
+	 */
 	public static String createUpdateStatement(Server server, Table table, List<Column> columns) {
 		StringBuilder sbUpdate = new StringBuilder(columns.size() * 30);
 		sbUpdate.append("UPDATE ");
@@ -331,6 +346,16 @@ public class SQLUtil {
 		return sbWhere.toString();
 	}
 
+	/**
+	 * ColumnDataUpdate uses : String newColumnValue
+	 * before preparedStatement is executed, this String value needs to be converted into proper type to match DB type, 
+	 * for this purpose metadata: Column.getColumnType() is used
+	 * 
+	 * returns Object of proper data type: String, Integer, Long...Date...Time
+	 * @param data
+	 * @param sqlDataType
+	 * @return
+	 */
 	public static Object convertToType(String data, int sqlDataType) {
 		Object oReturn = null;
 

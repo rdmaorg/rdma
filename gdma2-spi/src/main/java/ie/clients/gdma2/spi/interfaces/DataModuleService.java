@@ -41,6 +41,7 @@ public interface DataModuleService {
 
 		/*add record to the table */
 		public void addRecord(Integer tableId);
+		public int updateRecord(Integer tableId);
 			
 	
 	
