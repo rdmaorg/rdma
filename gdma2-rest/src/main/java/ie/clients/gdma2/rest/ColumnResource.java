@@ -205,6 +205,12 @@ public class ColumnResource extends BaseDataTableResource{
 	public int updateColumnData(@PathVariable("id") Integer tableId, @RequestParam Map<String,String> reqParams){
 		//TODO - change return type if we need to refresh and return latest data after update
 		logger.info("updateColumnData, table: " + tableId);
-		return serviceFacade.getDataModuleService().updateRecord(tableId);
+		return serviceFacade.getDataModuleService().updateRecords(tableId);
+	}
+	
+	@RequestMapping("/data/delete/table/{id}")
+	public int deleteColumnData(@PathVariable("id") Integer tableId, @RequestParam Map<String, String> reqParams){
+		logger.info("deleteColumnData, table:  " + tableId);
+		return serviceFacade.getDataModuleService().deleteRecords(tableId);
 	}
 }

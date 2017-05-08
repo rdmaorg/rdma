@@ -358,6 +358,108 @@ public class UpdateDataRequestDummy{
 		}
 
 	}
+	
+	/*
+	 * DELETE records
+	 * 
+			 REMOTE DB
+			 # id, name, year
+		------------------
+		'1', 'abv', '1989'
+		'2', 'cdr_new', '1991'
+		'3', 'bfg_new', '2009'
+		'4', 'abv-new', NULL
+		'5', '2020', NULL
+		'6', 'new data', NULL
+		'7', NULL, '2017'
+		'8', 'new data', '1987'
+		'9', 'Mike', '1950'
+		'10', 'new data', '1987'
+		'11', 'Mike', '1950'
+		'12', 'new data', '1987'
+		'13', 'Mike', '1950'
+
+		DELETE RECORDS:
+		'9', 'Mike', '1950'
+		'10', 'new data', '1987'
+			
+	 * 
+	 */
+	public static UpdateDataRequest createDummyDeleteRecordsForAutoIncrementTable_new_table_test_autoincrement(int serverId, int tableId) {
+		
+		/*MYSQL table has autoincrement- this method will insert 2 rows in remote DB*/
+		logger.info("createDummy DELETE request" + "for serverId: "  + serverId + " and tableId: " + tableId);
+		logger.info("PK must be set!");
+		logger.info("No other columns are used!");
+		/*ROW 1*/
+		ArrayList<ColumnDataUpdate> row1 = new ArrayList<ColumnDataUpdate>();
+
+		/*column NAME ROW1*/
+		ColumnDataUpdate col1Row1 = new ColumnDataUpdate();
+
+		//col1Row1.setColumnId(653);
+		//col1Row1.setOldColumnValue("cdr");
+		//col1Row1.setNewColumnValue("cdr_new");
+
+		/*column YEAR row1*/
+		//ColumnDataUpdate col2Row1 = new ColumnDataUpdate();
+		//col2Row1.setColumnId(652);
+		//col2Row1.setOldColumnValue("1990");
+		//col2Row1.setNewColumnValue("1991");
+
+		/*column ID row1*/
+		ColumnDataUpdate col3Row1 = new ColumnDataUpdate();
+		col3Row1.setColumnId(654);
+		col3Row1.setOldColumnValue("9");
+		//col3Row1.setNewColumnValue("2");
+		
+		//row1.add(col1Row1);
+		//row1.add(col2Row1);
+		row1.add(col3Row1);
+		
+		/*Row 2*/
+		ArrayList<ColumnDataUpdate> row2 = new ArrayList<ColumnDataUpdate>();
+
+		/*column NAME Row2*/
+		//ColumnDataUpdate col1Row2 = new ColumnDataUpdate();
+
+		//col1Row2.setColumnId(653);
+		//col1Row2.setOldColumnValue("bfg");
+		//col1Row2.setNewColumnValue("bfg_new");
+
+		/*column Year Row2*/
+		//ColumnDataUpdate col2Row2 = new ColumnDataUpdate();
+		//col2Row2.setColumnId(652);
+		//col2Row2.setOldColumnValue("2008");
+		//col2Row2.setNewColumnValue("2009");
+
+		ColumnDataUpdate col3Row2 = new ColumnDataUpdate();
+		col3Row2.setColumnId(654);
+		col3Row2.setOldColumnValue("10");
+		//col3Row2.setNewColumnValue("3");
+		
+		//row2.add(col1Row2);
+		//row2.add(col2Row2);
+		row2.add(col3Row2);
+
+		/*add rows to list*/
+		List<List<ColumnDataUpdate>> updateRows = new ArrayList(new ArrayList<ColumnDataUpdate>());
+
+		updateRows.add(row1);
+		updateRows.add(row2);
+
+		/*print created*/
+		print(updateRows);
+
+		/*create and return wrapper*/
+		UpdateDataRequest updateReq = new UpdateDataRequest();
+		updateReq.setServerId(serverId);
+		updateReq.setTableId(tableId);
+		updateReq.setUpdates(updateRows);
+
+		return updateReq;
+		
+	}
 
 	public static void main(String[] args) {
 		//UpdateDataRequestDummy.createDummyAddRecordsForNonAutoIncrementTable_new_table_test(6, 43);
@@ -366,7 +468,13 @@ public class UpdateDataRequestDummy{
 		//UpdateDataRequestDummy.createDummyAddRecordsForAutoIncrementTable_new_table_test_autoincrement(6,83);
 		
 		//UPDATE TEST
-		UpdateDataRequestDummy.createDummyUpdateRequestForAutoIncrementTable_new_table_test_autoincrement(6, 136);
+		//UpdateDataRequestDummy.createDummyUpdateRequestForAutoIncrementTable_new_table_test_autoincrement(6, 136);
+		
+		//DELETE TEST
+		UpdateDataRequestDummy.createDummyDeleteRecordsForAutoIncrementTable_new_table_test_autoincrement(6,136);
 	}
+
+
+	
 
 }

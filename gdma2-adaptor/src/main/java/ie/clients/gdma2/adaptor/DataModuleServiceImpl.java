@@ -122,8 +122,8 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 
 	/*using dummy logic until we define how data is transfered from UI to BE*/
 	@Override
-	public int updateRecord(Integer tableId) {
-		logger.info("updateRecord");
+	public int updateRecords(Integer tableId) {
+		logger.info("updateRecords");
 		logger.info("user: " + userContextProvider.getLoggedInUserName());
 		
 		int updateRecords = dynamicDAO.updateRecords(createDummyUpdateReq());
@@ -150,5 +150,17 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 			}
 		}
 		return udr;
+	}
+
+	@Override
+	public int deleteRecords(Integer tableId) {
+		logger.info("deleteRecords");
+		logger.info("user: " + userContextProvider.getLoggedInUserName());
+		logger.info("createDummy DELETE Req: ");
+		
+		UpdateDataRequestDummy dummyDelete = new UpdateDataRequestDummy();
+		UpdateDataRequest updateDataRequest = dummyDelete.createDummyDeleteRecordsForAutoIncrementTable_new_table_test_autoincrement(6, 136);
+		
+		return dynamicDAO.deleteRecords(updateDataRequest);
 	}
 }

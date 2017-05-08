@@ -39,9 +39,10 @@ public interface DataModuleService {
 		public List getDropdownData(Integer displayColumnId, Integer storeColumnId);
 		
 
-		/*add record to the table */
+		/*add/upadate/delete Records - for Columns */
 		public void addRecord(Integer tableId);
-		public int updateRecord(Integer tableId);
+		public int updateRecords(Integer tableId);
+		public int deleteRecords(Integer tableId);
 			
 	
 	

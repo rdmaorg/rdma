@@ -1121,7 +1121,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 						int countUpdated = 0;
 
 						for (List<ColumnDataUpdate> list : columnsUpdate) {//will perform multiple SQL UPDATEs row by row
-							
+
 							List<Column> columns = new ArrayList<Column>();
 							final List parameters = new ArrayList();
 							List keys = new ArrayList();
@@ -1135,21 +1135,26 @@ public class DynamicDAOImpl implements DynamicDAO{
 								//Column column = gdmaFacade.getColumnDao().get(columnUpdate.getColumnId());
 								Column column = repositoryManager.getColumnRepository().findOne(columnUpdate.getColumnId());
 								logger.info("2: local column found by id: " + column.getName());
+								
 								if (column.isPrimarykey()) {
 									logger.info("3: column IS PK! Getting old value from request and type from metadata");
 									columns.add(column);
 									keys.add(SQLUtil.convertToType(columnUpdate.getOldColumnValue(), column.getColumnType()));
 								} else {
 									logger.info("3: column is NOT PK!");
+									
 									if (columnUpdate.getNewColumnValue() != null) {
 										logger.info("4: column, not PK, has NEW value set (but can be null?)");
 										columns.add(column);
 										Object obj = SQLUtil.convertToType(columnUpdate.getNewColumnValue(), column.getColumnType());
+										
 										if (obj == null && !column.isNullable()) {
 											throw new InvalidDataAccessResourceUsageException(
 													"Column " + column.getName() + " can not be set to null and must have a value");
 										}
+										
 										parameters.add(obj);
+										
 										if (obj == null){
 											logger.info("obj of data type is null - problem with data type conversion?");
 										} else {
@@ -1171,7 +1176,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 							handleSpecialColumns(table.getColumns(), columns, parameters);
 
 							parameters.addAll(keys);
-							
+
 							String sql = SQLUtil.createUpdateStatement(server, table, columns);
 							logger.info("Update SQL query: " + sql);
 							logger.info("parameters: " + parameters);
@@ -1183,9 +1188,9 @@ public class DynamicDAOImpl implements DynamicDAO{
 							parameters: [cdr_new, 1991, 2]
 							Update SQL query: UPDATE new_table_test_autoincrement SET name = ?, year = ? WHERE  (id = ?) 
 							parameters: [bfg_new, 2009, 3]
-							*/
+							 */
 
-							
+
 						}//main for
 
 						logger.info("doInTransaction() - end - return value=" + countUpdated);
@@ -1200,9 +1205,17 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 
 
-
-	//@Auditable TODO
+	/**
+	 * Deletes selected multiple records from Column Data view
+	 * PKs must be used and send from UI
+	 * 
+	 * SQLs to be executed to delete 2 rows from table with PK named 'id'
+					 	DELETE FROM new_table_test_autoincrement WHERE  (id = ?) 
+ 						DELETE FROM new_table_test_autoincrement WHERE  (id = ?) 
+	 */
+	//@Auditable TODO//
 	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
 	public int deleteRecords(UpdateDataRequest updateRequest) {
 		logger.info("start delete records");
 
@@ -1222,27 +1235,29 @@ public class DynamicDAOImpl implements DynamicDAO{
 		TransactionTemplate txTemplate = new TransactionTemplate(transactionManager);
 		logger.info("transactionManager obtained");
 
-
 		int countDel = (Integer) txTemplate.execute(new org.springframework.transaction.support.TransactionCallback() {
 
 			@Override
 			public Object doInTransaction(
 					org.springframework.transaction.TransactionStatus status) {
+				logger.info("doInTransaction");
 				int countDeleted = 0;
 				for (List<ColumnDataUpdate> list : columnsUpdate) {
 
 					List<Column> columns = new ArrayList<Column>();
 					final List keys = new ArrayList();
+					
 					if (CollectionUtils.isEmpty(list)) {
 						throw new InvalidDataAccessResourceUsageException("Cannot delete records as this table does not have a primary key set");
 					}
 
 					for (ColumnDataUpdate columnUpdate : list) {
-
+						logger.info("1: column list itteration");
 						//Column column = gdmaFacade.getColumnDao().get(columnUpdate.getColumnId());
 						Column column = repositoryManager.getColumnRepository().findOne(columnUpdate.getColumnId());
 						columns.add(column);
 						if (column.isPrimarykey()) {
+							logger.info("2: Pk detected");
 							keys.add(SQLUtil.convertToType(columnUpdate.getOldColumnValue(), column.getColumnType()));
 						}
 					}
@@ -1250,18 +1265,23 @@ public class DynamicDAOImpl implements DynamicDAO{
 					final String sql = SQLUtil.createDeleteStatement(server, table, columns);
 					logger.info("Delete SQL used: " + sql);
 					logger.info("Keys-values used : " + keys);
-
+					
+					/*	
+					 	DELETE FROM new_table_test_autoincrement WHERE  (id = ?) 
+ 						DELETE FROM new_table_test_autoincrement WHERE  (id = ?) 
+					 */
+					
 					JdbcTemplate jdbcTemplate = new JdbcTemplate(transactionManager.getDataSource());
 					countDeleted += jdbcTemplate.update(sql, keys.toArray());
 
 				}//for
-
+				logger.info("count deleted in itteration" + countDeleted);
 				return countDeleted;
 			}
 
 		});//inner iterface impl. end
 
-
+		logger.info("count all deleted" + countDel);
 		return countDel;
 	}
 

@@ -64,7 +64,7 @@ public interface DynamicDAO {
 	 * @param updateRequest
 	 * @return the number of records delete
 	 */
-	//public int deleteRecords(UpdateRequest updateRequest);
+	public int deleteRecords(UpdateDataRequest updateRequest);
 
 	/**
 	 * Get a list of drop down values and text for a column
