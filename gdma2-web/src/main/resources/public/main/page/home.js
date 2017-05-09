@@ -31,7 +31,7 @@ var loadDatatable = function(){
 
 var configureDataTable = function(){
 	var columnsData = [];
-	for(var i = 0; i < columns.length+1; i++){
+	for(var i = 0; i < columns.length; i++){
 		columnsData[i] = {"data": ""+i};
 	}
 	
