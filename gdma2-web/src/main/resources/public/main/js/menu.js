@@ -1,61 +1,14 @@
+var dataModulePage = getContextPath() + "/";
+
 $(document).ready(function(){
 	buildDataModuleMenu();
+	loadUserMenu();
+	loadAdminMenu();
 });
 
 
 
 var buildDataModuleMenu = function(){
-	//Get User Menu
-	$.ajax({
-        type: "get",
-        url: restUri.menu.user,
-        data: { get_param: 'data' },
-        contentType: "application/json; charset=utf-8",
-        dataType: 'json'
-    }).done(function(data){	
-		$(".user-menu span").html(data[0].name);
-    	$.each(data[0].children, function(i, menu) {
-    		$('<li><a href="/gdma2'+ menu.view +'" class="btn btn-default btn-flat">'+ menu.name +'</a></li>').appendTo(".dropdown-menu-right");
-    	});
-
-    }).fail(function(e){
-    	handleError('#global-alert', e);
-    }).always(function(){
-    });
-	
-	//Get Admin Menu
-	$.ajax({
-        type: "get",
-        url: restUri.menu.app,
-        data: { get_param: 'data' },
-        contentType: "application/json; charset=utf-8",
-        dataType: 'json'
-    }).done(function(data){	
-    	$.each(data[0].children, function(i, menu) {
-    		$('<div class="form-group"><a class="btn btn-primary btn-block btn-sm" href="/gdma2'+ menu.view +'"><h3><i class="fa '+ menu.iconClass +'" aria-hidden="true"></i><br>'+ menu.name +'</h3><p>'+ menu.description +'</p></a></div>').appendTo("#control-sidebar-settings-tab");	
-    	});
-    }).fail(function(e){
-    	handleError('#global-alert', e);
-    }).always(function(){
-    });
-	
-	//Get Connection types
-	$.ajax({
-        type: "get",
-        url: restUri.connection.list,
-        data: { get_param: 'id,name' },
-        contentType: "application/json; charset=utf-8",
-        dataType: 'json'
-    }).done(function(data){
-    	$.each(data, function(i, connection) {
-    	    $("<option value='" + connection.id + "'>" + connection.name + "</option>").appendTo("#connectionType");
-    	});
-    }).fail(function(e){
-    	handleError('#global-alert', e);
-    }).always(function(){
-    	hideLoading();
-    });
-
 	// Get Server list
 	showLoading();
     $.ajax({
@@ -78,14 +31,20 @@ var buildDataModuleMenu = function(){
         	        success: function(data, textStatus, jqXHR) {
         			$.each(data, function(i, table) {
         	            var serverId = table.server.id;
-        			    $("<li><a href='" + restUri.table.list_for_server + "'><i class='fa fa-table'></i><span> " + table.name + " </span></a></li>").appendTo("#server" + serverId + " .treeview-menu");
+        			    $("<li><a href='" + dataModulePage + "' class='table-data' data-id='"+table.id+"'><i class='fa fa-table'></i><span> " + table.name + " </span></a></li>").appendTo("#server" + serverId + " .treeview-menu");
         			});        			
         	        },
         	        contentType: "application/json; charset=utf-8",
         	        dataType: 'json'
         	    }).fail(function(e){
         	    	handleError('#global-alert', e);
+        	    }).complete(function(e){
+        	    	$(".table-data").click(function(){
+        		    	var link = $(this);
+        		    	sessionStorage.setItem("tableId", link.data("id"));
+        		    });
         	    }).always(function(){
+        	    	
         	    	hideLoading();
         	    });
     		}
@@ -137,11 +96,65 @@ var buildDataModuleMenu = function(){
 			//	window.location.href = "tables";
     		//});
     	});
-    	
     }).fail(function(e){
     	handleError('#global-alert', e);
     }).always(function(){
     	hideLoading();
     });
-    
+}
+
+var loadAdminMenu = function(){
+	
+	//Get Admin Menu
+	$.ajax({
+        type: "get",
+        url: restUri.menu.app,
+        data: { get_param: 'data' },
+        contentType: "application/json; charset=utf-8",
+        dataType: 'json'
+    }).done(function(data){	
+    	$.each(data[0].children, function(i, menu) {
+    		$('<div class="form-group"><a class="btn btn-primary btn-block btn-sm" href="/gdma2'+ menu.view +'"><h3><i class="fa '+ menu.iconClass +'" aria-hidden="true"></i><br>'+ menu.name +'</h3><p>'+ menu.description +'</p></a></div>').appendTo("#control-sidebar-settings-tab");	
+    	});
+    }).fail(function(e){
+    	handleError('#global-alert', e);
+    }).always(function(){
+    });
+	
+	//Get Connection types
+	$.ajax({
+        type: "get",
+        url: restUri.connection.list,
+        data: { get_param: 'id,name' },
+        contentType: "application/json; charset=utf-8",
+        dataType: 'json'
+    }).done(function(data){
+    	$.each(data, function(i, connection) {
+    	    $("<option value='" + connection.id + "'>" + connection.name + "</option>").appendTo("#connectionType");
+    	});
+    }).fail(function(e){
+    	handleError('#global-alert', e);
+    }).always(function(){
+    	hideLoading();
+    });
+}
+
+var loadUserMenu = function(){
+	//Get User Menu
+	$.ajax({
+        type: "get",
+        url: restUri.menu.user,
+        data: { get_param: 'data' },
+        contentType: "application/json; charset=utf-8",
+        dataType: 'json'
+    }).done(function(data){	
+		$(".user-menu span").html(data[0].name);
+    	$.each(data[0].children, function(i, menu) {
+    		$('<li><a href="/gdma2'+ menu.view +'" class="btn btn-default btn-flat">'+ menu.name +'</a></li>').appendTo(".dropdown-menu-right");
+    	});
+
+    }).fail(function(e){
+    	handleError('#global-alert', e);
+    }).always(function(){
+    });
 }
