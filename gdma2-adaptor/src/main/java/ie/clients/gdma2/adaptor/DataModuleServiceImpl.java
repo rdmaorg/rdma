@@ -139,7 +139,14 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 	private UpdateDataRequest createDummyUpdateReq(){
 	
 		UpdateDataRequestDummy dummy = new UpdateDataRequestDummy();
-		UpdateDataRequest udr = dummy.createDummyUpdateRequestForAutoIncrementTable_new_table_test_autoincrement(6, 136);
+		
+		//UPDATE - no date
+		//UpdateDataRequest udr = dummy.createDummyUpdateRequestForAutoIncrementTable_new_table_test_autoincrement(6, 136);
+		
+		//upadte witj date
+		UpdateDataRequest udr = dummy.createDummyUpdateRequestForAutoIncrementTableWithDate_new_table_test_autoincrement(6, 136);
+		
+		
 		
 		logger.info("createDummyUpdateReq: ");
 		List<List<ColumnDataUpdate>> updates = udr.getUpdates();

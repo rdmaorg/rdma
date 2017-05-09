@@ -340,6 +340,151 @@ public class UpdateDataRequestDummy{
 
 	
 	
+	
+
+	/*
+	serverId=6
+	 tableId = 136  name 'new_table_test_autoincrement'
+	 user.username = 804427 has userAccess to tableId = 136
+
+	 LOCAL METADATA 
+	 
+  
+	 PRECONDITION 1: 
+	 	new column metadata added to local DB
+	 	RESYNCH URL: https://localhost/gdma2/rest/column/metadata/table/136?length=100
+	
+	PRECONDITION 2:
+	  special column type changed from 'N' to 'D' for 684 
+
+	SQL:
+	  select id, name, column_type_str, special,active, is_nullable, is_primary_key from column_gdma2 where table_id = 136;	 
+
+	 id	name	column_type_str	   special	active	is_nullable	is_primary_key
+	 ----------------------------------------------------------------------------
+	652	year			VARCHAR		N		true		true			false
+	654	id				INT			N		true		false			true
+	653	name			VARCHAR		U		true		true			false
+	684	employment_date	DATETIME	N		true		true			false		NEW COLUMN!
+	 
+	REMOTE Data
+	
+	BEFORE UPDATE:
+		654	  653   652    684
+		# id, name, year, employment_date
+		----------------------
+		1, abv, 1989, NULL
+		
+	->	2, 804427, 1991, NULL
+	->	3, 804427, 2009, NULL
+	
+		4, abv-new, NULL, NULL
+		5, 2020, NULL, NULL
+
+
+	AFTER UPDATE 
+		
+		654	    653	  652		684
+		# id, 	name, year, employment_date
+		----------------------------------
+		1, abv, 1989, NULL
+		
+	->	2, 804427, 1992, DATE_HERE!
+	->	3, 804427, 2010, DATE_HERE!
+	
+		4, abv-new, NULL, NULL
+		
+
+	 */
+	public static UpdateDataRequest createDummyUpdateRequestForAutoIncrementTableWithDate_new_table_test_autoincrement(Integer serverId, Integer tableId){
+		/*MYSQL table has autoincrement- this method will insert 2 rows in remote DB*/
+		logger.info("createDummyUpdateRequest" + "for serverId: "  + serverId + " and tableId: " + tableId);
+		logger.info("PK must be set!");
+		/*ROW 1*/
+		ArrayList<ColumnDataUpdate> row1 = new ArrayList<ColumnDataUpdate>();
+
+		/*column ID ROW1*/
+		ColumnDataUpdate col1Row1 = new ColumnDataUpdate();
+
+		col1Row1.setColumnId(654);
+		col1Row1.setOldColumnValue("2");
+		//col1Row1.setNewColumnValue("cdr_new");
+
+		/*column NAME row1*/
+		ColumnDataUpdate col2Row1 = new ColumnDataUpdate();
+		col2Row1.setColumnId(653);
+		col2Row1.setOldColumnValue("804427");
+		col2Row1.setNewColumnValue("804427"); //again created for the same user //OPEN Q
+
+		/*column year row1*/
+		ColumnDataUpdate col3Row1 = new ColumnDataUpdate();
+		col3Row1.setColumnId(652);
+		col3Row1.setOldColumnValue("1991");
+		col3Row1.setNewColumnValue("1992");
+		
+		ColumnDataUpdate col4Row1 = new ColumnDataUpdate();
+		col4Row1.setColumnId(684);
+		col4Row1.setOldColumnValue(null);
+		//col4Row1.setNewColumnValue(""); //set using DynamicDAO.handleSpecialColumns(), precondition is that special column is changed to 'D'
+		
+		row1.add(col1Row1);
+		row1.add(col2Row1);
+		row1.add(col3Row1);
+		row1.add(col4Row1);
+		
+		/*Row 2*/
+		ArrayList<ColumnDataUpdate> row2 = new ArrayList<ColumnDataUpdate>();
+
+		/*column ID Row2*/
+		ColumnDataUpdate col1Row2 = new ColumnDataUpdate();
+
+		col1Row2.setColumnId(654);
+		col1Row2.setOldColumnValue("3");
+		//col1Row2.setNewColumnValue("");
+
+		/*column NAME Row2*/
+		ColumnDataUpdate col2Row2 = new ColumnDataUpdate();
+		col2Row2.setColumnId(653);
+		col2Row2.setOldColumnValue("804427");
+		col2Row2.setNewColumnValue("804427"); //?
+
+		/*YEAR */
+		ColumnDataUpdate col3Row2 = new ColumnDataUpdate();
+		col3Row2.setColumnId(652);
+		col3Row2.setOldColumnValue("2009");
+		col3Row2.setNewColumnValue("2010");
+		
+		/*DATE*/
+		ColumnDataUpdate col4Row2 = new ColumnDataUpdate();
+		col4Row2.setColumnId(684);
+		col4Row2.setOldColumnValue(null);
+		//col4Row2.setNewColumnValue(""); //set using DynamicDAO.handleSpecialColumns(), precondition is that special column is changed to 'D'
+		
+		row2.add(col1Row2);
+		row2.add(col2Row2);
+		row2.add(col3Row2);
+		row2.add(col4Row2);
+
+		/*add rows to list*/
+		List<List<ColumnDataUpdate>> updateRows = new ArrayList(new ArrayList<ColumnDataUpdate>());
+
+		updateRows.add(row1);
+		updateRows.add(row2);
+
+		/*print created*/
+		print(updateRows);
+
+		/*create and return wrapper*/
+		UpdateDataRequest updateReq = new UpdateDataRequest();
+		updateReq.setServerId(serverId);
+		updateReq.setTableId(tableId);
+		updateReq.setUpdates(updateRows);
+
+		return updateReq;
+	}
+
+	
+	
 	private static void print(List<List<ColumnDataUpdate>> columns) {
 
 		int columnsSize = columns.size();
@@ -470,8 +615,10 @@ public class UpdateDataRequestDummy{
 		//UPDATE TEST
 		//UpdateDataRequestDummy.createDummyUpdateRequestForAutoIncrementTable_new_table_test_autoincrement(6, 136);
 		
+		//UPDATE TEST - with date
+		UpdateDataRequestDummy.createDummyUpdateRequestForAutoIncrementTableWithDate_new_table_test_autoincrement(6,136);
 		//DELETE TEST
-		UpdateDataRequestDummy.createDummyDeleteRecordsForAutoIncrementTable_new_table_test_autoincrement(6,136);
+		//UpdateDataRequestDummy.createDummyDeleteRecordsForAutoIncrementTable_new_table_test_autoincrement(6,136);
 	}
 
 

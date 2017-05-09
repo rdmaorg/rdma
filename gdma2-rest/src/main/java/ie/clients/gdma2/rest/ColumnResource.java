@@ -201,6 +201,7 @@ public class ColumnResource extends BaseDataTableResource{
 		serviceFacade.getDataModuleService().addRecord(tableId);
 	}
 	
+	/*	https://localhost/gdma2/rest/column/data/update/table/136 */
 	@RequestMapping("/data/update/table/{id}")
 	public int updateColumnData(@PathVariable("id") Integer tableId, @RequestParam Map<String,String> reqParams){
 		//TODO - change return type if we need to refresh and return latest data after update

@@ -5,6 +5,7 @@ import ie.clients.gdma2.domain.Column;
 import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.UserAccess;
+import ie.clients.gdma2.spi.interfaces.UserContextProvider;
 
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -39,6 +40,9 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 	@Autowired
 	protected RepositoryManager repositoryManager;
+
+	@Autowired
+	protected UserContextProvider userContextProvider;
 
 	@Autowired
 	private DataSourcePool dataSourcePool;
@@ -942,6 +946,11 @@ public class DynamicDAOImpl implements DynamicDAO{
 			return; //TODO 
 		}
 
+		//TODO check conditions : does column need to be active...
+		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(table.getId());
+		table.setColumns(new HashSet(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change this and pass colums to utility method themselves
+
+		
 		List<List<ColumnDataUpdate>> columnsUpdate = updateRequest.getUpdates();
 
 		DataSourceTransactionManager transactionManager = dataSourcePool.getTransactionManager(server);
@@ -1023,38 +1032,32 @@ public class DynamicDAOImpl implements DynamicDAO{
 	 */
 	@SuppressWarnings("unchecked")
 	private void handleSpecialColumns(Set<Column> metadataColumnSet, List<Column> columns, List parameters) {
-		logger.info("handleSpecialColumns");
+		logger.info("handleSpecialColumns, size " + metadataColumnSet.size());
 		for (Column metadataColumn : metadataColumnSet) {
+			logger.info("start iteration");//TODO REMOVE
+			logdetails(metadataColumn);//TODO REMOVE
+			
 			if (StringUtils.hasText(metadataColumn.getSpecial())) {
-
+				//USER
 				if ("U".equals(metadataColumn.getSpecial())) {
-					logger.info("special column is U");
-					String user = "";
-
-					//TODO logger.info("user: " + userContextProvider.getLoggedInUserName());
-					/*
-					SecurityContext securityContext = SecurityContextHolder.getContext();
-					Authentication authentication = securityContext.getAuthentication();
-
-					 */
-					if( 1==1 ){
-						/*
-						if (authentication != null && authentication.getPrincipal() instanceof User) {
-							user = ((User) authentication.getPrincipal()).getUserName();
-						 */
-					} else {
-						user = "UNKNOWN";
+					logger.info("special column 'U' detected");
+					String userName = userContextProvider.getLoggedInUserName();
+					logger.info("logged user: " + userName);
+					if(userName == null || userName.isEmpty()){
+						userName = "UNKNOWN"; //TODO ? how and when can this happen???
 					}
+
 					// first see if by error the column is already included
 					if (columns.contains(metadataColumn)) {
 						int index = columns.indexOf(metadataColumn);
-						parameters.set(index, SQLUtil.convertToType(user, metadataColumn.getColumnType()));
+						parameters.set(index, SQLUtil.convertToType(userName, metadataColumn.getColumnType()));
 					} else {
 						columns.add(metadataColumn);
-						parameters.add(SQLUtil.convertToType(user, metadataColumn.getColumnType()));
+						parameters.add(SQLUtil.convertToType(userName, metadataColumn.getColumnType()));
 					}
+				//DATE
 				} else if ("D".equals(metadataColumn.getSpecial())) {
-					logger.info("special column is D");
+					logger.info("special column 'D' detected");
 					// first see if by error the column is already included
 					if (columns.contains(metadataColumn)) {
 						int index = columns.indexOf(metadataColumn);
@@ -1067,10 +1070,15 @@ public class DynamicDAOImpl implements DynamicDAO{
 					}
 				}
 			}
-		}
+		}//for
 
 	}
 
+
+	private void logdetails(Column metadataColumn) {
+		logger.info("metadata, id: " + metadataColumn.getId() + " , name: " + metadataColumn.getName() +  " , special: " + 	metadataColumn.getSpecial());
+		
+	}
 
 	/**
 	 * Updates data in remote DB - one SQL UPDATE is executed on each row update 
@@ -1103,6 +1111,10 @@ public class DynamicDAOImpl implements DynamicDAO{
 			return -1; //TODO 
 		}
 
+		//TODO check conditions : does column need to be active...
+		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(table.getId());
+		table.setColumns(new HashSet(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change this and pass colums to utility method themselves
+		
 		List<List<ColumnDataUpdate>> columnsUpdate = updateRequest.getUpdates();
 
 		DataSourceTransactionManager transactionManager = dataSourcePool.getTransactionManager(server);
@@ -1135,26 +1147,26 @@ public class DynamicDAOImpl implements DynamicDAO{
 								//Column column = gdmaFacade.getColumnDao().get(columnUpdate.getColumnId());
 								Column column = repositoryManager.getColumnRepository().findOne(columnUpdate.getColumnId());
 								logger.info("2: local column found by id: " + column.getName());
-								
+
 								if (column.isPrimarykey()) {
 									logger.info("3: column IS PK! Getting old value from request and type from metadata");
 									columns.add(column);
 									keys.add(SQLUtil.convertToType(columnUpdate.getOldColumnValue(), column.getColumnType()));
 								} else {
 									logger.info("3: column is NOT PK!");
-									
+
 									if (columnUpdate.getNewColumnValue() != null) {
 										logger.info("4: column, not PK, has NEW value set (but can be null?)");
 										columns.add(column);
 										Object obj = SQLUtil.convertToType(columnUpdate.getNewColumnValue(), column.getColumnType());
-										
+
 										if (obj == null && !column.isNullable()) {
 											throw new InvalidDataAccessResourceUsageException(
 													"Column " + column.getName() + " can not be set to null and must have a value");
 										}
-										
+
 										parameters.add(obj);
-										
+
 										if (obj == null){
 											logger.info("obj of data type is null - problem with data type conversion?");
 										} else {
@@ -1246,7 +1258,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 					List<Column> columns = new ArrayList<Column>();
 					final List keys = new ArrayList();
-					
+
 					if (CollectionUtils.isEmpty(list)) {
 						throw new InvalidDataAccessResourceUsageException("Cannot delete records as this table does not have a primary key set");
 					}
@@ -1265,12 +1277,12 @@ public class DynamicDAOImpl implements DynamicDAO{
 					final String sql = SQLUtil.createDeleteStatement(server, table, columns);
 					logger.info("Delete SQL used: " + sql);
 					logger.info("Keys-values used : " + keys);
-					
+
 					/*	
 					 	DELETE FROM new_table_test_autoincrement WHERE  (id = ?) 
  						DELETE FROM new_table_test_autoincrement WHERE  (id = ?) 
 					 */
-					
+
 					JdbcTemplate jdbcTemplate = new JdbcTemplate(transactionManager.getDataSource());
 					countDeleted += jdbcTemplate.update(sql, keys.toArray());
 
