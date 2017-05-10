@@ -29,7 +29,6 @@ var configureUserAccessDatatable = function() {
 				},
 				{
 					"data" : "user.firstName",
-					"orderable" : false,
 					"defaultContent" : ""
 				},{
 					"data" : "fullAccess",

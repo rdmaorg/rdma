@@ -1,6 +1,8 @@
 var serverSessionId = sessionStorage.getItem("id");
 var serverSessionName = sessionStorage.getItem("name");
 var selectedTableId = -1;
+var table;
+var tableEdit;
 var configureDataTable = function(){
 	
 	var config={
@@ -23,7 +25,7 @@ var configureDataTable = function(){
 			            },			            
 			            { "data": "name","render" : function(data, type, row){ 
 			            	var disabled = row.active ? '': ' disabled';
-			            	return '<button class="btn btn-primary btn-xs editTable" data-tableid="'+ row.id+ '" data-tablename="'+ row.name +'"'+ disabled +'><i class="fa fa-pencil-square-o"></i> Edit Table</button>'
+			            	return '<button class="btn btn-primary btn-xs editTable" data-tableid="'+ row.id+ '" data-tablename="'+ row.name +'"'+ disabled +'><i class="fa fa-pencil-square-o"></i> Edit Alias</button>'
 			            	+ '&nbsp;'
 			            	+ '<button class="btn btn-primary btn-xs editAccess" data-tableid="'+ row.id+ '" data-tablename="'+ row.name +'"'+ disabled +'><i class="fa fa-pencil-square-o"></i> Edit Access</button>'
 			            	+ '&nbsp;'
@@ -33,13 +35,13 @@ var configureDataTable = function(){
 			        ]
 	};
 	
-	$('#tbl_tables').configureDataTable(config, {
+	table = $('#tbl_tables').configureDataTable(config, {
 		url: mapPathVariablesInUrl(restUri.table.table, {id: serverSessionId}),
 		complete: function(){
 //		hideLoading();
 			associateEditAcces();
-			associateViewTable();
-			//associateEditTable();
+			associateViewColumns();
+			associateEditTable();
 		}
 	});
 };
@@ -56,55 +58,34 @@ var associateEditAcces = function(){
 	
 }
 
-/*//Edit table
+//Edit table
 var associateEditTable = function(){
 	$('.editTable').click(function(){
 		var btn = $(this);
-		editServer(btn.data('tableid'));
+		tableEdit = table.row($(this).closest('tr')[0]).data();
+		$("#modalTable").find('form').trigger('reset');
+		$("#tableNameModal").val(tableEdit.name);
+		$("#alias").val(tableEdit.alias);
+		$('#modalTable').modal('show');
 	})
 };
 
-var editTable = function(tableId) {	
-	showLoading();
-	serverSessionId = serverId;
-	$.ajax({
-        type: "get",
-        url: mapPathVariablesInUrl(restUri.table.table,{id: serverId}),
-        data: { get_param: 'id,alias' },
-        contentType: "application/json; charset=utf-8",
-        dataType: 'json'
-    }).done(function(data){
-    	var validator = $( "#newTable" ).validate();
-    	validator.destroy();
-		$("#alias").val(data.name);
-		$('#modalServer').modal('show');
-		$("#modalServer").on('shown.bs.modal', function () {
-            $("#alias").focus();
-		});
-		associatePostTable();
-    }).fail(function(e){
-    	handleError('#global-alert', e);
-    }).always(function(){
-    	hideLoading();
-    });		 
-}
-
 //Post table
 var associatePostTable = function(){	
-	var form = $("#newTable");
+	var form = $("#editAlias");
 	form.validate();
 	$('#Save-table').click(function(e){		
 		if (form.valid()) {
 			$(this).confirmation({
 				placement: "left",
-				btnOkLabel: "Save Server",
+				btnOkLabel: "Save Table Alias",
 				onConfirm : function(event, element) {			
 					showLoading();
-					var aliasname = $("#alias").val();
+					tableEdit.alias = $("#alias").val();
 					$.ajax({
 				        type: "post",
 				        url: restUri.table.save,
-				        data: JSON.stringify({id:savedServerID,alias:aliasname,}),
+				        data: JSON.stringify(tableEdit),
 				        contentType: "application/json; charset=utf-8"
 				    }).done(function(data){
 				    	var table = $('#tbl_tables').DataTable();
@@ -128,10 +109,10 @@ var associatePostTable = function(){
 		}
 		e.preventDefault();
 	});
-};*/
+};
 
 //View table columns
-var associateViewTable = function(){
+var associateViewColumns = function(){
 	$('.viewColumns').click(function(){
  		var btn = $(this);
  		syncColumns(btn.data('tableid'));
@@ -160,7 +141,14 @@ var viewTable = function(serverId,tableName) {
 
 $(document).ready(function(){
 	configureDataTable();	
+	associatePostTable();
 
     $("#serverName").html(serverSessionName);
+    
+    
+    $("#modalTable").on('hide.bs.modal', function() {
+    	var validator = $( "#editAlias" ).validate();
+    	validator.destroy();
+    })
 	
 });

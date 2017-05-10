@@ -40,7 +40,7 @@ var populateSelectServer = function(){
     	$("#select-server").empty();
     	$('<option value=""></option>').appendTo("#select-server");
     	$.each(data, function(i, server) {
-    	    $("<option value='" + server.id + "'>" + server.name + "</option>").appendTo("#select-server");
+    	    $("<option value='" + server.id + "'>" + server.alias + "</option>").appendTo("#select-server");
     	});
     	if(selectedDropDownDisplay !== null){
     		$("#select-server").val(selectedDropDownDisplay.table.server.id);
@@ -73,8 +73,8 @@ var populateSelectTable = function(serverId){
     }).done(function(data){
     	$("#select-table").empty();
     	$('<option value=""></option>').appendTo("#select-table");
-    	$.each(data, function(i, server) {
-    	    $("<option value='" + server.id + "'>" + server.name + "</option>").appendTo("#select-table");
+    	$.each(data, function(i, table) {
+    	    $("<option value='" + table.id + "'>" + server.alias + "</option>").appendTo("#select-table");
     	});
     	$('#table-control').show();
     	if(selectedDropDownDisplay !== null){
