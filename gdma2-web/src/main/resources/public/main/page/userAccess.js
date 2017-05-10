@@ -286,6 +286,7 @@ var associateSaveUserAccess = function() {
 				placement : "right",
 				title : "Discard unsaved changes?",
 				btnOkLabel : "Yes",
+				btnOkClass : "btn btn-sm btn-danger",
 				onConfirm : function(event, element) {
 					$('#modalUserAccess').modal('hide');
 				}
