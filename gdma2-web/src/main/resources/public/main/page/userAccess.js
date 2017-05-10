@@ -218,8 +218,6 @@ var verifyFullAccess = function(id){
 var verifyDisplayAccess = function(id){
 	if($("#"+id+"allowU")[0].checked ||	$("#"+id+"allowI")[0].checked || $("#"+id+"allowDel")[0].checked){
 		$("#"+id+"allowD").prop( "checked", true );
-	} else {
-		$("#"+id+"allowD").prop( "checked", false );
 	}
 }
 
@@ -282,7 +280,7 @@ var associateSaveUserAccess = function() {
 		$(this).confirmation('show');
 		e.preventDefault();
 	});
-	$("#modal-close").click(function(e) {
+	$("#modal-close-access").click(function(e) {
 		if(!jQuery.isEmptyObject(changedCheckboxes)){
 			$(this).confirmation({
 				placement : "right",

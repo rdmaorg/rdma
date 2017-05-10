@@ -4,13 +4,12 @@ var configureDataTable = function(){
 	var config={
 			order: [[ 1, "asc" ]],
 			"lengthMenu": [ [10, 25, 50, 100], [10, 25, 50, 100] ],
-			"columnDefs": [ { className: "text-center", "targets": [7,8] },
-			                { "orderable": false, "targets": 8 } ],
+			"columnDefs": [ { className: "text-center", "targets": [6,7] },
+			                { "orderable": false, "targets": 7 } ],
 			"columns": [
 			            { "data": "id" },
 			            { "data": "name" },
 			            { "data": "username" },
-			            { "data": "password" },
 			            { "data": "connectionUrl" },
 			            { "data": "connectionType.name", "defaultContent": "" },
 			            { "data": "prefix" },
