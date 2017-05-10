@@ -104,6 +104,11 @@
     opacity: 0.5;
 }
 
+.editTable {
+	background-color: #3cbcb1;
+    border-color: #309990;
+}
+
 table thead tr {
     background: rgba(60, 141, 188, 1);
     color: #fff;
