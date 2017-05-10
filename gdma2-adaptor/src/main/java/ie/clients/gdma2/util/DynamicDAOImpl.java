@@ -1082,6 +1082,9 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 	/**
 	 * Updates data in remote DB - one SQL UPDATE is executed on each row update 
+	 * 
+	 * Update SQL query: UPDATE new_table_test_autoincrement SET name = ?, year = ? WHERE  (id = ?) 
+	 * 
 	 * Execution rules: 
 	 *  - server and table must exists before update starts
 	 *  - info carrier ColumnDataUpdate needs to have at least 1 entry

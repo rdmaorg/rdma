@@ -55,7 +55,7 @@ public class ResultSetExtractorColumns implements ResultSetExtractor<Set<Column>
 		
 		logger.info("readColumnMetaData");
 		//String columnLabel = metaData.getColumnLabel(i);
-		//boolean autoIncrement = metaData.isAutoIncrement(i);
+		boolean autoIncrement = metaData.isAutoIncrement(i);
 		
 		//the nullability status of the given column; one of columnNoNulls, columnNullable or columnNullableUnknown
 		//int nullable = metaData.isNullable(i);

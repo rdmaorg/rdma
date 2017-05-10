@@ -6,6 +6,7 @@ import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.spi.interfaces.DataModuleService;
 import ie.clients.gdma2.util.ColumnDataUpdate;
+import ie.clients.gdma2.util.EntityUtils;
 import ie.clients.gdma2.util.UpdateDataRequest;
 import ie.clients.gdma2.util.UpdateDataRequestDummy;
 
@@ -31,6 +32,7 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 		logger.info("getActiveServers" );
 		logger.info("user: " + userContextProvider.getLoggedInUserName());
 		List<Server> servers = repositoryManager.getServerRepository().activeServersWithActiveTablesForUser(userContextProvider.getLoggedInUserName());
+		EntityUtils.emptyPasswordForServers(servers);
 		return servers;
 	}
 

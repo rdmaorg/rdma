@@ -77,7 +77,7 @@ public class ServerResource extends BaseDataTableResource {
 
 	@RequestMapping(value="save", method = RequestMethod.POST)
 	public void saveServer(@RequestBody Server server){
-		logger.debug("saveServer " + server.getName() );
+		logger.info("saveServer " + server.getName() );
 		serviceFacade.getMetadataService().saveServer(server);
 	}
 

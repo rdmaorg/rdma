@@ -83,13 +83,16 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	/*Server section*/
 	@Override
 	public List<Server> getAllServers() {
-		return IteratorUtils.toList(repositoryManager.getServerRepository().findAll().iterator());
+		List<Server> servers = IteratorUtils.toList(repositoryManager.getServerRepository().findAll().iterator());
+		EntityUtils.emptyPasswordForServers(servers);
+		return servers;
 	}
 
 
 	@Override
 	public PaginatedTableResponse<Server> getServers(String matching, String orderBy, String orderDirection,
 			int startIndex, int length) {
+		logger.info("getServers");
 		List<Server> servers = null;
 		long total = 0;
 		long filtered = 0;
@@ -110,16 +113,56 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 					getPagingRequest(orderBy, orderDirection, startIndex, length, total));
 
 		}
-
+		EntityUtils.emptyPasswordForServers(servers);
+		
 		logger.debug("Search Servers:: Search: " + matching + ", Total: " + total + ", Filtered: " + filtered
 				+ ", Result Count: " + servers.size());
 
 		return getPaginatedTableResponse(servers != null ? servers : new ArrayList<Server>(), total, filtered);
 	}
 
+
+	/**
+	 * a) on initial server creation
+	 * 		/rest/server/save
+	 *  - Modal is opened and password field is empty and mandatory. 
+	 * User enters password value and submits modal.
+	 * if SAVING simply save all values to DB with password value.
+	 *   
+	 * b) reading initially saved Server with password value: 
+	 *    /rest/server/{id}
+	 *   in server list - password column is removed and will not be displayed but if user needs to update password,
+	 *    but when [Edit] is clicked and Modal is opened - password field is present. 
+	 *   Backend will read value from DB but will mask password (********) and send this value to UI so user knows that value exists
+	 *   
+	 *   Now when Admin, changes value in Modal and Submits - UPDATE server request is sent 
+	 *    - if it still contains masked password - do now update, use old pass
+	 *      else take new value and update password 
+	
+	 */
 	@Transactional
 	@Override
 	public void saveServer(Server server) {
+		logger.info("saving/update server");
+		int serverId = server.getId(); 
+		logger.info("serverId: " +  serverId);
+		//check if user is INSERT/UPDATE (-1 is for INSERT)
+		//INSERT
+		if(serverId < 0 ){
+			logger.info("INSERT new server");
+		} else {
+			//UPDATE
+			logger.info("UPDATE existing server");
+			Server serverBeforeUpdate = repositoryManager.getServerRepository().findOne(serverId);
+			if(EntityUtils.PASSWORD_MASK.equals(server.getPassword())){
+				logger.info("no change - keep all password");
+				//do not save masked value, keep the same old pass
+				server.setPassword(serverBeforeUpdate.getPassword());
+				//else just save new updated pass value  
+			} else{
+				logger.info("password is changed and will be udpated");
+			}
+		}				
 		repositoryManager.getServerRepository().save(server);
 	}
 
@@ -141,7 +184,8 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 	@Override
 	public Server findOne(Integer serverId) {
-		return repositoryManager.getServerRepository().findOne(serverId);
+		Server server = repositoryManager.getServerRepository().findOne(serverId);
+		return  EntityUtils.emptyServerPassword(server);
 	}
 
 	@Override
@@ -263,6 +307,8 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		return user; 
 	}
 
+
+
 	@Override
 	public List<User> getAllUsers() {
 		List<User> users =  IteratorUtils.toList(repositoryManager.getUserRepository().findAll().iterator());
@@ -278,7 +324,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	@Override
 	public PaginatedTableResponse<User> getUsers(String matching,
 			String orderBy, String orderDirection, int startIndex, int length) {
-		
+
 		logger.info("*** getUsers()");
 		List<User> users = null;
 		long total = 0;
@@ -442,7 +488,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	}
 
 
-	
+
 	@Transactional
 	@Override
 	public void deleteColumn(int id) {

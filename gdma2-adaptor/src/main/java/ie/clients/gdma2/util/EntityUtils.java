@@ -1,17 +1,22 @@
 package ie.clients.gdma2.util;
 
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import ie.clients.gdma2.domain.Column;
+import ie.clients.gdma2.domain.Server;
 
 public class EntityUtils {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(EntityUtils.class);
+	public static final String PASSWORD_MASK = "********";
 
 	public static void applyColumnRules(Column column) {
 		logger.info("applyRules for column:" + column.getName());
-		
+
 		if (column.isPrimarykey()) {
 			column.setDisplayed(true);
 			column.setAllowUpdate(false);
@@ -51,6 +56,28 @@ public class EntityUtils {
 			}
 		}
 
+	}
+
+	/*server password should not be send via JSON response - mask them and display them in UI masked */
+	public static void emptyPasswordForServers(List<Server> servers) {
+		logger.info("emptyPasswordForServers");
+		if( servers != null && !servers.isEmpty()){
+			for(Server s: servers){
+				emptyServerPassword(s);
+			}
+		}
+	}
+
+	public static Server emptyServerPassword(Server server){
+		logger.info("emptyServerPassword, serverId: " + server.getId());
+		if(server != null) {
+			if(StringUtils.isNotBlank(server.getPassword())){
+				server.setPassword(PASSWORD_MASK);
+			} else{
+				logger.info("password is blank - no masking");
+			}
+		}
+		return server; 
 	}
 
 }
