@@ -232,8 +232,6 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			logger.debug("Total active tables, no search:" + total);
 			filtered = total;
 
-			logger.debug("findALL...getPagingRequest():");
-
 			tables = repositoryManager.getTableRepository().getActivePagableTables(serverId,
 					getPagingRequest(orderBy, orderDirection, startIndex, length, total));
 
@@ -247,11 +245,9 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 					match,serverId,
 					getPagingRequest(orderBy, orderDirection, startIndex, length, total));
 
-			logger.debug("tables found: " + tables.size());
-
 		}
 
-		logger.debug("Search Tables: Search: " + matching + ", Total: " + total + ", Filtered: " + filtered	+ ", Result Table Count: " + tables.size());
+		logger.info("Search Tables: Search: " + matching + ", Total: " + total + ", Filtered: " + filtered	+ ", Result Table Count: " + tables.size());
 
 		return getPaginatedTableResponse(tables != null ? tables : new ArrayList<Table>(), total, filtered);	
 	}

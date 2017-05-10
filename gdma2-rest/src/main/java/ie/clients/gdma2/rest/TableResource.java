@@ -58,14 +58,11 @@ public class TableResource extends BaseDataTableResource{
 		case 1: //by name
 			orderByColumn = "name";
 			break;
-		case 2: //by active
-			orderByColumn = "active";
-			break;
-		case 3: 
-			orderByColumn = "server.name";
-			break;
-		case 4:
+		case 2: //by alias
 			orderByColumn = "alias";
+			break;
+		case 3:  //by active
+			orderByColumn = "active";
 			break;
 		}
 
