@@ -197,9 +197,12 @@ table.table-condensed {
     color: rgba(255,255,255,0.5);
     background: rgba(60, 141, 188, 1);
     height: 21px;
-    line-height: 20px;
+    line-height: 17px;
     padding: 0 5px;
     cursor: pointer;
+    border: 2px solid rgba(255, 255, 255, .3);
+    border-right-color: rgba(0, 0, 0, .3);
+    border-bottom-color: rgba(0, 0, 0, .3);
 }
 
 .input-edit input {
