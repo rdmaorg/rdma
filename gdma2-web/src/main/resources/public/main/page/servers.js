@@ -149,7 +149,7 @@ var associatePostServer = function(){
 					var url = $("#url").val();
 					var connectionType = $("#connectionType").val();
 					var prefix = $("#prefix").val();
-					var active = $("#active").val();
+					var active = $("#active").bootstrapSwitch('state');
 					$.ajax({
 				        type: "post",
 				        url: restUri.server.save,
