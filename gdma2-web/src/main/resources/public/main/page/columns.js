@@ -303,8 +303,9 @@ var cancelColumnsEdition = function(){
 	$("#cancel-columns").click(function(e) {
 		$(this).confirmation({
 			placement : "left",
-			title: "Are you sure you wish to cancel the changes?",
+			title: "Discard unsaved changes?",
 			btnOkLabel : "Yes",
+			btnOkClass : "btn btn-sm btn-danger",
 			onConfirm : function(event, element) {
 				showLoading();
 				changedColumns = new Object();
