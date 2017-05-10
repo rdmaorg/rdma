@@ -583,28 +583,27 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		//TODO if(null == table)
 		if(StringUtils.isBlank(matching)){
 			total = repositoryManager.getUserAccessRepository().countUserAccessForTable(table.getId());
-			logger.debug("Total count UserAccess for tableId:" + tableId  + ", no search:" + total);
+			logger.info("Total count UserAccess for tableId:" + tableId  + ", no search:" + total);
 			filtered = total;
-			logger.debug("findALL...getPagingRequest():");
 			PageRequest pagingRequest = getPagingRequest(orderBy, orderDirection, startIndex, length, total);
-
 			userAccessListForTable  = repositoryManager.getUserAccessRepository().findPaginatedUserAccessByTable(tableId, pagingRequest);
-			logger.debug("userAccess entries found: " + (null != userAccessListForTable ? userAccessListForTable.size() : "0"));
+			logger.info("userAccess entries found: " + (null != userAccessListForTable ? userAccessListForTable.size() : "0"));
 		} else {
 			String match = "%" + matching.trim().toUpperCase() + "%";
 			total = repositoryManager.getUserAccessRepository().countUserAccessForTable(table.getId());
-			logger.debug("Total count UserAccess for table, with search:" + total);
-			filtered = repositoryManager.getUserAccessRepository().getCountMatching(match);
+			logger.info("Total count UserAccess for table, with search:" + total);
+			filtered = repositoryManager.getUserAccessRepository().getCountMatchingByTable(match, tableId);
+			logger.info("filtered: " + filtered);
 			PageRequest pagingRequest = getPagingRequest(orderBy, orderDirection, startIndex, length, total);
-			userAccessListForTable =  repositoryManager.getUserAccessRepository().getMatchingUserAccesses(match, tableId,pagingRequest);
+			userAccessListForTable =  repositoryManager.getUserAccessRepository().getMatchingUserAccessesByTable(match, tableId,pagingRequest);
 
 		}
 
-		logger.debug("Search UserAccess: Search: " + matching + ", Total: " + total + ", Filtered: " + filtered
+		logger.info("Search UserAccess: Search: " + matching + ", Total: " + total + ", Filtered: " + filtered
 				+ ", Result Count: " + ((userAccessListForTable != null) ? userAccessListForTable.size() : "0"));
 
 		return getPaginatedTableResponse(userAccessListForTable, total, filtered);
-
+		
 
 	}
 

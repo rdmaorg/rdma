@@ -42,9 +42,11 @@ public class UserAccessResource extends BaseDataTableResource {
 		case 1:
 			orderByColumn = "user.userName";
 			break;
+		case 2: 
+			orderByColumn = "user.firstName";	
 		}
 		
-		logger.debug("orderBy column: " + orderByColumn) ;
+		logger.info("orderBy column: " + orderByColumn) ;
 		
 		PaginatedTableResponse<UserAccess> resp = serviceFacade.getMetadataService().getUserAccessForTable(
 				tableId,
