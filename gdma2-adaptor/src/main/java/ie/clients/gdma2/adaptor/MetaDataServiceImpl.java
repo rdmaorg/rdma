@@ -502,12 +502,10 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	@Override
 	public PaginatedTableResponse<Column> getActiveLocalColumnsForTable(
 			Integer tableId, String matching, String orderBy, String orderDirection,int startIndex, int length) {
-		logger.info("getActiveSynchedColumnsForTable : " + tableId);
+		logger.info("getActiveLocalColumnsForTable : " + tableId);
 
 		//synch tables first
 		//synhronizeColumnsForTable(tableId); IS NOW PERFORMED SEPARATELLY
-
-		logger.debug("...get ACTIVE Synched Columns now");
 
 		Table table = null;
 		List<Column> columns = null;
@@ -519,25 +517,23 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 		if(StringUtils.isBlank(matching)){
 			total = repositoryManager.getColumnRepository().countActiveForTable(table.getId());
-			logger.debug("Total Active columns for table, no search:" + total);
+			logger.info("Total Active columns for table, no search:" + total);
 			filtered = total;
-
-			logger.debug("find all Active columns by table:");
 			PageRequest pagingRequest = getPagingRequest(orderBy, orderDirection, startIndex, length, total);
 			columns = repositoryManager.getColumnRepository().findActiveforTable(table.getId(), pagingRequest);
-			logger.debug("columns found: " + (null != columns ? columns.size() : "0"));
+			logger.info("columns found: " + (null != columns ? columns.size() : "0"));
 		} else {
 			String match = "%" + matching.trim().toUpperCase() + "%";
-			logger.debug("searching for: " +  match);
+			logger.info("searching for: " +  match);
 			total = repositoryManager.getColumnRepository().countActiveForTable(table.getId());
-			logger.debug("Total active count columns for table, with search:" + total);
+			logger.info("Total active count columns for table, with search:" + total);
 			filtered = repositoryManager.getColumnRepository().countActiveAndMatchingForTable(match, table.getId());
-			logger.debug("filtered : " + filtered + ", for match: " + match);
+			logger.info("filtered : " + filtered + ", for match: " + match);
 			PageRequest pagingRequest = getPagingRequest(orderBy, orderDirection, startIndex, length, total);
 			columns = repositoryManager.getColumnRepository().findActiveAndMatchingforTable(match, table.getId(), pagingRequest);
 		}
 
-		logger.debug("Search Columns: Search: " + matching + ", Total: " + total + ", Filtered: " + filtered
+		logger.info("Search Columns: Search: " + matching + ", Total: " + total + ", Filtered: " + filtered
 				+ ", Result Count: " + ((columns != null) ? columns.size() : "0"));
 
 		return getPaginatedTableResponse(columns != null ? columns : new ArrayList<Column>(), total, filtered);

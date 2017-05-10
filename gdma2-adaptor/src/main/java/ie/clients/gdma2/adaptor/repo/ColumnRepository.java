@@ -12,22 +12,6 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 public interface ColumnRepository extends PagingAndSortingRepository<Column, Integer>{
 
-	/*
-	ColumnDao
-    public Column get(Long id); //used is DynamicDAO for addRecord, deleteRecords,get(paginatedRequest), updateRecords() and loading dropdowns
-								//Inherited by CRUD : 				T findOne(ID id)		Retrieves an entity by its id. 
-	
-	public Column save(Column column);  //
-										//Inherited by CRUD:		public abstract <S extends T> S save(S paramS);
-	
-	public void save(List<Column> columns); //	used in GdmaAdmin.saveColumns
-	 										//TODO : BEFORE SAVING : applyRules(column) needs tobe IMPLEMENTED
-											//Inherited by CRUD:		<S extends T> Iterable<S> save(Iterable<S> entities)
-	*/
-	
-	
-	
-	
 	
 	/*find all columns for table*/
 	public Set<Column> findByTableId(int tableId);
@@ -62,14 +46,14 @@ public interface ColumnRepository extends PagingAndSortingRepository<Column, Int
 	/* count Active and Matching columns for table : Admin module - after synch*/
 	@Query("select count(c) from Column c where "
 			+ " c.active = true "
-			+ " and ( upper(c.name) like ?1 or upper(c.special) like ?1 or upper(c.alias) like ?1 )"
+			+ " and ( upper(c.name) like ?1 or upper(c.special) like ?1 or upper(c.alias) like ?1 or upper(c.columnTypeString) like ?1 )"
 			+ " and c.table.id = ?2")
 	public long countActiveAndMatchingForTable(String matching, Integer tableId);
 	
 	/* All Active and Matching columns for table : Admin module - after synch*/
 	@Query("select c from Column c where "
 			+ " c.active = true "
-			+ " and (upper(c.name) like ?1 or upper(c.special) like ?1 or upper(c.alias) like ?1 ) "
+			+ " and ( upper(c.name) like ?1 or upper(c.special) like ?1 or upper(c.alias) like ?1 or upper(c.columnTypeString) like ?1 ) "
 			+ " and c.table.id = ?2")
 	public List<Column> findActiveAndMatchingforTable(String matching, Integer tableId, Pageable pageable);
 	
