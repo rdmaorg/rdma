@@ -152,7 +152,7 @@ var associatePostServer = function(){
 					$.ajax({
 				        type: "post",
 				        url: restUri.server.save,
-				        data: JSON.stringify({id:savedServerID,name:name,username:username,password:password,connectionUrl:url,prefix:prefix,active:active,alias:"","connectionType":{"id":connectionType},"tables":[],"connected":false,"lastError":""}),
+				        data: JSON.stringify({id:savedServerID,name:name,username:username,password:password,connectionUrl:url,prefix:prefix,active:active,"connectionType":{"id":connectionType},"tables":[],"connected":false,"lastError":""}),
 				        contentType: "application/json; charset=utf-8"
 				    }).done(function(data){
 				    	var table = $('#tbl_server').DataTable();
