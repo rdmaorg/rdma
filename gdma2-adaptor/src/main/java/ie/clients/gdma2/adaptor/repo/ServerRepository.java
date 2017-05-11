@@ -17,11 +17,11 @@ public interface ServerRepository extends PagingAndSortingRepository<Server, Int
 	public List<Server> findActiveServers();
 	
 	@Query("select count(s) from Server s where upper(s.name) like ?1 or upper(s.username) like ?1 "
-			+ " or upper(s.connectionUrl) like ?1 or upper(s.connectionType.name) like ?1 or upper(s.prefix) like ?1 or upper(s.alias) like ?1")
+			+ " or upper(s.connectionUrl) like ?1 or upper(s.connectionType.name) like ?1 or upper(s.prefix) like ?1 ")
 	public long getCountMatching(String matching);
 
 	@Query("select s from Server s where upper(s.name) like ?1 or upper(s.username) like ?1"
-			+ " or upper(s.connectionUrl) like ?1 or upper(s.connectionType.name) like ?1 or upper(s.prefix) like ?1 or upper(s.alias) like ?1")
+			+ " or upper(s.connectionUrl) like ?1 or upper(s.connectionType.name) like ?1 or upper(s.prefix) like ?1 ")
 	public List<Server> getMatchingServers(String matching, Pageable pageable);
 
 	

@@ -64,9 +64,6 @@ public class ServerResource extends BaseDataTableResource {
 		case 6:// by active
 			orderByColumn = "active";
 			break;
-		case 7:// by alias
-			orderByColumn = "alias";
-			break;
 		}
 
 		logger.debug("orderByColumn: " + orderByColumn);
