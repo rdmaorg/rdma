@@ -74,7 +74,7 @@ var populateSelectTable = function(serverId){
     	$("#select-table").empty();
     	$('<option value=""></option>').appendTo("#select-table");
     	$.each(data, function(i, table) {
-    	    $("<option value='" + table.id + "'>" + server.alias + "</option>").appendTo("#select-table");
+    	    $("<option value='" + table.id + "'>" + table.alias + "</option>").appendTo("#select-table");
     	});
     	$('#table-control').show();
     	if(selectedDropDownDisplay !== null){
@@ -115,8 +115,8 @@ var populateColumnsSelectors = function(tableId){
     	$('<option value=""></option>').appendTo("#select_col_store");
     	$.each(data, function(i, column) {
     		columns[column.id] = column;
-    	    $("<option value='" + column.id + "'>" + column.name + "</option>").appendTo("#select_col_display");
-    	    $("<option value='" + column.id + "'>" + column.name + "</option>").appendTo("#select_col_store");
+    	    $("<option value='" + column.id + "'>" + column.alias + "</option>").appendTo("#select_col_display");
+    	    $("<option value='" + column.id + "'>" + column.alias + "</option>").appendTo("#select_col_store");
     	});
     	$('#columns-control').show();
     	if(selectedDropDownDisplay !== null){
