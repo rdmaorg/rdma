@@ -10,7 +10,6 @@ import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 import ie.clients.gdma2.spi.interfaces.MetaDataService;
 import ie.clients.gdma2.util.EntityUtils;
 import ie.clients.gdma2.util.HashUtil;
-import ie.clients.gdma2.util.SQLUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -161,7 +160,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			logger.info("UPDATE existing server");
 			Server serverBeforeUpdate = repositoryManager.getServerRepository().findOne(serverId);
 			if(EntityUtils.PASSWORD_MASK.equals(server.getPassword())){
-				logger.info("no change - keep all password");
+				logger.info("no change - keep old password");
 				//do not save masked value, keep the same old pass
 				server.setPassword(serverBeforeUpdate.getPassword());
 				//else just save new updated pass value  
@@ -193,7 +192,8 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	@Override
 	public Server findOne(Integer serverId) {
 		Server server = repositoryManager.getServerRepository().findOne(serverId);
-		return  EntityUtils.emptyServerPassword(server);
+		EntityUtils.emptyServerPassword(server);
+		return server;
 	}
 
 	@Override
@@ -290,39 +290,21 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	}
 
 
-	/*USER*/
-
-	//Emptying the passwords
-	private List<User> emptyPasswords(List<User> users){
-		if( users != null && !users.isEmpty()){
-			for(User u: users){
-				logger.debug("emptyPasswords executed");
-				u.setPassword("");
-			}
-		}
-		return users; 
-	}
-
-	private User emptyPassword(User user){
-		if( user != null) {
-			logger.debug("emptyPassword executed");
-			user.setPassword("");
-		}
-		return user; 
-	}
-
+	/*USER section*/
 
 
 	@Override
 	public List<User> getAllUsers() {
 		List<User> users =  IteratorUtils.toList(repositoryManager.getUserRepository().findAll().iterator());
-		return emptyPasswords(users);
+		EntityUtils.emptyPasswordsForUsers(users);
+		return users;
 	}
 
 	@Override
 	public List<User> getAllActiveUsers() {
 		List<User> users =  repositoryManager.getUserRepository().findByActiveTrue();
-		return emptyPasswords(users);
+		EntityUtils.emptyPasswordsForUsers(users);
+		return users;
 	}
 
 	@Override
@@ -350,7 +332,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			users = repositoryManager.getUserRepository().getMatchingUsers(match, pagingRequest);
 		}
 		//Emptying the password
-		emptyPasswords(users);
+		EntityUtils.emptyPasswordsForUsers(users);
 
 		logger.info("Search Users: Search: " + matching + ", Total: " + total + ", Filtered: " + filtered
 				+ ", Result Count: " + users.size());
@@ -363,9 +345,16 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	@Override
 	public List<User> findByUserNameIgnoreCase(String userName) {
 		List<User> users = IteratorUtils.toList(repositoryManager.getUserRepository().findByUserNameIgnoreCase(userName).iterator());
-		return emptyPasswords(users);
+		EntityUtils.emptyPasswordsForUsers(users);
+		return users;
 	}
 
+	@Override
+	public User findOneUser(int id) {
+		User user = repositoryManager.getUserRepository().findOne(id);
+		EntityUtils.emptyUserPassword(user);
+		return user;
+	}
 
 	/**
 	 * save / update users
@@ -378,18 +367,19 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	 *  	S3-2: 	else any other UPDATE - skip orphan delete
 	 *  
 	 *  S4 authentication section: 
-	 *   if internal DB authentication provider is used :
+	 *  	Make local storage of password when NOT connecting to external authentication provider like LDAP or Active Directory
 	 *    - User View will contain additional column in UI - userPassword
-	 *    - on backend there is additional Entity field User.password and in DB : users_gdma2.user_password
+	 *    - on back-end there is additional Entity field User.password and in DB : users_gdma2.user_password
 	 *    
 	 *   S4.1 On INSERT, we need to encode password taken from UI and save to DB
-	 *    Saved password is never to be show on UI - TODO : make all loading passwords in all methods BLANK
+	 *    Saved password is never to be show on UI - TODO : make all loading passwords in all methods BLANK/masked
 	 *    
-	 *    If User is UPDATEed in UI and userPassword field is UPDATEed then backend must: 
-	 *   S4-2:	 check if password is blank, if not  re-encode new password and store it
-	 *   S4-3 :							    else skip password rencoding  
+	 *    If User is UPDATE-ed in UI and userPassword field is UPDATE-ed then back-end must: 
+	 *   S4-2:	 check if password is blank (masked), if not  re-encode new password and store it
+	 *   S4-3 :							              else skip password re-encoding  
 	 *   
-	 *   at the end save all users and return user list with empty passwords
+	 *   at the end save all users 
+	 *   then return user list with empty passwords but out of this Transaction! - from caller
 	 *    
 	 */
 	@Transactional
@@ -399,13 +389,8 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		for(User user: userList){
 			int userId = user.getId(); 
 			logger.info("userId: " +  userId);
+
 			//check if user is INSERT/UPDATE (-1 is for INSERT)
-
-			//TODO: Uncomment the following to set the SHA-1 encoded password for the user
-			//DB will always contain hashed password
-			//Handle the user update scenario in which if password is not changed, then it should not be re-encoded
-			//This is to allow local storage of password when not connecting to external authentication provider like LDAP or Active Directory
-
 
 			//INSERT
 			if(userId < 0 ){
@@ -413,7 +398,8 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 				logger.info("INSERTing new user");
 				if(StringUtils.isNotBlank(user.getPassword())){
 					logger.info("creating hash password");
-					user.setPassword(HashUtil.hash(user.getPassword()));
+					// set the SHA-1 encoded password for the user
+					user.setPassword(HashUtil.hash(user.getPassword())); 
 				}	
 			} else {
 				//UPDATE
@@ -427,17 +413,18 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 				}
 
 				//S4-2 and S4-3
-				if(StringUtils.isNotBlank(user.getPassword())){
-					if(userBeforeUpdate.getPassword().equals(user.getPassword())){
-						logger.info("skip password re-encoding");
-					} else {
-						logger.info("password was updated: re-encoding new pass: ");
-						//						logger.info("password was updated: re-encoding new pass: " + user.getPassword());
-						user.setPassword(HashUtil.hash(user.getPassword()));
-						//						logger.info("password was updated: re-encoded new pass: " + user.getPassword());
-					}
-
-				}	
+				if(EntityUtils.PASSWORD_MASK.equals(user.getPassword())){
+					logger.info("no change - keep old password");
+					//do not save masked value, keep the same old pass
+					user.setPassword(userBeforeUpdate.getPassword());
+				} else{
+					//logger.info("password was updated: re-encoding new pass: " + user.getPassword());
+					logger.info("password is updated - hashing and saving new value");
+					user.setPassword(HashUtil.hash(user.getPassword()));
+					//logger.info("new password, after hash: " + user.getPassword());
+				}
+				
+				
 			}
 		}
 
@@ -868,11 +855,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 	}
 
-	@Override
-	public User findOneUser(int id) {
-		User user = repositoryManager.getUserRepository().findOne(id);
-		return emptyPassword(user);
-	}
+	
 
 
 	/*DATA module section - getting DISPLAYABLE columns DATA for selected table*/

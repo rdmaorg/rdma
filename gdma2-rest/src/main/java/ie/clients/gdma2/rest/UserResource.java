@@ -6,6 +6,7 @@ import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,9 +29,9 @@ public class UserResource extends BaseDataTableResource{
 		return serviceFacade.getMetadataService().getAllUsers();
 	}
 
-	@RequestMapping("listactive")
+	@RequestMapping("/list/active")
 	public List<User> getAllActiveUsers(){
-		logger.debug("*** getAllUsers(");
+		logger.debug("getAllActiveUsers");
 		return serviceFacade.getMetadataService().getAllActiveUsers();
 	}
 
@@ -84,7 +85,20 @@ public class UserResource extends BaseDataTableResource{
 	public List<User> saveUsers(@RequestBody List<User> users){
 		logger.debug("*** saveUsers()");
 		//TODO: Empty the password
-		return serviceFacade.getMetadataService().saveUsers(users);
+		//return serviceFacade.getMetadataService().saveUsers(users);
+		List<User> savedUsers = serviceFacade.getMetadataService().saveUsers(users);
+		
+		//EntityUtils.emptyPasswordsForUsers(users); problem - Entitity utils cannot be imported, doing manually ?TODO
+		if(savedUsers != null && !savedUsers.isEmpty()){
+			for(User u: savedUsers){
+				if(StringUtils.isNotBlank(u.getPassword())){
+					final String PASSWORD_MASK = "********";
+					u.setPassword(PASSWORD_MASK);
+				}
+			}
+		}
+		
+		return savedUsers;
 	}
 
 	/*delete - check if needed possibly only deactivation - which will be done via save/update*/

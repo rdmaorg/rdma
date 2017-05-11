@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import ie.clients.gdma2.domain.Column;
 import ie.clients.gdma2.domain.Server;
+import ie.clients.gdma2.domain.User;
 
 public class EntityUtils {
 
@@ -41,6 +42,8 @@ public class EntityUtils {
 							+ column.getColumnTypeString()
 							+ "] can not be set to 'special type User' as is is not of type text.");
 				}
+				logger.info("special column USER set for: " + column.getName() + ", Insert or Update are now not allowed manually,"
+						+ " but will be done automatically during add/update record in data module");
 				column.setAllowInsert(false);
 				column.setAllowUpdate(false);
 
@@ -51,6 +54,8 @@ public class EntityUtils {
 					throw new IllegalArgumentException("Column [" + column.getName()
 							+ "] can not be set to 'special type Date' as is is not of type date.");
 				}
+				logger.info("special column DATE for: " + column.getName() + ", Insert or Update are now not allowed manually,"
+						+ " but will be done automatically during add/update record in data module");
 				column.setAllowInsert(false);
 				column.setAllowUpdate(false);
 			}
@@ -68,16 +73,39 @@ public class EntityUtils {
 		}
 	}
 
-	public static Server emptyServerPassword(Server server){
-		logger.info("emptyServerPassword, serverId: " + server.getId());
+
+	public static void emptyServerPassword(Server server){
 		if(server != null) {
 			if(StringUtils.isNotBlank(server.getPassword())){
 				server.setPassword(PASSWORD_MASK);
+				logger.info("emptying server password for serverId: " + server.getId());
 			} else{
 				logger.info("password is blank - no masking");
 			}
 		}
-		return server; 
+
+	}
+
+	//Emptying the passwords for users
+	public static void emptyPasswordsForUsers(List<User> users){
+		logger.info("emptyPasswords for users");
+		if( users != null && !users.isEmpty()){
+			for(User u: users){
+				emptyUserPassword(u);
+			}
+		}
+
+	}
+
+	public static void emptyUserPassword(User user){
+		if( user != null) {
+			if(StringUtils.isNotBlank(user.getPassword())){
+				user.setPassword(PASSWORD_MASK);
+				logger.info("emptying user password for user " + user.getUserName());
+			} else {
+				//logger.info("password is blank - no masking");
+			}
+		}
 	}
 
 }
