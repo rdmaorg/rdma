@@ -17,10 +17,8 @@ var configureDataTable = function(){
 			"columns": [
 			            { "data": "id" },
 			            { "data": "name" },
-			            { "data": "columnType","render" : function(data, type, row) {
-			            		return row.columnType + ' - ' + row.columnTypeString;
-			            	}
-			            },
+			            { "data": "alias" },
+			            { "data": "columnTypeString" },
 			            { "data": "primarykey" ,
 						  "className": "text-center",
 						  "orderable" : false,
@@ -176,15 +174,17 @@ var associateInputs = function(){
 	associateInput("max-width", "maxWidth");
 	associateInput("column-size", "columnSize");
 }
-
+var rigthValue;
 var associateInput = function(input,varName){
 	$("."+input).click(function(e) {
 		$(e.target).removeClass("input-disabled");
 		clicOutInputEvent(e.target);
 		var oldValue = e.target.value;
 		$(this).confirmation({
-			placement : "top",
+			placement : "bottom",
+			title: "Save new value?",
 			btnOkLabel : "Yes",
+			btnCancelLabel: "No",
 			onConfirm : function(event, element) {
 				$(e.target).addClass("input-disabled");
 				verifyChanges(e,varName);
