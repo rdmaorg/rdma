@@ -52,22 +52,19 @@ public class ServerResource extends BaseDataTableResource {
 		case 2:// by username
 			orderByColumn = "username";
 			break;
-		case 3:// by password
-			orderByColumn = "password";
-			break;
-		case 4:// by connectionUrl
+		case 3:// connectionUrl
 			orderByColumn = "connectionUrl";
 			break;
-		case 5:// by connectionType
+		case 4:// connectionType.name
 			orderByColumn = "connectionType.name";
 			break;
-		case 6:// by prefix
+		case 5:// by prefix
 			orderByColumn = "prefix";
 			break;
-		case 7:// by active
+		case 6:// by active
 			orderByColumn = "active";
 			break;
-		case 8: //alias
+		case 7:// by alias
 			orderByColumn = "alias";
 			break;
 		}

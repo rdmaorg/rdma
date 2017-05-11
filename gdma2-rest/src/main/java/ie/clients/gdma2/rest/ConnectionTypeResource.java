@@ -43,10 +43,10 @@ public class ConnectionTypeResource extends BaseDataTableResource{
 			orderByColumn = "name";
 			break;
 		case 2: //by SQL get table query
-			orderByColumn = "sqlGetTables";
+			orderByColumn = "connectionClass";
 			break;
 		case 3: //by connection class
-			orderByColumn = "connectionClass";
+			orderByColumn = "sqlGetTables";
 			break;
 		}
 
