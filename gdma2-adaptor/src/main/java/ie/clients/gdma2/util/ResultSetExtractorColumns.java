@@ -80,7 +80,9 @@ public class ResultSetExtractorColumns implements ResultSetExtractor<Set<Column>
 		col.setActive(true);
 		col.setColumnSize(metaData.getColumnDisplaySize(i));
 		
-		//TODO ???
+		//TODO 
+		/*The Min Width and Max Width values are used to determine the width, in pixels, of the columns in the data grid
+		 *  used to display a table's data to the front end user.*/
 		//col.setMaxWidth(maxWidth);
 		//col.setMinWidth(minWidth);
 		//col.setOrderby(orderby);

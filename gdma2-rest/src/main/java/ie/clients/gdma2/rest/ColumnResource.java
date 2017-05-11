@@ -59,51 +59,52 @@ public class ColumnResource extends BaseDataTableResource{
 		case 1:
 			orderByColumn = "name";
 			break;
-		case 2: 
-			orderByColumn = "columnType";
+		case 2:
+			orderByColumn = "alias";
 			break;
+		//case 3: 
+			//orderByColumn = "columnType";
+			//break;
 		case 3: 
 			orderByColumn = "columnTypeString";
 			break;
-		case 4: 
-			orderByColumn = "dropDownColumnDisplay.name";
-			break;
-		case 6:
-			orderByColumn = "dropDownColumnStore.name";
-			break;
-		case 7:
-			orderByColumn = "displayed";
-			break;
-		case 8:
-			orderByColumn = "allowInsert";
-			break;
-		case 9:
-			orderByColumn = "allowUpdate";
-			break;
-		case 10:
-			orderByColumn = "nullable";
-			break;
-		case 11:
+		case 4:
 			orderByColumn = "primarykey";
 			break;
-		case 12:
+		case 5:
+			orderByColumn = "displayed";
+			break;
+		case 6:
+			orderByColumn = "allowInsert";
+			break;
+		case 7:
+			orderByColumn = "allowUpdate";
+			break;
+		case 8:
+			orderByColumn = "nullable";
+			break;
+		case 9: //order by column0_.dd_lookup_display asc limit ?    
+			//if this is to be used at all consider : column0_.dd_lookup_display.name in columns.js and here
+			orderByColumn = "dropDownColumnDisplay";  
+			break;
+		case 10:
+			orderByColumn = "dropDownColumnStore";
+			break;
+		case 11:
 			orderByColumn = "special";
 			break;
-		case 13:
+		case 12:
 			orderByColumn = "minWidth";
 			break;
-		case 14:
+		case 13:
 			orderByColumn = "maxWidth";
 			break;
-		case 15:
-			orderByColumn = "orderby";
-			break;
-		case 16:
+		case 14:
 			orderByColumn = "columnSize";
 			break;
-		case 17:
-			orderByColumn = "alias";
-			break;
+		//case 15:
+			//	orderByColumn = "orderby";
+			//	break;	
 		}
 		
 		logger.info("orderByColumn: " + orderByColumn);
