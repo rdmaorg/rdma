@@ -17,7 +17,11 @@ var configureDataTable = function(){
 			"columns": [
 			            { "data": "id" },
 			            { "data": "name" },
-			            { "data": "alias" },
+			            { "data": "alias" , "render" : function(data, type, row) {
+				            	var value = row.alias === null ? "": row.alias;
+				            	return '<div class="alias input-edit fa fa-pencil" data-id="' + row.id+ '"><input type="text" class=" input-disabled" value="'+ value +'"></div>' ;
+			            	}
+			            },
 			            { "data": "columnTypeString" },
 			            { "data": "primarykey" ,
 						  "className": "text-center",
@@ -67,12 +71,12 @@ var configureDataTable = function(){
 			            },
 			            { "data": "dropDownColumnDisplay", "orderable" : false, "render" : function(data, type, row){ 
 			            		var value = verifyValue(row,"dropDownColumnDisplay") === null ? "": verifyValue(row,"dropDownColumnDisplay").name;
-		            			return '<div class="input-edit fa fa-bars"><input type="text" id="columnDisplay'+row.id+'" class="column-display input-disabled" data-id="' + row.id+ '" value="'+ value +'"></div>' ;
+		            			return '<div class="column-display input-edit fa fa-bars" data-id="' + row.id+ '"><input type="text" id="columnDisplay'+row.id+'" class=" input-disabled" value="'+ value +'"></div>' ;
 			            	} 
 			            },
 			            { "data": "dropDownColumnStore", "orderable" : false, "render" : function(data, type, row){ 
 			            	 	var value = verifyValue(row,"dropDownColumnStore") === null ? "": verifyValue(row,"dropDownColumnStore").name;
-		            			return '<div class="input-edit fa fa-bars"><input type="text" id="columnStore'+row.id+'" class="column-store input-disabled" data-id="' + row.id+ '" value="'+ value +'"></div>' ;
+		            			return '<div class="column-store input-edit fa fa-bars" data-id="' + row.id+ '"><input type="text" id="columnStore'+row.id+'" class="input-disabled" value="'+ value +'"></div>' ;
 			            	} 
 			            },
 			            { "data": "special","render" : function(data, type, row){ 
@@ -81,17 +85,26 @@ var configureDataTable = function(){
 			            },
 			            { "data": "minWidth", "render" : function(data, type, row){ 
 			            	    var value = row.minWidth === null ? "": row.minWidth;
-		            			return '<div class="input-edit fa fa-pencil"><input type="text" maxlength="3" class="min-width input-disabled" data-id="' + row.id+ '" value="'+ value +'"></div>' ;
+		            			return '<div class="input-edit fa fa-pencil min-width" data-id="' + row.id+ '">'+
+		            				'<input type="text" maxlength="3" class="input-disabled" value="'+ value +'"'+
+		            				' onkeypress="return event.charCode >= 48 && event.charCode <= 57" >'
+		            				+'</div>' ;
 		            		}			       
 			            },
 			            { "data": "maxWidth", "render" : function(data, type, row){ 
 			            		var value = row.maxWidth === null ? "": row.maxWidth;
-		            			return '<div class="input-edit fa fa-pencil"><input type="text" maxlength="3" class="max-width input-disabled" data-id="' + row.id+ '" value="'+ value +'"></div>' ;
+		            			return '<div class="input-edit fa fa-pencil max-width" data-id="' + row.id+ '">'+
+		            			'<input type="text" maxlength="3" class=" input-disabled" value="'+ value +'"'+
+		            			' onkeypress="return event.charCode >= 48 && event.charCode <= 57" >'+
+		            			'</div>' ;
 	            			}			 
 			            },
 			            { "data": "columnSize", "render" : function(data, type, row){ 
 			            		var value = row.columnSize === null ? "": row.columnSize;
-		            			return '<div class="input-edit fa fa-pencil"><input type="text" maxlength="3" class="column-size input-disabled" data-id="' + row.id+ '" value="'+ value +'"></div>' ;
+		            			return '<div class="input-edit fa fa-pencil column-size" data-id="' + row.id+ '">'+
+		            			'<input type="text" maxlength="3" class=" input-disabled" value="'+ value +'"'+
+		            			' onkeypress="return event.charCode >= 48 && event.charCode <= 57" >'+
+		            			'</div>' ;
             				}			 
 			            }
 			        ]
@@ -126,21 +139,21 @@ var createDropDownSpecial = function(id, value){
 		if(value.toUpperCase()==='N'){
 			select+= '<option value="N" selected>No</option>';
 			select+= '<option value="U">User</option>';
-			select+= '<option value="D">Data</option>';
+			select+= '<option value="D">Date</option>';
 		} else {
 			if(value.toUpperCase()==='U'){
 				select+= '<option value="N">No</option>';
 				select+= '<option value="U" selected>User</option>';
-				select+= '<option value="D">Data</option>';
+				select+= '<option value="D">Date</option>';
 			} else {
 				if(value.toUpperCase()==='D'){
 					select+= '<option value="N">No</option>';
 					select+= '<option value="U">User</option>';
-					select+= '<option value="D" selected>Data</option>';
+					select+= '<option value="D" selected>Date</option>';
 				} else {
 					select+= '<option value="N">No</option>';
 					select+= '<option value="U">User</option>';
-					select+= '<option value="D">Data</option>';
+					select+= '<option value="D">Date</option>';
 				}
 			}
 		}
@@ -164,8 +177,7 @@ var associateCheckBoxes = function(){
 var associateCheckBox = function(classes, variableName){
 	$('.' + classes).off('change');
 	$('.' + classes).change(function(e) {
-		verifyChanges(e,variableName);
-		verifyButtonsRow();
+		verifyChanges(e.target,variableName);
 	});
 }
 
@@ -173,29 +185,14 @@ var associateInputs = function(){
 	associateInput("min-width", "minWidth");	
 	associateInput("max-width", "maxWidth");
 	associateInput("column-size", "columnSize");
+	associateInput("alias", "alias");
+	
 }
 var rigthValue;
 var associateInput = function(input,varName){
 	$("."+input).click(function(e) {
 		$(e.target).removeClass("input-disabled");
-		clicOutInputEvent(e.target);
-		var oldValue = e.target.value;
-		$(this).confirmation({
-			placement : "bottom",
-			title: "Save new value?",
-			btnOkLabel : "Yes",
-			btnCancelLabel: "No",
-			onConfirm : function(event, element) {
-				$(e.target).addClass("input-disabled");
-				verifyChanges(e,varName);
-				verifyButtonsRow();
-			},
-			onCancel : function(event, element) {
-				e.target.value=oldValue;
-				$(e.target).addClass("input-disabled");
-			}
-		});
-		$(this).confirmation('show');
+		clicOutInputEvent(e.target, varName);
 	});
 }
 
@@ -216,37 +213,52 @@ var associateDropDownInput = function(classes){
 
 var associateSpecialSelect = function(){
 	$('.special').on('change', function(e) {
-		verifyChanges(e,"special");
-		verifyButtonsRow();
+		verifyChanges(e.target,"special");
 	});
 	
 }
-var clicOutInputEvent = function(input){
+var clicOutInputEvent = function(input, varName){
 	$(window).one( "click", function(e) {
 		if($(e.target).data("id") !== $(input).data("id")){
 			$(input).addClass("input-disabled");
+			verifyChanges(input, varName);
 		} else {
-			clicOutInputEvent(input);
+			clicOutInputEvent(input,varName);
 		}
 	});
 }
 
 var verifyChanges = function(e, variableName){
-	var obj = origColumns[$(e.target).data("id")];
+	var obj = origColumns[$(e).data("id")];
 	if(changedColumns[obj.id]){
-		if($(e.target)[0].checked !== undefined){
-			changedColumns[obj.id][variableName] = $(e.target)[0].checked;
+		if($(e).is(':checkbox')){
+			changedColumns[obj.id][variableName] = $(e)[0].checked;
 		} else {
-			changedColumns[obj.id][variableName] = $(e.target)[0].value;
+			if ($(e)[0].value) {
+				changedColumns[obj.id][variableName] = $(e)[0].value;
+			} else {
+				var input = $(e).fing("input");
+				if(input){
+					changedColumns[obj.id][variableName] = input.value;
+				}
+			}
 		}
 	} else {
 		changedColumns[obj.id] = jQuery.extend({}, obj);
-		if($(e.target).checked !== undefined){
-			changedColumns[obj.id][variableName] = $(e.target)[0].checked;
+		if($(e).is(':checkbox')){
+			changedColumns[obj.id][variableName] = $(e)[0].checked;
 		} else {
-			changedColumns[obj.id][variableName] = $(e.target)[0].value;
+			if ($(e)[0].value) {
+				changedColumns[obj.id][variableName] = $(e)[0].value;
+			} else {
+				var input = $(e).fing("input");
+				if(input){
+					changedColumns[obj.id][variableName] = input.value;
+				}
+			}
 		}
 	}
+	verifyButtonsRow();
 }
 
 var verifyButtonsRow = function(){
@@ -322,7 +334,7 @@ var getModifiedObjects = function() {
 	var list = new Array();
 	var i = 0;
 	$.each(changedColumns, function(key, value) {
-		list[i] = value;
+		list[i] = jQuery.extend({}, value);
 		i++;
 	});
 	return list;

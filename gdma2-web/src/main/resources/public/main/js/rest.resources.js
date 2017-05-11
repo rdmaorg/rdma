@@ -9,7 +9,8 @@ var restUri = {
 		table: getRestBaseUri() + '/server/table',
 		item: getRestBaseUri() + '/server/{serverId}',
 		save: getRestBaseUri() + '/server/save',
-		del: getRestBaseUri() + '/server/delete/{serverId}'
+		del: getRestBaseUri() + '/server/delete/{serverId}',
+		list_active: getRestBaseUri() + '/server/list/active'
 	},
 	user:{
 		list: getRestBaseUri() + '/user/list',

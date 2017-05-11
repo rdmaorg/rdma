@@ -32,7 +32,7 @@ var verifyDropDownselected = function(){
 var populateSelectServer = function(){
 	$.ajax({
         type: "get",
-        url: restUri.server.list,
+        url: restUri.server.list_active,
         data: { get_param: 'id,name' },
         contentType: "application/json; charset=utf-8",
         dataType: 'json'
@@ -40,7 +40,7 @@ var populateSelectServer = function(){
     	$("#select-server").empty();
     	$('<option value=""></option>').appendTo("#select-server");
     	$.each(data, function(i, server) {
-    	    $("<option value='" + server.id + "'>" + server.alias + "</option>").appendTo("#select-server");
+    	    $("<option value='" + server.id + "'>" + server.name + "</option>").appendTo("#select-server");
     	});
     	if(selectedDropDownDisplay !== null){
     		$("#select-server").val(selectedDropDownDisplay.table.server.id);
@@ -66,7 +66,7 @@ var populateSelectTable = function(serverId){
 	showLoading("#loading-spinner-modal");
 	$.ajax({
         type: "get",
-        url: mapPathVariablesInUrl(restUri.table.sync_table_server, {id: serverId}),
+        url: mapPathVariablesInUrl(restUri.table.list_active, {id: serverId}),
         data: { get_param: 'id,name' },
         contentType: "application/json; charset=utf-8",
         dataType: 'json'
@@ -94,24 +94,10 @@ var associateTableChanged = function(){
 		$("#select_col_store").val(null);
 		columns = new Object();
 		if($(e.target)[0].value != undefined && $(e.target)[0].value != null){
-			syncColumns($(e.target)[0].value);
-			$.Deferred(populateColumnsSelectors($(e.target)[0].value), $('#columns-control').show());
+			populateColumnsSelectors($(e.target)[0].value);
 		} else {
 			$('#columns-control').hide();
 		}
-	});
-}
-
-var syncColumns = function(tableId){
-	$.ajax({
-		type: "get",
-		url: mapPathVariablesInUrl(restUri.column.sync,{id: tableId}),
-		contentType: "application/json; charset=utf-8",
-	}).done(function(data){
-	}).fail(function(e){
-		handleError('#global-alert', e);
-	}).always(function(){
-		hideLoading("#loading-spinner-modal");
 	});
 }
 
@@ -137,6 +123,8 @@ var populateColumnsSelectors = function(tableId){
     		$("#select_col_display").val(selectedDropDownDisplay.id);
     		$("#select_col_store").val(selectedDropDownStore.id);
     	}
+    }).complete(function(e){
+    	$('#columns-control').show()
     }).fail(function(e){
     	handleError('#global-alert', e);
     }).always(function(){
