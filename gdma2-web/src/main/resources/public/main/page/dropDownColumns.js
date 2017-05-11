@@ -20,12 +20,14 @@ var verifyDropDownselected = function(){
 			populateColumnsSelectors(changed.dropDownColumnDisplay.table.id);
 			selectedDropDownStore = changed.dropDownColumnStore;
 			selectedDropDownDisplay = changed.dropDownColumnDisplay;
+			hideLoading("#loading-spinner-modal");
 		}
 	} else if(obj.dropDownColumnDisplay !== null && obj.dropDownColumnStore !== null){
 		populateSelectTable(obj.dropDownColumnDisplay.table.server.id);
 		populateColumnsSelectors(obj.dropDownColumnDisplay.table.id);
 		selectedDropDownStore = obj.dropDownColumnStore;
 		selectedDropDownDisplay = obj.dropDownColumnDisplay;
+		hideLoading("#loading-spinner-modal");
 	}
 }
 
@@ -54,8 +56,9 @@ var populateSelectServer = function(){
 
 var associateServerChanged = function(){
 	$('#select-server').on('change', function(e) {
+		$('#columns-control').hide();
 		if($(e.target)[0].value != undefined && $(e.target)[0].value != null){
-			$.Deferred(populateSelectTable($(e.target)[0].value),$('#table-control').show());
+			populateSelectTable($(e.target)[0].value);
 		} else {
 			$('#table-control').hide();
 		}
@@ -80,8 +83,12 @@ var populateSelectTable = function(serverId){
     	if(selectedDropDownDisplay !== null){
     		$("#select-table").val(selectedDropDownDisplay.table.id);
     	}
+    }).complete(function(e){
+    	$('#table-control').show();
+    	hideLoading("#loading-spinner-modal");
     }).fail(function(e){
     	handleError('#global-alert', e);
+    	$('#table-control').show()
     }).always(function(){
     	hideLoading("#loading-spinner-modal");
     });
@@ -124,7 +131,8 @@ var populateColumnsSelectors = function(tableId){
     		$("#select_col_store").val(selectedDropDownStore.id);
     	}
     }).complete(function(e){
-    	$('#columns-control').show()
+    	$('#columns-control').show();
+    	hideLoading("#loading-spinner-modal");
     }).fail(function(e){
     	handleError('#global-alert', e);
     }).always(function(){
