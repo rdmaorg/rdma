@@ -27,6 +27,14 @@ public class ServerResource extends BaseDataTableResource {
 		logger.debug("getallServers()");
 		return serviceFacade.getMetadataService().getAllServers();
 	}
+	
+	
+	@RequestMapping("/list/active")
+	public List<Server> getAllActiveServers(){
+		logger.debug("getAllActiveServers()");
+		return serviceFacade.getMetadataService().getAllActiveServers();
+	}
+	
 
 	@RequestMapping("table")
 	public PaginatedTableResponse<Server> getServerPaginatedTable(@RequestParam Map<String, String> params) {

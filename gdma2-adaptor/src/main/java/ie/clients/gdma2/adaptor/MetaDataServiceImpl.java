@@ -88,6 +88,12 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		return servers;
 	}
 
+	@Override
+	public List<Server> getAllActiveServers() {
+		List<Server> servers = repositoryManager.getServerRepository().findActiveServers();
+		EntityUtils.emptyPasswordForServers(servers);
+		return servers;
+	}
 
 	@Override
 	public PaginatedTableResponse<Server> getServers(String matching, String orderBy, String orderDirection,
@@ -919,7 +925,6 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 
 	}
-
 
 
 

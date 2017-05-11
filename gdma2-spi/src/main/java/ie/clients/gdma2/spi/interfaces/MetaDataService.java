@@ -21,6 +21,7 @@ public interface MetaDataService {
 	
 	/*Server*/
 	public List<Server> getAllServers();
+	public List<Server> getAllActiveServers();
 	public PaginatedTableResponse<Server> getServers(String matching, String orderBy,
 			String orderDirection, int startIndex, int length);
 	public void saveServer(Server server);

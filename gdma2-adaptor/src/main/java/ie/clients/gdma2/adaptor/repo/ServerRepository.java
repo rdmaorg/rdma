@@ -1,7 +1,6 @@
 package ie.clients.gdma2.adaptor.repo;
 
 import ie.clients.gdma2.domain.Server;
-import ie.clients.gdma2.domain.Table;
 
 import java.util.List;
 
@@ -11,6 +10,11 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.data.repository.query.Param;
 
 public interface ServerRepository extends PagingAndSortingRepository<Server, Integer> {
+
+	
+	/*find all active */
+	@Query("select s from Server s where s.active = TRUE")
+	public List<Server> findActiveServers();
 	
 	@Query("select count(s) from Server s where upper(s.name) like ?1 or upper(s.username) like ?1 "
 			+ " or upper(s.connectionUrl) like ?1 or upper(s.connectionType.name) like ?1 or upper(s.prefix) like ?1 or upper(s.alias) like ?1")
@@ -20,15 +24,7 @@ public interface ServerRepository extends PagingAndSortingRepository<Server, Int
 			+ " or upper(s.connectionUrl) like ?1 or upper(s.connectionType.name) like ?1 or upper(s.prefix) like ?1 or upper(s.alias) like ?1")
 	public List<Server> getMatchingServers(String matching, Pageable pageable);
 
-	/* TODO
-	ServerDao
-	public Server getByColumn(Long columnId);
-    public List<Server> getServerTableList(String username);
-    public List<Server> getServerTableColumnList();
-    public List<Server> getServerTableColumnList(Long serverId, Long tableId);
-	public List<Server> getServerTableColumnListForDDDropdown();
-	*/
-
+	
 	
 	/*
 	@Query("SELECT t FROM TopupType t join t.topupTypeCategoryPermissions c WHERE (c.enabled = 'true' and LOWER(c.topupCategory.name) = LOWER(:categoryName))")

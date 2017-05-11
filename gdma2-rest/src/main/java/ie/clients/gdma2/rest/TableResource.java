@@ -77,7 +77,7 @@ public class TableResource extends BaseDataTableResource{
 	}
 
 
-	/*TESTING ONLY : Get active tables for server - but without synch */
+	/*Get active tables for server*/
 	@RequestMapping(value = "/server/{id}/active",method = RequestMethod.GET)
 	public List<Table> findByServerIdAndActiveTrue(@PathVariable("id") Integer serverId){
 		logger.debug("*** findByServerIdAndActiveTrue(), serverId: " +  serverId);
