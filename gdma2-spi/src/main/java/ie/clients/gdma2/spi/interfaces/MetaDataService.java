@@ -25,7 +25,7 @@ public interface MetaDataService {
 	public PaginatedTableResponse<Server> getServers(String matching, String orderBy,
 			String orderDirection, int startIndex, int length);
 	public void saveServer(Server server);
-	public void deleteServer(int id);
+	/* public void deleteServer(int id); */
 	public void deleteServer(Server server);
 	public Server findOne(Integer serverId);
 	

@@ -173,11 +173,13 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	}
 
 
+	/*
 	@Transactional
 	@Override
 	public void deleteServer(int id) {
 		repositoryManager.getServerRepository().delete(id);
 	}
+	*/
 
 	@Transactional
 	@Override

@@ -90,11 +90,16 @@ public class ServerResource extends BaseDataTableResource {
 	}
 
 
+	/*not to be used - server is to be deactivated only. 
+	 * Deleting server would lead to deleting children: Tables, UserAccess, Columns...*/
+	
+	/*
 	@RequestMapping(value="delete/{id}", method = RequestMethod.DELETE)
 	public void deleteServer(@PathVariable("id") Integer id){
 		logger.debug("delete server: " + id);
 		serviceFacade.getMetadataService().deleteServer(id);
 	}
+	*/
 
 	@RequestMapping(value = "{id}")
 	public Server getServer(@PathVariable("id") Integer serverId ){
