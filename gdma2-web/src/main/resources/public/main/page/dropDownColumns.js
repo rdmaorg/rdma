@@ -30,7 +30,6 @@ var verifyDropDownselected = function(){
 }
 
 var populateSelectServer = function(){
-	
 	$.ajax({
         type: "get",
         url: restUri.server.list_active,
@@ -47,6 +46,7 @@ var populateSelectServer = function(){
     		$("#select-server").val(selectedDropDownDisplay.table.server.id);
     	}
     }).fail(function(e){
+    	$("#select-server").empty();
     	handleError('#global-alert', e);
     	window.setTimeout(function() {
     		$("#global-alert").slideUp(500);
@@ -69,7 +69,6 @@ var associateServerChanged = function(){
 }
 
 var populateSelectTable = function(serverId){
-	
 	$.ajax({
         type: "get",
         url: mapPathVariablesInUrl(restUri.table.list_active, {id: serverId}),
@@ -90,6 +89,7 @@ var populateSelectTable = function(serverId){
     	$('#table-control').show();
     	
     }).fail(function(e){
+    	$("#select-table").empty();
     	handleError('#global-alert', e);
     	window.setTimeout(function() {
     		$("#global-alert").slideUp(500);
@@ -138,6 +138,8 @@ var populateColumnsSelectors = function(tableId){
     }).complete(function(e){
     	$('#columns-control').show();
     }).fail(function(e){
+    	$("#select_col_display").empty();
+    	$("#select_col_store").empty();
     	handleError('#global-alert', e);
     	window.setTimeout(function() {
     		$("#global-alert").slideUp(500);
@@ -187,7 +189,7 @@ var associateSaveDropDownColumn = function() {
 			var obj = origColumns[selectdedColumnId];
 			
 			if(changedColumns[obj.id]){
-				if($("#select_col_display")[0].value === undefined || $("#select_col_display")[0].value === null){
+				if($("#select_col_display")[0].value === null || $("#select_col_display")[0].value === ""){
 					setColumnData(obj.id, null, null, "", "");
 				}else {
 					changedColumns[obj.id].dropDownColumnDisplay = columns[$("#select_col_display")[0].value];
@@ -197,7 +199,7 @@ var associateSaveDropDownColumn = function() {
 				}
 			} else {
 				changedColumns[obj.id] = jQuery.extend({}, obj);
-				if($("#select_col_display")[0].value === undefined || $("#select_col_display")[0].value === null){
+				if($("#select_col_display")[0].value === null || $("#select_col_display")[0].value === ""){
 					setColumnData(obj.id, null, "");
 				} else {
 					changedColumns[obj.id].dropDownColumnDisplay = columns[$("#select_col_display")[0].value];
