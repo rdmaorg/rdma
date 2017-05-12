@@ -192,6 +192,7 @@ table.table-condensed {
 
 .input-edit {
     position: relative;
+    width: 100%;
 }
 
 .input-edit.fa.fa-pencil:before,.input-edit.fa.fa-bars:before {

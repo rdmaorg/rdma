@@ -14,10 +14,15 @@
 				<h2>
 					<a th:href="@{/server}" th:text="#{view.server.heading}"></a>
 					<i class="fa fa-angle-double-right" aria-hidden="true"></i>
-					<a th:href="@{/tables}"><span id="tableName"></span></a>
+					<a th:href="@{/tables}"><span id="serverName"></span></a>
+					<i class="fa fa-angle-double-right" aria-hidden="true"></i>
+					<span id="tableName"></span>
 				</h2>							
 		  		<h1><span th:text="#{view.column.heading}"></span></h1>	
 	      		<div th:replace="inc/spinner"></div>
+	      		<div class="row">				
+					<div th:replace="inc/modalDropDownColumn"></div>
+				</div>
 		  </section>
 		  <!-- Main content -->
 			<section class="content">
@@ -25,15 +30,16 @@
 					<thead>
 						<tr>
 							<th th:text="#{view.column.table.heading.id}"></th>
-							<th th:text="#{view.column.table.heading.name}"></th>
+							<th width="15%" th:text="#{view.column.table.heading.name}"></th>
+							<th width="15%" th:text="#{view.column.table.heading.alias}"></th>
 							<th th:text="#{view.column.table.heading.columnType}"></th>
 							<th th:text="#{view.column.table.heading.primaryKey}"></th>
 							<th th:text="#{view.column.table.heading.displayed}"></th>
 							<th th:text="#{view.column.table.heading.allowInsert}"></th>
 							<th th:text="#{view.column.table.heading.allowUpdate}"></th>
 							<th th:text="#{view.column.table.heading.nullable}"></th>
-							<th th:text="#{view.column.table.heading.ddDisplay}"></th>
-							<th th:text="#{view.column.table.heading.ddStore}"></th>
+							<th width="12%" th:text="#{view.column.table.heading.ddDisplay}"></th>
+							<th width="12%" th:text="#{view.column.table.heading.ddStore}"></th>
 							<th th:text="#{view.column.table.heading.special}"></th>
 							<th th:text="#{view.column.table.heading.minWidth}"></th>
 							<th th:text="#{view.column.table.heading.maxWidth}"></th>
@@ -41,13 +47,24 @@
 						</tr>
 					</thead>
 				</table>
-				
+				<div id="buttons-row" style="display: none;" class="row buttons-row text-right">
+					<div class="col-lg-12">
+			        	<button type="button" id="cancel-columns" class="btn btn-default">
+							<span th:text="#{view.column.btn.cancel}"></span>
+						</button>
+						<button class="btn btn-primary" id="save-columns" name="submit" type="submit">
+							<span th:text="#{view.column.btn.save}"></span>
+						</button>					        
+					</div>
+				</div>
+			
 			</section>
 		</div>
 
 		<footer th:replace="inc/footer"></footer>
 		<aside th:replace="inc/rightPanel"></aside>
 		<script th:src="@{/public/main/page/columns.js}"></script>
+		<script th:src="@{/public/main/page/dropDownColumns.js}"></script>
 	</div>
 
 </body>
