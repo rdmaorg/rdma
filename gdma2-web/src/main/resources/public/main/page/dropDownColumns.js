@@ -163,21 +163,21 @@ var associateColumnChanged = function(id){
 var verifySelect = function(){
 	if(($("#select_col_display")[0].value !== null && $("#select_col_display")[0].value !== "")){
 		if($("#select_col_store")[0].value === null || $("#select_col_store")[0].value === ""){
-			$("col-store-error").show();
+			$("#col-store-error").show();
 			return false;
 		} else {
-			$("col-store-error").hide();
+			$("#col-store-error").hide();
 		}
 	} else if($("#select_col_store")[0].value !== null && $("#select_col_store")[0].value !== ""){
 		if(($("#select_col_display")[0].value === null || $("#select_col_display")[0].value === "")){
-			$("col-display-error").show();
+			$("#col-display-error").show();
 			return false;
 		} else {
-			$("col-display-error").hide();
+			$("#col-display-error").hide();
 		}
 	} else {
-		$("col-store-error").hide();
-		$("col-display-error").hide();
+		$("#col-store-error").hide();
+		$("#col-display-error").hide();
 	}
 	return true;
 }
