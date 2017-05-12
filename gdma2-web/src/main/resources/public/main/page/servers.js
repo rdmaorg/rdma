@@ -186,12 +186,14 @@ var associateViewServer = function(){
 };
 
 var syncTables = function(serverId){
-	
+	showLoading();
 	$.ajax({
         type: "get",
         url: mapPathVariablesInUrl(restUri.table.sync_table_server,{id: serverId}),
         contentType: "application/json; charset=utf-8",
     }).done(function(data){
+    }).complete(function(data){
+    	completeSyncServer();
     }).fail(function(e){
     	handleError('#global-alert', e);
     }).always(function(){
@@ -203,6 +205,9 @@ var viewServer = function(serverId,serverName) {
 	syncTables(serverId);
 	sessionStorage.setItem("id",serverId);
 	sessionStorage.setItem("name",serverName);
+}
+
+var completeSyncServer = function(serverId,serverName){
 	window.location.href = "tables";
 }
 
