@@ -36,6 +36,11 @@
 	position:relative;
 }
 
+.error-dd {
+	right: 20px;
+    bottom: 10px;
+}
+
 .bootstrap-switch {
 	display: block;
 }

@@ -156,38 +156,36 @@ var associateColumnsChange = function(){
 
 var associateColumnChanged = function(id){
 	$('#'+id).on('change', function(e) {
-		if($(e.target)[0].value != undefined && $(e.target)[0].value != null){
-//			populateColumnsSelectors($(e.target)[0].value);
-		} 
 		verifySelect();
 	});
 }
 
 var verifySelect = function(){
-//	if(($("#select_col_display")[0].value != undefined && $("#select_col_display")[0].value != null)
-//			|| ($("#select_col_store")[0].value != undefined && $("#select_col_store")[0].value != null)){
-//		$('#dropDownColumn').validate({
-//			  rules: {
-//				  select_col_display: {
-//					  required: true
-//			    }
-//			  }
-//			});
-//	} else {
-//		var form = $("#dropDownColumn");
-//		form.validate();
-//		$( "#select_col_display" ).rules( "remove", "required");
-//		$( "#select_col_store" ).rules( "remove", "required");
-//	}
+	if(($("#select_col_display")[0].value !== null && $("#select_col_display")[0].value !== "")){
+		if($("#select_col_store")[0].value === null || $("#select_col_store")[0].value === ""){
+			$("col-store-error").show();
+			return false;
+		} else {
+			$("col-store-error").hide();
+		}
+	} else if($("#select_col_store")[0].value !== null && $("#select_col_store")[0].value !== ""){
+		if(($("#select_col_display")[0].value === null || $("#select_col_display")[0].value === "")){
+			$("col-display-error").show();
+			return false;
+		} else {
+			$("col-display-error").hide();
+		}
+	} else {
+		$("col-store-error").hide();
+		$("col-display-error").hide();
+	}
+	return true;
 }
 
 var associateSaveDropDownColumn = function() {
-	var form = $("#dropDownColumn");
-	form.validate();
 	$("#save-dropdowncolumn").click(function(e) {
-		if(form.valid()){
+		if(verifySelect){
 			var obj = origColumns[selectdedColumnId];
-			
 			if(changedColumns[obj.id]){
 				if($("#select_col_display")[0].value === null || $("#select_col_display")[0].value === ""){
 					setColumnData(obj.id, null, null, "", "");
@@ -215,7 +213,6 @@ var associateSaveDropDownColumn = function() {
 			resetModal();
 			verifyButtonsRow();
 		}
-		e.preventDefault();
 	});
 	
 	$("#close-dropdown").click(function(e) {
@@ -244,8 +241,8 @@ var associateSaveDropDownColumn = function() {
 var setColumnData = function(id, value, label){
 	changedColumns[id].dropDownColumnDisplay = value;
 	changedColumns[id].dropDownColumnStore = value;
-	$('#columnStore'+obj.id).val(label);
-	$('#columnDisplay'+obj.id).val(label);
+	$('#columnStore'+id).val(label);
+	$('#columnDisplay'+id).val(label);
 }
 
 
@@ -256,6 +253,4 @@ var resetModal = function(){
 	$('#columns-control').hide();
 	selectedDropDownStore = null;
 	selectedDropDownDisplay = null;
-	var form = $("#dropDownColumn").validate();
-	form.destroy();
 }
