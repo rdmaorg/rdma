@@ -204,10 +204,11 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	}
 
 	@Override
-	public List<Table> getRemoteServerTableMetadata(Integer serverId) {
+	public boolean getRemoteServerTableMetadata(Integer serverId) {
 		//call synnch logic, perform complete synch and transactional save to local DB, then load all previously inserted
 		synhronizeTablesForServer(serverId);
-		return IteratorUtils.toList(repositoryManager.getTableRepository().findAll().iterator());
+		//return IteratorUtils.toList(repositoryManager.getTableRepository().findAll().iterator());
+		return true;
 	}
 
 
@@ -452,9 +453,10 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	/*COLUMN section*/
 
 	@Override
-	public List<Column> getRemoteTableColumnsMetadata(Integer tableId) {
+	public boolean getRemoteTableColumnsMetadata(Integer tableId) {
 		synhronizeColumnsForTable(tableId); 
-		return IteratorUtils.toList(repositoryManager.getColumnRepository().findByTableId(tableId).iterator());
+		//return IteratorUtils.toList(repositoryManager.getColumnRepository().findByTableId(tableId).iterator());
+		return true;
 	}
 
 

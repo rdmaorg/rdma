@@ -33,7 +33,7 @@ public class ColumnResource extends BaseDataTableResource{
 	 * http://localhost/gdma2/rest/column/metadata/table/11?length=100 
 	 * (precondition is that previous table fetch was done)*/
 	@RequestMapping(value = "/metadata/table/{id}")
-	public List<Column> getRemoteTableColumnsMetadata(@PathVariable("id") String tableId,
+	public boolean getRemoteTableColumnsMetadata(@PathVariable("id") String tableId,
 			@RequestParam Map<String,String> params){
 
 		logger.info("getRemoteTableColumnsMetadata, tableId: " + tableId);

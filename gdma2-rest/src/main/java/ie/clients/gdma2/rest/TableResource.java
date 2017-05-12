@@ -31,7 +31,7 @@ public class TableResource extends BaseDataTableResource{
 	/*METADATA - fetch Tables from remote DB and save to local, return ALL saved Tables to UI (not just ACTIve), NO pagination
 	 * http://localhost/gdma2/rest/table/6/metadata?length=100 */
 	@RequestMapping(value = "/{id}/metadata")
-	public List<Table> getRemoteServerTableMetadata(@PathVariable("id") String serverId,
+	public boolean getRemoteServerTableMetadata(@PathVariable("id") String serverId,
 			@RequestParam Map<String,String> params){
 
 		logger.info("getRemoteServerTableMetadata, serverId: " + serverId);

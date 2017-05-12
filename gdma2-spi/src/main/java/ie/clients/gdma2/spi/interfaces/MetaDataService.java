@@ -41,9 +41,6 @@ public interface MetaDataService {
 	public PaginatedTableResponse<Table> getActiveLocalTablesForServer(Integer serverId, String matching, String orderBy,
 			String orderDirection, int startIndex, int length );
 	
-	/*metadata*/
-	public List<Table> getRemoteServerTableMetadata(Integer serverId);
-	
 	
 	/*User*/
 	public List<User> getAllUsers();
@@ -70,8 +67,7 @@ public interface MetaDataService {
 	public PaginatedTableResponse<Column> getActiveLocalColumnsForTable(Integer tableId, String matching, String orderBy,
 			String orderDirection, int startIndex, int length);
 	
-	/*metadata*/
-	public List<Column> getRemoteTableColumnsMetadata(Integer tableId);
+	
 	
 	/*UserAccess*/
 	public List<UserAccess> getAllUserAccess();
@@ -83,7 +79,15 @@ public interface MetaDataService {
 
 	
 	/*DynamicDAO part*/
+	
+	/*metadata*/
 	public List<Table> getMetadata(Integer serverId);
+	
+	/*metadata*/
+	public boolean getRemoteServerTableMetadata(Integer serverId);
+	
+	/*metadata*/
+	public boolean getRemoteTableColumnsMetadata(Integer tableId);
 	
 	
 	/*DATA Module part*/
