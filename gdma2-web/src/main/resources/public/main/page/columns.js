@@ -174,8 +174,18 @@ var rigthValue;
 var associateInput = function(input,varName){
        $("."+input).click(function(e) {
              $(e.target).removeClass("input-disabled");
-             clicOutInputEvent(e.target, varName);
+		     clicOutInputEvent(e.target, varName);
+			 if (!$(e.target).attr('id')) {
+				var obj = $(e.target).find("input");
+			 	$(obj).focus();
+			 	$(obj).removeClass("input-disabled");
+			 }
        });
+       $("."+input).on('keyup', function (e) {
+		    if (e.keyCode == 13) {
+		    	verifyChanges(e.target,varName);
+		    }
+		});
 }
 
 var associateDropDownInputs = function(){
@@ -237,7 +247,7 @@ var verifyChanges = function(e, variableName){
                 } else {
                        var input = $(e).find("input");
                        if(input){
-                             changedColumns[obj.id][variableName] = input.value;
+                             changedColumns[obj.id][variableName] = input[0].value;
                        }
                 }
              }
@@ -254,7 +264,7 @@ var verifyChanges = function(e, variableName){
                     } else {
                            var input = $(e).find("input");
                            if(input){
-                                 changedColumns[obj.id][variableName] = input.value;
+                                 changedColumns[obj.id][variableName] = input[0].value;
                            }
                     }
              }
