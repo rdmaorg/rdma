@@ -13,6 +13,7 @@ var configureDataTable = function(){
 	        fixedHeader: true,
 			order: [[ 1, "asc" ]],
 			"lengthMenu": [ [10, 25, 50, 100], [10, 25, 50, 100] ],
+			"stateSave" : false,
 			"columnDefs": [ { className: "text-center", "targets": [7,8] },{ "orderable": false, "targets": 8 }  ],
 			"columns": [
 			            { "data": "id" },

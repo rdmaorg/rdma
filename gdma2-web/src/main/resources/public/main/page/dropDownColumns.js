@@ -185,41 +185,31 @@ var associateSaveDropDownColumn = function() {
 	form.validate();
 	$("#save-dropdowncolumn").click(function(e) {
 		if(form.valid()){
-			$(this).confirmation({
-				placement : "left",
-				btnOkLabel : "Edit dropdown columns",
-				class: "medium-confirm-modal",
-				onConfirm : function(event, element) {
-					var obj = origColumns[selectdedColumnId];
-					
-					if(changedColumns[obj.id]){
-						if($("#select_col_display")[0].value === undefined || $("#select_col_display")[0].value === null){
-							setColumnData(obj.id, null, null, "", "");
-						}else {
-							changedColumns[obj.id].dropDownColumnDisplay = columns[$("#select_col_display")[0].value];
-							changedColumns[obj.id].dropDownColumnStore = columns[$("#select_col_store")[0].value];
-							$('#columnStore'+obj.id).val(changedColumns[obj.id].dropDownColumnStore.name);
-							$('#columnDisplay'+obj.id).val(changedColumns[obj.id].dropDownColumnDisplay.name);
-						}
-					} else {
-						changedColumns[obj.id] = jQuery.extend({}, obj);
-						if($("#select_col_display")[0].value === undefined || $("#select_col_display")[0].value === null){
-							setColumnData(obj.id, null, "");
-						} else {
-							changedColumns[obj.id].dropDownColumnDisplay = columns[$("#select_col_display")[0].value];
-							changedColumns[obj.id].dropDownColumnStore = columns[$("#select_col_store")[0].value];
-							$('#columnStore'+obj.id).val(changedColumns[obj.id].dropDownColumnStore.name);
-							$('#columnDisplay'+obj.id).val(changedColumns[obj.id].dropDownColumnDisplay.name);
-						}
-					}
-					$('#modalDropDownColumns').modal('hide');
-					resetModal();
-					verifyButtonsRow();
+			var obj = origColumns[selectdedColumnId];
+			
+			if(changedColumns[obj.id]){
+				if($("#select_col_display")[0].value === undefined || $("#select_col_display")[0].value === null){
+					setColumnData(obj.id, null, null, "", "");
+				}else {
+					changedColumns[obj.id].dropDownColumnDisplay = columns[$("#select_col_display")[0].value];
+					changedColumns[obj.id].dropDownColumnStore = columns[$("#select_col_store")[0].value];
+					$('#columnStore'+obj.id).val(changedColumns[obj.id].dropDownColumnStore.name);
+					$('#columnDisplay'+obj.id).val(changedColumns[obj.id].dropDownColumnDisplay.name);
 				}
-			});
-			$(this).confirmation('show');
-		} else {
-			$(this).confirmation('destroy');
+			} else {
+				changedColumns[obj.id] = jQuery.extend({}, obj);
+				if($("#select_col_display")[0].value === undefined || $("#select_col_display")[0].value === null){
+					setColumnData(obj.id, null, "");
+				} else {
+					changedColumns[obj.id].dropDownColumnDisplay = columns[$("#select_col_display")[0].value];
+					changedColumns[obj.id].dropDownColumnStore = columns[$("#select_col_store")[0].value];
+					$('#columnStore'+obj.id).val(changedColumns[obj.id].dropDownColumnStore.name);
+					$('#columnDisplay'+obj.id).val(changedColumns[obj.id].dropDownColumnDisplay.name);
+				}
+			}
+			$('#modalDropDownColumns').modal('hide');
+			resetModal();
+			verifyButtonsRow();
 		}
 		e.preventDefault();
 	});

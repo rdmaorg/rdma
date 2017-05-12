@@ -44,7 +44,7 @@
 		var cfg = {
 		    fixedHeader: true,
 		    "processing" : true,
-			"stateSave" : false,
+			"stateSave" : true,
 			"stateDuration" : -1,
 			"pageLength" : 10,
 			"lengthMenu": [ [10, 25, 50, -1], [10, 25, 50, "All"] ],
