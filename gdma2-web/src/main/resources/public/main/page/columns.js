@@ -404,8 +404,8 @@ var lineExpansionEvent = function(){
 }
 
 $(document).ready(function(){
-       configureDataTable();
-       
+    configureDataTable();
+    associateSaveDropDownColumn();   
     $("#serverName").html(serverSessionName);
     $("#tableName").html(sessionStorage.getItem("nameTable"));
 });

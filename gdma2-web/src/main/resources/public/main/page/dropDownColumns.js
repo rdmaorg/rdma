@@ -8,7 +8,6 @@ var initiateModalDropDownColumns = function() {
 	verifyDropDownselected();
 	$('#columnName').html('<b>&nbsp' + selectedColumnName + '</b>');
 	$('#modalDropDownColumns').modal('show');
-	associateSaveDropDownColumn();
 }
 
 
@@ -206,6 +205,9 @@ var associateSaveDropDownColumn = function() {
 					$('#columnStore'+obj.id).val(changedColumns[obj.id].dropDownColumnStore.name);
 					$('#columnDisplay'+obj.id).val(changedColumns[obj.id].dropDownColumnDisplay.name);
 				}
+			}
+			if(!objectChanged(obj, changedColumns[obj.id])){
+				delete changedColumns[obj.id];
 			}
 			$('#modalDropDownColumns').modal('hide');
 			resetModal();
