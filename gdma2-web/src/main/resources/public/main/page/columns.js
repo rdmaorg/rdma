@@ -247,7 +247,11 @@ var verifyChanges = function(e, variableName){
                 } else {
                        var input = $(e).find("input");
                        if(input){
-                             changedColumns[obj.id][variableName] = input[0].value;
+                    	   	 if(input[0]){
+                    	   		 changedColumns[obj.id][variableName] = input[0].value;
+                    	   	 } else {
+                    	   		changedColumns[obj.id][variableName] = input.value;
+                    	   	 }
                        }
                 }
              }
@@ -264,7 +268,11 @@ var verifyChanges = function(e, variableName){
                     } else {
                            var input = $(e).find("input");
                            if(input){
-                                 changedColumns[obj.id][variableName] = input[0].value;
+                        	   if(input[0]){
+                        		   changedColumns[obj.id][variableName] = input[0].value;
+                        	   } else {
+                        		   changedColumns[obj.id][variableName] = input.value;
+                        	   }
                            }
                     }
              }
