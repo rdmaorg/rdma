@@ -238,6 +238,7 @@ var addEventEnter = function(input, varName){
 }
 var verifyChanges = function(e, variableName){
        var obj = origColumns[$(e).data("id")];
+       var input = $(e).find("input");
        if(changedColumns[obj.id]){
              if($(e).is(':checkbox')){
                  changedColumns[obj.id][variableName] = $(e)[0].checked;
@@ -245,7 +246,6 @@ var verifyChanges = function(e, variableName){
                 if ($(e)[0].value) {
                        changedColumns[obj.id][variableName] = $(e)[0].value;
                 } else {
-                       var input = $(e).find("input");
                        if(input){
                     	   	 if(input[0]){
                     	   		 changedColumns[obj.id][variableName] = input[0].value;
@@ -256,6 +256,9 @@ var verifyChanges = function(e, variableName){
                 }
              }
              if(!objectChanged(obj, changedColumns[obj.id])){
+            	 if(!$(e).is(':checkbox')){
+            		 input.addClass("input-disabled");
+            	 }
             	 delete changedColumns[obj.id];
              }
        } else {
@@ -266,7 +269,6 @@ var verifyChanges = function(e, variableName){
                     if ($(e)[0].value) {
                            changedColumns[obj.id][variableName] = $(e)[0].value;
                     } else {
-                           var input = $(e).find("input");
                            if(input){
                         	   if(input[0]){
                         		   changedColumns[obj.id][variableName] = input[0].value;
@@ -277,6 +279,9 @@ var verifyChanges = function(e, variableName){
                     }
              }
              if(!objectChanged(obj, changedColumns[obj.id])){
+            	 if(!$(e).is(':checkbox')){
+            		 input.addClass("input-disabled");
+            	 }
             	 delete changedColumns[obj.id];
              }
        }
