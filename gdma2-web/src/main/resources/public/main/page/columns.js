@@ -83,22 +83,6 @@ var configureDataTable = function(){
 			            		return createDropDownSpecial(row.id, row.special);
 			            	}			            
 			            },
-			            { "data": "minWidth", "render" : function(data, type, row){ 
-			            	    var value = row.minWidth === null ? "": row.minWidth;
-		            			return '<div class="input-edit fa fa-pencil min-width" data-id="' + row.id+ '">'+
-		            				'<input type="text" maxlength="3" class="input-disabled" value="'+ value +'"'+
-		            				' onkeypress="return event.charCode >= 48 && event.charCode <= 57" >'
-		            				+'</div>' ;
-		            		}			       
-			            },
-			            { "data": "maxWidth", "render" : function(data, type, row){ 
-			            		var value = row.maxWidth === null ? "": row.maxWidth;
-		            			return '<div class="input-edit fa fa-pencil max-width" data-id="' + row.id+ '">'+
-		            			'<input type="text" maxlength="3" class=" input-disabled" value="'+ value +'"'+
-		            			' onkeypress="return event.charCode >= 48 && event.charCode <= 57" >'+
-		            			'</div>' ;
-	            			}			 
-			            },
 			            { "data": "columnSize", "render" : function(data, type, row){ 
 			            		var value = row.columnSize === null ? "": row.columnSize;
 		            			return '<div class="input-edit fa fa-pencil column-size" data-id="' + row.id+ '">'+
@@ -182,8 +166,6 @@ var associateCheckBox = function(classes, variableName){
 }
 
 var associateInputs = function(){
-	associateInput("min-width", "minWidth");	
-	associateInput("max-width", "maxWidth");
 	associateInput("column-size", "columnSize");
 	associateInput("alias", "alias");
 	
