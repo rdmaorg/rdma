@@ -289,7 +289,7 @@ var postColumnsData = function(){
 	$("#save-columns").click(function(e) {
 		$(this).confirmation({
 			placement : "left",
-			title: "Are you sure you wish to save the changed data?",
+			title: "Save changed data?",
 			btnOkLabel : "Yes",
 			onConfirm : function(event, element) {
 				showLoading();

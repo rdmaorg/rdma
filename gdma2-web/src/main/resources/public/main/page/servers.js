@@ -137,7 +137,8 @@ var associatePostServer = function(){
 		if (form.valid()) {
 			$(this).confirmation({
 				placement: "left",
-				btnOkLabel: "Save Server",
+				title : "Save Server?",
+				btnOkLabel : "Yes",
 				onConfirm : function(event, element) {			
 					showLoading();
 					var name = $("#name").val();

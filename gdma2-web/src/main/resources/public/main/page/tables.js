@@ -78,7 +78,8 @@ var associatePostTable = function(){
 		if (form.valid()) {
 			$(this).confirmation({
 				placement: "left",
-				btnOkLabel: "Save Table Alias",
+				title : "Save Table Alias?",
+				btnOkLabel : "Yes",
 				onConfirm : function(event, element) {			
 					showLoading();
 					tableEdit.alias = $("#alias").val();
