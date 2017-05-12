@@ -24,8 +24,6 @@ var configureDataTable = function(){
 			            { "data": "active","render" : function(data, type, row){ 	
 			            	return '<button class="btn btn-primary btn-xs editServer" data-serverid="'+ row.id+ '"><i class="fa fa-pencil-square-o"></i> Edit</button>'
 			            	+ '&nbsp;'
-			            	+'<button class="btn btn-warning btn-xs deleteServer" data-serverid="'+ row.id+ '"><i class="fa fa-trash-o"></i> Delete</button>'
-			            	+ '&nbsp;'
 			            	+'<button class="btn btn-info btn-xs viewServer" data-serverid="'+ row.id+ '" data-servername="'+ row.name + '"><i class="fa fa-table"></i> Tables</button>'
 			            	} 
 			            }

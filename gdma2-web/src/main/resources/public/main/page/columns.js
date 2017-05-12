@@ -233,11 +233,20 @@ var verifyChanges = function(e, variableName){
 			changedColumns[obj.id][variableName] = $(e)[0].checked;
 		} else {
 			if ($(e)[0].value) {
-				changedColumns[obj.id][variableName] = $(e)[0].value;
+				if(changedColumns[obj.id][variableName] !== obj[variableName]){
+					changedColumns[obj.id][variableName] = $(e)[0].value;
+				} else {
+					delete changedColumns[obj.id];
+				}
 			} else {
 				var input = $(e).find("input");
 				if(input){
-					changedColumns[obj.id][variableName] = input.value;
+					if(input.value !== obj[variableName]){
+						changedColumns[obj.id][variableName] = input.value;
+					} else {
+						delete changedColumns[obj.id];
+					}
+					
 				}
 			}
 		}
@@ -247,11 +256,19 @@ var verifyChanges = function(e, variableName){
 			changedColumns[obj.id][variableName] = $(e)[0].checked;
 		} else {
 			if ($(e)[0].value) {
-				changedColumns[obj.id][variableName] = $(e)[0].value;
+				if(changedColumns[obj.id][variableName] !== obj[variableName]){
+					changedColumns[obj.id][variableName] = $(e)[0].value;
+				} else {
+					delete changedColumns[obj.id];
+				}
 			} else {
 				var input = $(e).find("input");
 				if(input){
-					changedColumns[obj.id][variableName] = input.value;
+					if(input.value !== obj[variableName]){
+						changedColumns[obj.id][variableName] = input.value;
+					} else {
+						delete changedColumns[obj.id];
+					}
 				}
 			}
 		}
