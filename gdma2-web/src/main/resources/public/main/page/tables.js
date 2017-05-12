@@ -25,11 +25,11 @@ var configureDataTable = function(){
 			            },			            
 			            { "data": "name","render" : function(data, type, row){ 
 			            	var disabled = row.active ? '': ' disabled';
-			            	return '<button class="btn btn-primary btn-xs editTable" data-tableid="'+ row.id+ '" data-tablename="'+ row.name +'"'+ disabled +'><i class="fa fa-pencil-square-o"></i> Edit Alias</button>'
+			            	return '<button class="btn btn-primary btn-xs editTable" data-tableid="'+ row.id+ '" data-tablename="'+ row.alias +'"'+ disabled +'><i class="fa fa-pencil-square-o"></i> Edit Alias</button>'
 			            	+ '&nbsp;'
-			            	+ '<button class="btn btn-primary btn-xs editAccess" data-tableid="'+ row.id+ '" data-tablename="'+ row.name +'"'+ disabled +'><i class="fa fa-pencil-square-o"></i> Edit Access</button>'
+			            	+ '<button class="btn btn-primary btn-xs editAccess" data-tableid="'+ row.id+ '" data-tablename="'+ row.alias +'"'+ disabled +'><i class="fa fa-pencil-square-o"></i> Edit Access</button>'
 			            	+ '&nbsp;'
-			            	+'<button class="btn btn-info btn-xs viewColumns" data-tableid="'+ row.id+ '" data-tablename="'+ row.name +'"'+ disabled +'><i class="fa fa-columns"></i> Columns</button>'
+			            	+'<button class="btn btn-info btn-xs viewColumns" data-tableid="'+ row.id+ '" data-tablename="'+ row.alias +'"'+ disabled +'><i class="fa fa-columns"></i> Columns</button>'
 			            	} 
 			            }
 			        ]

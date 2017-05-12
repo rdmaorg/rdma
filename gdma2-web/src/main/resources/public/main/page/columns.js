@@ -19,7 +19,7 @@ var configureDataTable = function(){
 			            { "data": "name" },
 			            { "data": "alias" , "render" : function(data, type, row) {
 				            	var value = row.alias === null ? "": row.alias;
-				            	return '<div class="alias input-edit fa fa-pencil" data-id="' + row.id+ '"><input type="text" class=" input-disabled" value="'+ value +'"></div>' ;
+				            	return '<div  id="alias'+row.id+'" class="alias input-edit fa fa-pencil" data-id="' + row.id+ '"><input type="text" class=" input-disabled" value="'+ value +'"></div>' ;
 			            	}
 			            },
 			            { "data": "columnTypeString" },
@@ -86,8 +86,8 @@ var configureDataTable = function(){
 			            { "data": "columnSize", "render" : function(data, type, row){ 
 			            		var value = row.columnSize === null ? "": row.columnSize;
 		            			return '<div class="input-edit fa fa-pencil column-size" data-id="' + row.id+ '">'+
-		            			'<input type="text" maxlength="3" class=" input-disabled" value="'+ value +'"'+
-		            			' onkeypress="return event.charCode >= 48 && event.charCode <= 57" >'+
+		            			'<input type="text" id="colS'+row.id+'" maxlength="3" class=" input-disabled" value="'+ value +'"'+
+		            			' onkeypress="return event.charCode >= 48 && event.charCode <= 57" data-id="' + row.id+ '">'+
 		            			'</div>' ;
             				}			 
 			            }
@@ -201,15 +201,31 @@ var associateSpecialSelect = function(){
 }
 var clicOutInputEvent = function(input, varName){
 	$(window).one( "click", function(e) {
+		addEventEnter(input, varName);
 		if($(e.target).data("id") !== $(input).data("id")){
-			$(input).addClass("input-disabled");
 			verifyChanges(input, varName);
 		} else {
 			clicOutInputEvent(input,varName);
 		}
 	});
 }
-
+var addEventEnter = function(input, varName){
+	var obj;
+	if($(input).attr('id')){
+		obj = $(input);
+	} else {
+		obj = $(e).find("input");
+	}
+	document.getElementById(obj.attr('id')).onkeypress = function(e) {
+		if (!e)
+			e = window.event;
+		var keyCode = e.keyCode || e.which;
+		if (keyCode == '13') {
+			verifyChanges(obj, varName);
+			return false;
+		}
+	}
+}
 var verifyChanges = function(e, variableName){
 	var obj = origColumns[$(e).data("id")];
 	if(changedColumns[obj.id]){
@@ -219,7 +235,7 @@ var verifyChanges = function(e, variableName){
 			if ($(e)[0].value) {
 				changedColumns[obj.id][variableName] = $(e)[0].value;
 			} else {
-				var input = $(e).fing("input");
+				var input = $(e).find("input");
 				if(input){
 					changedColumns[obj.id][variableName] = input.value;
 				}
@@ -233,7 +249,7 @@ var verifyChanges = function(e, variableName){
 			if ($(e)[0].value) {
 				changedColumns[obj.id][variableName] = $(e)[0].value;
 			} else {
-				var input = $(e).fing("input");
+				var input = $(e).find("input");
 				if(input){
 					changedColumns[obj.id][variableName] = input.value;
 				}
@@ -337,5 +353,4 @@ $(document).ready(function(){
 	
     $("#serverName").html(serverSessionName);
     $("#tableName").html(sessionStorage.getItem("nameTable"));
-    
 });
