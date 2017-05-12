@@ -62,7 +62,7 @@ var populateSelectServer = function(){
 var associateServerChanged = function(){
 	$('#select-server').on('change', function(e) {
 		$('#columns-control').hide();
-		if($(e.target)[0].value != undefined && $(e.target)[0].value != null){
+		if($(e.target)[0].value != null && $(e.target)[0].value != ""){
 			populateSelectTable($(e.target)[0].value);
 		} else {
 			$('#table-control').hide();
