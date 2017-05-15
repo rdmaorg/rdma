@@ -186,6 +186,9 @@ var associateInput = function(input,varName){
 		    	verifyChanges(e.target,varName);
 		    }
 		});
+       $("."+input).focusout('focusout', function (e) {
+	    	verifyChanges(e.target,varName);
+       });
 }
 
 var associateDropDownInputs = function(){
@@ -256,9 +259,6 @@ var verifyChanges = function(e, variableName){
                 }
              }
              if(!objectChanged(obj, changedColumns[obj.id])){
-            	 if(!$(e).is(':checkbox')){
-            		 input.addClass("input-disabled");
-            	 }
             	 delete changedColumns[obj.id];
              }
        } else {
@@ -279,9 +279,6 @@ var verifyChanges = function(e, variableName){
                     }
              }
              if(!objectChanged(obj, changedColumns[obj.id])){
-            	 if(!$(e).is(':checkbox')){
-            		 input.addClass("input-disabled");
-            	 }
             	 delete changedColumns[obj.id];
              }
        }
