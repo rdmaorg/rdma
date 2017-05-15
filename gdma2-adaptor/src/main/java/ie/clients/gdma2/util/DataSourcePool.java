@@ -64,6 +64,9 @@ import org.springframework.stereotype.Component;
 
  * Here we will use 2) Connection pooling implementation based on 'Commons DBCP2'
  *  
+ *  REFRESH: 
+ *  DataSource pool needs to be refreshed if server or connectionType properties has been changed after initial entry into pool (resynch attempts)
+ *  
  * @author Avnet
  *
  */
@@ -77,24 +80,55 @@ public class DataSourcePool {
 	private Map<Integer, DataSourceTransactionManager> dataSoucePool = new HashMap<Integer, DataSourceTransactionManager>();
 
 
-	// TODO refresh DataSource when server has been updated
-	public DataSourceTransactionManager getTransactionManager(Server server) {
-		logger.info("getTransactionManager(): ");;
-		if (dataSoucePool.containsKey(server.getId())) {
-			return dataSoucePool.get(server.getId());
-		}
+	/*3 scenarios: 
+	a) initial usage - create DataSource for server
+	b) later usage - get existing DS (server and Connection type haven't been changed)
+	c) later usage - get existing DS but server or connection type have been changed - refresh*/
 
-		return createDataSource(server);
+
+	public DataSourceTransactionManager getTransactionManager(Server server) {
+		logger.info("getTransactionManager(): ");
+		if (!dataSoucePool.containsKey(server.getId()) ) {
+			logger.info("datasource does not exist for this server, creating new one...");
+			return createDataSource(server);
+		} else {
+			if (serverOrConnectionNotUpdated(server)){
+				return dataSoucePool.get(server.getId());	
+			} else{
+				dataSoucePool.remove(server.getId());
+				return createDataSource(server);
+
+			}
+		}
 	}
 
+	/*check if server or connection type properties have been changed after initial putting into datasource pool*/
+	private boolean serverOrConnectionNotUpdated(Server server) {
+		logger.info("was server Or Connection Updated... ?" + server.getId());
+		DataSourceTransactionManager dataSourceTransactionManager = dataSoucePool.get(server.getId());
+		DataSource dataSource = dataSourceTransactionManager.getDataSource();
+		org.apache.commons.dbcp2.BasicDataSource basicDataSource = (BasicDataSource) dataSource; // GDMA.
+
+		if ( basicDataSource.getUrl().equals(server.getConnectionUrl()) &&
+				basicDataSource.getUsername().equals(server.getUsername()) &&
+				basicDataSource.getPassword().equals(server.getPassword()) &&
+				basicDataSource.getDriverClassName().equals(server.getConnectionType().getConnectionClass())) {
+			logger.info("...no update, using existing fetching...");
+			return true;
+		} else{
+			logger.info("...yes, datasource exists for this server, but needs refresh - server or connection was updated");
+			return false;	
+		}
+
+	}
 
 
 	private synchronized DataSourceTransactionManager createDataSource(Server server) {
 		logger.info("createDataSource(), for server:  " + server.getId());
 		// just in case ...
-		if (dataSoucePool.containsKey(server.getId())) {
-			return dataSoucePool.get(server.getId());
-		}
+		//if (dataSoucePool.containsKey(server.getId())) {
+		//	return dataSoucePool.get(server.getId());
+		//}
 
 		try {
 			// TODO configure properly - i.e. maube add max and min to server
@@ -122,6 +156,7 @@ public class DataSourcePool {
 			server.setConnected(true);
 			return transactionManager;
 		} catch (Throwable e) {
+			logger.error(e.getMessage());
 			server.setConnected(false);
 			server.setLastError(e.getMessage());
 		}
@@ -129,7 +164,6 @@ public class DataSourcePool {
 	}
 
 
-	
 	public JdbcTemplate getJdbcTemplateFromDataDource(Server server){
 		DataSource dataSource = getTransactionManager(server).getDataSource();
 		return new JdbcTemplate(dataSource);			
