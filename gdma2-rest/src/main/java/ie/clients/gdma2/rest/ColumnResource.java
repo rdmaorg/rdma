@@ -121,7 +121,7 @@ public class ColumnResource extends BaseDataTableResource{
 		return resp;
 	}
 	
-	/*Get active columns for table - use for DD display and DD store, after selecting active table from server*/
+	/*Get active columns for table order by column alias - use for DD display and DD store, after selecting active table from server*/
 	@RequestMapping(value = "table/{id}/active")
 	public List<Column> findByTableIdAndActiveTrue(@PathVariable("id") Integer tableId){
 		logger.info("findByTableIdAndActiveTrue, tableId: " + tableId);

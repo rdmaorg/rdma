@@ -19,12 +19,12 @@ public interface TableRepository extends PagingAndSortingRepository<Table, Integ
 	 * https://www.petrikainulainen.net/programming/spring-framework/spring-data-jpa-tutorial-part-seven-pagination/
 	 * */
 
-	/*TESTING PURPOSE*/
-	/*find by ServerId and Active - not pageable*/
-	public List<Table> findByServerIdAndActiveTrue(Integer serverId);
-	public List<Table> findByServerId(int serverId);
-
 	
+	/*find by ServerId and Active - not pageable, order by table alias - for DD store in Columns page*/
+	@Query("select t from Table t where t.server.id = ?1 and t.active = TRUE order by t.alias asc")
+	public List<Table> findByServerIdAndActiveTrue(Integer serverId);
+		
+	public List<Table> findByServerId(int serverId);
 	
 	@Query("select count(t) from Table t where t.server.id = ?1")
 	public long countTablesForServer(Integer serverId);

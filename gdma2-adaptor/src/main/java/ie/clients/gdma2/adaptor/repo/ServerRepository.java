@@ -12,8 +12,8 @@ import org.springframework.data.repository.query.Param;
 public interface ServerRepository extends PagingAndSortingRepository<Server, Integer> {
 
 	
-	/*find all active */
-	@Query("select s from Server s where s.active = TRUE")
+	/*find all active order by server name*/
+	@Query("select s from Server s where s.active = TRUE order by s.name asc")
 	public List<Server> findActiveServers();
 	
 	@Query("select count(s) from Server s where upper(s.name) like ?1 or upper(s.username) like ?1 "

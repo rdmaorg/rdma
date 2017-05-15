@@ -77,7 +77,7 @@ public class TableResource extends BaseDataTableResource{
 	}
 
 
-	/*Get active tables for server*/
+	/*Get active tables for server order by table alias - for DD store in Columns page*/
 	@RequestMapping(value = "/server/{id}/active",method = RequestMethod.GET)
 	public List<Table> findByServerIdAndActiveTrue(@PathVariable("id") Integer serverId){
 		logger.debug("*** findByServerIdAndActiveTrue(), serverId: " +  serverId);

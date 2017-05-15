@@ -29,6 +29,7 @@ public class ServerResource extends BaseDataTableResource {
 	}
 	
 	
+	/*find all active order by server name*/
 	@RequestMapping("/list/active")
 	public List<Server> getAllActiveServers(){
 		logger.debug("getAllActiveServers()");

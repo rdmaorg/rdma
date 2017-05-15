@@ -1,7 +1,6 @@
 package ie.clients.gdma2.adaptor.repo;
 
 import ie.clients.gdma2.domain.Column;
-import ie.clients.gdma2.domain.Table;
 
 import java.util.List;
 import java.util.Set;
@@ -16,7 +15,8 @@ public interface ColumnRepository extends PagingAndSortingRepository<Column, Int
 	/*find all columns for table*/
 	public Set<Column> findByTableId(int tableId);
 	
-	/*find ACTIVE columns for table*/
+	/*find ACTIVE columns for table order by alias - for DD store in Column page*/
+	@Query("select c from Column c where c.active = true and c.table.id = ?1 order by c.alias asc")
 	public List<Column> findByTableIdAndActiveTrue(Integer tableId);
 
 	/*count all columns for table*/
