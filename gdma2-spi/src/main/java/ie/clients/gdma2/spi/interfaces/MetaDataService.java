@@ -8,6 +8,7 @@ import ie.clients.gdma2.domain.User;
 import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 
+
 import java.util.List;
 
 public interface MetaDataService {
@@ -94,5 +95,8 @@ public interface MetaDataService {
 	public PaginatedTableResponse<Column> getColumnData(Integer tableId, String matching, int orderByColumnID,
 			String orderDirection, int startIndex, int length);
 	
+	/*TABLE DATA using Datagrid*/
+	public PaginatedTableResponse<Column> getTableData(Integer tableId, List<Object> filters, int orderByColumnID,
+			String orderDirection, int startIndex, int length);
 	
 }

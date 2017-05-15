@@ -1,4 +1,4 @@
-package ie.clients.gdma2.util;
+package ie.clients.gdma2.domain;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
  */
 public class UpdateDataRequestDummy{ 
 
-	private static final Logger logger = LoggerFactory.getLogger(DataSourcePool.class);
+	private static final Logger logger = LoggerFactory.getLogger(UpdateDataRequestDummy.class);
 
 
 	/**

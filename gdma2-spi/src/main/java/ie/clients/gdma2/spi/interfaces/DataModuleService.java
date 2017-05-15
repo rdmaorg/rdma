@@ -3,6 +3,7 @@ package ie.clients.gdma2.spi.interfaces;
 import ie.clients.gdma2.domain.Column;
 import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.Table;
+import ie.clients.gdma2.domain.UpdateDataRequest;
 import ie.clients.gdma2.domain.UserAccess;
 
 import java.util.List;
@@ -41,8 +42,15 @@ public interface DataModuleService {
 
 		/*add/upadate/delete Records - for Columns */
 		public void addRecord(Integer tableId);
+		public void addRecord(UpdateDataRequest dataRequest);
+		
 		public int updateRecords(Integer tableId);
+		public int updateRecords(UpdateDataRequest dataRequest);
+		
 		public int deleteRecords(Integer tableId);
+		public int deleteRecords(UpdateDataRequest dataRequest);
+
+		
 			
 	
 	

@@ -9,9 +9,11 @@ import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 import ie.clients.gdma2.spi.interfaces.MetaDataService;
 import ie.clients.gdma2.util.EntityUtils;
+import ie.clients.gdma2.util.Filter;
 import ie.clients.gdma2.util.HashUtil;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -913,7 +915,53 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 	}
 
+	/**
+	 */
+	@SuppressWarnings("unchecked")
+	@Override
+	public PaginatedTableResponse<Column> getTableData(Integer tableId, List<Object> filtersParam,
+			int orderByColumnID, String orderDirection,
+			int startIndex, int length) {
 
+		logger.info("getTableData : " + tableId);
+		
+		Table table = null;
+		Server server = null;
+		List<Column> columns = null;
+		
+		List<Filter> filtersTODO = new ArrayList<Filter>(); //NEVER use NULL for Filters, only empty collection
+		long total = 0;
+		long filtered = 0;
+
+		table = repositoryManager.getTableRepository().findOne(tableId);
+		server = table.getServer();
+		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(tableId);
+		table.setColumns(new HashSet<Column>(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change this and pass colums to utility method themselves
+		Column sortedByColumn = (orderByColumnID == 0 ? null : repositoryManager.getColumnRepository().findOne(orderByColumnID));
+
+		logger.info("table : " + tableId + " , server: " + server.getId() + " , sortedBy Column: " + sortedByColumn);
+		
+		if(filtersTODO.isEmpty()){
+			logger.info("count - no filters");
+			total = dynamicDAO.getCount(server, table, filtersTODO).longValue();
+			filtered = total;
+			
+		} else {
+			logger.info("count - with filters");
+			filtered =  dynamicDAO.getCount(server, table, filtersTODO).longValue();
+			final List<Filter> emptyFilterListForCount = new ArrayList<Filter>(); //NEVER use NULL for Filters, only empty collection
+			total =  dynamicDAO.getCount(server, table, emptyFilterListForCount).longValue();
+			
+		}
+		
+		columns = dynamicDAO.getTableData(table, server, sortedByColumn, filtersTODO, orderDirection, startIndex, length);
+		/**/
+		
+		logger.info("Total: " + total + ", Filtered: " + filtered + ", Result Count: " + columns.size());
+
+		return getPaginatedTableResponse(columns != null ? columns : new ArrayList<Column>(), total, filtered);
+		
+	}
 
 
 }

@@ -30,6 +30,7 @@ public class UserAccess extends BaseEntity {
 	
 	//@Id
 	//TODO ? @ManyToOne(cascade = CascadeType.ALL)
+	//@JsonIgnore
 	@ManyToOne
 	@JoinColumn(name = "USER_ID", nullable = false)
 	private User user;

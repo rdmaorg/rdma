@@ -2,8 +2,10 @@ package ie.clients.gdma2.util;
 
 import ie.clients.gdma2.adaptor.repo.RepositoryManager;
 import ie.clients.gdma2.domain.Column;
+import ie.clients.gdma2.domain.ColumnDataUpdate;
 import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.Table;
+import ie.clients.gdma2.domain.UpdateDataRequest;
 import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.spi.interfaces.UserContextProvider;
 
@@ -757,7 +759,9 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 	}
 
-	/*	 sql: SELECT count(1)  FROM customers */
+	
+	/*	 sql: SELECT count(1)  FROM customers WHERE + filters*/
+	@Override
 	public Long getCount(Server server, Table table, List<Filter> filters) {
 		// TODO optimise!!
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSourcePool.getTransactionManager(server).getDataSource());
@@ -1300,5 +1304,49 @@ public class DynamicDAOImpl implements DynamicDAO{
 		return countDel;
 	}
 
+	
+	
+	
+	@Override
+	public List getTableData(Table table, Server server, Column orderByColumn,
+			List<Filter> filters,
+			String orderDirection, int startIndex,int length) {
+
+		
+		logger.info("getTableData");
+		String sql = SQLUtil.createSelect(server, table, orderByColumn, orderDirection, filters);
+		logger.info("sql created: " + sql);
+
+		PreparedStatementCreatorFactory psc = new PreparedStatementCreatorFactory(sql);
+
+		declareSqlParameters(psc, filters, server);
+
+		psc.setResultSetType(ResultSet.TYPE_SCROLL_INSENSITIVE);
+		psc.setUpdatableResults(false);
+
+		JdbcTemplate jdbcTemplate = dataSourcePool.getJdbcTemplateFromDataDource(server);
+
+		final List<Object> params = convertFiltersToSqlParameterValues(filters);
+		logger.info("params: " +  params);
+
+		
+		List records =  (List)jdbcTemplate.query(psc.newPreparedStatementCreator(params), new PagedResultSetExtractor(new RowMapper(),
+				startIndex, length));
+
+		
+		/** todo in metadata service after returning List<Entity>
+		paginatedResponse.setTotalRecords(getCount(server, table, paginatedRequest.getFilters()));
+		paginatedResponse.setStartIndex(paginatedRequest.getRecordOffset());
+		paginatedResponse.setKey("" + paginatedRequest.getSortedByColumnId());
+		paginatedResponse.setSortDir(paginatedRequest.getDir());
+
+		return paginatedResponse;
+		 */
+
+		return records;
+
+	}
+	
+	
 
 }

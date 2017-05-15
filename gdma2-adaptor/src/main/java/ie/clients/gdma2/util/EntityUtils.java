@@ -20,7 +20,7 @@ public class EntityUtils {
 
 		if (column.isPrimarykey()) {
 			column.setDisplayed(true);
-			column.setAllowUpdate(false);
+			column.setAllowUpdate(false); //but if not autoincrement then me have to allow update
 			column.setNullable(false);
 			column.setSpecial("N");
 		}

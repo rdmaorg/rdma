@@ -1,4 +1,4 @@
-package ie.clients.gdma2.util;
+package ie.clients.gdma2.domain;
 
 import java.util.ArrayList;
 import java.util.List;

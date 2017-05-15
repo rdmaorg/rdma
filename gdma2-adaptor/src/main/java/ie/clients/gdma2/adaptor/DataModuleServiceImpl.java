@@ -1,14 +1,14 @@
 package ie.clients.gdma2.adaptor;
 
 import ie.clients.gdma2.domain.Column;
+import ie.clients.gdma2.domain.ColumnDataUpdate;
 import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.Table;
+import ie.clients.gdma2.domain.UpdateDataRequest;
+import ie.clients.gdma2.domain.UpdateDataRequestDummy;
 import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.spi.interfaces.DataModuleService;
-import ie.clients.gdma2.util.ColumnDataUpdate;
 import ie.clients.gdma2.util.EntityUtils;
-import ie.clients.gdma2.util.UpdateDataRequest;
-import ie.clients.gdma2.util.UpdateDataRequestDummy;
 
 import java.util.List;
 
@@ -99,6 +99,14 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 		dynamicDAO.addRecord(createDummyUpdateReqForAddRecord());
 
 	}
+		
+	@Override
+	public void addRecord(UpdateDataRequest dataRequest) {
+		logger.info("addRecord");
+		logger.info("user: " + userContextProvider.getLoggedInUserName());
+		dynamicDAO.addRecord(dataRequest);
+		
+	}
 	
 	/**
 	 * 
@@ -127,11 +135,20 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 	public int updateRecords(Integer tableId) {
 		logger.info("updateRecords");
 		logger.info("user: " + userContextProvider.getLoggedInUserName());
-		
 		int updateRecords = dynamicDAO.updateRecords(createDummyUpdateReq());
 		return updateRecords;
 		
 	}
+	
+	@Override
+	public int updateRecords(UpdateDataRequest dataRequest) {
+		logger.info("updateRecords");
+		logger.info("user: " + userContextProvider.getLoggedInUserName());
+		int updateRecords = dynamicDAO.updateRecords(dataRequest);
+		return updateRecords;
+		
+	}
+	
 	
 	/**
 	 * select * from table_gdma2 where name = 'new_table_test_autoincrement'; 	id=136
@@ -148,8 +165,6 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 		//upadte witj date
 		UpdateDataRequest udr = dummy.createDummyUpdateRequestForAutoIncrementTableWithDate_new_table_test_autoincrement(6, 136);
 		
-		
-		
 		logger.info("createDummyUpdateReq: ");
 		List<List<ColumnDataUpdate>> updates = udr.getUpdates();
 		for (List<ColumnDataUpdate> list : updates) {
@@ -161,6 +176,9 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 		return udr;
 	}
 
+	
+	
+	
 	@Override
 	public int deleteRecords(Integer tableId) {
 		logger.info("deleteRecords");
@@ -172,4 +190,12 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 		
 		return dynamicDAO.deleteRecords(updateDataRequest);
 	}
+
+	@Override
+	public int deleteRecords(UpdateDataRequest dataRequest) {
+		logger.info("deleteRecords");
+		return dynamicDAO.deleteRecords(dataRequest);
+	}
+
+	
 }

@@ -1,4 +1,4 @@
-package ie.clients.gdma2.util;
+package ie.clients.gdma2.domain;
 
 public class ColumnDataUpdate {
 

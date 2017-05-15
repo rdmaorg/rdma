@@ -3,6 +3,7 @@ package ie.clients.gdma2.util;
 import ie.clients.gdma2.domain.Column;
 import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.Table;
+import ie.clients.gdma2.domain.UpdateDataRequest;
 
 import java.util.List;
 import java.util.Set;
@@ -40,10 +41,20 @@ public interface DynamicDAO {
 			int orderByColumnID, String orderDirection, int startIndex,
 			int length);
 	
+
+	/*count data for table with/without filterw in WHERE clause*/
+	public Long getCount(Server server, Table table, List<Filter> filters);
+	
+	public List getTableData(Table table, Server server, Column orderByColumn,
+			List<Filter> filters, String orderDirection, int startIndex,
+			int length);
+
+	
+
+	
+	
 	/*
 	public PaginatedResponse get(PaginatedRequest paginatedRequest);
-
-	public Long getCount(Server server, Table table, List<Filter> filters);
 
 	public void addRecord(UpdateRequest updateRequest);
 	*/
@@ -77,6 +88,11 @@ public interface DynamicDAO {
 	 */
 	public List getDropDownData(Column display, Column store);
 
+	
+	
+	
+
+	
 	/**
 	 * Get the list of columns for a select through the SQL Console
 	 * 
