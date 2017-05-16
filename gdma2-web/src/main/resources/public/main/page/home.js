@@ -6,17 +6,19 @@ var loadDatatable = function(){
 	showLoading("#loading-spinner-modal");
 	$.ajax({
         type: "get",
-        url: mapPathVariablesInUrl(restUri.column.list_active, {id: tableId}),
+        url: mapPathVariablesInUrl(restUri.column.column_data, {id: tableId}),
         contentType: "application/json; charset=utf-8",
         dataType: 'json'
     }).done(function(data){
     	$("#tableHeaderRow").empty();
-    	 $("<th></th>").appendTo("#tableHeaderRow");
-    	$.each(data, function(i, column) {
-    		columns[i+1] = column;
-    	    $("<th>" + column.name + "</th>").appendTo("#tableHeaderRow");
-    	});
-    	
+		$("<th>Row id</th>").appendTo("#tableHeaderRow");
+		columns[0] = {
+			name : "Row Id"
+		}
+		$.each(data, function(i, column) {
+			columns[i + 1] = column;
+			$("<th>" + column.name + "</th>").appendTo("#tableHeaderRow");
+		});
     }).fail(function(e){
     	handleError('#global-alert', e);
     }).complete(function(e){
@@ -39,7 +41,8 @@ var configureDataTable = function(){
 			"lengthMenu": [ [10, 25, 50, 100], [10, 25, 50, 100] ],
 			"columnDefs": [ { className: "text-center", "targets": [7,8] },
 			                { "orderable": false, "targets": 8 } ],
-			"columns": columnsData
+			 "dataSrc": "data",
+			 "columns": columnsData
 	};
 
 	tableData = $('#table_data').configureDataTable(config, {

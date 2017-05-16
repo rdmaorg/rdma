@@ -31,7 +31,8 @@ var restUri = {
 	column:{
 		sync: getRestBaseUri() + '/column/metadata/table/{id}',
 		list: getRestBaseUri() + '/column/list',
-		list_active: getRestBaseUri() + '/column/data/table/{id}',
+		list_active: getRestBaseUri() + '/column/table/{id}/active',
+		column_data: getRestBaseUri() + '/column/data/table/{id}',
 		table: getRestBaseUri() + '/column/table/{id}',
 		item: getRestBaseUri() + '/column/table/{id}/active',
 		save: getRestBaseUri() + '/column/save'
