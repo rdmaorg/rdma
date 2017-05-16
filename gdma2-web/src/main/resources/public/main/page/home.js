@@ -3,7 +3,7 @@ var columns = new Array();
 var tableData;
 
 var loadDatatable = function(){
-	showLoading("#loading-spinner-modal");
+	showLoading();
 	$.ajax({
         type: "get",
         url: mapPathVariablesInUrl(restUri.column.column_data, {id: tableId}),
@@ -24,7 +24,7 @@ var loadDatatable = function(){
     }).complete(function(e){
     	configureDataTable();
     }).always(function(){
-    	hideLoading("#loading-spinner-modal");
+    	hideLoading();
     	$("#tableRow").show();
     });
 	
