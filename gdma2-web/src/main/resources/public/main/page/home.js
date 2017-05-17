@@ -22,7 +22,7 @@ var loadDatatable = function(){
     }).fail(function(e){
     	handleError('#global-alert', e);
     }).complete(function(e){
-    	configureDataTable();
+//    	configureDataTable();
     }).always(function(){
     	hideLoading();
     	$("#tableRow").show();
@@ -38,11 +38,8 @@ var configureDataTable = function(){
 	}
 	
 	var config={
-			"lengthMenu": [ [10, 25, 50, 100], [10, 25, 50, 100] ],
-			"columnDefs": [ { className: "text-center", "targets": [7,8] },
-			                { "orderable": false, "targets": 8 } ],
-			 "dataSrc": "data",
-			 "columns": columnsData
+		 "dataSrc": "data",
+		 "columns": columnsData
 	};
 
 	tableData = $('#table_data').configureDataTable(config, {
@@ -61,7 +58,7 @@ var configureDataTable = function(){
 $(document).ready(function(){	
 	tableId = sessionStorage.getItem("tableId");
 	if(tableId){
-		loadDatatable();
+//		loadDatatable();
 	}
     
 });
