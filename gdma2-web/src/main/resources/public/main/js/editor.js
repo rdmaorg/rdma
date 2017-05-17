@@ -28,11 +28,11 @@
 			ajax : function(method, url, d, successCallback, errorCallback) {
 				if (d.action === 'create') {
 					if (editorConfig.createFunction) {
-						editorConfig.createFuncion(d, successCallback, errorCallback);
+						editorConfig.createFunction(d, successCallback, errorCallback);
 					}
 				} else if (d.action === 'edit') {
 					if (editorConfig.editFunction) {
-						e1ditorConfig.editFuncion(d, successCallback, errorCallback);
+						e1ditorConfig.editFunction(d, successCallback, errorCallback);
 					}
 				} else if (d.action === 'remove') {1
 					if (editorConfig.removeFunction) {1
