@@ -11,10 +11,10 @@ var loadDatatable = function(){
         dataType: 'json'
     }).done(function(data){
     	$("#tableHeaderRow").empty();
-		$("<th>Row id</th>").appendTo("#tableHeaderRow");
 		columns[0] = {
-			name : "Row Id"
+			name : ""
 		}
+		$("<th>"+ columns.name +"</th>").appendTo("#tableHeaderRow");
 		$.each(data, function(i, column) {
 			columns[i + 1] = column;
 			$("<th>" + column.name + "</th>").appendTo("#tableHeaderRow");
@@ -22,7 +22,7 @@ var loadDatatable = function(){
     }).fail(function(e){
     	handleError('#global-alert', e);
     }).complete(function(e){
-//    	configureDataTable();
+    	configureDataTable();
     }).always(function(){
     	hideLoading();
     	$("#tableRow").show();
@@ -58,7 +58,7 @@ var configureDataTable = function(){
 $(document).ready(function(){	
 	tableId = sessionStorage.getItem("tableId");
 	if(tableId){
-//		loadDatatable();
+		loadDatatable();
 	}
     
 });
