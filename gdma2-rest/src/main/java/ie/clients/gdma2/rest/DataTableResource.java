@@ -68,6 +68,13 @@ public class DataTableResource extends BaseDataTableResource{
 		
 	}
 	
+	/*	 http://localhost/gdma2/rest/datatable/dropdown/display/628/store/629	 */
+	@RequestMapping(value = "/dropdown/display/{did}/store/{sid}")
+	public List getDropdownData(@PathVariable("did") Integer displayColumnId, @PathVariable("sid") Integer storeColumnId){
+		logger.info("getDropdownData for display column: " + displayColumnId + ", and store column: " + storeColumnId);
+		return serviceFacade.getDataModuleService().getDropdownData(displayColumnId, storeColumnId);
+	}
+	
 	/*serverId = 6 tableId= 133 user is active and has userAccess to table with active columns
 	 * 
 	 * first READ: 			https://localhost/gdma2/rest/datatable/table/83 
