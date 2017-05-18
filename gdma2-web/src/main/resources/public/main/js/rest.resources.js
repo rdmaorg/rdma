@@ -1,10 +1,5 @@
 var restUri = {
-//	menu : {
-//		app : getRestBaseUri() + '/menu/app',
-//		user : getRestBaseUri() + '/menu/user'
-//	},
 	server:{
-		data: getRestBaseUri() + '/server/data/tables',
 		list: getRestBaseUri() + '/server/list',
 		table: getRestBaseUri() + '/server/table',
 		item: getRestBaseUri() + '/server/{serverId}',
@@ -22,20 +17,15 @@ var restUri = {
 	table:{
 		list: getRestBaseUri() + '/table/list',
 		list_active: getRestBaseUri() + '/table/server/{id}/active',
-		list_for_server_active: getRestBaseUri() + '/table/data/server/{id}',
 		sync_table_server: getRestBaseUri() + '/table/{id}/metadata',
 		table: getRestBaseUri() + '/table/server/{id}',
 		save: getRestBaseUri() + '/table/save',
-		table_data:  getRestBaseUri() + '/datatable/table/{id}'
-//		table_data:  getRestBaseUri() + '/column/data/read/table/{id}'
-		
+		table_data:  getRestBaseUri() + '/column/data/read/table/{id}'
 	},
 	column:{
 		sync: getRestBaseUri() + '/column/metadata/table/{id}',
 		list: getRestBaseUri() + '/column/list',
 		list_active: getRestBaseUri() + '/column/table/{id}/active',
-		column_data: getRestBaseUri() + '/column/data/table/{id}',
-		column_metadata: getRestBaseUri() + '/datatable/columns/table/{id}',
 		table: getRestBaseUri() + '/column/table/{id}',
 		item: getRestBaseUri() + '/column/table/{id}/active',
 		save: getRestBaseUri() + '/column/save'
@@ -53,6 +43,11 @@ var restUri = {
 	menu: {
 		user: getRestBaseUri() + '/menu/user',
 		app: getRestBaseUri() + '/menu/app'
+	},
+	datatable: {
+		servers: getRestBaseUri() + '/datatable/servers',
+		tables: getRestBaseUri() + '/datatable/tables/server/{id}',
+		columns: getRestBaseUri() + '/datatable/columns/table/{id}'
 	}
 	
 };

@@ -8,7 +8,7 @@ var loadDatatable = function(){
 	showLoading();
 	$.ajax({
         type: "get",
-        url: mapPathVariablesInUrl(restUri.column.column_metadata, {id: tableId}),
+        url: mapPathVariablesInUrl(restUri.datatable.columns, {id: tableId}),
         contentType: "application/json; charset=utf-8",
         dataType: 'json'
     }).done(function(data){
@@ -16,7 +16,7 @@ var loadDatatable = function(){
 		columns[0] = {
 			name : ""
 		}
-		$("<th>"+ columns.name +"</th>").appendTo("#tableHeaderRow");
+		$("<th>"+ columns[0].name +"</th>").appendTo("#tableHeaderRow");
 		$.each(data, function(i, column) {
 			columns[i + 1] = column;
 			$("<th>" + column.name + "</th>").appendTo("#tableHeaderRow");
@@ -55,6 +55,7 @@ var configureDataTable = function(){
 		 "dataSrc": "data",
 		 "columns": columnsData,
          dom : "Bfrtip",
+         select: true,
 		 buttons: [
               { extend: "create", editor: editorData },
               { extend: "edit",   editor: editorData },
@@ -79,10 +80,19 @@ var configureDataTable = function(){
 }
 
 var createEditorFields = function(){
+	var fieldTypes = {
+			VARCHAR: "VARCHAR",
+			BOOLEAN: "BOOLEAN",
+			TINYINT: "TINYINT"
+	}
 	var fields = [];
 	for(var i = 1; i < columns.length; i++){
 		fields[i-1] = { label: columns[i].alias ,
                 	  name: ""+i };
+		if(columns[i].columnTypeString.toUpperCase() === fieldTypes.BOOLEAN
+				|| columns[i].columnTypeString.toUpperCase() === fieldTypes.TINYINT){
+			fields[i-1].type = "checkbox";
+		}
 	}
 	return fields;
 }
