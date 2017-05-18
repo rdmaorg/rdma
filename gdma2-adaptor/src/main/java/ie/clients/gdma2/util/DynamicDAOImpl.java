@@ -9,6 +9,9 @@ import ie.clients.gdma2.domain.UpdateDataRequest;
 import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.spi.interfaces.UserContextProvider;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -25,6 +28,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
@@ -34,6 +38,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 @Repository
 public class DynamicDAOImpl implements DynamicDAO{
@@ -759,7 +764,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 	}
 
-	
+
 	/*	 sql: SELECT count(1)  FROM customers WHERE + filters*/
 	@Override
 	public Long getCount(Server server, Table table, List<Filter> filters) {
@@ -954,7 +959,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(table.getId());
 		table.setColumns(new HashSet(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change this and pass colums to utility method themselves
 
-		
+
 		List<List<ColumnDataUpdate>> columnsUpdate = updateRequest.getUpdates();
 
 		DataSourceTransactionManager transactionManager = dataSourcePool.getTransactionManager(server);
@@ -1040,7 +1045,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 		for (Column metadataColumn : metadataColumnSet) {
 			logger.info("start iteration");//TODO REMOVE
 			logdetails(metadataColumn);//TODO REMOVE
-			
+
 			if (StringUtils.hasText(metadataColumn.getSpecial())) {
 				//USER
 				if ("U".equals(metadataColumn.getSpecial())) {
@@ -1059,7 +1064,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 						columns.add(metadataColumn);
 						parameters.add(SQLUtil.convertToType(userName, metadataColumn.getColumnType()));
 					}
-				//DATE
+					//DATE
 				} else if ("D".equals(metadataColumn.getSpecial())) {
 					logger.info("special column 'D' detected");
 					// first see if by error the column is already included
@@ -1081,7 +1086,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 	private void logdetails(Column metadataColumn) {
 		logger.info("metadata, id: " + metadataColumn.getId() + " , name: " + metadataColumn.getName() +  " , special: " + 	metadataColumn.getSpecial());
-		
+
 	}
 
 	/**
@@ -1121,7 +1126,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 		//TODO check conditions : does column need to be active...
 		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(table.getId());
 		table.setColumns(new HashSet(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change this and pass colums to utility method themselves
-		
+
 		List<List<ColumnDataUpdate>> columnsUpdate = updateRequest.getUpdates();
 
 		DataSourceTransactionManager transactionManager = dataSourcePool.getTransactionManager(server);
@@ -1304,15 +1309,15 @@ public class DynamicDAOImpl implements DynamicDAO{
 		return countDel;
 	}
 
-	
-	
-	
+
+
+
 	@Override
 	public List getTableData(Table table, Server server, Column orderByColumn,
 			List<Filter> filters,
 			String orderDirection, int startIndex,int length) {
 
-		
+
 		logger.info("getTableData");
 		String sql = SQLUtil.createSelect(server, table, orderByColumn, orderDirection, filters);
 		logger.info("sql created: " + sql);
@@ -1329,11 +1334,11 @@ public class DynamicDAOImpl implements DynamicDAO{
 		final List<Object> params = convertFiltersToSqlParameterValues(filters);
 		logger.info("params: " +  params);
 
-		
+
 		List records =  (List)jdbcTemplate.query(psc.newPreparedStatementCreator(params), new PagedResultSetExtractor(new RowMapper(),
 				startIndex, length));
 
-		
+
 		/** todo in metadata service after returning List<Entity>
 		paginatedResponse.setTotalRecords(getCount(server, table, paginatedRequest.getFilters()));
 		paginatedResponse.setStartIndex(paginatedRequest.getRecordOffset());
@@ -1346,7 +1351,118 @@ public class DynamicDAOImpl implements DynamicDAO{
 		return records;
 
 	}
-	
-	
+
+	//TODO test TRANSACTIONS, test NULL values, test non-autoinc, test value with quotes, test mysql/other DB vendors, test more columns in header than in body
+	//this code will INSERT partially new data id some row in CSV contains bad data - check if needs to be done in transaction
+	@Override
+	public int bulkImport(Server server, Table table, Set<Column> columns,	MultipartFile file) {
+
+		int counter = 0;
+
+		InputStream inputStream = null;
+		com.opencsv.CSVReader rdr = null;
+
+		try {
+			inputStream = file.getInputStream();
+			rdr = new com.opencsv.CSVReader(new InputStreamReader(inputStream));
+			//READ HEADERS
+			final String[] headers = rdr.readNext();
+			logger.info("Headers starting with: " + headers[0]);
+
+			if (headers != null) {
+
+				
+				//final Set<Column> columns = table.getColumns();
+				final List<SqlParameter> params = new ArrayList<SqlParameter>();
+
+				String tableList = null;
+				String patternList = null;
+				for (String h : headers) {
+					h = h.trim();
+					Column theColumn = null;
+					for (Column c : columns) {
+						if (c.getName().equals(h)) {
+							theColumn = c;
+							break;
+						}
+					}
+					if (theColumn == null)
+						throw new IOException("The column \"" + h + "\" does not exist in " + table.getName());
+
+					logger.info("Column is of type " + theColumn.getColumnTypeString());
+
+					if(server.getConnectionUrl().contains("mysql")){
+						if (tableList == null) {
+							tableList = h;
+							patternList = "?";
+						} else {
+							tableList += "," + h;
+							patternList += ",?";
+						}
+					}else{
+						if (tableList == null) {
+							tableList = "\"" + h + "\"";
+							patternList = "?";
+						} else {
+							tableList += ",\"" + h + "\"";
+							patternList += ",?";
+						}
+					}
+
+
+					// using varchar because all values from CSV are strings
+					//	params.add(new SqlParameter(Types.VARCHAR));
+					//bh changing this as it was breaking date types
+					params.add(new SqlParameter(theColumn.getColumnType()));
+				}
+
+				final String sql = "INSERT INTO " + server.getPrefix() + "." + table.getName() + " (" + tableList + ") VALUES (" + patternList + ")";
+				//final String sql = "INSERT INTO " + table.getName() + " (" + tableList + ") VALUES (" + patternList + ")";
+				logger.info("Preparing sql: [" + sql + "]");
+				
+
+				/*	MYSQL:
+				 * 		[INSERT INTO dbo.caste (id1,caste1,name1) VALUES (?,?,?)]
+				 * 
+				 * OTHER: 
+				 * 		[INSERT INTO dbo.caste ("id1","caste1","name1") VALUES (?,?,?)]		*/
+				
+				
+				final PreparedStatementCreatorFactory psc = new PreparedStatementCreatorFactory(sql, params);
+
+				//START READING DATA
+				String[] row = rdr.readNext();
+				final JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSourcePool.getTransactionManager(server).getDataSource());
+
+				try {
+					while (row != null) {
+						logger.info("Row starting with: " + row[0] );
+						jdbcTemplate.update(sql, psc.newPreparedStatementSetter(row));
+						counter++;
+						row = rdr.readNext();
+					}
+				} catch (DataAccessException ex) {
+					throw new IOException("Could not import data:" + ex.getMessage());
+				}
+			}
+			return counter;
+
+		} catch (IOException e) {
+			logger.error(e.getMessage());
+			e.printStackTrace(); //TODO
+
+		} finally{
+			try {
+				rdr.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		return counter;
+
+	}
+
+
 
 }

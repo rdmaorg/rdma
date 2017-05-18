@@ -4,7 +4,9 @@ import ie.clients.gdma2.domain.Column;
 import ie.clients.gdma2.domain.UpdateDataRequest;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 /*
 @Controller
@@ -28,7 +31,7 @@ public class DataTableResource extends BaseDataTableResource{
 	private static Logger logger = LoggerFactory.getLogger(DataTableResource.class);
 	
 	/*paginated active columns DATA for : Active server, active table Table, logged in user with UserAccess.allowDisplay = true  */
-	/* https://localhost/gdma2/rest/column/data/read/table/133?length=20  */
+	/* https://localhost/gdma2/rest/datatable/table/136 */
 	@RequestMapping("/table/{id}")
 	public PaginatedTableResponse<Column> tableData(@PathVariable("id") Integer tableId,
 			@RequestParam Map<String, String> reqParams){
@@ -93,6 +96,41 @@ public class DataTableResource extends BaseDataTableResource{
 		return serviceFacade.getDataModuleService().deleteRecords(dataRequest);
 	}
 	
-	
+	/*Upload CSV file for proper DB table to INSERT data*/
+	@RequestMapping(value = "/upload", method = RequestMethod.POST)
+	public Map<String,String> handleUpload(
+			@RequestParam("file") MultipartFile file,
+			@RequestParam("tableid") Integer tableId
+			) throws IOException {
 
+		logger.info("tableId: " + tableId);
+		//System.out.println("HandleUpload");
+		final Map<String, String> results = new HashMap<String, String>();
+		logger.info("file: " + file.getOriginalFilename());
+
+		if (!file.getOriginalFilename().endsWith(".csv")) {
+			results.put("error", "Invalid file type");
+		} else {
+			logger.info("type: " + file.getContentType());
+			logger.info("stream: " + file.getInputStream());
+			logger.info("size: " + file.getSize());
+
+			/*
+			final JSONObject jsonObject = JSONObject.fromObject(bean.getTxtPaginatedRequest());
+			final PaginatedRequest paginatedRequest = (PaginatedRequest) JSONObject.toBean(jsonObject, PaginatedRequest.class);
+			final Server server = gdmaFacade.getServerDao().get(paginatedRequest.getServerId());
+			final Table table = gdmaFacade.getTableDao().get(paginatedRequest.getTableId());
+			*/
+			
+			//final int numRows = bulkImport(tableId, file.getInputStream());
+			int bulkImportResult = serviceFacade.getDataModuleService().bulkImport(tableId, file);
+			results.put("numRecords", "" + bulkImportResult);
+			
+		}
+//	    if (!file.isEmpty()) {
+//	            byte[] bytes = file.getBytes(); // alternatively, file.getInputStream();
+//	            // application logic
+//	    }
+		return results;
+	}
 }

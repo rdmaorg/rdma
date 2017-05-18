@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.data.domain.PageRequest;
+import org.springframework.web.multipart.MultipartFile;
 
 
 public interface DynamicDAO {
@@ -119,6 +120,6 @@ public interface DynamicDAO {
 	 * @return number of rows imported
 	 * @throws IOException
 	 */
-	//public int bulkImport(Server server, Table table, InputStream data) throws IOException;
+	public int bulkImport(Server server, Table table, Set<Column> columns, MultipartFile file);
 
 }

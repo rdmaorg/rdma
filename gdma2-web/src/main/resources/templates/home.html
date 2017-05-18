@@ -30,6 +30,27 @@
 				</table>
 			</div>	
 		  </section>
+		  
+		  <!-- CSV BULK FILE UPLOAD TEST
+		  Data Module - Table page with data, adding upload f-tion to INSERT CSV data to remote DB table 
+		  (pick tableId and put in hidden param e.g. tableId=107) 
+		  Request URL:https://localhost/gdma2/rest/datatable/upload
+			Request Method:POST
+			Content-Disposition: form-data; name="tableid"
+			
+		   -->
+		  <div>
+		  <h1>upload your scv file</h1>
+				
+				<form action="/gdma2/rest/datatable/upload" method="post" enctype="multipart/form-data">
+			    <input type="file" name="file" />
+			    <input type= "hidden" name="tableid"  value="135"/>
+			    <input type="submit" value="Upload"/>
+		  </form>
+		  </div>
+		  <!-- END CSV BULK FILE UPLOAD TEST -->
+		  
+		  
 		  <!-- /.content -->
 		</div>	
 		<footer th:replace="inc/footer"></footer>

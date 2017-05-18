@@ -239,6 +239,13 @@
 			</exclusions>
 		</dependency>
 
+
+	<!-- adding opencsv for bulk CV upload  -->
+	<dependency>
+			<groupId>com.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>3.8</version>
+		</dependency>
 	</dependencies>
 
 	<profiles>
@@ -293,7 +300,7 @@
 			</dependencies>
 		</profile>
 		<profile>
-			<id>test</id>			
+			<id>test</id>
 			<properties>
 				<db.jndi>java:comp/env/jdbc/gdma</db.jndi>
 				<log.location>${d}{catalina.home}/logs</log.location>

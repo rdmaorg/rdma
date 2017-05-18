@@ -42,6 +42,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	public PaginatedTableResponse<ConnectionType> getConnectionTypeTable(String searchValue, String orderByColumn, String orderByDirection,
 			int startIndex, int length) {
 
+		
 		logger.debug("getConnectionTypeTable");
 		long total = repositoryManager.getConnectionTypeRepository().count();
 		long filtered = 0;

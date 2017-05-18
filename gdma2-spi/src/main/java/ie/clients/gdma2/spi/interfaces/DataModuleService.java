@@ -8,6 +8,8 @@ import ie.clients.gdma2.domain.UserAccess;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 /**corresponds to GdmaAjaxFacade in GMDA I, contains operations for working with DATA module, not Admin module
  * GDMA I : before execution each operation calls authecticateUser() to check user in Session
  * GDMA II: CAS used for authentication, every operation will simply call UserContextProvider to get authenticated user*/
@@ -49,6 +51,9 @@ public interface DataModuleService {
 		
 		public int deleteRecords(Integer tableId);
 		public int deleteRecords(UpdateDataRequest dataRequest);
+		
+		//bulk import of remote DB Table data 
+		public int bulkImport(Integer tableId, MultipartFile file);
 
 		
 			
