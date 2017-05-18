@@ -18,8 +18,10 @@ var loadDatatable = function(){
 		}
 		$("<th>"+ columns[0].name +"</th>").appendTo("#tableHeaderRow");
 		$.each(data, function(i, column) {
-			columns[i + 1] = column;
-			$("<th>" + column.name + "</th>").appendTo("#tableHeaderRow");
+			if(column.displayed){
+				columns[i + 1] = column;
+				$("<th>" + column.name + "</th>").appendTo("#tableHeaderRow");
+			}
 		});
     }).fail(function(e){
     	handleError('#global-alert', e);
