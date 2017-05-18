@@ -32,10 +32,10 @@
 					}
 				} else if (d.action === 'edit') {
 					if (editorConfig.editFunction) {
-						e1ditorConfig.editFunction(d, successCallback, errorCallback);
+						editorConfig.editFunction(d, successCallback, errorCallback);
 					}
-				} else if (d.action === 'remove') {1
-					if (editorConfig.removeFunction) {1
+				} else if (d.action === 'remove') {
+					if (editorConfig.removeFunction) {
 						editorConfig.removeFunction(d, successCallback, errorCallback);
 					}
 				}
