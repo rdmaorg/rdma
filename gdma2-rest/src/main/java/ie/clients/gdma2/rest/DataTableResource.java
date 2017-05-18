@@ -1,6 +1,8 @@
 package ie.clients.gdma2.rest;
 
 import ie.clients.gdma2.domain.Column;
+import ie.clients.gdma2.domain.Server;
+import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.UpdateDataRequest;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 
@@ -29,6 +31,47 @@ import org.springframework.web.multipart.MultipartFile;
 public class DataTableResource extends BaseDataTableResource{
 
 	private static Logger logger = LoggerFactory.getLogger(DataTableResource.class);
+	
+	
+	
+	/*METADATA PART*/
+	
+	/*Regular user: list all active servers for user after login.
+	 * 
+	 * User needs to have userAccess to Active tables on this server to get result: 
+	 * 		https://localhost/gdma2/rest/datatable/servers 
+	 * 
+	 * ...After this call user can calls a list of active tables on one of the servers: 
+	 *	 	https://localhost/gdma2/rest/datatable/tables/server/6
+	 * ...and then user can call for a column list of table  
+	 * 		https://localhost/gdma2/rest/datatable/columns/table/133
+	 * ....
+	 */
+	
+	/*	https://localhost/gdma2/rest/datatable/servers	*/
+	@RequestMapping(value = "/servers")
+	public List<Server> getActiveServersContainingActiveTablesForUser(@RequestParam Map<String, String> params){
+		return serviceFacade.getDataModuleService().getActiveServers();
+	}
+	
+	/*	https://localhost/gdma2/rest/datatable/tables/server/6	*/
+	@RequestMapping(value = "/tables/server/{id}")
+	public List<Table> activeTablesOnActiveServerForUser(@PathVariable("id") Integer serverId){
+		logger.info("activeTablesOnActiveServerForUser, serverId: " + serverId);
+		return serviceFacade.getDataModuleService().getActiveTables(serverId);
+	}
+	
+	/*get all Active columns STRUCTURE for given Active table on Active server, based on userName
+	 * 		https://localhost/gdma2/rest/datatable/columns/table/133  
+	 * in GDMA1 : GdmaAjaxFacade.getTableDetails*/
+	@RequestMapping(value = "/columns/table/{id}")
+	public List<Column> getActiveColumns(@PathVariable("id") Integer tableId){
+		logger.info("getActiveColumnsForActiveTableOnActiveServer");
+		return serviceFacade.getDataModuleService().getActiveColumns(tableId);
+	}
+	
+	
+	/*DATA PART*/
 	
 	/*paginated active columns DATA for : Active server, active table Table, logged in user with UserAccess.allowDisplay = true  */
 	/* https://localhost/gdma2/rest/datatable/table/136 */

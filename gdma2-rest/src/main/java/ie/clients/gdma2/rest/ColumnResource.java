@@ -146,14 +146,7 @@ public class ColumnResource extends BaseDataTableResource{
 	
 	/*DATA MODULE*/
 	
-	/*get all Active columns STRUCTURE for given Active table on Active server, based on userName
-	 * 		http://localhost/gdma2/rest/column/data/table/124  
-	 * in GDMA1 : GdmaAjaxFacade.getTableDetails*/
-	@RequestMapping(value = "/data/table/{id}")
-	public List<Column> getActiveColumns(@PathVariable("id") Integer tableId){
-		logger.info("getActiveColumnsForActiveTableOnActiveServer");
-		return serviceFacade.getDataModuleService().getActiveColumns(tableId);
-	}
+	
 	
 	/*paginated active columns DATA for : Active server, active table Table, logged in user with UserAccess.allowDisplay = true  */
 	/* https://localhost/gdma2/rest/column/data/read/table/133?length=20  */
