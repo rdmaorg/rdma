@@ -39,29 +39,30 @@ var configureDataTable = function(){
 		url: mapPathVariablesInUrl(restUri.table.table, {id: serverSessionId}),
 		complete: function(){
 //		hideLoading();
-			associateEditAcces();
+			showEditTableAccessModal();
 			associateViewColumns();
-			associateEditTable();
+			showEditTableAliasModal();
 		}
 	});
 };
 
-var associateEditAcces = function(){
+var showEditTableAccessModal = function(){
 	$(".editAccess").click(function(){
 		var btn = $(this);
 		selectedTableId = btn.data('tableid');
 		selectedTableName = btn.data('tablename');
 		initiateModalUserAccess();
-		$("#modalUserAccess").find('form').trigger('reset');
+//		$("#modalUserAccess").find('form').trigger('reset');
+		$("#editUserAccess").trigger('reset');
 		$('#modalUserAccess').modal('show');
 	});
 	
 }
 
 //Edit table
-var associateEditTable = function(){
+var showEditTableAliasModal = function(){
 	$('.editTable').click(function(){
-		var btn = $(this);
+//		var btn = $(this);
 		tableEdit = table.row($(this).closest('tr')[0]).data();
 		$("#modalTable").find('form').trigger('reset');
 		$("#tableNameModal").val(tableEdit.name);
@@ -143,13 +144,9 @@ var viewTable = function(serverId,tableName) {
 $(document).ready(function(){
 	configureDataTable();	
 	associatePostTable();
-
     $("#serverName").html(serverSessionName);
-    
-    
     $("#modalTable").on('hide.bs.modal', function() {
     	var validator = $( "#editAlias" ).validate();
     	validator.destroy();
-    })
-	
+    });
 });

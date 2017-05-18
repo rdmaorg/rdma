@@ -15,6 +15,7 @@ import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -1323,6 +1324,12 @@ public class DynamicDAOImpl implements DynamicDAO{
 		logger.info("sql created: " + sql);
 
 		PreparedStatementCreatorFactory psc = new PreparedStatementCreatorFactory(sql);
+		
+		for (Column column : table.getColumns()) {
+			if (column.isDisplayed()) {
+				column.getName();
+			}
+		}
 
 		declareSqlParameters(psc, filters, server);
 
@@ -1333,10 +1340,27 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 		final List<Object> params = convertFiltersToSqlParameterValues(filters);
 		logger.info("params: " +  params);
+		
+		
+		
+		List<Column> records = new ArrayList<Column>();
 
-
-		List records =  (List)jdbcTemplate.query(psc.newPreparedStatementCreator(params), new PagedResultSetExtractor(new RowMapper(),
-				startIndex, length));
+		jdbcTemplate.query(psc.newPreparedStatementCreator(params), new PagedResultSetExtractor(new RowMapper(),
+				startIndex, length){
+			 @Override
+		        public Integer extractData(ResultSet rs) throws SQLException, DataAccessException {
+		            ResultSetMetaData rsmd = rs.getMetaData();
+		            int columnCount = rsmd.getColumnCount();
+		            for(int i = 1 ; i <= columnCount ; i++){
+		                Column column = new Column();
+		                column.setName(rsmd.getColumnName(i));
+		                column.setColumnTypeString(rsmd.getColumnTypeName(i));
+		                column.setColumnType(rsmd.getColumnType(i));		                
+		                records.add(column);
+		            }
+		            return columnCount;
+		        }
+		});
 
 
 		/** todo in metadata service after returning List<Entity>

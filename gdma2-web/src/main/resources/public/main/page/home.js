@@ -3,11 +3,12 @@ var columns = new Array();
 var tableData;
 var editorData;
 
+//load columns metadata
 var loadDatatable = function(){
 	showLoading();
 	$.ajax({
         type: "get",
-        url: mapPathVariablesInUrl(restUri.column.column_data, {id: tableId}),
+        url: mapPathVariablesInUrl(restUri.column.column_metadata, {id: tableId}),
         contentType: "application/json; charset=utf-8",
         dataType: 'json'
     }).done(function(data){
