@@ -1,11 +1,5 @@
 package ie.clients.gdma2.rest;
 
-import ie.clients.gdma2.domain.Column;
-import ie.clients.gdma2.domain.Server;
-import ie.clients.gdma2.domain.Table;
-import ie.clients.gdma2.domain.UpdateDataRequest;
-import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -21,6 +15,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import ie.clients.gdma2.domain.Column;
+import ie.clients.gdma2.domain.Server;
+import ie.clients.gdma2.domain.Table;
+import ie.clients.gdma2.domain.UpdateDataRequest;
+import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 
 /*
 @Controller
@@ -64,8 +64,8 @@ public class DataTableResource extends BaseDataTableResource{
 	/*get all Active columns STRUCTURE (OR METADATA) for given Active table on Active server, based on userName
 	 * 		https://localhost/gdma2/rest/datatable/columns/table/133  
 	 * in GDMA1 : GdmaAjaxFacade.getTableDetails*/
-	@RequestMapping(value = "/columns/table/{id}")
-	public List<Column> getActiveColumns(@PathVariable("id") Integer tableId){
+	@RequestMapping(value = "/columns/table/{tableId}", method = RequestMethod.GET)
+	public List<Column> getActiveColumns(@PathVariable("tableId") Integer tableId){
 		logger.info("getActiveColumnsForActiveTableOnActiveServer");
 		return serviceFacade.getDataModuleService().getActiveColumns(tableId);
 	}
@@ -75,7 +75,7 @@ public class DataTableResource extends BaseDataTableResource{
 	
 	/*paginated active columns DATA for : Active server, active table Table, logged in user with UserAccess.allowDisplay = true  */
 	/* https://localhost/gdma2/rest/datatable/table/136 */
-	@RequestMapping("/table/{id}")
+	@RequestMapping(value = "/table/{id}", method = RequestMethod.GET)
 	public PaginatedTableResponse<Column> tableData(@PathVariable("id") Integer tableId,
 			@RequestParam Map<String, String> reqParams){
 		

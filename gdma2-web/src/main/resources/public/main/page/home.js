@@ -8,10 +8,14 @@ var loadDatatable = function(){
 	showLoading();
 	$.ajax({
         type: "get",
-        url: mapPathVariablesInUrl(restUri.datatable.columns, {id: tableId}),
+        url: mapPathVariablesInUrl(restUri.datatable.columnsMetaData, {'id': tableId}),
         contentType: "application/json; charset=utf-8",
         dataType: 'json'
     }).done(function(data){
+    	data.sort(function(a, b) {
+		    return parseInt(a.id) - parseInt(b.id);
+		});
+    	
     	$("#tableHeaderRow").empty();
 		columns[0] = {
 			name : ""
@@ -36,11 +40,10 @@ var loadDatatable = function(){
     });
 	
 }
-//configureEditor
 
+//configureEditor
 var configureDataTable = function(){
 	var editorFields = createEditorFields();
-	
 	var configEditor = {
 		table: "#table_data",
 		createFunction: insertData,
@@ -48,11 +51,8 @@ var configureDataTable = function(){
 		removeFunction: removeData,
 		fields: editorFields
 	}
-	
 	editorData = $('#table_data').configureEditor(configEditor);
-	
 	var columnsData = createDataColumns();
-
 	var config={
 		 "dataSrc": "data",
 		 "columns": columnsData,
@@ -64,9 +64,8 @@ var configureDataTable = function(){
               { extend: "remove", editor: editorData }
           ]
 	};
-
 	tableData = $('#table_data').configureDataTable(config, {
-		url: mapPathVariablesInUrl(restUri.table.table_data, {id: tableId}),
+		url: mapPathVariablesInUrl(restUri.datatable.table, {'id': tableId}),
 		complete: function(){
 			//hideLoading();
 		},

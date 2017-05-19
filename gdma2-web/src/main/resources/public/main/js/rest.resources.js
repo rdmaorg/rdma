@@ -19,8 +19,8 @@ var restUri = {
 		list_active: getRestBaseUri() + '/table/server/{id}/active',
 		sync_table_server: getRestBaseUri() + '/table/{id}/metadata',
 		table: getRestBaseUri() + '/table/server/{id}',
-		save: getRestBaseUri() + '/table/save',
-		table_data:  getRestBaseUri() + '/column/data/read/table/{id}'
+		save: getRestBaseUri() + '/table/save'
+//		table_data:  getRestBaseUri() + '/column/data/read/table/{id}' /* DOESNT EXIST ANYMORE */
 	},
 	column:{
 		sync: getRestBaseUri() + '/column/metadata/table/{id}',
@@ -47,7 +47,8 @@ var restUri = {
 	datatable: {
 		servers: getRestBaseUri() + '/datatable/servers',
 		tables: getRestBaseUri() + '/datatable/tables/server/{id}',
-		columns: getRestBaseUri() + '/datatable/columns/table/{id}'
+		table: getRestBaseUri() + '/datatable/table/{id}',
+		columnsMetaData: getRestBaseUri() + '/datatable/columns/table/{id}'
 	}
 	
 };

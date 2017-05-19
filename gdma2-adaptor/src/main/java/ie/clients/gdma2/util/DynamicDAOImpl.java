@@ -1234,12 +1234,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 		PreparedStatementCreatorFactory psc = new PreparedStatementCreatorFactory(sql);
 		
-		for (Column column : table.getColumns()) {
-			if (column.isDisplayed()) {
-				column.getName();
-			}
-		}
-
+		
 		declareSqlParameters(psc, filters, server);
 
 		psc.setResultSetType(ResultSet.TYPE_SCROLL_INSENSITIVE);
@@ -1252,24 +1247,27 @@ public class DynamicDAOImpl implements DynamicDAO{
 		
 		
 		
-		List<Column> records = new ArrayList<Column>();
+		List records = new ArrayList();
 
-		jdbcTemplate.query(psc.newPreparedStatementCreator(params), new PagedResultSetExtractor(new RowMapper(),
-				startIndex, length){
-			 @Override
-		        public Integer extractData(ResultSet rs) throws SQLException, DataAccessException {
-		            ResultSetMetaData rsmd = rs.getMetaData();
-		            int columnCount = rsmd.getColumnCount();
-		            for(int i = 1 ; i <= columnCount ; i++){
-		                Column column = new Column();
-		                column.setName(rsmd.getColumnName(i));
-		                column.setColumnTypeString(rsmd.getColumnTypeName(i));
-		                column.setColumnType(rsmd.getColumnType(i));		                
-		                records.add(column);
-		            }
-		            return columnCount;
-		        }
-		});
+		records = (List)jdbcTemplate.query(psc.newPreparedStatementCreator(params), new PagedResultSetExtractor(new RowMapper(),
+				startIndex, length));
+		
+//		jdbcTemplate.query(psc.newPreparedStatementCreator(params), new PagedResultSetExtractor(new RowMapper(),
+//				startIndex, length){
+//			 @Override
+//		        public Integer extractData(ResultSet rs) throws SQLException, DataAccessException {
+//		            ResultSetMetaData rsmd = rs.getMetaData();
+//		            int columnCount = rsmd.getColumnCount();
+//		            for(int i = 1 ; i <= columnCount ; i++){
+//		                Column column = new Column();
+//		                column.setName(rsmd.getColumnName(i));
+//		                column.setColumnTypeString(rsmd.getColumnTypeName(i));
+//		                column.setColumnType(rsmd.getColumnType(i));		                
+//		                records.add(column);
+//		            }
+//		            return columnCount;
+//		        }
+//		});
 
 
 		/** todo in metadata service after returning List<Entity>
