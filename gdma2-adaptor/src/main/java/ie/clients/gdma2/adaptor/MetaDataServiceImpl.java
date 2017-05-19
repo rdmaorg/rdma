@@ -862,62 +862,6 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 	
 
-
-	/*DATA module section - getting DISPLAYABLE columns DATA for selected table*/
-
-	@Override
-	public PaginatedTableResponse<Column> getColumnData(Integer tableId, String matching, int orderByColumnID, String orderDirection,
-			int startIndex, int length) {
-
-
-		logger.info("getColumnData : " + tableId);
-
-		Table table = null;
-		List<Column> columns = null;
-		long total = 0;
-		long filtered = 0;
-
-		table = repositoryManager.getTableRepository().findOne(tableId);
-
-		//TODO if(null == table)
-
-		if(StringUtils.isBlank(matching)){
-			total = repositoryManager.getColumnRepository().countActiveForTable(table.getId());
-			logger.info("Total Active columns for table, no search:" + total);
-			filtered = total;
-
-			logger.info("find all Active columns by table:");
-			//PageRequest pagingRequest = getPagingRequest(orderBy, orderDirection, startIndex, length, total);
-			//columns = repositoryManager.getColumnRepository().findActiveforTable(table.getId(), pagingRequest);
-			columns = dynamicDAO.getColumnData(tableId, matching, orderByColumnID, orderDirection,
-					startIndex, length);
-
-
-			logger.info("columns found: " + (null != columns ? columns.size() : "0"));
-		} else {
-			String match = "%" + matching.trim().toUpperCase() + "%";
-			logger.info("searching for: " +  match);
-
-			/*
-				total = repositoryManager.getColumnRepository().countActiveForTable(table.getId());
-				logger.debug("Total active count columns for table, with search:" + total);
-				filtered = repositoryManager.getColumnRepository().countActiveAndMatchingForTable(match, table.getId());
-				logger.debug("filtered : " + filtered + ", for match: " + match);
-				PageRequest pagingRequest = getPagingRequest(orderBy, orderDirection, startIndex, length, total);
-				columns = repositoryManager.getColumnRepository().findActiveAndMatchingforTable(match, table.getId(), pagingRequest);
-			 */
-		}
-
-		logger.debug("Search Columns: Search: " + matching + ", Total: " + total + ", Filtered: " + filtered
-				+ ", Result Count: " + ((columns != null) ? columns.size() : "0"));
-
-		return getPaginatedTableResponse(columns != null ? columns : new ArrayList<Column>(), total, filtered);
-
-
-	}
-
-	/**
-	 */
 	@SuppressWarnings("unchecked")
 	@Override
 	public PaginatedTableResponse<Column> getTableData(Integer tableId, List<Object> filtersParam,

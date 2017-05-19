@@ -38,9 +38,6 @@ public interface DynamicDAO {
 	/*  OLD CODE - GDMA 1*/
 
 
-	public List<Column> getColumnData(Integer tableId, String matching,
-			int orderByColumnID, String orderDirection, int startIndex,
-			int length);
 	
 
 	/*count data for table with/without filterw in WHERE clause*/

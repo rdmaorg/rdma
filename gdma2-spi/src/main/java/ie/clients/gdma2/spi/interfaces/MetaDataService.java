@@ -92,8 +92,7 @@ public interface MetaDataService {
 	
 	
 	/*DATA Module part*/
-	public PaginatedTableResponse<Column> getColumnData(Integer tableId, String matching, int orderByColumnID,
-			String orderDirection, int startIndex, int length);
+	
 	
 	/*TABLE DATA using Datagrid*/
 	public PaginatedTableResponse<Column> getTableData(Integer tableId, List<Object> filters, int orderByColumnID,

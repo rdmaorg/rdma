@@ -148,33 +148,6 @@ public class ColumnResource extends BaseDataTableResource{
 	
 	
 	
-	/*paginated active columns DATA for : Active server, active table Table, logged in user with UserAccess.allowDisplay = true  */
-	/* https://localhost/gdma2/rest/column/data/read/table/133?length=20  */
-	@RequestMapping("/data/read/table/{id}")
-	PaginatedTableResponse<Column> getColumnData(@PathVariable("id") Integer tableId,
-			@RequestParam Map<String, String> reqParams){
-		logger.debug("getColumnsPaginatedTable");
-		
-		//  order[0][column]:1
-		//String orderByColumn = "id";
-		
-		//values are not 0,1,2... but 0, column1 PK, column2 PK like : 0,12,14,478
-		int orderByColumnID = getOrderByColumn(reqParams);
-		
-		logger.info("orderByColumn, column PK: " + orderByColumnID);
-		PaginatedTableResponse<Column> resp = serviceFacade.getMetadataService().getColumnData(
-				tableId,
-				getSearchValue(reqParams),
-				orderByColumnID,
-				getOrderByDirection(reqParams),
-				getStartIndex(reqParams),
-				getLength(reqParams));
-		
-		resp.setDraw(getDraw(reqParams));
-		logger.debug("getColumnsPaginatedTable ended");
-		return resp;
-	}
-	
 	/*	DISPLAY PURPOSE http://localhost/gdma2/rest/column/data/dropdown/display/608/store/609	
 	 * FOR SAVING DD columns from UI just call existing : saveColumns(@RequestBody List<Column> columnList){ */
 	@RequestMapping(value = "/data/dropdown/display/{did}/store/{sid}")
