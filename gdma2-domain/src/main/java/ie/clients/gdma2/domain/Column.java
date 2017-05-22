@@ -1,5 +1,8 @@
 package ie.clients.gdma2.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -80,6 +83,19 @@ public class Column extends BaseEntity{
 	
 	@javax.persistence.Column(name = "COLUMN_ALIAS")
 	private String alias;
+	
+	@javax.persistence.Transient
+	private List<String> columnValues = new ArrayList<String>();
+	
+	
+
+	public List<String> getColumnValues() {
+		return columnValues;
+	}
+
+	public void setColumnValues(List<String> columnValues) {
+		this.columnValues = columnValues;
+	}
 
 	public Integer getColumnSize() {
 		return columnSize;

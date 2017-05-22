@@ -8,14 +8,15 @@ import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.UpdateDataRequest;
 import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.spi.interfaces.UserContextProvider;
+import ie.clients.gdma2.util.TableRowDTO.TableColumn;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -672,7 +673,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 	/*DATA MODULE SECTION*/
 
-	
+
 
 
 	/*	 sql: SELECT count(1)  FROM customers WHERE + filters*/
@@ -1220,8 +1221,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 	}
 
 
-
-
+	/*get just data for table*/
 	@Override
 	public List getTableData(Table table, Server server, Column orderByColumn,
 			List<Filter> filters,
@@ -1233,8 +1233,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 		logger.info("sql created: " + sql);
 
 		PreparedStatementCreatorFactory psc = new PreparedStatementCreatorFactory(sql);
-		
-		
+
 		declareSqlParameters(psc, filters, server);
 
 		psc.setResultSetType(ResultSet.TYPE_SCROLL_INSENSITIVE);
@@ -1244,44 +1243,131 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 		final List<Object> params = convertFiltersToSqlParameterValues(filters);
 		logger.info("params: " +  params);
-		
-		
-		
-		List records = new ArrayList();
 
-		records = (List)jdbcTemplate.query(psc.newPreparedStatementCreator(params), new PagedResultSetExtractor(new RowMapper(),
+		List records =  (List)jdbcTemplate.query(psc.newPreparedStatementCreator(params), new PagedResultSetExtractor(new RowMapper(),
 				startIndex, length));
-		
-//		jdbcTemplate.query(psc.newPreparedStatementCreator(params), new PagedResultSetExtractor(new RowMapper(),
-//				startIndex, length){
-//			 @Override
-//		        public Integer extractData(ResultSet rs) throws SQLException, DataAccessException {
-//		            ResultSetMetaData rsmd = rs.getMetaData();
-//		            int columnCount = rsmd.getColumnCount();
-//		            for(int i = 1 ; i <= columnCount ; i++){
-//		                Column column = new Column();
-//		                column.setName(rsmd.getColumnName(i));
-//		                column.setColumnTypeString(rsmd.getColumnTypeName(i));
-//		                column.setColumnType(rsmd.getColumnType(i));		                
-//		                records.add(column);
-//		            }
-//		            return columnCount;
-//		        }
-//		});
 
+		logger.info("list content:");
+		for (int i = 0; i < records.size(); i++) {
+			Object object = records.get(i);
+			logger.info(object.toString());
+		}
+		logger.info("list content emd");
 
+		/*
+
+	[1, France, Nantes, Carine , 44000, 1370, 103, Atelier graphique, 40.32.2555, 54, rue Royale, 21000.0, null, Schmitt, null]
+	[2, USA, Las Vegas, Jean, 83030, 1166, 112, Signal Gift Stores, 7025551838, 8489 Strong St., 71800.0, null, King, NV]
+	[3, Australia, Melbourne, Peter, 3004, 1611, 114, Australian Collectors, Co., 03 9520 4555, 636 St Kilda Road, 117300.0, Level 3, Ferguson, Victoria]
+	[4, France, Nantes, Janine , 44000, 1370, 119, La Rochelle Gifts, 40.67.8555, 67, rue des Cinquante Otages, 118200.0, null, Labrune, null]
+	[5, Norway, Stavern, Jonas , 4110, 1504, 121, Baane Mini Imports, 07-98 9555, Erling Skakkes gate 78, 81700.0, null, Bergulfsen, null]
+
+		 */
 		/** todo in metadata service after returning List<Entity>
-		paginatedResponse.setTotalRecords(getCount(server, table, paginatedRequest.getFilters()));
-		paginatedResponse.setStartIndex(paginatedRequest.getRecordOffset());
-		paginatedResponse.setKey("" + paginatedRequest.getSortedByColumnId());
-		paginatedResponse.setSortDir(paginatedRequest.getDir());
+			paginatedResponse.setTotalRecords(getCount(server, table, paginatedRequest.getFilters()));
+			paginatedResponse.setStartIndex(paginatedRequest.getRecordOffset());
+			paginatedResponse.setKey("" + paginatedRequest.getSortedByColumnId());
+			paginatedResponse.setSortDir(paginatedRequest.getDir());
 
-		return paginatedResponse;
+			return paginatedResponse;
 		 */
 
 		return records;
 
 	}
+
+
+
+
+	/*return column metadata extended with values for selected Table in Data module*/
+	/* if generic original version is used only data is returned: 
+	 */		
+
+	@Override 
+	public List getTableDataWithColumnMetadata(Table table, Server server, Column orderByColumn,
+			List<Filter> filters,
+			String orderDirection, int startIndex,int length) {
+
+
+		logger.info("getDataForTable");
+		String sql = SQLUtil.createSelect(server, table, orderByColumn, orderDirection, filters);
+		logger.info("sql created: " + sql);
+
+		PreparedStatementCreatorFactory psc = new PreparedStatementCreatorFactory(sql);
+
+		declareSqlParameters(psc, filters, server);
+
+		psc.setResultSetType(ResultSet.TYPE_SCROLL_INSENSITIVE);
+		psc.setUpdatableResults(false);
+
+		JdbcTemplate jdbcTemplate = dataSourcePool.getJdbcTemplateFromDataDource(server);
+
+		final List<Object> params = convertFiltersToSqlParameterValues(filters);
+		logger.info("params: " +  params);
+
+
+		List<TableRowDTO> rows =(List<TableRowDTO>) jdbcTemplate.query(psc.newPreparedStatementCreator(params), 
+				new PagedResultSetExtractor(new TableDataRowMapper(),
+						startIndex,length));
+
+		logger.info("list new content:");
+		for (TableRowDTO tableRowDTO : rows) {
+
+			logger.info("row number:" + tableRowDTO.getRowNumber().intValue());
+
+			List<TableColumn> columns = tableRowDTO.getColumns();
+			for (TableColumn column : columns) {
+				logger.info("columnName: " + column.getColumnName() + " , val: " + (column.getVal()==null ? "" : column.getVal()) );
+			}
+		}
+
+		//set values for every column
+		for(Column col: table.getColumns()){
+			addValuesToColumnMetadata(rows, col);
+		}
+
+		//remove table and other parent object to make smaller JSON repsponse
+		for (Column column : table.getColumns()) {
+			column.setTable(null);
+		}
+
+		//return tableDTOList;
+		List<Column> colListWithValues = new ArrayList<Column>(table.getColumns());
+
+		return colListWithValues;
+
+
+
+	}
+
+
+
+	private void addValuesToColumnMetadata(List<TableRowDTO> rows, Column metadataColumn) {
+
+		/*----------*/
+		logger.info("addValuesToColumns");
+		List<String> columnValues = new ArrayList<String>();
+
+		for (TableRowDTO tableRowDTO : rows) {
+			BigInteger rowNumber = tableRowDTO.getRowNumber();
+			logger.info("rownumber: " + rowNumber.intValue());
+
+			List<TableColumn> columns = tableRowDTO.getColumns();
+			for (TableColumn column : columns) {
+				logger.info("columnName: " + column.getColumnName() + " , val: " + (column.getVal()==null ? "" : column.getVal()) );
+
+				if(metadataColumn.getName().equalsIgnoreCase(column.getColumnName())){
+					columnValues.add(column.getVal() == null ? "" : column.getVal().toString());
+				}
+
+			}
+		}
+		metadataColumn.setColumnValues(columnValues);
+	}
+
+
+
+
 
 	//TODO test TRANSACTIONS, test NULL values, test non-autoinc, test value with quotes, test mysql/other DB vendors, test more columns in header than in body
 	//this code will INSERT partially new data id some row in CSV contains bad data - check if needs to be done in transaction
@@ -1302,7 +1388,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 			if (headers != null) {
 
-				
+
 				//final Set<Column> columns = table.getColumns();
 				final List<SqlParameter> params = new ArrayList<SqlParameter>();
 
@@ -1350,15 +1436,15 @@ public class DynamicDAOImpl implements DynamicDAO{
 				final String sql = "INSERT INTO " + server.getPrefix() + "." + table.getName() + " (" + tableList + ") VALUES (" + patternList + ")";
 				//final String sql = "INSERT INTO " + table.getName() + " (" + tableList + ") VALUES (" + patternList + ")";
 				logger.info("Preparing sql: [" + sql + "]");
-				
+
 
 				/*	MYSQL:
 				 * 		[INSERT INTO dbo.caste (id1,caste1,name1) VALUES (?,?,?)]
 				 * 
 				 * OTHER: 
 				 * 		[INSERT INTO dbo.caste ("id1","caste1","name1") VALUES (?,?,?)]		*/
-				
-				
+
+
 				final PreparedStatementCreatorFactory psc = new PreparedStatementCreatorFactory(sql, params);
 
 				//START READING DATA

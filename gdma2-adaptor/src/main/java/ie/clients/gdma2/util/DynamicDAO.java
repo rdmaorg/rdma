@@ -43,12 +43,16 @@ public interface DynamicDAO {
 	/*count data for table with/without filterw in WHERE clause*/
 	public Long getCount(Server server, Table table, List<Filter> filters);
 	
+	/*get just row data */
 	public List getTableData(Table table, Server server, Column orderByColumn,
 			List<Filter> filters, String orderDirection, int startIndex,
 			int length);
 
+	/*Column Entity is extended with List<String> columnValues, so this method returns metadata+data based on JSON for column metadata representation */
+	public List getTableDataWithColumnMetadata(Table table, Server server,
+			Column orderByColumn, List<Filter> filters, String orderDirection,
+			int startIndex, int length);
 	
-
 	
 	
 	/*
@@ -118,5 +122,7 @@ public interface DynamicDAO {
 	 * @throws IOException
 	 */
 	public int bulkImport(Server server, Table table, Set<Column> columns, MultipartFile file);
+
+	
 
 }

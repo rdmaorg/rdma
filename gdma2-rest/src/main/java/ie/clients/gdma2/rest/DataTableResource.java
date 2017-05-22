@@ -74,14 +74,16 @@ public class DataTableResource extends BaseDataTableResource{
 	/*DATA PART*/
 	
 	/*paginated active columns DATA for : Active server, active table Table, logged in user with UserAccess.allowDisplay = true  */
-	/* https://localhost/gdma2/rest/datatable/table/136 */
+	/* 	https://localhost/gdma2/rest/datatable/table/133?length=22&order[0][column]=628   WITH LENGTH and OrderBY column CITY; use 629 for country 
+	 * https://localhost/gdma2/rest/datatable/table/133?length=22&order[0][column]=6  WITH LENGTH and WITHOUT OrderBY column
+	 * */
 	@RequestMapping(value = "/table/{id}", method = RequestMethod.GET)
 	public PaginatedTableResponse<Column> tableData(@PathVariable("id") Integer tableId,
 			@RequestParam Map<String, String> reqParams){
 		
 		logger.debug("tableData: " + tableId);
 		
-		List<Object> filtersTODO = new ArrayList<Object>();
+		List<Object> filtersTODO = new ArrayList<Object>(); //see Filter.java
 		//  order[0][column]:1
 		//String orderByColumn = "id";
 		

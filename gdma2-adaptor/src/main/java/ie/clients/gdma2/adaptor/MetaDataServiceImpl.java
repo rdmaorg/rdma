@@ -7,6 +7,7 @@ import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.User;
 import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
+import ie.clients.gdma2.spi.ServiceException;
 import ie.clients.gdma2.spi.interfaces.MetaDataService;
 import ie.clients.gdma2.util.EntityUtils;
 import ie.clients.gdma2.util.Filter;
@@ -234,9 +235,17 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		long filtered = 0;
 
 		server = repositoryManager.getServerRepository().findOne(serverIdParam);
+		
+		if(null == server){
+			logger.info("111");
+			throw new ServiceException("Server does not exist: " + serverIdParam);
+			
+		}
+		
 		logger.info("server.getTables().size():" + server.getTables().size());
 		int serverId = server.getId();
-		//TODO if(null == server)
+		
+		
 
 		//empty search, select all active tables for server
 		if (StringUtils.isBlank(matching)) {
@@ -462,7 +471,12 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		return true;
 	}
 
+	@Override
+	public Column findOneColumn(int id) {
+		return repositoryManager.getColumnRepository().findOne(id);
+	}
 
+	
 	@Override
 	public List<Column> getAllColumns() {
 		return IteratorUtils.toList(repositoryManager.getColumnRepository().findAll().iterator());
@@ -874,18 +888,32 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		Server server = null;
 		List<Column> columns = null;
 		
+		
 		List<Filter> filtersTODO = new ArrayList<Filter>(); //NEVER use NULL for Filters, only empty collection
 		long total = 0;
 		long filtered = 0;
-
+		
 		table = repositoryManager.getTableRepository().findOne(tableId);
 		server = table.getServer();
 		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(tableId);
 		table.setColumns(new HashSet<Column>(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change this and pass colums to utility method themselves
-		Column sortedByColumn = (orderByColumnID == 0 ? null : repositoryManager.getColumnRepository().findOne(orderByColumnID));
-
-		logger.info("table : " + tableId + " , server: " + server.getId() + " , sortedBy Column: " + sortedByColumn);
 		
+		/*if ordering not set, zero velue is received so keep sortedByColumn = null, else determine column among all table columns*/
+		Column sortedByColumn = null;
+		if(orderByColumnID != 0){
+			logger.info("orderByColumnID != 0");
+			for (Column column : activeColumns) {
+				if(column.getId() == orderByColumnID){
+					logger.info("orderByColumnID is found");
+					sortedByColumn = column;
+					break;
+				}
+			}
+		}
+		
+		logger.info("table : " + tableId + " , server: " + server.getId() + " , sortedBy Column: " + 
+		(sortedByColumn == null ? null : sortedByColumn.getId())); 
+				
 		if(filtersTODO.isEmpty()){
 			logger.info("count - no filters");
 			total = dynamicDAO.getCount(server, table, filtersTODO).longValue();
@@ -899,7 +927,11 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			
 		}
 		
-		columns = dynamicDAO.getTableData(table, server, sortedByColumn, filtersTODO, orderDirection, startIndex, length);
+		/*get just data - as in GDMA1*/
+		//columns = dynamicDAO.getTableData(table, server, sortedByColumn, filtersTODO, orderDirection, startIndex, length);
+		
+		/*get just data*/
+		//columns = dynamicDAO.getTableDataWithColumnMetadata(table, server, sortedByColumn, filtersTODO, orderDirection, startIndex, length);
 		/**/
 		
 		logger.info("Total: " + total + ", Filtered: " + filtered + ", Result Count: " + columns.size());
@@ -908,5 +940,6 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		
 	}
 
+	
 
 }

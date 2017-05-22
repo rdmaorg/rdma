@@ -181,4 +181,11 @@ public class ColumnResource extends BaseDataTableResource{
 		logger.info("deleteColumnData, table:  " + tableId);
 		return serviceFacade.getDataModuleService().deleteRecords(tableId);
 	}
+	
+	/*get column by ID: 	https://localhost/gdma2/rest/column/id/628	 */
+	@RequestMapping(value = "/id/{id}")
+	public Column getColumn(@PathVariable("id") Integer columnId ){
+		logger.info("getColumn: " + columnId);
+		return serviceFacade.getMetadataService().findOneColumn(columnId);
+	}
 }

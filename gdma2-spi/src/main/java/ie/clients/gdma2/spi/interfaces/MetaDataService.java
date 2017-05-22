@@ -68,6 +68,7 @@ public interface MetaDataService {
 	public PaginatedTableResponse<Column> getActiveLocalColumnsForTable(Integer tableId, String matching, String orderBy,
 			String orderDirection, int startIndex, int length);
 	
+	public Column findOneColumn(int id);
 	
 	
 	/*UserAccess*/
