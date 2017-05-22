@@ -930,8 +930,8 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		/*get just data - as in GDMA1*/
 		//columns = dynamicDAO.getTableData(table, server, sortedByColumn, filtersTODO, orderDirection, startIndex, length);
 		
-		/*get just data*/
-		//columns = dynamicDAO.getTableDataWithColumnMetadata(table, server, sortedByColumn, filtersTODO, orderDirection, startIndex, length);
+		/*get column metadata + data*/
+		columns = dynamicDAO.getTableDataWithColumnMetadata(table, server, sortedByColumn, filtersTODO, orderDirection, startIndex, length);
 		/**/
 		
 		logger.info("Total: " + total + ", Filtered: " + filtered + ", Result Count: " + columns.size());
