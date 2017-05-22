@@ -61,7 +61,14 @@ var configureDataTable = function(){
 		 buttons: [
               { extend: "create", editor: editorData },
               { extend: "edit",   editor: editorData },
-              { extend: "remove", editor: editorData }
+              { extend: "remove", editor: editorData },
+              { extend: "csv", 
+            	text:"Download",
+                exportOptions: {
+                  modifier: {
+                    search: 'none'
+                  }
+                } }
           ]
 	};
 	tableData = $('#table_data').configureDataTable(config, {
