@@ -105,31 +105,36 @@ var createDataColumns = function(columnsMetadata){
 	var columnsData = [];
 	for(var i = 0; i < columnsMetadata.length; i++){		
 		if (columnsMetadata[i].dropDownColumnDisplay){
+			console.log('columnsMetadata['+i+'].dropDownColumnDisplay: ' + JSON.stringify(columnsMetadata[i].dropDownColumnDisplay));
 			columnsData.push({"data": ''+i,
 						 render: function ( data, type, row ) {
-						 	 var columnsMetadataGlobal = getColumnsMetadata();
-						 	 console.log('columnsMetadataGlobal: ' + JSON.stringify(columnsMetadataGlobal));
-						 	 console.log('data: ' + JSON.stringify(data));
+						 	 
+							 console.log('data: ' + JSON.stringify(data));
+							 if(data){
 						 	 console.log('data.did: ' + data.did);
 						 	 console.log('data.sid: ' + data.sid);
 						 	 console.log('type: ' + type);
 						 	 console.log('row: ' + row);
 					 	     console.log('data.dropdownOptions: ' + data.dropdownOptions);
-						 	 var $select = $("<select></select>", {
-					           "id": "dropdownoption" + row[0],
-					           "value": data.value
-					         });
-					         $.each(data.dropdownOptions, function(k,v){
-					           var $option = $("<option></option>", {
-					             "text": v[2],
-					             "value": v[1]
-					           });
-					           if(data.value == v[1]){
-					             $option.attr("selected", "selected")
-					           }
-					           $select.append($option);
-					         });
-					         return $select.prop("outerHTML");
+					 	     if(data.dropdownOptions){
+						 	    	 var $select = $("<select></select>", {
+						 	    		 "id": "dropdownoption" + row[0],
+						 	    		 "value": data.value
+						 	    	 });						 	 
+						 	    	 $.each(data.dropdownOptions, function(k,v){
+						 	    		 var $option = $("<option></option>", {
+						 	    			 "text": v[2],
+						 	    			 "value": v[1]
+						 	    		 });
+						 	    		 if(data.value == v[1]){
+						 	    			 $option.attr("selected", "selected")
+						 	    		 }
+						 	    		 $select.append($option);
+						 	    	 });
+						 	    	 return $select.prop("outerHTML");
+						 	     }
+							 }
+					 	     return data;
 						    }
 					});
 		} else {
@@ -137,10 +142,6 @@ var createDataColumns = function(columnsMetadata){
 		}
 	}
 	return columnsData;
-}
-
-function getColumnsMetadata(){
-	return this.columnsMetadata;
 }
 
 var insertData = function(d, successCallback, errorCallback){
