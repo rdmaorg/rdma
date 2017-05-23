@@ -12,7 +12,7 @@
 		  <!-- Content Header (Page header) -->
 		  <section class="content-header">
 		    <h1>
-		      {ServerName} - {tableName}
+		      <span id="serverName"></span> - <span id="tableName"></span>
 		      <small><i class="fa fa-home"></i> Home</small>
 		    </h1>	
 	      	<div th:replace="inc/spinner"></div>    
@@ -39,7 +39,7 @@
 			
 		   -->
 		  <div>
-		  <h1>upload your scv file</h1>
+		  <h1>upload your csv file</h1>
 				
 				<form action="/gdma2/rest/datatable/upload" method="post" enctype="multipart/form-data">
 			    <input type="file" name="file" />

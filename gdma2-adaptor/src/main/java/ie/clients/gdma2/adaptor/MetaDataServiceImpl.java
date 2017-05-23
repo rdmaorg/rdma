@@ -928,7 +928,64 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		}
 		
 		/*get just data - as in GDMA1*/
-		//columns = dynamicDAO.getTableData(table, server, sortedByColumn, filtersTODO, orderDirection, startIndex, length);
+		columns = dynamicDAO.getTableData(table, server, sortedByColumn, filtersTODO, orderDirection, startIndex, length);
+		
+		logger.info("Total: " + total + ", Filtered: " + filtered + ", Result Count: " + columns.size());
+
+		return getPaginatedTableResponse(columns != null ? columns : new ArrayList<Column>(), total, filtered);
+		
+	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	public PaginatedTableResponse<Column> getTableDataWithColumnMetadata(Integer tableId, List<Object> filtersParam,
+			int orderByColumnID, String orderDirection,
+			int startIndex, int length) {
+
+		logger.info("getTableData : " + tableId);
+		
+		Table table = null;
+		Server server = null;
+		List<Column> columns = null;
+		
+		
+		List<Filter> filtersTODO = new ArrayList<Filter>(); //NEVER use NULL for Filters, only empty collection
+		long total = 0;
+		long filtered = 0;
+		
+		table = repositoryManager.getTableRepository().findOne(tableId);
+		server = table.getServer();
+		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(tableId);
+		table.setColumns(new HashSet<Column>(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change this and pass colums to utility method themselves
+		
+		/*if ordering not set, zero velue is received so keep sortedByColumn = null, else determine column among all table columns*/
+		Column sortedByColumn = null;
+		if(orderByColumnID != 0){
+			logger.info("orderByColumnID != 0");
+			for (Column column : activeColumns) {
+				if(column.getId() == orderByColumnID){
+					logger.info("orderByColumnID is found");
+					sortedByColumn = column;
+					break;
+				}
+			}
+		}
+		
+		logger.info("table : " + tableId + " , server: " + server.getId() + " , sortedBy Column: " + 
+		(sortedByColumn == null ? null : sortedByColumn.getId())); 
+				
+		if(filtersTODO.isEmpty()){
+			logger.info("count - no filters");
+			total = dynamicDAO.getCount(server, table, filtersTODO).longValue();
+			filtered = total;
+			
+		} else {
+			logger.info("count - with filters");
+			filtered =  dynamicDAO.getCount(server, table, filtersTODO).longValue();
+			final List<Filter> emptyFilterListForCount = new ArrayList<Filter>(); //NEVER use NULL for Filters, only empty collection
+			total =  dynamicDAO.getCount(server, table, emptyFilterListForCount).longValue();
+			
+		}
 		
 		/*get column metadata + data*/
 		columns = dynamicDAO.getTableDataWithColumnMetadata(table, server, sortedByColumn, filtersTODO, orderDirection, startIndex, length);

@@ -20,6 +20,7 @@ import ie.clients.gdma2.domain.Column;
 import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.UpdateDataRequest;
+import ie.clients.gdma2.domain.ui.DropDownColumn;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 
 /*
@@ -112,6 +113,44 @@ public class DataTableResource extends BaseDataTableResource{
 		
 		
 	}
+	
+	@RequestMapping(value = "/tablewithdropdowntest/{id}", method = RequestMethod.GET)
+	public PaginatedTableResponse<Object> getTableDataWithDropDownTest(@PathVariable("id") Integer tableId,
+			@RequestParam Map<String, String> reqParams){
+		
+		logger.debug("getTableDataWithDropDownTest tableData: " + tableId);
+		
+		List<Object> coluna = new ArrayList<Object>();
+		coluna.add(1);
+		coluna.add("France");
+		coluna.add("Nantes");
+		coluna.add("Carine ");
+		coluna.add("44000");
+		DropDownColumn dropdownColumn = new DropDownColumn();
+			dropdownColumn.setValue("1370");
+			dropdownColumn.setDid(15);
+			dropdownColumn.setSid(21);
+			dropdownColumn.setDropdownOptions(getDropdownData(dropdownColumn.getDid(),dropdownColumn.getSid()));
+		coluna.add(dropdownColumn);
+		coluna.add(103);
+		coluna.add("Atelier graphique");
+		coluna.add("40.32.2555");
+		coluna.add("54, rue Royale");
+		coluna.add(21000);
+		coluna.add(null);
+		coluna.add("Schmitt");
+		coluna.add(null);
+		
+		ArrayList<Object> lista = new ArrayList<Object>();
+		lista.add(coluna);
+		PaginatedTableResponse<Object> resp = new PaginatedTableResponse<Object>();
+		resp.setData(lista);
+		resp.setDraw(getDraw(reqParams));
+		resp.setRecordsTotal(1);
+		logger.debug("getTableDataWithDropDownTest ended");
+		return resp;
+	}
+	
 	
 	/*	 http://localhost/gdma2/rest/datatable/dropdown/display/628/store/629	 */
 	@RequestMapping(value = "/dropdown/display/{did}/store/{sid}")

@@ -48,7 +48,10 @@ var restUri = {
 		servers: getRestBaseUri() + '/datatable/servers',
 		tables: getRestBaseUri() + '/datatable/tables/server/{id}',
 		table: getRestBaseUri() + '/datatable/table/{id}',
-		columnsMetaData: getRestBaseUri() + '/datatable/columns/table/{id}'
+		columnsMetaData: getRestBaseUri() + '/datatable/columns/table/{id}',
+		dropdown: getRestBaseUri() + '/datatable/dropdown/display/{did}/store/{sid}',
+		tableWithDropDown: getRestBaseUri() + '/datatable/tablewithdropdown/{id}',
+		tablewithdropdowntest: getRestBaseUri() + '/datatable/tablewithdropdowntest/{id}'
 	}
 	
 };

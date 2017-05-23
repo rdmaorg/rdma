@@ -99,4 +99,7 @@ public interface MetaDataService {
 	public PaginatedTableResponse<Column> getTableData(Integer tableId, List<Object> filters, int orderByColumnID,
 			String orderDirection, int startIndex, int length);
 	
+	public PaginatedTableResponse<Column> getTableDataWithColumnMetadata(Integer tableId, List<Object> filtersParam,
+			int orderByColumnID, String orderDirection, int startIndex, int length);
+	
 }
