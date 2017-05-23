@@ -68,13 +68,8 @@ var configureDataTable = function(columnsMetadata){
           ]
 	};
 	tableData = $('#table_data').configureDataTable(config, {
-		url: mapPathVariablesInUrl(restUri.datatable.tablewithdropdowntest, {'id': tableId}),
+		url: mapPathVariablesInUrl(restUri.datatable.table, {'id': tableId}),
 		complete: function(){
-			console.log('columnsMetadata inside datatable complete function:');
-			console.log(columnsMetadata);
-			console.log('data inside datatable complete function:');
-//			console.log(data);
-			
 			//hideLoading();
 		},
 		error: function(message, e){
