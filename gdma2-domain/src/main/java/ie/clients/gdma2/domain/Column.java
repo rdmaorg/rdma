@@ -1,7 +1,7 @@
 package ie.clients.gdma2.domain;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
@@ -85,10 +85,22 @@ public class Column extends BaseEntity{
 	private String alias;
 	
 	@javax.persistence.Transient
+	private Map<Integer, String> columnValues = new LinkedHashMap<Integer, String>();
+	
+	public Map<Integer, String> getColumnValues() {
+		return columnValues;
+	}
+
+	public void setColumnValues(Map<Integer, String> columnValues) {
+		this.columnValues = columnValues;
+	}
+	
+	
+	
+	/*
+	@javax.persistence.Transient
 	private List<String> columnValues = new ArrayList<String>();
 	
-	
-
 	public List<String> getColumnValues() {
 		return columnValues;
 	}
@@ -96,6 +108,11 @@ public class Column extends BaseEntity{
 	public void setColumnValues(List<String> columnValues) {
 		this.columnValues = columnValues;
 	}
+	*/
+
+	
+	
+	
 
 	public Integer getColumnSize() {
 		return columnSize;

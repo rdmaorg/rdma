@@ -53,6 +53,11 @@ public interface DynamicDAO {
 			Column orderByColumn, List<Filter> filters, String orderDirection,
 			int startIndex, int length);
 	
+	/*expanding getTableData() to include column name for each cell and populate Lookup columns in second step after metadata resolves DD columns*/
+	public List getTableDataWithColumnNamesAndDropdowns(Table table, Server server,
+			Column orderByColumn, List<Filter> filters, String orderDirection,
+			int startIndex, int length);
+
 	
 	
 	/*
@@ -123,6 +128,7 @@ public interface DynamicDAO {
 	 */
 	public int bulkImport(Server server, Table table, Set<Column> columns, MultipartFile file);
 
+	
 	
 
 }

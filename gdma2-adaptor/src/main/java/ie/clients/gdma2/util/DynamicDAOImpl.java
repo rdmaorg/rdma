@@ -24,7 +24,9 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -1221,7 +1223,15 @@ public class DynamicDAOImpl implements DynamicDAO{
 	}
 
 
-	/*get just data for table*/
+	/*get just data for table
+	 * 
+	[1, France, Nantes, Carine , 44000, 1370, 103, Atelier graphique, 40.32.2555, 54, rue Royale, 21000.0, null, Schmitt, null]
+	[2, USA, Las Vegas, Jean, 83030, 1166, 112, Signal Gift Stores, 7025551838, 8489 Strong St., 71800.0, null, King, NV]
+	[3, Australia, Melbourne, Peter, 3004, 1611, 114, Australian Collectors, Co., 03 9520 4555, 636 St Kilda Road, 117300.0, Level 3, Ferguson, Victoria]
+	[4, France, Nantes, Janine , 44000, 1370, 119, La Rochelle Gifts, 40.67.8555, 67, rue des Cinquante Otages, 118200.0, null, Labrune, null]
+	[5, Norway, Stavern, Jonas , 4110, 1504, 121, Baane Mini Imports, 07-98 9555, Erling Skakkes gate 78, 81700.0, null, Bergulfsen, null]
+
+	 * */
 	@Override
 	public List getTableData(Table table, Server server, Column orderByColumn,
 			List<Filter> filters,
@@ -1254,15 +1264,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 		}
 		logger.info("list content emd");
 
-		/*
 
-	[1, France, Nantes, Carine , 44000, 1370, 103, Atelier graphique, 40.32.2555, 54, rue Royale, 21000.0, null, Schmitt, null]
-	[2, USA, Las Vegas, Jean, 83030, 1166, 112, Signal Gift Stores, 7025551838, 8489 Strong St., 71800.0, null, King, NV]
-	[3, Australia, Melbourne, Peter, 3004, 1611, 114, Australian Collectors, Co., 03 9520 4555, 636 St Kilda Road, 117300.0, Level 3, Ferguson, Victoria]
-	[4, France, Nantes, Janine , 44000, 1370, 119, La Rochelle Gifts, 40.67.8555, 67, rue des Cinquante Otages, 118200.0, null, Labrune, null]
-	[5, Norway, Stavern, Jonas , 4110, 1504, 121, Baane Mini Imports, 07-98 9555, Erling Skakkes gate 78, 81700.0, null, Bergulfsen, null]
-
-		 */
 		/** todo in metadata service after returning List<Entity>
 			paginatedResponse.setTotalRecords(getCount(server, table, paginatedRequest.getFilters()));
 			paginatedResponse.setStartIndex(paginatedRequest.getRecordOffset());
@@ -1281,6 +1283,33 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 	/*return column metadata extended with values for selected Table in Data module*/
 	/* if generic original version is used only data is returned: 
+	 * 
+	 * {  
+   "data":[  
+      {  
+         "id":628,
+         "table":null,
+         "name":"country",
+         "columnType":12,
+         "columnTypeString":"VARCHAR",
+         "dropDownColumnDisplay":null,
+         "dropDownColumnStore":null,
+         "displayed":true,
+         "allowInsert":true,
+         "allowUpdate":true,
+         "nullable":false,
+         "primarykey":false,
+         "special":"N",
+         "minWidth":null,
+         "maxWidth":null,
+         "orderby":null,
+         "columnSize":50,
+         "active":true,
+         "alias":"country",
+         "columnValues":{  
+            "1":"France",
+            "2":"USA",
+            "3":"Australia",
 	 */		
 
 	@Override 
@@ -1321,11 +1350,17 @@ public class DynamicDAOImpl implements DynamicDAO{
 			}
 		}
 
+		//return rows;
+		
+		
 		//set values for every column
 		for(Column col: table.getColumns()){
 			addValuesToColumnMetadata(rows, col);
 		}
 
+		//load display values for dropdowns if any
+		//resolveLookupTables(table.getColumns());
+				
 		//remove table and other parent object to make smaller JSON repsponse
 		for (Column column : table.getColumns()) {
 			column.setTable(null);
@@ -1336,39 +1371,240 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 		return colListWithValues;
 
-
-
 	}
-
 
 
 	private void addValuesToColumnMetadata(List<TableRowDTO> rows, Column metadataColumn) {
 
 		/*----------*/
 		logger.info("addValuesToColumns");
-		List<String> columnValues = new ArrayList<String>();
+		Map<Integer,String> valMap= new LinkedHashMap<Integer, String>();
+		//List<String> columnValues = new ArrayList<String>();
 
 		for (TableRowDTO tableRowDTO : rows) {
 			BigInteger rowNumber = tableRowDTO.getRowNumber();
 			logger.info("rownumber: " + rowNumber.intValue());
 
+			
 			List<TableColumn> columns = tableRowDTO.getColumns();
 			for (TableColumn column : columns) {
 				logger.info("columnName: " + column.getColumnName() + " , val: " + (column.getVal()==null ? "" : column.getVal()) );
 
 				if(metadataColumn.getName().equalsIgnoreCase(column.getColumnName())){
-					columnValues.add(column.getVal() == null ? "" : column.getVal().toString());
+					//columnValues.add(column.getVal() == null ? "" : column.getVal().toString());
+					
+					valMap.put(rowNumber.intValue(), column.getVal() == null ? "" : column.getVal().toString());
 				}
 
 			}
 		}
-		metadataColumn.setColumnValues(columnValues);
+		//metadataColumn.setColumnValues(columnValues);
+		metadataColumn.setColumnValues(valMap);
 	}
 
 
+	
+	
+
+	/*
+	 {  
+   "data":[  
+      {  
+         "rowNumber":1,
+         "columns":[  
+            {  
+               "columnName":"country",
+               "val":"France"
+            },
+            {  
+               "columnName":"city",
+               "val":"Nantes"
+            },
+            {  
+               "columnName":"contactFirstName",
+               "val":"Carine "
 
 
+	ADD LOOKUP
+	
+	"columnName": "gender": {
+	    "value": "22",
+        "did": "15",
+        "sid": "21",
+		"dropdownOptions":[{22,'male'}, {23,'female'}]
+    } 
+	
+	 */
+	@Override
+	public List getTableDataWithColumnNamesAndDropdowns(Table table, Server server, Column orderByColumn,
+			List<Filter> filters,
+			String orderDirection, int startIndex,int length) {
 
+
+		logger.info("getTableDataWithColumnNamesAndDropdowns");
+		String sql = SQLUtil.createSelect(server, table, orderByColumn, orderDirection, filters);
+		logger.info("sql created: " + sql);
+
+		PreparedStatementCreatorFactory psc = new PreparedStatementCreatorFactory(sql);
+
+		declareSqlParameters(psc, filters, server);
+
+		psc.setResultSetType(ResultSet.TYPE_SCROLL_INSENSITIVE);
+		psc.setUpdatableResults(false);
+
+		JdbcTemplate jdbcTemplate = dataSourcePool.getJdbcTemplateFromDataDource(server);
+
+		final List<Object> params = convertFiltersToSqlParameterValues(filters);
+		logger.info("params: " +  params);
+
+		
+		List<TableRowDTO> rows =(List<TableRowDTO>) jdbcTemplate.query(psc.newPreparedStatementCreator(params), 
+				new PagedResultSetExtractor(new TableDataRowMapper(),
+						startIndex,length));
+
+		
+		logger.info("list data with column names:");
+		for (TableRowDTO tableRowDTO : rows) {
+
+			logger.info("row number:" + tableRowDTO.getRowNumber().intValue());
+
+			List<TableColumn> columns = tableRowDTO.getColumns();
+			for (TableColumn column : columns) {
+				logger.info("columnName: " + column.getColumnName() + " , val: " + (column.getVal()==null ? "" : column.getVal()) );
+			}
+		}
+
+		for(Column col: table.getColumns()){
+			resolveLookupTables(rows, col);	
+		}
+		
+		
+		
+		return rows;
+	}
+
+
+	
+	
+	/*locate columns that have DD defined and send to this method to fetch remote Lookup table data
+	 * for each such column create new dynamic SQL to load ALL remote data and set propet cell value in dropdown in UI
+	 *  a) place all values in zero row and b) place all concrete value in columnName value 
+	 * 
+	 * "columnName": "gender": {
+	    "value": "22",
+        "did": "15",
+        "sid": "21",
+		"dropdownOptions":[{22,'male'}, {23,'female'}]
+    } 
+	 * */
+	private void resolveLookupTables(List<TableRowDTO> rows, Column metadataColumn) {
+		logger.info("resolveLookupTables");
+		
+		String colMame = metadataColumn.getName(); //gender_id (FK used column)
+		String ddColName  = metadataColumn.getDropDownColumnDisplay().getName(); //gender.name
+		String ddStoreColName  = metadataColumn.getDropDownColumnStore().getName(); //gender.id
+		List dropDownDataRows = getDropDownData(metadataColumn.getDropDownColumnDisplay(), metadataColumn.getDropDownColumnStore());
+		
+		/*
+		 
+		* SQL Structure: SELECT + ORDER BY
+		* SELECT table.storeColumn, table.displayColumn from serverPrefix.table order by table.displayColumn asc 
+		  
+		sql created: SELECT gender.id, gender.name FROM gender ORDER BY gender.order asc
+		
+		list members: [0, 23, Female]
+		list members: [1, 22, Male]
+		list members: [2, 24, Unknown]
+		
+		*/
+		/*
+		[  
+		   [  
+		      0,
+		      "22",
+		      "Male"
+		   ],
+		   [  
+		      1,
+		      "23",
+		      "Female"
+		   ]
+		   [  
+		      2,
+		      "24",
+		      "Not known"
+		   ]
+		]
+		*/
+				
+		
+		/*----------*/
+		//logger.info("addValuesToColumns");
+		//Map<Integer,String> valMap= new LinkedHashMap<Integer, String>();
+		//List<String> columnValues = new ArrayList<String>();
+		
+		for (TableRowDTO tableRowDTO : rows) {
+		
+			//TableRowDTO.TableColumn column =  tableRowDTO.new TableColumn(columnName, resultSetValue);
+			//tableRowDTO.getColumns().add(column);
+
+			
+			BigInteger rowNumber = tableRowDTO.getRowNumber();
+			logger.info("rownumber: " + rowNumber.intValue());
+
+			
+			List<TableColumn> columns = tableRowDTO.getColumns();
+			for (TableColumn columnDTO : columns) {
+				logger.info("columnName: " + columnDTO.getColumnName() + " , val: " + (columnDTO.getVal()==null ? "" : columnDTO.getVal()) );
+				
+				   //{"columnName": "gender_ID","value": "22",}
+				
+				
+				if(metadataColumn.getName().equalsIgnoreCase(columnDTO.getColumnName())){
+					
+					/*
+					{  
+			               "columnName":"gender_id",
+			               "val":  {  
+									"value":"22",
+									"dropdowns":
+											{  
+											"22":"male",
+											"23":"female"
+			            },
+					*/
+			            
+					//columnValues.add(column.getVal() == null ? "" : column.getVal().toString());
+					//valMap.put(rowNumber.intValue(), columnDTO.getVal() == null ? "" : columnDTO.getVal().toString());
+
+					//TableRowDTO.TableColumn column =  tableRowDTO.new TableColumn("dropdowns", resultSetValue);
+					
+					//inner structure
+					List<TableRowDTO.TableColumn> cols = new ArrayList<TableRowDTO.TableColumn>();
+					for(Object obj: dropDownDataRows){
+						List<Object> objList = (List)obj;
+						objList.get(0); //row enum
+						Object objStore = objList.get(1); // store
+						Object objDisplay = objList.get(2); // display
+						
+						TableRowDTO.TableColumn column =  tableRowDTO.new TableColumn(objStore.toString(), objDisplay.toString()); // //22:male
+						cols.add(column);
+					}
+					
+					TableRowDTO rowDTO = new TableRowDTO();
+					rowDTO.setColumns(cols);
+					
+				}
+
+			}
+		}
+		//metadataColumn.setColumnValues(columnValues);
+		//metadataColumn.setColumnValues(valMap);
+		
+		
+	}
+	
+	
 	//TODO test TRANSACTIONS, test NULL values, test non-autoinc, test value with quotes, test mysql/other DB vendors, test more columns in header than in body
 	//this code will INSERT partially new data id some row in CSV contains bad data - check if needs to be done in transaction
 	@Override
