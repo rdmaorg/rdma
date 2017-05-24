@@ -938,7 +938,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public PaginatedTableResponse<Column> getTableDataWithColumnMetadata(Integer tableId, List<Object> filtersParam,
+	public PaginatedTableResponse<Column> getTableDataWithColumnNamesAndDropdowns(Integer tableId, List<Object> filtersParam,
 			int orderByColumnID, String orderDirection,
 			int startIndex, int length) {
 
@@ -987,9 +987,12 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			
 		}
 		
+		/*get data with col names and metadata resolved*/
+		columns = dynamicDAO.getTableDataWithColumnNamesAndDropdowns(table, server, sortedByColumn, filtersTODO, orderDirection, startIndex, length);
+		
 		/*get column metadata + data*/
-		columns = dynamicDAO.getTableDataWithColumnMetadata(table, server, sortedByColumn, filtersTODO, orderDirection, startIndex, length);
-		/**/
+		//columns = dynamicDAO.getTableDataWithColumnMetadata(table, server, sortedByColumn, filtersTODO, orderDirection, startIndex, length);
+		
 		
 		logger.info("Total: " + total + ", Filtered: " + filtered + ", Result Count: " + columns.size());
 

@@ -79,7 +79,7 @@ public class DataTableResource extends BaseDataTableResource{
 	 * https://localhost/gdma2/rest/datatable/table/133?length=22&order[0][column]=6  WITH LENGTH and WITHOUT OrderBY column
 	 * */
 	@RequestMapping(value = "/table/{id}", method = RequestMethod.GET)
-	public PaginatedTableResponse<Column> tableData(@PathVariable("id") Integer tableId,
+	public PaginatedTableResponse<Column> getTableData(@PathVariable("id") Integer tableId,
 			@RequestParam Map<String, String> reqParams){
 		
 		logger.debug("tableData: " + tableId);
@@ -98,8 +98,10 @@ public class DataTableResource extends BaseDataTableResource{
 		*/
 		
 		logger.info("orderByColumn, column PK: " + orderByColumnID);
-		PaginatedTableResponse<Column> resp = serviceFacade.getMetadataService().getTableData(
-				tableId, 
+		
+		//PaginatedTableResponse<Column> resp = serviceFacade.getMetadataService().getTableData(
+		PaginatedTableResponse<Column> resp = serviceFacade.getMetadataService().getTableDataWithColumnNamesAndDropdowns(
+		tableId, 
 				filtersTODO,
 				//getSearchValue(reqParams), //NO SEARCH HERE
 				orderByColumnID,
@@ -128,8 +130,10 @@ public class DataTableResource extends BaseDataTableResource{
 		rowA.add("44000");
 		DropDownColumn dropdownColumn = new DropDownColumn();
 			dropdownColumn.setValue("1370");
-			dropdownColumn.setDid(15);
-			dropdownColumn.setSid(21);
+			//dropdownColumn.setDid(15);
+			//dropdownColumn.setSid(21);
+			dropdownColumn.setDid(628);
+			dropdownColumn.setSid(629);
 			dropdownColumn.setDropdownOptions(getDropdownData(dropdownColumn.getDid(),dropdownColumn.getSid()));
 		rowA.add(dropdownColumn);
 		rowA.add(103);
@@ -149,8 +153,10 @@ public class DataTableResource extends BaseDataTableResource{
 		rowB.add("83030");
 		DropDownColumn dropdownColumnB = new DropDownColumn();
 		dropdownColumnB.setValue("1166");
-		dropdownColumnB.setDid(15);
-		dropdownColumnB.setSid(21);
+		//dropdownColumn.setDid(15);
+		//dropdownColumn.setSid(21);
+		dropdownColumn.setDid(628);
+		dropdownColumn.setSid(629);
 		dropdownColumnB.setDropdownOptions(getDropdownData(dropdownColumn.getDid(),dropdownColumn.getSid()));
 		rowB.add(dropdownColumnB);
 		rowB.add(112);
@@ -170,8 +176,10 @@ public class DataTableResource extends BaseDataTableResource{
 		rowC.add("3004");
 		DropDownColumn dropdownColumnC = new DropDownColumn();
 		dropdownColumnC.setValue("1611");
-		dropdownColumnC.setDid(15);
-		dropdownColumnC.setSid(21);
+		//dropdownColumn.setDid(15);
+		//dropdownColumn.setSid(21);
+		dropdownColumn.setDid(628);
+		dropdownColumn.setSid(629);
 		dropdownColumnC.setDropdownOptions(getDropdownData(dropdownColumn.getDid(),dropdownColumn.getSid()));
 		rowC.add(dropdownColumnC);
 		rowC.add(114);

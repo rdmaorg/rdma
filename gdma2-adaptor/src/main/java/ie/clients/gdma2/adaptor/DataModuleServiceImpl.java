@@ -62,8 +62,21 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 	public List<Column> getActiveColumns(Integer tableId) {
 		logger.info("getActiveColumns");
 		logger.info("user: " + userContextProvider.getLoggedInUserName());
-		return repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(tableId);
+		
+		List<Column> activeTableList = repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(tableId);
+		
+		//remove tables and all parent objects
+		for (Column column : activeTableList) {
+			column.setTable(null);
+			if(column.getDropDownColumnDisplay() != null){
+				column.getDropDownColumnDisplay().setTable(null);
+			}
+			if(column.getDropDownColumnStore() != null){
+				column.getDropDownColumnStore().setTable(null);
+			}
+		}
 
+		return activeTableList;
 	}
 
 
