@@ -50,7 +50,7 @@ var configureDataTable = function(columnsMetadata){
 		createFunction: insertData,
 		editFunction: editData,
 		removeFunction: removeData,
-//		idSrc : '0',
+		idSrc : 'rowNumber',
 		ajax: {
             create: {
                 type: 'POST',
@@ -77,7 +77,7 @@ var configureDataTable = function(columnsMetadata){
 	var config={
 		 "dataSrc": "data",
 		 "columns": columnsData,
-//		 idSrc : '0',
+		 idSrc : 'rowNumber',
          dom : "Bfrtip",
 //         select: true,
          select: {
@@ -122,7 +122,7 @@ var createEditorFields = function(columnsMetadata){
 	var fields = [];
 	for(var i = 1; i < columnsMetadata.length; i++){
 		fields[i-1] = { label: columnsMetadata[i].alias ,
-                	  name: columnsMetadata[i].name };
+                	  name: 'columns.'+i+'.val' };
 		if(columnsMetadata[i].columnTypeString.toUpperCase() === fieldTypes.BOOLEAN
 				|| columnsMetadata[i].columnTypeString.toUpperCase() === fieldTypes.TINYINT){
 			fields[i-1].type = "checkbox";
@@ -141,7 +141,8 @@ var createDataTableColumns = function(columnsMetadata){
      });
 	console.log('columnsMetadata: ' + JSON.stringify(columnsMetadata));
 	for(var i = 0; i < columnsMetadata.length; i++){		
-			columnsData.push({"data": 'columns.'+i+'.val',
+			columnsData.push({data: 'columns.'+i+'.val',
+				editField: 'columns.'+i+'.val' , 
 				render: function ( data, type, row ) {
 				 console.log('data: ' + JSON.stringify(data));
 			 	 console.log('type: ' + type);
