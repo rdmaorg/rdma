@@ -58,28 +58,50 @@ var configureDataTable = function(columnsMetadata){
             },
             edit: {
                 type: 'POST',
-                url:  mapPathVariablesInUrl(restUri.datatable.update, {'serverId': serverId,'tableId': tableId})
+                url:  mapPathVariablesInUrl(restUri.datatable.update, {'serverId': serverId,'tableId': tableId}),
+//                "data": function ( d ) {
+//                    return JSON.stringify( d );
+//                  }
             },
             remove: {
                 type: 'DELETE',
                 url:  mapPathVariablesInUrl(restUri.datatable.remove, {'id': tableId})
             }
         },
-		fields: editorFields
+		fields: editorFields,
+        formOptions: {
+            inline: {
+                onBlur: 'submit'
+            }
+        }
 	}
 	datatableEditor = $('#table_data').configureEditor(configEditor);
-	// Activate an inline edit on click of a table cell
-    $('#table_data').on( 'click', 'tbody td:not(:first-child)', function (e) {
-    	datatableEditor.inline( this, { submit: 'allIfChanged'} );
-    } );
+
 	var columnsData = createDataTableColumns(columnsMetadata);
 	console.log('columnsData: ' + JSON.stringify(columnsData));
 	var config={
-		 "dataSrc": "data",
+		 "ajax":{
+			 "url":mapPathVariablesInUrl(restUri.datatable.table, {'id': tableId}),
+//			 "data": function ( d ) {
+//			      return JSON.stringify( d );
+//			    },
+			 "dataSrc": function (json) {
+				 var return_data = new Array();
+				 for(var i=0;i< json.data.length; i++){
+					 for(var j=0;j< json.data[i].columns.length; j++){
+						 json.data[i].columns[j].columnPK = ''+columnsMetadata[j].id;
+					 }
+				 }
+				 return json.data;
+			 }
+		 },
 		 "columns": columnsData,
 		 idSrc : 'rowNumber',
          dom : "Bfrtip",
-//         select: true,
+         keys: {
+             columns: ':not(:first-child)',
+             keys: [ 9 ]
+         },
          select: {
              style:    'os',
              selector: 'td:first-child'
@@ -102,6 +124,9 @@ var configureDataTable = function(columnsMetadata){
 		complete: function(){
 			//hideLoading();
 		},
+		dataFunction: function(d){
+			d.myKey = "myValue";
+		},
 		error: function(message, e){
 			console.error("ERROR: " + JSON.stringify(e));
 			handleError('#global-alert',e);
@@ -110,6 +135,20 @@ var configureDataTable = function(columnsMetadata){
 	    	}, 4000);
 		}
 	});
+	
+	// Activate an inline edit on click of a table cell
+  $('#table_data').on( 'click', 'tbody td:not(:first-child)', function (e) {
+    	datatableEditor.inline( this, { submit: 'allIfChanged',
+    		submitOnBlur: true
+    		} );
+    } );
+  
+  //Inline editing on tab focus
+  tableData.on( 'key-focus', function ( e, datatable, cell ) {
+	  datatableEditor.inline( cell.index(),{ submit: 'allIfChanged',
+  		submitOnBlur: true
+		} );
+  } );
 	
 }
 
@@ -120,12 +159,12 @@ var createEditorFields = function(columnsMetadata){
 			TINYINT: "TINYINT"
 	}
 	var fields = [];
-	for(var i = 1; i < columnsMetadata.length; i++){
-		fields[i-1] = { label: columnsMetadata[i].alias ,
+	for(var i = 0; i < columnsMetadata.length; i++){
+		fields[i] = { label: columnsMetadata[i].alias ,
                 	  name: 'columns.'+i+'.val' };
 		if(columnsMetadata[i].columnTypeString.toUpperCase() === fieldTypes.BOOLEAN
 				|| columnsMetadata[i].columnTypeString.toUpperCase() === fieldTypes.TINYINT){
-			fields[i-1].type = "checkbox";
+			fields[i].type = "checkbox";
 		}
 	}
 	return fields;
@@ -139,14 +178,14 @@ var createDataTableColumns = function(columnsMetadata){
          className: 'select-checkbox',
          orderable: false
      });
-	console.log('columnsMetadata: ' + JSON.stringify(columnsMetadata));
 	for(var i = 0; i < columnsMetadata.length; i++){		
 			columnsData.push({data: 'columns.'+i+'.val',
 				editField: 'columns.'+i+'.val' , 
 				render: function ( data, type, row ) {
-				 console.log('data: ' + JSON.stringify(data));
-			 	 console.log('type: ' + type);
-			 	 console.log('row: ' + row);
+				console.log('data: ' + JSON.stringify(data));
+			 	console.log('type: ' + type);
+			 	console.log('row: ');
+			 	console.log(row);
 		 	     if(data && data.dropdownOptions){
 		 	    	 console.log('data.dropdownOptions: ' + data.dropdownOptions);
 		 	    	 console.log('data.did: ' + data.did);

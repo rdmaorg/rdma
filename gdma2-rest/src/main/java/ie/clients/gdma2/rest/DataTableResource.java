@@ -8,12 +8,12 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -22,7 +22,6 @@ import ie.clients.gdma2.domain.ColumnDataUpdate;
 import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.UpdateDataRequest;
-import ie.clients.gdma2.domain.UpdateDataTableRequest;
 import ie.clients.gdma2.domain.ui.DropDownColumn;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 
@@ -228,23 +227,34 @@ public class DataTableResource extends BaseDataTableResource{
 	}
 	
 	//This method will receive the rowData from datatable and convert it to UpdateDataRequest
-	@RequestMapping(value = "/update/{serverId}/{tableId}", method = RequestMethod.POST)
-	public int updateDataTableData(@PathVariable("serverId") Integer serverId, @PathVariable("tableId") Integer tableId, @ModelAttribute UpdateDataTableRequest dataTableRequest){
+	@RequestMapping(value = "/update/{serverId}/{tableId}", method = RequestMethod.POST,produces="application/json")
+	public @ResponseBody Map<String,String> updateDataTableData(@PathVariable("serverId") Integer serverId, @PathVariable("tableId") Integer tableId, @RequestParam Map<String, String> reqParams){
+//	public int updateDataTableData(@PathVariable("serverId") Integer serverId, @PathVariable("tableId") Integer tableId, @ModelAttribute UpdateDataTableRequest dataTableRequest){
+		
 		UpdateDataRequest dataRequest = new UpdateDataRequest();
+		List<ColumnDataUpdate> row = new ArrayList<ColumnDataUpdate>();
 		dataRequest.setServerId(serverId);
 		dataRequest.setTableId(tableId);
-		for(List<String> rowData : dataTableRequest.getData()){
-			List<ColumnDataUpdate> row = new ArrayList<ColumnDataUpdate>(); 
-			for (String columnValue : rowData) {
-				ColumnDataUpdate e = new ColumnDataUpdate();
-				e.setNewColumnValue(columnValue);
-				row.add(e);
+		reqParams.remove("action");
+		final List<Column> columnsMetadata = getActiveColumns(tableId);
+		int i = 0,j = 0;
+		for (Column columnMetadata : columnsMetadata) {
+			for (String key: reqParams.keySet()) {
+				if(i == j){
+					ColumnDataUpdate newColumn = new ColumnDataUpdate();
+					newColumn.setColumnId(columnMetadata.getId());
+					newColumn.setNewColumnValue(reqParams.get(key));
+					newColumn.setOldColumnValue(reqParams.get(key));
+					row.add(newColumn);
+				}
+				j++;
 			}
-			if(row.size() > 0){
-				dataRequest.getUpdates().add(row);
-			}
+			j=0;
+			i++;
 		}
-		return serviceFacade.getDataModuleService().updateRecords(dataRequest);
+		dataRequest.getUpdates().add(row);
+		int updatedRecords = serviceFacade.getDataModuleService().updateRecords(dataRequest);
+		return reqParams;
 	}
 	
 	@RequestMapping(value = "/update/table/{id}", method = RequestMethod.PUT)

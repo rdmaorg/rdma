@@ -1,12 +1,13 @@
 package ie.clients.gdma2.domain;
 
 import java.util.List;
+import java.util.Map;
 
 public class UpdateDataTableRequest {
 
 	private String action;
 
-	private List<List<String>> data;
+	private List<Map<String,String>> data;
 	
 	public String getAction() {
 		return action;
@@ -16,12 +17,11 @@ public class UpdateDataTableRequest {
 		this.action = action;
 	}
 	
-	public List<List<String>> getData() {
+	public List<Map<String, String>> getData() {
 		return data;
 	}
 	
-	public void setData(List<List<String>> data) {
+	public void setData(List<Map<String, String>> data) {
 		this.data = data;
 	}
-	
 }
