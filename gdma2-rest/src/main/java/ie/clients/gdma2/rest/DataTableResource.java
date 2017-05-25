@@ -92,7 +92,7 @@ public class DataTableResource extends BaseDataTableResource{
 		//String orderByColumn = "id";
 		
 		//values are not 0,1,2... but 0, column1 PK, column2 PK like : 0,12,14,478
-		int orderByColumnID = getOrderByColumn(reqParams);
+		int orderByColumnPosition = getOrderByColumn(reqParams);
 		
 		/*
 		String returnJson = "{" + "\"data\":" + convertToAjaxResponse(systemConfigurationProvider.findAll()) + ","
@@ -100,14 +100,14 @@ public class DataTableResource extends BaseDataTableResource{
 		return returnJson;
 		*/
 		
-		logger.info("orderByColumn, column PK: " + orderByColumnID);
+		logger.info("orderByColumn, column Position: " + orderByColumnPosition);
 		
 		//PaginatedTableResponse<Column> resp = serviceFacade.getMetadataService().getTableData(
 		PaginatedTableResponse<Column> resp = serviceFacade.getMetadataService().getTableDataWithColumnNamesAndDropdowns(
 		tableId, 
 				filtersTODO,
 				//getSearchValue(reqParams), //NO SEARCH HERE
-				orderByColumnID,
+				orderByColumnPosition,
 				getOrderByDirection(reqParams),
 				getStartIndex(reqParams),
 				getLength(reqParams));

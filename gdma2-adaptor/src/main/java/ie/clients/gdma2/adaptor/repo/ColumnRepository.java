@@ -16,7 +16,8 @@ public interface ColumnRepository extends PagingAndSortingRepository<Column, Int
 	public Set<Column> findByTableId(int tableId);
 	
 	/*find ACTIVE columns for table order by alias - for DD store in Column page*/
-	@Query("select c from Column c where c.active = true and c.table.id = ?1 order by c.alias asc")
+//	@Query("select c from Column c where c.active = true and c.table.id = ?1 order by c.alias asc")
+	@Query("select c from Column c where c.active = true and c.table.id = ?1 order by c.id asc") 
 	public List<Column> findByTableIdAndActiveTrue(Integer tableId);
 
 	/*count all columns for table*/

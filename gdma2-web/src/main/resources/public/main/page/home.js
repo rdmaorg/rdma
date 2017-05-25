@@ -50,7 +50,7 @@ var configureDataTable = function(columnsMetadata){
 		createFunction: insertData,
 		editFunction: editData,
 		removeFunction: removeData,
-		idSrc : '0',
+//		idSrc : '0',
 		ajax: {
             create: {
                 type: 'POST',
@@ -77,7 +77,7 @@ var configureDataTable = function(columnsMetadata){
 	var config={
 		 "dataSrc": "data",
 		 "columns": columnsData,
-		 idSrc : '0',
+//		 idSrc : '0',
          dom : "Bfrtip",
 //         select: true,
          select: {

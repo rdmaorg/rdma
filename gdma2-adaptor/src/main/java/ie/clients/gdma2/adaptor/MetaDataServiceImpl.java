@@ -1,5 +1,20 @@
 package ie.clients.gdma2.adaptor;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.apache.commons.collections.IteratorUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import ie.clients.gdma2.domain.Column;
 import ie.clients.gdma2.domain.ConnectionType;
 import ie.clients.gdma2.domain.Server;
@@ -12,20 +27,6 @@ import ie.clients.gdma2.spi.interfaces.MetaDataService;
 import ie.clients.gdma2.util.EntityUtils;
 import ie.clients.gdma2.util.Filter;
 import ie.clients.gdma2.util.HashUtil;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.apache.commons.collections.IteratorUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataService {
@@ -956,19 +957,27 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		table = repositoryManager.getTableRepository().findOne(tableId);
 		server = table.getServer();
 		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(tableId);
-		table.setColumns(new HashSet<Column>(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change this and pass colums to utility method themselves
+//		table.setColumns(new HashSet<Column>(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change this and pass colums to utility method themselves
+		table.setColumns(new LinkedHashSet<Column>(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change
 		
 		/*if ordering not set, zero velue is received so keep sortedByColumn = null, else determine column among all table columns*/
 		Column sortedByColumn = null;
-		if(orderByColumnID != 0){
-			logger.info("orderByColumnID != 0");
-			for (Column column : activeColumns) {
-				if(column.getId() == orderByColumnID){
-					logger.info("orderByColumnID is found");
-					sortedByColumn = column;
-					break;
-				}
+		if(orderByColumnID > 0){
+			logger.info("orderByColumnID > 0");
+			
+			try {
+				sortedByColumn = activeColumns.get(orderByColumnID - 1);
+			} catch (IndexOutOfBoundsException e) {
+				logger.info("orderByColumnID position was not found");
+				e.printStackTrace();
 			}
+//			for (Column column : activeColumns) {
+//				if(column.getId() == orderByColumnID){
+//					logger.info("orderByColumnID is found");
+//					sortedByColumn = column;
+//					break;
+//				}
+//			}
 		}
 		
 		logger.info("table : " + tableId + " , server: " + server.getId() + " , sortedBy Column: " + 
