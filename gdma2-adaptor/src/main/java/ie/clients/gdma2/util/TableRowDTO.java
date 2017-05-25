@@ -4,6 +4,75 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+
+{  
+   "data":[  
+      {  
+         "rowNumber":1,
+         "columns":[  
+            {  
+               "columnName":"country",
+               "val":"France"
+            },
+            {  
+               "columnName":"city",
+               "val":"Nantes"
+            },
+            {  
+               "columnName":"contactFirstName",
+               "val":"Carine "
+            },
+            {  
+               "columnName":"membership_id",
+               "val":{  
+                  "value":"101",
+                  "did":2255,
+                  "sid":2254,
+                  "dropdownOptions":[  
+                     [  
+                        0,
+                        103,
+                        "gold"
+                     ],
+                     [  
+                        1,
+                        101,
+                        "ordinary"
+                     ],
+                     [  
+                        2,
+                        102,
+                        "silver"
+                     ]
+                  ]
+               }
+            },
+          
+            {  
+               "columnName":"state",
+               "val":null
+            }
+         ]
+      },
+      {  
+         "rowNumber":2,
+         "columns":[  
+            {  
+               "columnName":"country",
+               "val":"USA"
+            }
+          ]
+      }
+   ],
+   "draw":0,
+   "recordsTotal":122,
+   "recordsFiltered":122
+}
+            
+ * @author Avnet
+ *
+ */
 public class TableRowDTO {
 
 	private BigInteger rowNumber;

@@ -897,18 +897,18 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		table = repositoryManager.getTableRepository().findOne(tableId);
 		server = table.getServer();
 		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(tableId);
-		table.setColumns(new HashSet<Column>(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change this and pass colums to utility method themselves
+		table.setColumns(new LinkedHashSet<Column>(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change this and pass colums to utility method themselves
 		
 		/*if ordering not set, zero velue is received so keep sortedByColumn = null, else determine column among all table columns*/
 		Column sortedByColumn = null;
-		if(orderByColumnID != 0){
-			logger.info("orderByColumnID != 0");
-			for (Column column : activeColumns) {
-				if(column.getId() == orderByColumnID){
-					logger.info("orderByColumnID is found");
-					sortedByColumn = column;
-					break;
-				}
+		if(orderByColumnID > 0){
+			logger.info("orderByColumnID > 0");
+			
+			try {
+				sortedByColumn = activeColumns.get(orderByColumnID - 1);
+			} catch (IndexOutOfBoundsException e) {
+				logger.info("orderByColumnID position was not found");
+				throw new ServiceException("orderByColumnID position was not found: " + orderByColumnID);
 			}
 		}
 		
@@ -957,7 +957,6 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		table = repositoryManager.getTableRepository().findOne(tableId);
 		server = table.getServer();
 		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(tableId);
-//		table.setColumns(new HashSet<Column>(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change this and pass colums to utility method themselves
 		table.setColumns(new LinkedHashSet<Column>(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change
 		
 		/*if ordering not set, zero velue is received so keep sortedByColumn = null, else determine column among all table columns*/
@@ -967,17 +966,11 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			
 			try {
 				sortedByColumn = activeColumns.get(orderByColumnID - 1);
+				logger.info("sortedByColumn: " + sortedByColumn.getName());
 			} catch (IndexOutOfBoundsException e) {
 				logger.info("orderByColumnID position was not found");
-				e.printStackTrace();
+				throw new ServiceException("orderByColumnID position was not found: " + orderByColumnID);
 			}
-//			for (Column column : activeColumns) {
-//				if(column.getId() == orderByColumnID){
-//					logger.info("orderByColumnID is found");
-//					sortedByColumn = column;
-//					break;
-//				}
-//			}
 		}
 		
 		logger.info("table : " + tableId + " , server: " + server.getId() + " , sortedBy Column: " + 

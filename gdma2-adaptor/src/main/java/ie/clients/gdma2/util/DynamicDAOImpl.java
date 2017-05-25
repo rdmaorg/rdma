@@ -14,7 +14,6 @@ import ie.clients.gdma2.util.TableRowDTO.TableColumn;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Serializable;
 import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -1329,7 +1328,7 @@ public class DynamicDAOImpl implements DynamicDAO{
          "columnSize":50,
          "active":true,
          "alias":"country",
-         "columnValues":{  
+         "columnValues":{  	//NEW STRUCTURE
             "1":"France",
             "2":"USA",
             "3":"Australia",
@@ -1396,7 +1395,11 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 	}
 
-
+	/*used for : getTableDataWithColumnMetadata() to add 
+	 *  "columnValues":{  	//NEW STRUCTURE
+            "1":"France",
+            "2":"USA",
+            "3":"Australia",*/
 	private void addValuesToColumnMetadata(List<TableRowDTO> rows, Column metadataColumn) {
 
 		/*----------*/
@@ -1527,10 +1530,10 @@ public class DynamicDAOImpl implements DynamicDAO{
 			}
 				
 		}
-		
 		return rows;
+		//return TableDataFormatUtil.createPlainList(rows);
+		//return TableDataFormatUtil.createListWithMap(rows);
 	}
-
 
 	
 	

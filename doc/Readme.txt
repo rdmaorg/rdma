@@ -428,7 +428,8 @@ TEST URLS
 	SECTION: 	TESTING TABLE SYNCH (used in Admin module)
 	****************************************
 
-- Use sample MySQL DB with data: sampledatabase.sql
+- Use sample MySQL DB with data: classic_models_20170524.sql
+ 	
  	Run on local - this will create fresh DB and populate it 
 
 - Register MYSQL server in GDMA 2 DB  
