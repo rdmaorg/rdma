@@ -1,7 +1,8 @@
 var tableId;
+var serverId;
 var columnsMetadata = new Array();
 var tableData;
-var editorData;
+var datatableEditor;
 
 //load columns metadata
 var loadDatatable = function(){
@@ -13,13 +14,17 @@ var loadDatatable = function(){
         dataType: 'json'
     }).done(function(data){
     	columnsMetadata = data.filter(filterDisplayed);
+    	console.log('columnsMetadata: ');
+    	console.log(columnsMetadata);
     	
     	//sort columns by columnID
     	columnsMetadata.sort(function(a, b) {
 		    return parseInt(a.id) - parseInt(b.id);
 		});
-    	columnsMetadata.unshift({name:"", alias:""});
+    	//columnsMetadata.unshift({name:"", alias:""});
     	$("#tableHeaderRow").empty();
+    	//select checkbox header
+    	$("<th></th>").appendTo("#tableHeaderRow");
 		$.each(columnsMetadata, function(i, column) {
 			$("<th>" + column.alias + "</th>").appendTo("#tableHeaderRow");
 		});
@@ -45,19 +50,44 @@ var configureDataTable = function(columnsMetadata){
 		createFunction: insertData,
 		editFunction: editData,
 		removeFunction: removeData,
+		idSrc : '0',
+		ajax: {
+            create: {
+                type: 'POST',
+                url:  mapPathVariablesInUrl(restUri.datatable.update, {'id': tableId})
+            },
+            edit: {
+                type: 'POST',
+                url:  mapPathVariablesInUrl(restUri.datatable.update, {'serverId': serverId,'tableId': tableId})
+            },
+            remove: {
+                type: 'DELETE',
+                url:  mapPathVariablesInUrl(restUri.datatable.remove, {'id': tableId})
+            }
+        },
 		fields: editorFields
 	}
-	editorData = $('#table_data').configureEditor(configEditor);
-	var columnsData = createDataColumns(columnsMetadata);
+	datatableEditor = $('#table_data').configureEditor(configEditor);
+	// Activate an inline edit on click of a table cell
+    $('#table_data').on( 'click', 'tbody td:not(:first-child)', function (e) {
+    	datatableEditor.inline( this, { submit: 'allIfChanged'} );
+    } );
+	var columnsData = createDataTableColumns(columnsMetadata);
+	console.log('columnsData: ' + JSON.stringify(columnsData));
 	var config={
 		 "dataSrc": "data",
 		 "columns": columnsData,
+		 idSrc : '0',
          dom : "Bfrtip",
-         select: true,
+//         select: true,
+         select: {
+             style:    'os',
+             selector: 'td:first-child'
+         },
 		 buttons: [
-              { extend: "create", editor: editorData },
-              { extend: "edit",   editor: editorData },
-              { extend: "remove", editor: editorData },
+              { extend: "create", editor: datatableEditor },
+              { extend: "edit",   editor: datatableEditor },
+              { extend: "remove", editor: datatableEditor },
               { extend: "csv", 
             	text:"Download",
                 exportOptions: {
@@ -92,7 +122,7 @@ var createEditorFields = function(columnsMetadata){
 	var fields = [];
 	for(var i = 1; i < columnsMetadata.length; i++){
 		fields[i-1] = { label: columnsMetadata[i].alias ,
-                	  name: ""+i };
+                	  name: columnsMetadata[i].name };
 		if(columnsMetadata[i].columnTypeString.toUpperCase() === fieldTypes.BOOLEAN
 				|| columnsMetadata[i].columnTypeString.toUpperCase() === fieldTypes.TINYINT){
 			fields[i-1].type = "checkbox";
@@ -101,60 +131,62 @@ var createEditorFields = function(columnsMetadata){
 	return fields;
 }
 
-var createDataColumns = function(columnsMetadata){
+var createDataTableColumns = function(columnsMetadata){
 	var columnsData = [];
+	columnsData.push({
+         data: null,
+         defaultContent: '',
+         className: 'select-checkbox',
+         orderable: false
+     });
+	console.log('columnsMetadata: ' + JSON.stringify(columnsMetadata));
 	for(var i = 0; i < columnsMetadata.length; i++){		
-		if (columnsMetadata[i].dropDownColumnDisplay){
-			console.log('columnsMetadata['+i+'].dropDownColumnDisplay: ' + JSON.stringify(columnsMetadata[i].dropDownColumnDisplay));
-			columnsData.push({"data": ''+i,
-						 render: function ( data, type, row ) {
-						 	 
-							 console.log('data: ' + JSON.stringify(data));
-							 if(data){
-						 	 console.log('data.did: ' + data.did);
-						 	 console.log('data.sid: ' + data.sid);
-						 	 console.log('type: ' + type);
-						 	 console.log('row: ' + row);
-					 	     console.log('data.dropdownOptions: ' + data.dropdownOptions);
-					 	     if(data.dropdownOptions){
-						 	    	 var $select = $("<select></select>", {
-						 	    		 "id": "dropdownoption" + row[0],
-						 	    		 "value": data.value
-						 	    	 });						 	 
-						 	    	 $.each(data.dropdownOptions, function(k,v){
-						 	    		 var $option = $("<option></option>", {
-						 	    			 "text": v[2],
-						 	    			 "value": v[1]
-						 	    		 });
-						 	    		 if(data.value == v[1]){
-						 	    			 $option.attr("selected", "selected")
-						 	    		 }
-						 	    		 $select.append($option);
-						 	    	 });
-						 	    	 return $select.prop("outerHTML");
-						 	     }
-							 }
-					 	     return data;
-						    }
-					});
-		} else {
-			columnsData.push({"data": ''+i});
-		}
-	}
+			columnsData.push({"data": 'columns.'+i+'.val',
+				render: function ( data, type, row ) {
+				 console.log('data: ' + JSON.stringify(data));
+			 	 console.log('type: ' + type);
+			 	 console.log('row: ' + row);
+		 	     if(data && data.dropdownOptions){
+		 	    	 console.log('data.dropdownOptions: ' + data.dropdownOptions);
+		 	    	 console.log('data.did: ' + data.did);
+		 	    	 console.log('data.sid: ' + data.sid);
+		 	    	 var $select = $("<select></select>", {
+		 	    		 "id": "dropdownoption" + row[0],
+			 	    	 "value": data.value
+                     });
+		 	    	 $.each(data.dropdownOptions, function(k,v){
+		 	    		 var $option = $("<option></option>", {
+		 	    			 "text": v[2],
+			 	    		 "value": v[1]
+			 	    	 });
+		 	    		 if(data.value == v[1]){
+		 	    			 $option.attr("selected", "selected")
+			 	    	 }
+		 	    		 $select.append($option);
+			 	     });
+			 	    return $select.prop("outerHTML");
+	 	     	 }
+		 	     return data;
+			    }
+		});
+	};
 	return columnsData;
 }
 
 var insertData = function(d, successCallback, errorCallback){
+	console.log('insertData function triggered');
 	console.log(d.data);
 	successCallback(d);
 }
 
 var editData = function(d, successCallback, errorCallback){
+	console.log('editData function triggered');
 	console.log(d.data);
 	successCallback(d);
 }
 
 var removeData = function(d, successCallback, errorCallback){
+	console.log('removeData function triggered');
 	console.log(d.data);
 	successCallback(d);
 }
@@ -188,6 +220,7 @@ var createDropDownColumn = function(displayId, storeId, selectedValue){
 $(document).ready(function(){	
 	$("#serverName").html(sessionStorage.getItem("serverName"));
 	$("#tableName").html(sessionStorage.getItem("tableName"));
+	serverId = sessionStorage.getItem("serverId");
 	tableId = sessionStorage.getItem("tableId");
 	if(tableId){
 		loadDatatable();

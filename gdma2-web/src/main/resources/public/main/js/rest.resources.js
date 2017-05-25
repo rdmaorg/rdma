@@ -51,7 +51,9 @@ var restUri = {
 		columnsMetaData: getRestBaseUri() + '/datatable/columns/table/{id}',
 		dropdown: getRestBaseUri() + '/datatable/dropdown/display/{did}/store/{sid}',
 		tableWithDropDown: getRestBaseUri() + '/datatable/tablewithdropdown/{id}',
-		tablewithdropdowntest: getRestBaseUri() + '/datatable/tablewithdropdowntest/{id}'
+		tablewithdropdowntest: getRestBaseUri() + '/datatable/tablewithdropdowntest/{id}',
+		update: getRestBaseUri() + '/datatable/update/{serverId}/{tableId}',
+		remove: getRestBaseUri() + '/datatable/delete/table/{id}'
 	}
 	
 };

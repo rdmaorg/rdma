@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,9 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import ie.clients.gdma2.domain.Column;
+import ie.clients.gdma2.domain.ColumnDataUpdate;
 import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.UpdateDataRequest;
+import ie.clients.gdma2.domain.UpdateDataTableRequest;
 import ie.clients.gdma2.domain.ui.DropDownColumn;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 
@@ -224,9 +227,27 @@ public class DataTableResource extends BaseDataTableResource{
 	
 	}
 	
+	//This method will receive the rowData from datatable and convert it to UpdateDataRequest
+	@RequestMapping(value = "/update/{serverId}/{tableId}", method = RequestMethod.POST)
+	public int updateDataTableData(@PathVariable("serverId") Integer serverId, @PathVariable("tableId") Integer tableId, @ModelAttribute UpdateDataTableRequest dataTableRequest){
+		UpdateDataRequest dataRequest = new UpdateDataRequest();
+		dataRequest.setServerId(serverId);
+		dataRequest.setTableId(tableId);
+		for(List<String> rowData : dataTableRequest.getData()){
+			List<ColumnDataUpdate> row = new ArrayList<ColumnDataUpdate>(); 
+			for (String columnValue : rowData) {
+				ColumnDataUpdate e = new ColumnDataUpdate();
+				e.setNewColumnValue(columnValue);
+				row.add(e);
+			}
+			if(row.size() > 0){
+				dataRequest.getUpdates().add(row);
+			}
+		}
+		return serviceFacade.getDataModuleService().updateRecords(dataRequest);
+	}
 	
-	
-	@RequestMapping(value = "/update/table/{id}", method = RequestMethod.POST)
+	@RequestMapping(value = "/update/table/{id}", method = RequestMethod.PUT)
 	public int updateTableData(@RequestBody UpdateDataRequest dataRequest){
 		//TODO - change return type if we need to refresh and return latest data after update
 		logger.info("update Table Data: " + dataRequest.getTableId() );
