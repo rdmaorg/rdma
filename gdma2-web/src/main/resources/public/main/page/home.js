@@ -58,14 +58,26 @@ var configureDataTable = function(columnsMetadata){
             },
             edit: {
                 type: 'POST',
-                url:  mapPathVariablesInUrl(restUri.datatable.update, {'serverId': serverId,'tableId': tableId}),
-//                "data": function ( d ) {
-//                    return JSON.stringify( d );
-//                  }
+                url:  mapPathVariablesInUrl(restUri.datatable.update, {'serverId': serverId,'tableId': tableId})
             },
             remove: {
-                type: 'DELETE',
-                url:  mapPathVariablesInUrl(restUri.datatable.remove, {'id': tableId})
+                type: 'POST',
+                url:  mapPathVariablesInUrl(restUri.datatable.remove, {'serverId': serverId,'tableId': tableId}),
+                "data": function ( d ) {
+                	console.log('deleting rows: ' + JSON.stringify(d));
+            		for(var i in d.data) {
+                		delete d.data[i].rowNumber;
+                		for(var j = 0; j < d.data[i].columns.length;j++){ 
+                			delete d.data[i].columns[j].columnPK;
+                			delete d.data[i].columns[j].position;
+                			delete d.data[i].columns[j].columnName;
+                			if(d.data[i].columns[j].val && d.data[i].columns[j].val.dropdownOptions){
+                				d.data[i].columns[j].val = d.data[i].columns[j].val.value
+                			}
+                		};
+                	};
+                    return d;
+                  }
             }
         },
 		fields: editorFields,

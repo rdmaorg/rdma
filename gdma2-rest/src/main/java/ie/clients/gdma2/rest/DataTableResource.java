@@ -226,45 +226,35 @@ public class DataTableResource extends BaseDataTableResource{
 	
 	}
 	
-	/*
-	 * This method will receive the rowData from datatable and convert it to UpdateDataRequest
+	/**
+	 * 
 	 * Once a form has been submitted to the server, Editor expects a JSON object to be returned with the following parameters:
 	 * data: the data that represents the new or updated rows in the database
 	 * to see more infromation: https://editor.datatables.net/manual/server
+	 * @param serverId
+	 * @param tableId
+	 * @param reqParams
+	 * @return
 	 */
 	@RequestMapping(value = "/update/{serverId}/{tableId}", method = RequestMethod.POST,produces="application/json")
 	public @ResponseBody Map<String,String> updateDataTableData(@PathVariable("serverId") Integer serverId, @PathVariable("tableId") Integer tableId, @RequestParam Map<String, String> reqParams){
 		UpdateDataRequest dataRequest = extractDataRequest(serverId, tableId, reqParams);
 		int updatedRecords = serviceFacade.getDataModuleService().updateRecords(dataRequest);
-		
 		return reqParams;
 	}
 
-	//TODO - move this method to a Service class
-	private UpdateDataRequest extractDataRequest(Integer serverId, Integer tableId, Map<String, String> reqParams) {
-		UpdateDataRequest dataRequest = new UpdateDataRequest();
-		List<ColumnDataUpdate> row = new ArrayList<ColumnDataUpdate>();
-		dataRequest.setServerId(serverId);
-		dataRequest.setTableId(tableId);
-		reqParams.remove("action");
-		final List<Column> columnsMetadata = getActiveColumns(tableId);
-		int i = 0,j = 0;
-		for (Column columnMetadata : columnsMetadata) {
-			for (String key: reqParams.keySet()) {
-				if(i == j){
-					ColumnDataUpdate newColumn = new ColumnDataUpdate();
-					newColumn.setColumnId(columnMetadata.getId());
-					newColumn.setNewColumnValue(reqParams.get(key));
-					newColumn.setOldColumnValue(reqParams.get(key));
-					row.add(newColumn);
-				}
-				j++;
-			}
-			j=0;
-			i++;
-		}
-		dataRequest.getUpdates().add(row);
-		return dataRequest;
+	/**
+	 * RequestMethod is POST because we have to infer what column is the PK at the server side. 
+	 * @param serverId
+	 * @param tableId
+	 * @param reqParams
+	 * @return
+	 */
+	@RequestMapping(value = "/delete/{serverId}/{tableId}", method = RequestMethod.POST,produces="application/json")
+	public @ResponseBody Map<String,String> deleteTableData(@PathVariable("serverId") Integer serverId, @PathVariable("tableId") Integer tableId, @RequestParam Map<String, String> reqParams){
+		UpdateDataRequest dataRequest = extractDataRequest(serverId, tableId, reqParams);
+		int deletedRecords = serviceFacade.getDataModuleService().deleteRecords(dataRequest); 
+		return reqParams;
 	}
 	
 	@RequestMapping(value = "/update/table/{id}", method = RequestMethod.PUT)
@@ -274,11 +264,6 @@ public class DataTableResource extends BaseDataTableResource{
 		return serviceFacade.getDataModuleService().updateRecords(dataRequest);
 	}
 	
-	@RequestMapping(value = "/delete/table/{id}", method = RequestMethod.DELETE)
-	public int deleteTableData(@RequestBody UpdateDataRequest dataRequest ){
-		logger.info("delete Table ata, table:  " + dataRequest.getTableId());
-		return serviceFacade.getDataModuleService().deleteRecords(dataRequest);
-	}
 	
 	/*Upload CSV file for proper DB table to INSERT data*/
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
@@ -316,5 +301,36 @@ public class DataTableResource extends BaseDataTableResource{
 //	            // application logic
 //	    }
 		return results;
+	}
+	
+
+	//TODO - move this method to a Service class
+	/*
+	 * This method will receive the rowData from datatable and convert it to UpdateDataRequest
+	 */
+	private UpdateDataRequest extractDataRequest(Integer serverId, Integer tableId, Map<String, String> reqParams) {
+		UpdateDataRequest dataRequest = new UpdateDataRequest();
+		List<ColumnDataUpdate> row = new ArrayList<ColumnDataUpdate>();
+		dataRequest.setServerId(serverId);
+		dataRequest.setTableId(tableId);
+		reqParams.remove("action");
+		final List<Column> columnsMetadata = getActiveColumns(tableId);
+		int i = 0,j = 0;
+		for (Column columnMetadata : columnsMetadata) {
+			for (String key: reqParams.keySet()) {
+				if(i == j){
+					ColumnDataUpdate newColumn = new ColumnDataUpdate();
+					newColumn.setColumnId(columnMetadata.getId());
+					newColumn.setNewColumnValue(reqParams.get(key));
+					newColumn.setOldColumnValue(reqParams.get(key));
+					row.add(newColumn);
+				}
+				j++;
+			}
+			j=0;
+			i++;
+		}
+		dataRequest.getUpdates().add(row);
+		return dataRequest;
 	}
 }
