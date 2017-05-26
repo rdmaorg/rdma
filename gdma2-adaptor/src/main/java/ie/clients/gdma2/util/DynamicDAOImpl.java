@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -871,7 +872,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 		//TODO check conditions : does column need to be active...
 		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(table.getId());
-		table.setColumns(new HashSet(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change this and pass colums to utility method themselves
+		table.setColumns(new LinkedHashSet(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change this and pass colums to utility method themselves
 
 
 		List<List<ColumnDataUpdate>> columnsUpdate = updateRequest.getUpdates();
@@ -1039,7 +1040,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 		//TODO check conditions : does column need to be active...
 		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(table.getId());
-		table.setColumns(new HashSet(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change this and pass colums to utility method themselves
+		table.setColumns(new LinkedHashSet(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change this and pass colums to utility method themselves
 
 		List<List<ColumnDataUpdate>> columnsUpdate = updateRequest.getUpdates();
 
