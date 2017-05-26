@@ -90,8 +90,14 @@ var configureDataTable = function(columnsMetadata){
 				 for(var i=0;i< json.data.length; i++){
 					 for(var j=0;j< json.data[i].columns.length; j++){
 						 json.data[i].columns[j].columnPK = ''+columnsMetadata[j].id;
+						 if(json.data[i].columns[j].val && json.data[i].columns[j].val.dropdownOptions){
+							   json.data[i].columns[j].val.position = j;
+							 } else {
+							 json.data[i].columns[j].position = j;	
+							 }
 					 }
 				 }
+				 editor = this.datatableEditor;
 				 return json.data;
 			 }
 		 },
@@ -166,6 +172,10 @@ var createEditorFields = function(columnsMetadata){
 				|| columnsMetadata[i].columnTypeString.toUpperCase() === fieldTypes.TINYINT){
 			fields[i].type = "checkbox";
 		}
+		if(columnsMetadata[i].dropDownColumnDisplay){
+			fields[i].type = "select";
+			fields[i].name = 'columns.'+i+'.val.value';
+		}
 	}
 	return fields;
 }
@@ -178,37 +188,29 @@ var createDataTableColumns = function(columnsMetadata){
          className: 'select-checkbox',
          orderable: false
      });
-	for(var i = 0; i < columnsMetadata.length; i++){		
-			columnsData.push({data: 'columns.'+i+'.val',
-				editField: 'columns.'+i+'.val' , 
-				render: function ( data, type, row ) {
-				console.log('data: ' + JSON.stringify(data));
-			 	console.log('type: ' + type);
-			 	console.log('row: ');
-			 	console.log(row);
-		 	     if(data && data.dropdownOptions){
-		 	    	 console.log('data.dropdownOptions: ' + data.dropdownOptions);
-		 	    	 console.log('data.did: ' + data.did);
-		 	    	 console.log('data.sid: ' + data.sid);
-		 	    	 var $select = $("<select></select>", {
-		 	    		 "id": "dropdownoption" + row[0],
-			 	    	 "value": data.value
-                     });
-		 	    	 $.each(data.dropdownOptions, function(k,v){
-		 	    		 var $option = $("<option></option>", {
-		 	    			 "text": v[2],
-			 	    		 "value": v[1]
-			 	    	 });
-		 	    		 if(data.value == v[1]){
-		 	    			 $option.attr("selected", "selected")
-			 	    	 }
-		 	    		 $select.append($option);
-			 	     });
-			 	    return $select.prop("outerHTML");
-	 	     	 }
-		 	     return data;
-			    }
-		});
+	for(var i = 0; i < columnsMetadata.length; i++){
+		var dataValue = 'columns.'+i+'.val';
+		var editFieldValue = columnsMetadata[i].dropDownColumnDisplay ? 'columns.'+i+'.val.value' : 'columns.'+i+'.val';
+		
+		var renderFunction = function ( data, type, row ) {
+	 	  if(data && data.dropdownOptions){
+	 	    var options = [];
+	 	    var returnValue = data.value; 
+	 	    $.each(data.dropdownOptions, function(k,v){
+	 	      options.push({'label':v[2], 'value':v[1]});
+	 	      if(data.value == v[1]){
+	 	        returnValue = v[2];
+	 	      }
+		    });
+	 	    editor.field('columns.'+data.position+'.val.value').update(options);
+		    return returnValue;
+ 	      }
+	 	  return data;
+		};
+		
+		columnsData.push({'data': dataValue,
+		  'editField': editFieldValue, 
+		  'render': renderFunction});
 	};
 	return columnsData;
 }

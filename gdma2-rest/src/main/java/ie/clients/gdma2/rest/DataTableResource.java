@@ -226,11 +226,22 @@ public class DataTableResource extends BaseDataTableResource{
 	
 	}
 	
-	//This method will receive the rowData from datatable and convert it to UpdateDataRequest
+	/*
+	 * This method will receive the rowData from datatable and convert it to UpdateDataRequest
+	 * Once a form has been submitted to the server, Editor expects a JSON object to be returned with the following parameters:
+	 * data: the data that represents the new or updated rows in the database
+	 * to see more infromation: https://editor.datatables.net/manual/server
+	 */
 	@RequestMapping(value = "/update/{serverId}/{tableId}", method = RequestMethod.POST,produces="application/json")
 	public @ResponseBody Map<String,String> updateDataTableData(@PathVariable("serverId") Integer serverId, @PathVariable("tableId") Integer tableId, @RequestParam Map<String, String> reqParams){
-//	public int updateDataTableData(@PathVariable("serverId") Integer serverId, @PathVariable("tableId") Integer tableId, @ModelAttribute UpdateDataTableRequest dataTableRequest){
+		UpdateDataRequest dataRequest = extractDataRequest(serverId, tableId, reqParams);
+		int updatedRecords = serviceFacade.getDataModuleService().updateRecords(dataRequest);
 		
+		return reqParams;
+	}
+
+	//TODO - move this method to a Service class
+	private UpdateDataRequest extractDataRequest(Integer serverId, Integer tableId, Map<String, String> reqParams) {
 		UpdateDataRequest dataRequest = new UpdateDataRequest();
 		List<ColumnDataUpdate> row = new ArrayList<ColumnDataUpdate>();
 		dataRequest.setServerId(serverId);
@@ -253,8 +264,7 @@ public class DataTableResource extends BaseDataTableResource{
 			i++;
 		}
 		dataRequest.getUpdates().add(row);
-		int updatedRecords = serviceFacade.getDataModuleService().updateRecords(dataRequest);
-		return reqParams;
+		return dataRequest;
 	}
 	
 	@RequestMapping(value = "/update/table/{id}", method = RequestMethod.PUT)
