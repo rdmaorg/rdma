@@ -18,6 +18,8 @@ public class SQLUtil {
 	private static final Logger logger = LoggerFactory.getLogger(SQLUtil.class);
 
 	/*
+		Selects DISPLAYABLE columns for table
+		
 		URL: https://localhost/gdma2/rest/column/data/read/table/133?order[0][column]=629 
 	
 	creates SELECT colum_list from TABLE 

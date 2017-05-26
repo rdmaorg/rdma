@@ -238,7 +238,19 @@ public class DataTableResource extends BaseDataTableResource{
 	 */
 	@RequestMapping(value = "/update/{serverId}/{tableId}", method = RequestMethod.POST,produces="application/json")
 	public @ResponseBody Map<String,String> updateDataTableData(@PathVariable("serverId") Integer serverId, @PathVariable("tableId") Integer tableId, @RequestParam Map<String, String> reqParams){
+		logger.info("updateDataTableData");
 		UpdateDataRequest dataRequest = extractDataRequest(serverId, tableId, reqParams);
+		
+		/*---TODO DELETE*/
+		List<List<ColumnDataUpdate>> updates = dataRequest.getUpdates();
+		for (List<ColumnDataUpdate> list : updates) {
+			for (ColumnDataUpdate columnDataUpdate : list) {
+				logger.info(columnDataUpdate.getColumnId() + "  "  + columnDataUpdate.getOldColumnValue() + "  " + columnDataUpdate.getNewColumnValue());
+			}
+			
+		}
+		/*----TODO DELETE end */
+		
 		int updatedRecords = serviceFacade.getDataModuleService().updateRecords(dataRequest);
 		return reqParams;
 	}
@@ -307,6 +319,11 @@ public class DataTableResource extends BaseDataTableResource{
 	//TODO - move this method to a Service class
 	/*
 	 * This method will receive the rowData from datatable and convert it to UpdateDataRequest
+	 * 
+	 *  data[11][columns][0][val]:Tseng
+		data[11][columns][1][val]:Foon Yui
+		
+		the key is is "data[11][columns][0][val]" , the Value is "Tseng" 
 	 */
 	private UpdateDataRequest extractDataRequest(Integer serverId, Integer tableId, Map<String, String> reqParams) {
 		UpdateDataRequest dataRequest = new UpdateDataRequest();

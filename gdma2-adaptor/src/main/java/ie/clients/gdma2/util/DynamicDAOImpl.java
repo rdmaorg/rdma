@@ -1042,7 +1042,22 @@ public class DynamicDAOImpl implements DynamicDAO{
 		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(table.getId());
 		table.setColumns(new LinkedHashSet(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change this and pass colums to utility method themselves
 
+		
+		
+		
 		List<List<ColumnDataUpdate>> columnsUpdate = updateRequest.getUpdates();
+		
+		/**/
+		logger.info("*******TODO DELETE *************");
+		List<List<ColumnDataUpdate>> updates = columnsUpdate;
+		for (List<ColumnDataUpdate> list : updates) {
+			for (ColumnDataUpdate columnDataUpdate : list) {
+				logger.info(columnDataUpdate.getColumnId() + "  "  + columnDataUpdate.getOldColumnValue() + "  " + columnDataUpdate.getNewColumnValue());
+			}
+			
+		}
+		logger.info("********TODO DELETE ***********");
+		/**/
 
 		DataSourceTransactionManager transactionManager = dataSourcePool.getTransactionManager(server);
 		TransactionTemplate txTemplate = new TransactionTemplate(transactionManager);
@@ -1070,10 +1085,13 @@ public class DynamicDAOImpl implements DynamicDAO{
 							}
 
 							for (ColumnDataUpdate columnUpdate : list) {
-								logger.info("1: column list reading");
+								logger.info("column list reading");
 								//Column column = gdmaFacade.getColumnDao().get(columnUpdate.getColumnId());
 								Column column = repositoryManager.getColumnRepository().findOne(columnUpdate.getColumnId());
-								logger.info("2: local column found by id: " + column.getName());
+								logger.info("2: columnUpdateId: " + columnUpdate.getColumnId() + " val old :" + columnUpdate.getOldColumnValue() + 
+										" , new val: " + columnUpdate.getNewColumnValue()  
+										+ " and local column found with name: " + column.getName() + " and id: " + column.getId() + 
+										" and type : " + column.getColumnTypeString());
 
 								if (column.isPrimarykey()) {
 									logger.info("3: column IS PK! Getting old value from request and type from metadata");
@@ -1095,9 +1113,9 @@ public class DynamicDAOImpl implements DynamicDAO{
 										parameters.add(obj);
 
 										if (obj == null){
-											logger.info("obj of data type is null - problem with data type conversion?");
+											logger.info("5: obj of data type is null - problem with data type conversion?");
 										} else {
-											logger.info("New value " + obj.toString());
+											logger.info("5: New value " + obj.toString());
 										}
 									}
 								}
