@@ -98,6 +98,7 @@ var configureDataTable = function(columnsMetadata){
 //			      return JSON.stringify( d );
 //			    },
 			 "dataSrc": function (json) {
+				 //json does not contain hidden columns
 				 var return_data = new Array();
 				 for(var i=0;i< json.data.length; i++){
 					 for(var j=0;j< json.data[i].columns.length; j++){
