@@ -237,6 +237,36 @@ public class DataTableResource extends BaseDataTableResource{
 	 * @param reqParams
 	 * @return
 	 */
+	@RequestMapping(value = "/create/{serverId}/{tableId}", method = RequestMethod.POST,produces="application/json")
+	public @ResponseBody Map<String,String> createDataTableData(@PathVariable("serverId") Integer serverId, @PathVariable("tableId") Integer tableId, @RequestParam Map<String, String> reqParams){
+		logger.info("createDataTableData");
+		
+		UpdateDataRequest dataRequest = extractDataRequest(serverId, tableId, reqParams);
+		
+		/*---TODO DELETE*/
+		List<List<ColumnDataUpdate>> updates = dataRequest.getUpdates();
+		for (List<ColumnDataUpdate> list : updates) {
+			for (ColumnDataUpdate columnDataUpdate : list) {
+				logger.info(columnDataUpdate.getColumnId() + "  "  + columnDataUpdate.getOldColumnValue() + "  " + columnDataUpdate.getNewColumnValue());
+			}
+			
+		}
+		/*----TODO DELETE end */
+		
+		serviceFacade.getDataModuleService().addRecord(dataRequest);
+		return reqParams;
+	}
+	
+	/**
+	 * 
+	 * Once a form has been submitted to the server, Editor expects a JSON object to be returned with the following parameters:
+	 * data: the data that represents the new or updated rows in the database
+	 * to see more infromation: https://editor.datatables.net/manual/server
+	 * @param serverId
+	 * @param tableId
+	 * @param reqParams
+	 * @return
+	 */
 	@RequestMapping(value = "/update/{serverId}/{tableId}", method = RequestMethod.POST,produces="application/json")
 	public @ResponseBody Map<String,String> updateDataTableData(@PathVariable("serverId") Integer serverId, @PathVariable("tableId") Integer tableId, @RequestParam Map<String, String> reqParams){
 		logger.info("updateDataTableData");

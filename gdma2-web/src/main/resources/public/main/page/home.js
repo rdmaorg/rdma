@@ -54,7 +54,7 @@ var configureDataTable = function(columnsMetadata){
 		ajax: {
             create: {
                 type: 'POST',
-                url:  mapPathVariablesInUrl(restUri.datatable.update, {'id': tableId})
+                url:  mapPathVariablesInUrl(restUri.datatable.create, {'serverId': serverId,'tableId': tableId})
             },
             edit: {
                 type: 'POST',

@@ -52,6 +52,7 @@ var restUri = {
 		dropdown: getRestBaseUri() + '/datatable/dropdown/display/{did}/store/{sid}',
 		tableWithDropDown: getRestBaseUri() + '/datatable/tablewithdropdown/{id}',
 		tablewithdropdowntest: getRestBaseUri() + '/datatable/tablewithdropdowntest/{id}',
+		create: getRestBaseUri() + '/datatable/create/{serverId}/{tableId}',
 		update: getRestBaseUri() + '/datatable/update/{serverId}/{tableId}',
 		remove: getRestBaseUri() + '/datatable/delete/{serverId}/{tableId}'
 	}
