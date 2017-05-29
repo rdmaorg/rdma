@@ -264,7 +264,7 @@ public class DataTableResource extends BaseDataTableResource{
 	 * @return
 	 */
 	@RequestMapping(value = "/delete/{serverId}/{tableId}", method = RequestMethod.POST,produces="application/json")
-	public @ResponseBody List<Map<String,String>> deleteTableData(@PathVariable("serverId") Integer serverId, @PathVariable("tableId") Integer tableId, @RequestParam List<Map<String, String>> reqParams){
+	public @ResponseBody Map<String,String> deleteTableData(@PathVariable("serverId") Integer serverId, @PathVariable("tableId") Integer tableId, @RequestParam Map<String, String> reqParams){
 		UpdateDataRequest dataRequest = extractDataRequest(serverId, tableId, reqParams);
 		int deletedRecords = serviceFacade.getDataModuleService().deleteRecords(dataRequest);
 		logger.debug("deletedRecords: " +deletedRecords);
