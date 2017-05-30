@@ -297,9 +297,11 @@ public class DataTableResource extends BaseDataTableResource{
 	 */
 	@RequestMapping(value = "/delete/{serverId}/{tableId}", method = RequestMethod.POST,produces="application/json")
 	public @ResponseBody Map<String,String> deleteTableData(@PathVariable("serverId") Integer serverId, @PathVariable("tableId") Integer tableId, @RequestParam Map<String, String> reqParams){
-		UpdateDataRequest dataRequest = extractDataRequest(serverId, tableId, reqParams);
-		int deletedRecords = serviceFacade.getDataModuleService().deleteRecords(dataRequest);
-		logger.debug("deletedRecords: " +deletedRecords);
+		List<UpdateDataRequest> dataRequest = extractDataRequestList(serverId, tableId, reqParams);
+		for (UpdateDataRequest updateDataRequest : dataRequest) {
+			int deletedRecords = serviceFacade.getDataModuleService().deleteRecords(updateDataRequest);
+			logger.debug("deletedRecords: " +deletedRecords);
+		}
 		return reqParams;
 	}
 	
@@ -392,12 +394,38 @@ public class DataTableResource extends BaseDataTableResource{
 		return dataRequest;
 	}
 	
-	private UpdateDataRequest extractDataRequest(Integer serverId, Integer tableId, List<Map<String, String>> reqParams) {
-		UpdateDataRequest dataRequest = null;
-		for (Map<String, String> map : reqParams) {
-			dataRequest = extractDataRequest(serverId, tableId, map); 
+	private List<UpdateDataRequest> extractDataRequestList(Integer serverId, Integer tableId, Map<String, String> reqParams) {
+		List<UpdateDataRequest> dataRequestList = new ArrayList<UpdateDataRequest>();
+		reqParams.remove("action");
+		final List<Column> columnsMetadata = getActiveColumns(tableId);
+		columnsMetadata.removeIf(c -> !c.isDisplayed());
+		List<String> extractedRowKeyList = extractRowKeyList(reqParams);
+		for (String rowKey : extractedRowKeyList) {
+			UpdateDataRequest dataRequest = new UpdateDataRequest();
+			List<ColumnDataUpdate> row = new ArrayList<ColumnDataUpdate>();
+			dataRequest.setServerId(serverId);
+			dataRequest.setTableId(tableId);
+			int i = 0,j = 0;
+			for (Column columnMetadata : columnsMetadata) {
+				for (String key: reqParams.keySet()) {
+					if(key.startsWith(rowKey)){
+						if(i == j){
+							ColumnDataUpdate newColumn = new ColumnDataUpdate();
+							newColumn.setColumnId(columnMetadata.getId());
+							newColumn.setNewColumnValue(reqParams.get(key));
+							newColumn.setOldColumnValue(reqParams.get(key));
+							row.add(newColumn);
+						}
+						j++;
+					}
+				}
+				j=0;
+				i++;
+			}
+			dataRequest.getUpdates().add(row);
+			dataRequestList.add(dataRequest);
 		}
-		return dataRequest;
+		return dataRequestList;
 	}
 	
 	private List<String> extractRowKeyList(Map<String, String> reqParams) {
