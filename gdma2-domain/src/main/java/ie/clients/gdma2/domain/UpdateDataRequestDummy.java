@@ -505,7 +505,149 @@ public class UpdateDataRequestDummy{
 	}
 	
 	/*
-	 * DELETE records
+	 * DELETE COMPOSITE KEY records: 'voting'
+	 * 
+			 REMOTE DB
+			 
+	# questionID, personID, vote, votenumber
+	'3', '101', 'green option', '5689'
+	'3', '102', 'blue option', '6486'
+	'3', '103', 'yellow option', '56465'
+	'4', '101', 'green option', '54456'
+	'4', '103', 'yellow option', '556654'
+	'5', '102', 'blue option', '4454'
+	'6', '107', 'black option', '434454'
+
+
+		DELETE RECORDS:
+		questionId	personId		 vote			vote_number
+		'4', 		'101', 		'green option', '54456'
+		'6', 		'107', 		'black option', '434454'
+			
+	 * 
+	 */
+	public static UpdateDataRequest createDummyDeleteRecordsForVote(int serverId, int tableId) {
+		
+		/*MYSQL table has autoincrement- this method will insert 2 rows in remote DB*/
+		logger.info("createDummy DELETE request" + "for serverId: "  + serverId + " and tableId: " + tableId);
+		logger.info("PK must be set!");
+		logger.info("No other columns are used!");
+		
+		/*
+		Id		Name	
+		2260	personID	
+		2259	questionID	
+		2261	vote	
+		2262	votenumber
+		
+		*/
+		
+		/*ROW 1*/
+		/*
+		personId	questionId	 vote			vote_number
+		'4', 		'101', 		'green option', '54456'
+		*/
+		
+		ArrayList<ColumnDataUpdate> row1 = new ArrayList<ColumnDataUpdate>();
+
+		/*column PersonId ROW1*/
+		ColumnDataUpdate col1Row1 = new ColumnDataUpdate();
+
+		col1Row1.setColumnId(2260);
+		col1Row1.setOldColumnValue("101");
+		col1Row1.setNewColumnValue("101");
+
+		/*column QuestionId row1*/
+		ColumnDataUpdate col2Row1 = new ColumnDataUpdate();
+		col2Row1.setColumnId(2259);
+		col2Row1.setOldColumnValue("4");
+		col2Row1.setNewColumnValue("4");
+
+		/*column Vote row1*/
+		ColumnDataUpdate col3Row1 = new ColumnDataUpdate();
+		col3Row1.setColumnId(2261);
+		col3Row1.setOldColumnValue("green option");
+		col3Row1.setNewColumnValue("green option");
+		
+		
+		/*column Vote row1*/
+		ColumnDataUpdate col4Row1 = new ColumnDataUpdate();
+		col4Row1.setColumnId(2262);
+		col4Row1.setOldColumnValue("54456");
+		col4Row1.setNewColumnValue("54456");
+		
+		row1.add(col1Row1);
+		row1.add(col2Row1);
+		row1.add(col3Row1);
+		row1.add(col4Row1);
+		
+		/*Row 2*/
+		
+		/*
+		personId	questionId	 vote			vote_number
+		'6', 		'107', 		'black option', '434454'
+		*/
+		
+		ArrayList<ColumnDataUpdate> row2 = new ArrayList<ColumnDataUpdate>();
+
+		/*column PersonId row2*/
+		ColumnDataUpdate col1row2 = new ColumnDataUpdate();
+
+		col1row2.setColumnId(2260);
+		col1row2.setOldColumnValue("107");
+		col1row2.setNewColumnValue("107");
+
+		/*column QuestionId row2*/
+		ColumnDataUpdate col2row2 = new ColumnDataUpdate();
+		col2row2.setColumnId(2259);
+		col2row2.setOldColumnValue("6");
+		col2row2.setNewColumnValue("6");
+
+		/*column Vote row2*/
+		ColumnDataUpdate col3row2 = new ColumnDataUpdate();
+		col3row2.setColumnId(2261);
+		col3row2.setOldColumnValue("black option");
+		col3row2.setNewColumnValue("black option");
+		
+		
+		/*column Vote row2*/
+		ColumnDataUpdate col4row2 = new ColumnDataUpdate();
+		col4row2.setColumnId(2262);
+		col4row2.setOldColumnValue("434454");
+		col4row2.setNewColumnValue("434454");
+		
+		row2.add(col1row2);
+		row2.add(col2row2);
+		row2.add(col3row2);
+		row2.add(col4row2);
+		
+		
+		
+		
+
+		/*add rows to list*/
+		List<List<ColumnDataUpdate>> updateRows = new ArrayList(new ArrayList<ColumnDataUpdate>());
+
+		updateRows.add(row1);
+		updateRows.add(row2);
+
+		/*print created*/
+		print(updateRows);
+
+		/*create and return wrapper*/
+		UpdateDataRequest updateReq = new UpdateDataRequest();
+		updateReq.setServerId(serverId);
+		updateReq.setTableId(tableId);
+		updateReq.setUpdates(updateRows);
+
+		return updateReq;
+		
+	}
+
+	
+	
+	/*
+	 * DELETE records - SINGLE PK
 	 * 
 			 REMOTE DB
 			 # id, name, year
@@ -527,13 +669,22 @@ public class UpdateDataRequestDummy{
 		DELETE RECORDS:
 		'9', 'Mike', '1950'
 		'10', 'new data', '1987'
+		
+		EXPECTED SQL - see log:
+	 	Delete SQL used:			 DELETE FROM voting WHERE  (personID = ?)  AND  (questionID = ?) 
+	 	Keys-values used : [101, 4]
+
+  		Delete SQL used: 			DELETE FROM voting WHERE  (personID = ?)  AND  (questionID = ?)
+  		Keys-values used : [107, 6]
+
+ 
 			
 	 * 
 	 */
 	public static UpdateDataRequest createDummyDeleteRecordsForAutoIncrementTable_new_table_test_autoincrement(int serverId, int tableId) {
 		
 		/*MYSQL table has autoincrement- this method will insert 2 rows in remote DB*/
-		logger.info("createDummy DELETE request" + "for serverId: "  + serverId + " and tableId: " + tableId);
+		logger.info("createDummyDeleteRecordsForAutoIncrementTable_new_table_test_autoincrement" + "for serverId: "  + serverId + " and tableId: " + tableId);
 		logger.info("PK must be set!");
 		logger.info("No other columns are used!");
 		/*ROW 1*/
@@ -555,7 +706,7 @@ public class UpdateDataRequestDummy{
 		/*column ID row1*/
 		ColumnDataUpdate col3Row1 = new ColumnDataUpdate();
 		col3Row1.setColumnId(654);
-		col3Row1.setOldColumnValue("9");
+		col3Row1.setOldColumnValue("12");
 		//col3Row1.setNewColumnValue("2");
 		
 		//row1.add(col1Row1);
@@ -580,7 +731,7 @@ public class UpdateDataRequestDummy{
 
 		ColumnDataUpdate col3Row2 = new ColumnDataUpdate();
 		col3Row2.setColumnId(654);
-		col3Row2.setOldColumnValue("10");
+		col3Row2.setOldColumnValue("14");
 		//col3Row2.setNewColumnValue("3");
 		
 		//row2.add(col1Row2);
@@ -605,7 +756,9 @@ public class UpdateDataRequestDummy{
 		return updateReq;
 		
 	}
-
+	
+	
+	
 	public static void main(String[] args) {
 		//UpdateDataRequestDummy.createDummyAddRecordsForNonAutoIncrementTable_new_table_test(6, 43);
 
@@ -616,9 +769,14 @@ public class UpdateDataRequestDummy{
 		//UpdateDataRequestDummy.createDummyUpdateRequestForAutoIncrementTable_new_table_test_autoincrement(6, 136);
 		
 		//UPDATE TEST - with date
-		UpdateDataRequestDummy.createDummyUpdateRequestForAutoIncrementTableWithDate_new_table_test_autoincrement(6,136);
-		//DELETE TEST
+		//UpdateDataRequestDummy.createDummyUpdateRequestForAutoIncrementTableWithDate_new_table_test_autoincrement(6,136);
+		
+		//DELETE TEST - single KEYS
 		//UpdateDataRequestDummy.createDummyDeleteRecordsForAutoIncrementTable_new_table_test_autoincrement(6,136);
+		
+		
+		//DELETE TEST - coposite KEYS
+		UpdateDataRequestDummy.createDummyDeleteRecordsForVote(6, 4189);
 	}
 
 

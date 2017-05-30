@@ -1187,6 +1187,12 @@ public class DynamicDAOImpl implements DynamicDAO{
 		}
 
 		List<List<ColumnDataUpdate>> columnsUpdate = updateRequest.getUpdates();
+		
+		for (List<ColumnDataUpdate> list : columnsUpdate) {
+			for (ColumnDataUpdate columnDataUpdate : list) {
+				logger.info("dumy col Id: " + columnDataUpdate.getColumnId() + " old val: " + columnDataUpdate.getOldColumnValue() + " new val:" + columnDataUpdate.getNewColumnValue());
+			}
+		}
 
 		DataSourceTransactionManager transactionManager = dataSourcePool.getTransactionManager(server);
 		TransactionTemplate txTemplate = new TransactionTemplate(transactionManager);

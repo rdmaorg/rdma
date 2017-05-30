@@ -213,8 +213,24 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 		logger.info("createDummy DELETE Req: ");
 
 		UpdateDataRequestDummy dummyDelete = new UpdateDataRequestDummy();
-		UpdateDataRequest updateDataRequest = dummyDelete.createDummyDeleteRecordsForAutoIncrementTable_new_table_test_autoincrement(6, 136);
-
+		//SINGLE PK TEST
+		//UpdateDataRequest updateDataRequest = dummyDelete.createDummyDeleteRecordsForAutoIncrementTable_new_table_test_autoincrement(6, 136);
+		
+		//COMPOSITE PK TEST (make sure DB table classicmodels.voting is used and metadata is fetched in admin module)
+		
+		/*tableId = 4189
+		 * 
+				Columns
+				2260	personID	
+				2259	questionID	
+				2261	vote	
+				2262	votenumber
+				
+				 PRIMARY KEY (`questionID`,`personID`)
+		*/
+		
+		UpdateDataRequest updateDataRequest = dummyDelete.createDummyDeleteRecordsForVote(6, 4189);
+		
 		return dynamicDAO.deleteRecords(updateDataRequest);
 	}
 
