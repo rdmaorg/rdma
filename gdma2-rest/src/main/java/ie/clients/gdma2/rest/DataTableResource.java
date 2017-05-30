@@ -271,20 +271,11 @@ public class DataTableResource extends BaseDataTableResource{
 	public @ResponseBody Map<String,String> updateDataTableData(@PathVariable("serverId") Integer serverId, @PathVariable("tableId") Integer tableId, @RequestParam Map<String, String> reqParams){
 		logger.info("updateDataTableData");
 		
-		UpdateDataRequest dataRequest = extractDataRequest(serverId, tableId, reqParams);
-		
-		/*---TODO DELETE*/
-		List<List<ColumnDataUpdate>> updates = dataRequest.getUpdates();
-		for (List<ColumnDataUpdate> list : updates) {
-			for (ColumnDataUpdate columnDataUpdate : list) {
-				logger.info(columnDataUpdate.getColumnId() + "  "  + columnDataUpdate.getOldColumnValue() + "  " + columnDataUpdate.getNewColumnValue());
-			}
-			
+		List<UpdateDataRequest> dataRequestList = extractDataRequestList(serverId, tableId, reqParams);
+		for (UpdateDataRequest updateDataRequest : dataRequestList) {
+			int updatedRecords = serviceFacade.getDataModuleService().updateRecords(updateDataRequest);
+			logger.debug("updatedRecords : " + updatedRecords );
 		}
-		/*----TODO DELETE end */
-		
-		int updatedRecords = serviceFacade.getDataModuleService().updateRecords(dataRequest);
-		logger.debug("updatedRecords : " + updatedRecords );
 		return reqParams;
 	}
 
