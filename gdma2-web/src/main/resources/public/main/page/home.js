@@ -116,7 +116,7 @@ var configureDataTable = function(columnsMetadata){
 		 },
 		 "columns": columnsData,
 		 idSrc : 'rowNumber',
-         dom : "Bfrtip",
+         dom : "Blfrtip",
          keys: {
              columns: ':not(:first-child)',
              keys: [ 9 ]

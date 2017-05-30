@@ -123,6 +123,10 @@ table thead tr {
     background: rgba(60, 141, 188, .2);	
 }
 
+.dataTables_length {
+	float: left;
+}
+
 .modal-title {
 	color:#fff;
 }
