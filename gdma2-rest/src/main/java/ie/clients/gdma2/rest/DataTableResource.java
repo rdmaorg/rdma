@@ -24,6 +24,8 @@ import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.UpdateDataRequest;
 import ie.clients.gdma2.domain.ui.DropDownColumn;
+import ie.clients.gdma2.domain.ui.Filter;
+import ie.clients.gdma2.domain.ui.FilterDummy;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 
 /*
@@ -87,7 +89,8 @@ public class DataTableResource extends BaseDataTableResource{
 		
 		logger.debug("tableData: " + tableId);
 		
-		List<Object> filtersTODO = new ArrayList<Object>(); //see Filter.java
+		//List<Object> filtersTODO = new ArrayList<Object>(); //see Filter.java
+		List<Filter> createdummyFilters = FilterDummy.createdummyFilters();
 		//  order[0][column]:1
 		//String orderByColumn = "id";
 		
@@ -105,7 +108,7 @@ public class DataTableResource extends BaseDataTableResource{
 		//PaginatedTableResponse<Column> resp = serviceFacade.getMetadataService().getTableData(
 		PaginatedTableResponse<Column> resp = serviceFacade.getMetadataService().getTableDataWithColumnNamesAndDropdowns(
 		tableId, 
-				filtersTODO,
+			createdummyFilters,
 				//getSearchValue(reqParams), //NO SEARCH HERE
 				orderByColumnPosition,
 				getOrderByDirection(reqParams),

@@ -4,7 +4,7 @@ import org.springframework.util.StringUtils;
 
 public class Filter {
 
-	private Long columnId;
+	private Integer columnId;
 
 	private String columnName;
 
@@ -32,11 +32,11 @@ public class Filter {
 
 	private boolean notValue = false;  // to deal with NOT's in the filter sql
 
-	public Long getColumnId() {
+	public Integer getColumnId() {
 		return columnId;
 	}
 
-	public void setColumnId(Long columnId) {
+	public void setColumnId(Integer columnId) {
 		this.columnId = columnId;
 	}
 

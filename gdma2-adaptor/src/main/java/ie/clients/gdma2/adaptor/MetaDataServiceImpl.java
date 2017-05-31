@@ -939,7 +939,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public PaginatedTableResponse<Column> getTableDataWithColumnNamesAndDropdowns(Integer tableId, List<Object> filtersParam,
+	public PaginatedTableResponse<Column> getTableDataWithColumnNamesAndDropdowns(Integer tableId, List<Filter> filtersParam,
 			int orderByColumnID, String orderDirection,
 			int startIndex, int length) {
 
@@ -950,7 +950,8 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		List<Column> columns = null;
 		
 		
-		List<Filter> filtersTODO = new ArrayList<Filter>(); //NEVER use NULL for Filters, only empty collection
+		//List<Filter> filtersTODO = new ArrayList<Filter>(); //NEVER use NULL for Filters, only empty collection
+		
 		long total = 0;
 		long filtered = 0;
 		
@@ -976,21 +977,22 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		logger.info("table : " + tableId + " , server: " + server.getId() + " , sortedBy Column: " + 
 		(sortedByColumn == null ? null : sortedByColumn.getId())); 
 				
-		if(filtersTODO.isEmpty()){
-			logger.info("count - no filters");
-			total = dynamicDAO.getCount(server, table, filtersTODO).longValue();
+		if(filtersParam.isEmpty()){
+			total = dynamicDAO.getCount(server, table, filtersParam).longValue();
+			logger.info("count - no filters, total: " + total);
 			filtered = total;
 			
 		} else {
 			logger.info("count - with filters");
-			filtered =  dynamicDAO.getCount(server, table, filtersTODO).longValue();
+			filtered =  dynamicDAO.getCount(server, table, filtersParam).longValue();
+			logger.info("count - with filters, filtered count: " + filtered );
 			final List<Filter> emptyFilterListForCount = new ArrayList<Filter>(); //NEVER use NULL for Filters, only empty collection
 			total =  dynamicDAO.getCount(server, table, emptyFilterListForCount).longValue();
 			
 		}
 		
 		/*get data with col names and metadata resolved*/
-		columns = dynamicDAO.getTableDataWithColumnNamesAndDropdowns(table, server, sortedByColumn, filtersTODO, orderDirection, startIndex, length);
+		columns = dynamicDAO.getTableDataWithColumnNamesAndDropdowns(table, server, sortedByColumn, filtersParam, orderDirection, startIndex, length);
 		
 		/*get column metadata + data*/
 		//columns = dynamicDAO.getTableDataWithColumnMetadata(table, server, sortedByColumn, filtersTODO, orderDirection, startIndex, length);

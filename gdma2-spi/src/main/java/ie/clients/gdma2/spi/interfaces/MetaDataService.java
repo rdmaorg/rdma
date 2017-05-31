@@ -6,7 +6,9 @@ import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.User;
 import ie.clients.gdma2.domain.UserAccess;
+import ie.clients.gdma2.domain.ui.Filter;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
+
 
 
 import java.util.List;
@@ -99,7 +101,7 @@ public interface MetaDataService {
 	public PaginatedTableResponse<Column> getTableData(Integer tableId, List<Object> filters, int orderByColumnID,
 			String orderDirection, int startIndex, int length);
 	
-	public PaginatedTableResponse<Column> getTableDataWithColumnNamesAndDropdowns(Integer tableId, List<Object> filtersParam,
+	public PaginatedTableResponse<Column> getTableDataWithColumnNamesAndDropdowns(Integer tableId, List<Filter> filtersParam,
 			int orderByColumnID, String orderDirection, int startIndex, int length);
 
 	/*
