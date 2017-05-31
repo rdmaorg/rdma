@@ -56,7 +56,8 @@ public interface DataModuleService {
 		public int bulkImport(Integer tableId, MultipartFile file);
 
 		
-			
+		//user access on Table for logged in user
+		public List<UserAccess> getUserAccessForUserOnTable(Integer tableId);
 	
 	
 }

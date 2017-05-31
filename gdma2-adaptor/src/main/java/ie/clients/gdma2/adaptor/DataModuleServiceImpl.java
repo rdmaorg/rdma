@@ -1,13 +1,5 @@
 package ie.clients.gdma2.adaptor;
 
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
-import org.springframework.jdbc.core.SqlParameter;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-
-
-
 import ie.clients.gdma2.domain.Column;
 import ie.clients.gdma2.domain.ColumnDataUpdate;
 import ie.clients.gdma2.domain.Server;
@@ -18,10 +10,6 @@ import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.spi.interfaces.DataModuleService;
 import ie.clients.gdma2.util.EntityUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -40,8 +28,7 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 
 	private static final Logger logger = LoggerFactory.getLogger(DataModuleServiceImpl.class);
 
-
-	@Override
+		@Override
 	public List<Server> getActiveServers() {
 		logger.info("getActiveServers" );
 		logger.info("user: " + userContextProvider.getLoggedInUserName());
@@ -257,6 +244,13 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 		
 	}
 
+
+	@Override
+	public List<UserAccess> getUserAccessForUserOnTable(Integer tableId) {
+		logger.info("getUserAccessForUserOnTable" );
+		logger.info("user: " + userContextProvider.getLoggedInUserName());
+		return repositoryManager.getUserAccessRepository().getUserAccessForUserOnTable(userContextProvider.getLoggedInUserName(), tableId);
+	}
 
 
 

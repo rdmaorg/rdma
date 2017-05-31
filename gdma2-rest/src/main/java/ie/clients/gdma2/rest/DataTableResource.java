@@ -23,6 +23,7 @@ import ie.clients.gdma2.domain.ColumnDataUpdate;
 import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.UpdateDataRequest;
+import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.domain.ui.DropDownColumn;
 import ie.clients.gdma2.domain.ui.Filter;
 import ie.clients.gdma2.domain.ui.FilterDummy;
@@ -438,5 +439,14 @@ public class DataTableResource extends BaseDataTableResource{
 			}
 		}
 		return rowKeyList;
+	}
+	
+	
+	/*Get user access for logged in user on single table 
+	 * https://localhost/gdma2/rest/datatable/access/table/133 */
+	@RequestMapping(value = "/access/table/{id}", method = RequestMethod.GET)
+	public List<UserAccess> getUserAccessForUserOnTable(@PathVariable("id") Integer tableId){
+		logger.info("getUserAccessForUserOnTable:  " + tableId);
+		return serviceFacade.getDataModuleService().getUserAccessForUserOnTable(tableId);
 	}
 }

@@ -43,5 +43,11 @@ public interface UserAccessRepository extends PagingAndSortingRepository<UserAcc
 	public void deleteForUser(int id);
 	
 	
-	
+	/*user access for User on table*/
+	@Query("select ua from UserAccess ua "
+			+ " where UPPER(ua.user.userName) = UPPER(:userName) " 
+			+ " and  ua.table.active = TRUE "  
+			+ " and ua.table.id =:tableId")
+	public List<UserAccess> getUserAccessForUserOnTable(@Param("userName") String userName, @Param("tableId") Integer tableId);
+		
 }
