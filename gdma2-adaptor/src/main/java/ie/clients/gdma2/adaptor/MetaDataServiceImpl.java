@@ -21,11 +21,11 @@ import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.User;
 import ie.clients.gdma2.domain.UserAccess;
+import ie.clients.gdma2.domain.ui.Filter;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 import ie.clients.gdma2.spi.ServiceException;
 import ie.clients.gdma2.spi.interfaces.MetaDataService;
 import ie.clients.gdma2.util.EntityUtils;
-import ie.clients.gdma2.util.Filter;
 import ie.clients.gdma2.util.HashUtil;
 
 @Service

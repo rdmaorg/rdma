@@ -8,6 +8,7 @@ import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.UpdateDataRequest;
 import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.domain.ui.DropDownColumn;
+import ie.clients.gdma2.domain.ui.Filter;
 import ie.clients.gdma2.spi.interfaces.UserContextProvider;
 import ie.clients.gdma2.util.TableRowDTO.TableColumn;
 

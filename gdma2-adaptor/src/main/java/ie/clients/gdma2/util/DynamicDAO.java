@@ -4,6 +4,7 @@ import ie.clients.gdma2.domain.Column;
 import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.UpdateDataRequest;
+import ie.clients.gdma2.domain.ui.Filter;
 
 import java.util.List;
 import java.util.Set;

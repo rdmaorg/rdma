@@ -3,6 +3,7 @@ package ie.clients.gdma2.util;
 import ie.clients.gdma2.domain.Column;
 import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.Table;
+import ie.clients.gdma2.domain.ui.Filter;
 
 import java.math.BigDecimal;
 import java.sql.Types;
