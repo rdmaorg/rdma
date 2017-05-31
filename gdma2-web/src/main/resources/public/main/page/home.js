@@ -94,20 +94,17 @@ var configureDataTable = function(columnsMetadata){
 	var config={
 		 "ajax":{
 			 "url":mapPathVariablesInUrl(restUri.datatable.table, {'id': tableId}),
-//			 "data": function ( d ) {
-//			      return JSON.stringify( d );
-//			    },
 			 "dataSrc": function (json) {
-				 //json does not contain hidden columns
+				 //json does not contain columns configured as 'displayed=false' in admin module
 				 var return_data = new Array();
 				 for(var i=0;i< json.data.length; i++){
 					 for(var j=0;j< json.data[i].columns.length; j++){
-						 json.data[i].columns[j].columnPK = ''+columnsMetadata[j].id;
-						 if(json.data[i].columns[j].val && json.data[i].columns[j].val.dropdownOptions){
-							   json.data[i].columns[j].val.position = j;
-							 } else {
-							 json.data[i].columns[j].position = j;	
-							 }
+					   json.data[i].columns[j].columnPK = ''+columnsMetadata[j].id;
+					   if(json.data[i].columns[j].val && json.data[i].columns[j].val.dropdownOptions){
+						 json.data[i].columns[j].val.position = j;
+					   } else {
+					     json.data[i].columns[j].position = j;	
+					   }
 					 }
 				 }
 				 editor = this.datatableEditor;
