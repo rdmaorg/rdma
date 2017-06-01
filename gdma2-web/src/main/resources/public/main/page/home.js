@@ -88,27 +88,26 @@ var configureDataTable = function(columnsMetadata){
         }
 	}
 	datatableEditor = $('#table_data').configureEditor(configEditor);
-//	datatableEditor.on( 'preSubmit', function ( e, o, action ) {
-//        if ( action !== 'remove' ) {
-//            var firstName = this.field( 'first_name' );
-// 
-//            // Only validate user input values - different values indicate that
-//            // the end user has not entered a value
-//            if ( ! firstName.isMultiValue() ) {
-//                if ( ! firstName.val() ) {
-//                    firstName.error( 'A first name must be given' );
-//                }
-//                 
-//                if ( firstName.val().length >= 20 ) {
-//                    firstName.error( 'The first name length must be less that 20 characters' );
-//                }
-//            }
-//            // If any error was reported, cancel the submission so it can be corrected
-//            if ( this.inError() ) {
-//                return false;
-//            }
-//        }
-//    } );
+	datatableEditor.on( 'preSubmit', function ( e, data, action ) {
+        if ( action !== 'create' || action !== 'edit'  ) {
+            for (var i = 0, len = columnsMetadata.length; i < len; i++) {
+        	  if (!columnsMetadata[i].nullable){
+        		  var field = this.field( 'columns.'+i+'.val' ) ? this.field( 'columns.'+i+'.val' ) : this.field( 'columns.'+i+'.val.value' );
+        		  // Only validate user input values - different values indicate that
+        		  // the end user has not entered a value
+        		  if ( ! field.isMultiValue() ) {
+        			  if ( ! field.val() ) {
+        				  field.error( 'A value must be given for ' + columnsMetadata[i].alias);
+        			  }
+        		  }
+        	  }
+        	}
+            // If any error was reported, cancel the submission so it can be corrected
+            if ( this.inError() ) {
+                return false;
+            }
+        }
+    } );
 
 	var columnsData = createDataTableColumns(columnsMetadata);
 	console.log('columnsData: ' + JSON.stringify(columnsData));
@@ -173,7 +172,10 @@ var configureDataTable = function(columnsMetadata){
 		}
 	});
 	
-	verifyButtonsEnable(tableData);
+	verifyEnabledButtons(tableData);
+	
+	addDownloadButton(tableData);
+	
 	
 	// Activate an inline edit on click of a table cell
   $('#table_data').on( 'click', 'tbody td:not(:first-child)', function (e) {
@@ -306,7 +308,7 @@ function filterDisplayed(column) {
     return column.displayed === true;
 };
 
-var verifyButtonsEnable = function (dataTable) {
+var verifyEnabledButtons = function (dataTable) {
 	$.ajax({
         type: "get",
         url: mapPathVariablesInUrl(restUri.datatable.permissions, {'tableId': tableId}),        
@@ -329,4 +331,8 @@ var verifyButtonsEnable = function (dataTable) {
     	handleError('#global-alert', e);
     }).always(function(){
     });
+}
+
+var addDownloadButton = function (datatable){
+	
 }
