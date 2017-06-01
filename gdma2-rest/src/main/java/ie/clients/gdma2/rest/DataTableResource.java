@@ -444,8 +444,8 @@ public class DataTableResource extends BaseDataTableResource{
 	
 	/*Get user access for logged in user on single table 
 	 * https://localhost/gdma2/rest/datatable/access/table/133 */
-	@RequestMapping(value = "/access/table/{id}", method = RequestMethod.GET)
-	public List<UserAccess> getUserAccessForUserOnTable(@PathVariable("id") Integer tableId){
+	@RequestMapping(value = "/access/table/{tableId}", method = RequestMethod.GET)
+	public List<UserAccess> getUserAccessForUserOnTable(@PathVariable("tableId") Integer tableId){
 		logger.info("getUserAccessForUserOnTable:  " + tableId);
 		return serviceFacade.getDataModuleService().getUserAccessForUserOnTable(tableId);
 	}

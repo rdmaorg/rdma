@@ -88,6 +88,27 @@ var configureDataTable = function(columnsMetadata){
         }
 	}
 	datatableEditor = $('#table_data').configureEditor(configEditor);
+//	datatableEditor.on( 'preSubmit', function ( e, o, action ) {
+//        if ( action !== 'remove' ) {
+//            var firstName = this.field( 'first_name' );
+// 
+//            // Only validate user input values - different values indicate that
+//            // the end user has not entered a value
+//            if ( ! firstName.isMultiValue() ) {
+//                if ( ! firstName.val() ) {
+//                    firstName.error( 'A first name must be given' );
+//                }
+//                 
+//                if ( firstName.val().length >= 20 ) {
+//                    firstName.error( 'The first name length must be less that 20 characters' );
+//                }
+//            }
+//            // If any error was reported, cancel the submission so it can be corrected
+//            if ( this.inError() ) {
+//                return false;
+//            }
+//        }
+//    } );
 
 	var columnsData = createDataTableColumns(columnsMetadata);
 	console.log('columnsData: ' + JSON.stringify(columnsData));
@@ -151,6 +172,8 @@ var configureDataTable = function(columnsMetadata){
 	    	}, 4000);
 		}
 	});
+	
+	verifyButtonsEnable(tableData);
 	
 	// Activate an inline edit on click of a table cell
   $('#table_data').on( 'click', 'tbody td:not(:first-child)', function (e) {
@@ -282,3 +305,28 @@ $(document).ready(function(){
 function filterDisplayed(column) {
     return column.displayed === true;
 };
+
+var verifyButtonsEnable = function (dataTable) {
+	$.ajax({
+        type: "get",
+        url: mapPathVariablesInUrl(restUri.datatable.permissions, {'tableId': tableId}),        
+        contentType: "application/json; charset=utf-8",
+        dataType: 'json'
+    }).done(function(data){	
+    	var buttonsRemoved = [];
+    	if(!data[0].allowInsert){
+    		buttonsRemoved.push('0');
+    	}
+    	if(!data[0].allowUpdate){
+    		buttonsRemoved.push('1');
+    	}
+    	if(!data[0].allowDelete){
+    		buttonsRemoved.push('2');
+    	}
+    	dataTable.buttons( buttonsRemoved ).remove();
+    	 
+    }).fail(function(e){
+    	handleError('#global-alert', e);
+    }).always(function(){
+    });
+}
