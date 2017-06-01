@@ -9,6 +9,7 @@ import ie.clients.gdma2.domain.UpdateDataRequest;
 import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.domain.ui.DropDownColumn;
 import ie.clients.gdma2.domain.ui.Filter;
+import ie.clients.gdma2.spi.ServiceException;
 import ie.clients.gdma2.spi.interfaces.UserContextProvider;
 import ie.clients.gdma2.util.TableRowDTO.TableColumn;
 
@@ -1107,8 +1108,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 										Object obj = SQLUtil.convertToType(columnUpdate.getNewColumnValue(), column.getColumnType());
 
 										if (obj == null && !column.isNullable()) {
-											throw new InvalidDataAccessResourceUsageException(
-													"Column " + column.getName() + " can not be set to null and must have a value");
+											throw new ServiceException("Column " + column.getName() + " can not be set to NULL and must have a value");
 										}
 
 										parameters.add(obj);
