@@ -38,17 +38,13 @@
 			Content-Disposition: form-data; name="tableid"
 			
 		   -->
-		  <div  style="display: none;">
-		  <h1>upload your csv file</h1>
-				
-				<form action="/gdma2/rest/datatable/upload" method="post" enctype="multipart/form-data">
-			    <input type="file" name="file" />
-			    <input type= "hidden" name="tableid"  value="135"/>
-			    <input type="submit" value="Upload"/>
+		  <div id="uploadDataTableDiv">
+				<form id="uploadDataTableForm" action="/gdma2/rest/datatable/upload" method="post" enctype="multipart/form-data">
+			    <input type="file" name="file" id="fileUpload" style="position:absolute; top:-100px;"/>
+			    <input type= "hidden" name="tableid" id="tableid"/>			    
 		  </form>
 		  </div>
 		  <!-- END CSV BULK FILE UPLOAD TEST -->
-		  
 		  
 		  <!-- /.content -->
 		</div>	
