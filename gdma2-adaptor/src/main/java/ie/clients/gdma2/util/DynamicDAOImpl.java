@@ -959,8 +959,10 @@ public class DynamicDAOImpl implements DynamicDAO{
 	@SuppressWarnings("unchecked")
 	private void handleSpecialColumns(Set<Column> metadataColumnSet, List<Column> columns, List parameters) {
 		logger.info("handleSpecialColumns, size " + metadataColumnSet.size());
+		logger.info("columns, size " + columns.size());
+		logger.info("parameters, size " + parameters.size());
 		for (Column metadataColumn : metadataColumnSet) {
-			logger.info("start iteration");//TODO REMOVE
+			
 			logdetails(metadataColumn);//TODO REMOVE
 
 			if (StringUtils.hasText(metadataColumn.getSpecial())) {
@@ -976,6 +978,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 					// first see if by error the column is already included
 					if (columns.contains(metadataColumn)) {
 						int index = columns.indexOf(metadataColumn);
+						logger.info("columns.indexOf(metadataColumn): " + index);
 						parameters.set(index, SQLUtil.convertToType(userName, metadataColumn.getColumnType()));
 					} else {
 						columns.add(metadataColumn);
@@ -987,6 +990,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 					// first see if by error the column is already included
 					if (columns.contains(metadataColumn)) {
 						int index = columns.indexOf(metadataColumn);
+						logger.info("columns.indexOf(metadataColumn): " + index);
 						parameters.set(index, SQLUtil.convertToType(Formatter.formatDate(new Date()), metadataColumn.getColumnType()));
 					} else {
 						columns.add(metadataColumn);
@@ -1096,9 +1100,10 @@ public class DynamicDAOImpl implements DynamicDAO{
 										" and type : " + column.getColumnTypeString());
 
 								if (column.isPrimarykey()) {
-									logger.info("3: column IS PK! Getting old value from request and type from metadata");
-									columns.add(column);
-									keys.add(SQLUtil.convertToType(columnUpdate.getOldColumnValue(), column.getColumnType()));
+									logger.info("3: skip, add PK at the end");
+									//columns.add(column);
+									//keys.add(SQLUtil.convertToType(columnUpdate.getOldColumnValue(), column.getColumnType()));
+									//parameters.add(SQLUtil.convertToType(columnUpdate.getOldColumnValue(), column.getColumnType()));
 								} else {
 									logger.info("3: column is NOT PK!");
 
@@ -1122,6 +1127,19 @@ public class DynamicDAOImpl implements DynamicDAO{
 								}
 							} //internal for end
 
+							
+							//ADD PKs at the end of both colums collection and key at : parameters.addAll(keys); //so they match positions
+							for (ColumnDataUpdate columnUpdate : list) {
+								Column column = repositoryManager.getColumnRepository().findOne(columnUpdate.getColumnId());
+								if (column.isPrimarykey()) {
+									logger.info("6: column IS PK! Getting old value from request and type from metadata");
+									columns.add(column);
+									keys.add(SQLUtil.convertToType(columnUpdate.getOldColumnValue(), column.getColumnType()));
+									
+								} 
+							} //internal for end
+							
+							
 							if (CollectionUtils.isEmpty(parameters)) {
 								throw new InvalidDataAccessResourceUsageException("No update values found!");
 							}
@@ -1131,23 +1149,17 @@ public class DynamicDAOImpl implements DynamicDAO{
 							}
 							logger.info("6: before handling special columns");
 							//TODO !!!
+							
+							parameters.addAll(keys); //add keys at the end because they are always last in:  
+							// UPDATE new_table_test_autoincrement SET year = ?, name = ?, employment_date = ? WHERE  (id = ?) 
+							//...now positions are matched for mapping by index and collections of columns and  parameters have the same size
 							handleSpecialColumns(table.getColumns(), columns, parameters);
-
-							parameters.addAll(keys);
-
+							
 							String sql = SQLUtil.createUpdateStatement(server, table, columns);
 							logger.info("Update SQL query: " + sql);
 							logger.info("parameters: " + parameters);
 							JdbcTemplate jdbcTemplate = new JdbcTemplate(transactionManager.getDataSource());
 							countUpdated += jdbcTemplate.update(sql, parameters.toArray());
-
-							/* for dummy test - 2 rows update
-							Update SQL query: UPDATE new_table_test_autoincrement SET name = ?, year = ? WHERE  (id = ?) 
-							parameters: [cdr_new, 1991, 2]
-							Update SQL query: UPDATE new_table_test_autoincrement SET name = ?, year = ? WHERE  (id = ?) 
-							parameters: [bfg_new, 2009, 3]
-							 */
-
 
 						}//main for
 
