@@ -152,7 +152,12 @@ var configureDataTable = function(columnsMetadata){
                   modifier: {
                     search: 'none'
                   }
-                } }
+                } },
+              {text: 'upload', 
+                	action:function ( e, dt, node, config ) {
+                		$('#tableid').val(tableId); 
+                        $('#fileUpload').get(0).click();
+                    }}
           ]
 	};
 	tableData = $('#table_data').configureDataTable(config, {
