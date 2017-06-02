@@ -180,6 +180,8 @@ var configureDataTable = function(columnsMetadata){
 	
 	verifyEnabledButtons(tableData);
 	
+	configureUploadButton();
+	
 	addDownloadButton(tableData);
 	
 	
@@ -340,5 +342,57 @@ var verifyEnabledButtons = function (dataTable) {
 }
 
 var addDownloadButton = function (datatable){
+	
+}
+
+var configureUploadButton = function() {
+	$('#fileUpload').on('change', function() {
+	    var file = this.files[0];
+//	    if (file.type != 'text/plain') {
+//	        alert('file type must be text/plain');
+//	        return false;
+//	        // Also see .name, .size
+//	    } else {
+	    	$.ajax({
+	    		// Your server script to process the upload
+	    		url: restUri.datatable.upload,
+	    		type: 'POST',
+	    		enctype: 'multipart/form-data',
+	    		data: new FormData($('#uploadDataTableForm')[0]),
+	    		processData: false, //prevent jQuery from automatically transforming the data into a query string
+	    		cache: false,
+	    		contentType: false,
+	    		success: function (data) {
+//	                $("#result").text(data);
+	                console.log("SUCCESS : ", data);
+//	                $("#btnSubmit").prop("disabled", false);
+
+	            },
+	            error: function (e) {
+//	                $("#result").text(e.responseText);
+	                console.log("ERROR : ", e);
+//	                $("#btnSubmit").prop("disabled", false);
+
+	            },
+	    		// Custom XMLHttpRequest
+//	    		xhr: function() {
+//	    			var myXhr = $.ajaxSettings.xhr();
+//	    			if (myXhr.upload) {
+//	    				// For handling the progress of the upload
+//	    				myXhr.upload.addEventListener('progress', function(e) {
+//	    					if (e.lengthComputable) {
+//	    						$('progress').attr({
+//	    							value: e.loaded,
+//	    							max: e.total,
+//	    						});
+//	    					}
+//	    				} , false);
+//	    			}
+//	    			return myXhr;
+//	    		},
+	    	});
+//	    }
+	    
+	});
 	
 }

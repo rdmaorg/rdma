@@ -308,7 +308,7 @@ public class DataTableResource extends BaseDataTableResource{
 	/*Upload CSV file for proper DB table to INSERT data*/
 	@RequestMapping(value = "/upload", method = RequestMethod.POST)
 	public Map<String,String> handleUpload(
-			@RequestParam("file") MultipartFile file,
+			@RequestParam("fileUpload") MultipartFile file,
 			@RequestParam("tableid") Integer tableId
 			) throws IOException {
 

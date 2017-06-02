@@ -55,7 +55,8 @@ var restUri = {
 		permissions: getRestBaseUri() + '/datatable/access/table/{tableId}',
 		create: getRestBaseUri() + '/datatable/create/{serverId}/{tableId}',
 		update: getRestBaseUri() + '/datatable/update/{serverId}/{tableId}',
-		remove: getRestBaseUri() + '/datatable/delete/{serverId}/{tableId}'
+		remove: getRestBaseUri() + '/datatable/delete/{serverId}/{tableId}',
+		upload: getRestBaseUri() + '/datatable/upload',
 	}
 	
 };
