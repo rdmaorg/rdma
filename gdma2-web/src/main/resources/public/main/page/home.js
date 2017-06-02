@@ -142,6 +142,7 @@ var configureDataTable = function(columnsMetadata){
              style:    'os',
              selector: 'td:first-child'
          },
+         lengthMenu: [ [10, 25, 50, 100], [10, 25, 50, 100] ],
 		 buttons: [
               { extend: "create", editor: datatableEditor },
               { extend: "edit",   editor: datatableEditor },
