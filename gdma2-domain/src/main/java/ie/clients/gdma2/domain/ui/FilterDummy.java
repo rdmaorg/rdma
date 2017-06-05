@@ -41,6 +41,23 @@ import org.slf4j.LoggerFactory;
 
 
    
+   
+   
+   <select id="selOperator" style="width: 200px;">
+	<option value="-1">Please Select</option>
+	<option value="0">Equal To</option>
+	<option value="1">Less Than</option>
+	<option value="2">Less Than Or Equal To</option>
+	<option value="3">Greater Than</option>
+	<option value="4">Greater Than Or Equal To</option>
+	<option value="5">Begins With</option>
+	<option value="6">Contains</option>
+	<option value="7">Ends With</option>
+	<option value="8">Is Null</option>
+	<option value="9">Is Blank</option>
+</select>
+
+
  * @author Avnet
  *
  */
@@ -52,6 +69,7 @@ public class FilterDummy {
 	public static List<Filter> createdummyFilters(){
 		List<Filter> filters = new ArrayList<Filter>();
 		filters.add(createFilterColumnCOUNTRY());
+		filters.add(createFilterColumnCUSTOMERNUMBER());
 		
 		//print filters
 		for (Filter f : filters) {
@@ -84,7 +102,7 @@ public class FilterDummy {
 				
 		//filters
 		filter.setFilterValue("Germany");
-		filter.setFilterOperatorText("0");
+		filter.setFilterOperator(0);//	<option value="0">Equal To</option>
 		filter.setFilterOperatorText("Equal%20To");
 		
 		//NOT, OR
@@ -93,6 +111,37 @@ public class FilterDummy {
 		filter.setNotValue(false);
 		filter.setOrValue(false);
 	
+		
+		return filter;
+	}
+	
+	
+	/**
+	 * SELECT customers.country, customers.city, customers.contactFirstName, customers.postalCode, customers.salesRepEmployeeNumber, customers.customerNumber, 
+customers.customerName, customers.phone, customers.addressLine1, customers.creditLimit, customers.contactLastName,
+ customers.addressLine2, customers.state, customers.membership_id, customers.gender_id FROM customers
+ WHERE  (customers.country = ? ) AND  (customers.customerNumber > ? )
+ 
+	 * @return
+	 */
+	private static Filter createFilterColumnCUSTOMERNUMBER(){
+		Filter filter = new Filter();
+		
+		//metadata
+		filter.setColumnId(633); //TODO provide columnID from local DB
+		filter.setColumnName("customerNumber"); 
+		filter.setColumnType(4);//INT
+				
+		//filters
+		filter.setFilterValue("103");
+		filter.setFilterOperator(3);  //<option value="3">Greater Than</option>
+		filter.setFilterOperatorText("Greater%20Than");
+		
+		//NOT, OR
+		//orValue:reference:c0-e15, 				//	false			private boolean orValue = false; 
+		//notValue:reference:c0-e16}				//	false			private boolean notValue = false; 
+		filter.setNotValue(false);
+		filter.setOrValue(false);
 		
 		return filter;
 	}

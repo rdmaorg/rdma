@@ -91,8 +91,8 @@ public class DataTableResource extends BaseDataTableResource{
 		
 		logger.debug("tableData: " + tableId);
 		
-		List<Filter> filters = new ArrayList<Filter>(); 
-		// List<Filter> createdummyFilters = FilterDummy.createdummyFilters();
+		//List<Filter> filters = new ArrayList<Filter>(); 
+		 List<Filter> createdummyFilters = FilterDummy.createdummyFilters();
 		
 		//values are not 0,1,2... but 0, column1 PK, column2 PK like : 0,12,14,478
 		int orderByColumnPosition = getOrderByColumn(reqParams);
@@ -101,7 +101,7 @@ public class DataTableResource extends BaseDataTableResource{
 		
 		PaginatedTableResponse<Column> resp = serviceFacade.getMetadataService().getTableDataWithColumnNamesAndDropdowns(
 				tableId, 
-				filters,
+				createdummyFilters,
 				orderByColumnPosition,
 				getOrderByDirection(reqParams),
 				getStartIndex(reqParams),

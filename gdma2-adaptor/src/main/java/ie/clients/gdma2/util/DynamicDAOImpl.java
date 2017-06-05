@@ -1772,7 +1772,9 @@ public class DynamicDAOImpl implements DynamicDAO{
 						row = rdr.readNext();
 					}
 				} catch (DataAccessException ex) {
-					throw new IOException("Could not import data:" + ex.getMessage());
+					//throw new ServiceException("ERROR: cannot INSERT new data into table",ex);
+					throw new ServiceException(ex.getMessage(),ex);
+					//throw new IOException("Could not import data:" + ex.getMessage());
 				}
 			}
 			return counter;
