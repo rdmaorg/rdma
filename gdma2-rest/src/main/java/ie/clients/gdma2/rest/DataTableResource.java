@@ -27,6 +27,7 @@ import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.domain.ui.DropDownColumn;
 import ie.clients.gdma2.domain.ui.Filter;
 import ie.clients.gdma2.domain.ui.FilterDummy;
+import ie.clients.gdma2.domain.ui.FilterTextColumnsDummy;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 
 /*
@@ -92,7 +93,10 @@ public class DataTableResource extends BaseDataTableResource{
 		logger.debug("tableData: " + tableId);
 		
 		//List<Filter> filters = new ArrayList<Filter>(); 
-		 List<Filter> createdummyFilters = FilterDummy.createdummyFilters();
+		 //List<Filter> createdummyFilters = FilterDummy.createdummyFilters();
+		
+		String searchTerm = "an"; //TODO take this param from Reuqest
+		List<Filter> createdummyFilters = FilterTextColumnsDummy.createdummyFilters(searchTerm);
 		
 		//values are not 0,1,2... but 0, column1 PK, column2 PK like : 0,12,14,478
 		int orderByColumnPosition = getOrderByColumn(reqParams);

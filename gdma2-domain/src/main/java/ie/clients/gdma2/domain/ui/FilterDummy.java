@@ -146,6 +146,44 @@ customers.customerName, customers.phone, customers.addressLine1, customers.credi
 		return filter;
 	}
 	
+	
+	
+	
+	
+	/*
+	 * 				c0-e8=Object_Object:{columnId:reference:c0-e9, 			//c0-e9=number:1774
+					columnName:reference:c0-e10,		//c0-e10=string:Body
+					columnType:reference:c0-e11,		//c0-e11=number:12
+					filterValue:reference:c0-e12, 		//c0-e12=string:ABBA
+					filterOperator:reference:c0-e13, 	//c0-e13=string:6
+					filterOperatorText:reference:c0-e14,	//c0-e14=string:Contains
+					orValue:reference:c0-e15, 				//c0-e15=boolean:false
+					notValue:reference:c0-e16}				//c0-e16=boolean:false
+					c0-e7=Array:[reference:c0-e8]
+	 */
+	private static Filter createFilterColumnCUSTOMERNAME(){
+		Filter filter = new Filter();
+		
+		//metadata
+		filter.setColumnId(634); //TODO provide columnID from local DB
+		filter.setColumnName("customerName"); 
+		filter.setColumnType(4);//INT
+				
+		//filters
+		filter.setFilterValue("103");
+		filter.setFilterOperator(3);  //<option value="3">Greater Than</option>
+		filter.setFilterOperatorText("Greater%20Than");
+		
+		//NOT, OR
+		//orValue:reference:c0-e15, 				//	false			private boolean orValue = false; 
+		//notValue:reference:c0-e16}				//	false			private boolean notValue = false; 
+		filter.setNotValue(false);
+		filter.setOrValue(false);
+		
+		return filter;
+	}
+	
+	
 	private static  void printFilter(Filter f){
 		logger.info("FILTER VALUES");
 		logger.info("colID: " + f.getColumnId());
@@ -165,6 +203,8 @@ customers.customerName, customers.phone, customers.addressLine1, customers.credi
 		
 		
 	}
+	
+	
 	
 	public static void main(String[] args) {
 		new FilterDummy().createdummyFilters();
