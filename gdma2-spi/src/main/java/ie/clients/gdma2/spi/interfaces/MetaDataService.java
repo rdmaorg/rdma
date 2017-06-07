@@ -1,5 +1,7 @@
 package ie.clients.gdma2.spi.interfaces;
 
+import java.util.List;
+
 import ie.clients.gdma2.domain.Column;
 import ie.clients.gdma2.domain.ConnectionType;
 import ie.clients.gdma2.domain.Server;
@@ -8,10 +10,6 @@ import ie.clients.gdma2.domain.User;
 import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.domain.ui.Filter;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
-
-
-
-import java.util.List;
 
 public interface MetaDataService {
 
@@ -102,6 +100,9 @@ public interface MetaDataService {
 			String orderDirection, int startIndex, int length);
 	
 	public PaginatedTableResponse<Column> getTableDataWithColumnNamesAndDropdowns(Integer tableId, List<Filter> filtersParam,
+			int orderByColumnID, String orderDirection, int startIndex, int length);
+	
+	public PaginatedTableResponse<Column> getTableDataWithColumnNamesAndDropdowns(Integer tableId, String searchTerm,
 			int orderByColumnID, String orderDirection, int startIndex, int length);
 
 	/*

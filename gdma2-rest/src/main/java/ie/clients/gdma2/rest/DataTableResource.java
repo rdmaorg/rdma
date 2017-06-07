@@ -26,8 +26,6 @@ import ie.clients.gdma2.domain.UpdateDataRequest;
 import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.domain.ui.DropDownColumn;
 import ie.clients.gdma2.domain.ui.Filter;
-import ie.clients.gdma2.domain.ui.FilterDummy;
-import ie.clients.gdma2.domain.ui.FilterTextColumnsDummy;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 
 /*
@@ -90,22 +88,15 @@ public class DataTableResource extends BaseDataTableResource{
 	public PaginatedTableResponse<Column> getTableData(@PathVariable("id") Integer tableId,
 			@RequestParam Map<String, String> reqParams){
 		
+		
 		logger.debug("tableData: " + tableId);
-		
-		//List<Filter> filters = new ArrayList<Filter>(); 
-		 //List<Filter> createdummyFilters = FilterDummy.createdummyFilters();
-		
-		String searchTerm = "an"; //TODO take this param from Reuqest
-		List<Filter> createdummyFilters = FilterTextColumnsDummy.createdummyFilters(searchTerm);
-		
-		//values are not 0,1,2... but 0, column1 PK, column2 PK like : 0,12,14,478
-		int orderByColumnPosition = getOrderByColumn(reqParams);
-		
+		String searchTerm = getSearchValue(reqParams);
+		int orderByColumnPosition = getOrderByColumn(reqParams); //values are not 0,1,2... but 0, column1 PK, column2 PK like : 0,12,14,478
 		logger.info("orderByColumn, column Position: " + orderByColumnPosition);
 		
 		PaginatedTableResponse<Column> resp = serviceFacade.getMetadataService().getTableDataWithColumnNamesAndDropdowns(
 				tableId, 
-				createdummyFilters,
+				searchTerm,
 				orderByColumnPosition,
 				getOrderByDirection(reqParams),
 				getStartIndex(reqParams),
@@ -114,8 +105,6 @@ public class DataTableResource extends BaseDataTableResource{
 		resp.setDraw(getDraw(reqParams));
 		logger.debug("getColumnsPaginatedTable ended");
 		return resp;
-		
-		
 	}
 	
 	@RequestMapping(value = "/tablewithdropdowntest/{id}", method = RequestMethod.GET)
@@ -270,9 +259,9 @@ public class DataTableResource extends BaseDataTableResource{
 	public @ResponseBody PaginatedTableResponse<Column> updateDataTableData(@PathVariable("serverId") Integer serverId, @PathVariable("tableId") Integer tableId, @RequestParam Map<String, String> reqParams){
 		logger.info("updateDataTableData");
 		List<Filter> filterList = new ArrayList<Filter>();
-		List<UpdateDataRequest> dataRequestList = extractDataRequestList(serverId, tableId, reqParams,filterList);
+		List<UpdateDataRequest> updateDataRequestList = extractUpdateDataRequestList(serverId, tableId, reqParams,filterList);
 		int dataRequestListIndex = 0;
-		for (UpdateDataRequest updateDataRequest : dataRequestList) {
+		for (UpdateDataRequest updateDataRequest : updateDataRequestList) {
 			int updatedRecords = serviceFacade.getDataModuleService().updateRecords(updateDataRequest);
 			if(updatedRecords == 0) {
 				filterList.remove(dataRequestListIndex);
@@ -293,8 +282,8 @@ public class DataTableResource extends BaseDataTableResource{
 	 */
 	@RequestMapping(value = "/delete/{serverId}/{tableId}", method = RequestMethod.POST,produces="application/json")
 	public @ResponseBody Map<String,String> deleteTableData(@PathVariable("serverId") Integer serverId, @PathVariable("tableId") Integer tableId, @RequestParam Map<String, String> reqParams){
-		List<UpdateDataRequest> dataRequest = extractDataRequestList(serverId, tableId, reqParams,new ArrayList<Filter>());
-		for (UpdateDataRequest updateDataRequest : dataRequest) {
+		List<UpdateDataRequest> updateDataRequestList = extractUpdateDataRequestList(serverId, tableId, reqParams,new ArrayList<Filter>());
+		for (UpdateDataRequest updateDataRequest : updateDataRequestList) {
 			int deletedRecords = serviceFacade.getDataModuleService().deleteRecords(updateDataRequest);
 			logger.debug("deletedRecords: " +deletedRecords);
 		}
@@ -390,8 +379,8 @@ public class DataTableResource extends BaseDataTableResource{
 		return dataRequest;
 	}
 	
-	private List<UpdateDataRequest> extractDataRequestList(Integer serverId, Integer tableId, Map<String, String> reqParams, List<Filter> filterList) {
-		List<UpdateDataRequest> dataRequestList = new ArrayList<UpdateDataRequest>();
+	private List<UpdateDataRequest> extractUpdateDataRequestList(Integer serverId, Integer tableId, Map<String, String> reqParams, List<Filter> filterList) {
+		List<UpdateDataRequest> updateDataRequestList = new ArrayList<UpdateDataRequest>();
 		reqParams.remove("action");
 		final List<Column> columnsMetadata = getActiveColumns(tableId);
 		columnsMetadata.removeIf(c -> !c.isDisplayed());
@@ -427,9 +416,9 @@ public class DataTableResource extends BaseDataTableResource{
 				i++;
 			}
 			dataRequest.getUpdates().add(row);
-			dataRequestList.add(dataRequest);
+			updateDataRequestList.add(dataRequest);
 		}
-		return dataRequestList;
+		return updateDataRequestList;
 	}
 	
 	private List<String> extractRowKeyList(Map<String, String> reqParams) {

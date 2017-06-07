@@ -1,7 +1,6 @@
 package ie.clients.gdma2.adaptor;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -935,6 +934,35 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 		return getPaginatedTableResponse(columns != null ? columns : new ArrayList<Column>(), total, filtered);
 		
+	}
+	
+	@Override
+	public PaginatedTableResponse<Column> getTableDataWithColumnNamesAndDropdowns(Integer tableId, String searchTerm,
+			int orderByColumnID, String orderDirection,
+			int startIndex, int length) {
+		
+		List<Filter> filtersParam = new ArrayList<Filter>();
+		if (searchTerm != null && !searchTerm.trim().isEmpty()){
+			List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(tableId);
+			for (Column activeColumn : activeColumns) {
+				if(activeColumn.getColumnType() == 12){
+					Filter filter = new Filter();
+					filter.setOrValue(true);
+					filter.setNotValue(false);
+					filter.setFilterOperator(6);
+					filter.setFilterOperatorText("Contains");
+					filter.setFilterValue(searchTerm.trim());
+					filter.setColumnId(activeColumn.getId());
+					filter.setColumnName(activeColumn.getName());
+					filter.setColumnType(activeColumn.getColumnType());
+					filtersParam.add(filter);
+				}
+			}
+		}
+		
+		return getTableDataWithColumnNamesAndDropdowns(tableId, filtersParam,
+				orderByColumnID, orderDirection,
+				startIndex, length);
 	}
 	
 	@SuppressWarnings("unchecked")
