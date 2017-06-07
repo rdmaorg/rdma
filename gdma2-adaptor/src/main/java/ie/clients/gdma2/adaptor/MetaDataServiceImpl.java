@@ -21,11 +21,13 @@ import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.User;
 import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.domain.ui.Filter;
+import ie.clients.gdma2.domain.ui.IncrementalTextSearchFilter;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 import ie.clients.gdma2.spi.ServiceException;
 import ie.clients.gdma2.spi.interfaces.MetaDataService;
 import ie.clients.gdma2.util.EntityUtils;
 import ie.clients.gdma2.util.HashUtil;
+import ie.clients.gdma2.util.SQLUtil;
 
 @Service
 public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataService {
@@ -43,7 +45,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	public PaginatedTableResponse<ConnectionType> getConnectionTypeTable(String searchValue, String orderByColumn, String orderByDirection,
 			int startIndex, int length) {
 
-		
+
 		logger.debug("getConnectionTypeTable");
 		long total = repositoryManager.getConnectionTypeRepository().count();
 		long filtered = 0;
@@ -123,7 +125,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 		}
 		EntityUtils.emptyPasswordForServers(servers);
-		
+
 		logger.debug("Search Servers:: Search: " + matching + ", Total: " + total + ", Filtered: " + filtered
 				+ ", Result Count: " + servers.size());
 
@@ -147,7 +149,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	 *   Now when Admin, changes value in Modal and Submits - UPDATE server request is sent 
 	 *    - if it still contains masked password - do now update, use old pass
 	 *      else take new value and update password 
-	
+
 	 */
 	@Transactional
 	@Override
@@ -182,7 +184,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	public void deleteServer(int id) {
 		repositoryManager.getServerRepository().delete(id);
 	}
-	*/
+	 */
 
 	@Transactional
 	@Override
@@ -235,17 +237,17 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		long filtered = 0;
 
 		server = repositoryManager.getServerRepository().findOne(serverIdParam);
-		
+
 		if(null == server){
 			logger.info("111");
 			throw new ServiceException("Server does not exist: " + serverIdParam);
-			
+
 		}
-		
+
 		logger.info("server.getTables().size():" + server.getTables().size());
 		int serverId = server.getId();
-		
-		
+
+
 
 		//empty search, select all active tables for server
 		if (StringUtils.isBlank(matching)) {
@@ -436,8 +438,8 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 					user.setPassword(HashUtil.hash(user.getPassword()));
 					//logger.info("new password, after hash: " + user.getPassword());
 				}
-				
-				
+
+
 			}
 		}
 
@@ -476,7 +478,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		return repositoryManager.getColumnRepository().findOne(id);
 	}
 
-	
+
 	@Override
 	public List<Column> getAllColumns() {
 		return IteratorUtils.toList(repositoryManager.getColumnRepository().findAll().iterator());
@@ -609,7 +611,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 				+ ", Result Count: " + ((userAccessListForTable != null) ? userAccessListForTable.size() : "0"));
 
 		return getPaginatedTableResponse(userAccessListForTable, total, filtered);
-		
+
 
 	}
 
@@ -874,7 +876,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 	}
 
-	
+
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -883,26 +885,26 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			int startIndex, int length) {
 
 		logger.info("getTableData : " + tableId);
-		
+
 		Table table = null;
 		Server server = null;
 		List<Column> columns = null;
-		
-		
+
+
 		List<Filter> filtersTODO = new ArrayList<Filter>(); //NEVER use NULL for Filters, only empty collection
 		long total = 0;
 		long filtered = 0;
-		
+
 		table = repositoryManager.getTableRepository().findOne(tableId);
 		server = table.getServer();
 		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(tableId);
 		table.setColumns(new LinkedHashSet<Column>(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change this and pass colums to utility method themselves
-		
+
 		/*if ordering not set, zero velue is received so keep sortedByColumn = null, else determine column among all table columns*/
 		Column sortedByColumn = null;
 		if(orderByColumnID > 0){
 			logger.info("orderByColumnID > 0");
-			
+
 			try {
 				sortedByColumn = activeColumns.get(orderByColumnID - 1);
 			} catch (IndexOutOfBoundsException e) {
@@ -910,61 +912,57 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 				throw new ServiceException("orderByColumnID position was not found: " + orderByColumnID);
 			}
 		}
-		
+
 		logger.info("table : " + tableId + " , server: " + server.getId() + " , sortedBy Column: " + 
-		(sortedByColumn == null ? null : sortedByColumn.getId())); 
-				
+				(sortedByColumn == null ? null : sortedByColumn.getId())); 
+
 		if(filtersTODO.isEmpty()){
 			logger.info("count - no filters");
 			total = dynamicDAO.getCount(server, table, filtersTODO).longValue();
 			filtered = total;
-			
+
 		} else {
 			logger.info("count - with filters");
 			filtered =  dynamicDAO.getCount(server, table, filtersTODO).longValue();
 			final List<Filter> emptyFilterListForCount = new ArrayList<Filter>(); //NEVER use NULL for Filters, only empty collection
 			total =  dynamicDAO.getCount(server, table, emptyFilterListForCount).longValue();
-			
+
 		}
-		
+
 		/*get just data - as in GDMA1*/
 		columns = dynamicDAO.getTableData(table, server, sortedByColumn, filtersTODO, orderDirection, startIndex, length);
-		
+
 		logger.info("Total: " + total + ", Filtered: " + filtered + ", Result Count: " + columns.size());
 
 		return getPaginatedTableResponse(columns != null ? columns : new ArrayList<Column>(), total, filtered);
-		
+
 	}
-	
+
 	@Override
 	public PaginatedTableResponse<Column> getTableDataWithColumnNamesAndDropdowns(Integer tableId, String searchTerm,
 			int orderByColumnID, String orderDirection,
 			int startIndex, int length) {
-		
+
+
 		List<Filter> filtersParam = new ArrayList<Filter>();
 		if (searchTerm != null && !searchTerm.trim().isEmpty()){
 			List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(tableId);
 			for (Column activeColumn : activeColumns) {
-				if(activeColumn.getColumnType() == 12){
-					Filter filter = new Filter();
-					filter.setOrValue(true);
-					filter.setNotValue(false);
-					filter.setFilterOperator(6);
-					filter.setFilterOperatorText("Contains");
-					filter.setFilterValue(searchTerm.trim());
-					filter.setColumnId(activeColumn.getId());
-					filter.setColumnName(activeColumn.getName());
-					filter.setColumnType(activeColumn.getColumnType());
+				if(SQLUtil.isText(activeColumn.getColumnType())){
+
+					Filter filter = new IncrementalTextSearchFilter(
+							searchTerm.trim(), activeColumn.getId(), activeColumn.getName(), activeColumn.getColumnType());
 					filtersParam.add(filter);
+
 				}
 			}
 		}
-		
+
 		return getTableDataWithColumnNamesAndDropdowns(tableId, filtersParam,
 				orderByColumnID, orderDirection,
 				startIndex, length);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public PaginatedTableResponse<Column> getTableDataWithColumnNamesAndDropdowns(Integer tableId, List<Filter> filtersParam,
@@ -972,27 +970,27 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			int startIndex, int length) {
 
 		logger.info("getTableData : " + tableId);
-		
+
 		Table table = null;
 		Server server = null;
 		List<Column> columns = null;
-		
-		
+
+
 		//List<Filter> filtersTODO = new ArrayList<Filter>(); //NEVER use NULL for Filters, only empty collection
-		
+
 		long total = 0;
 		long filtered = 0;
-		
+
 		table = repositoryManager.getTableRepository().findOne(tableId);
 		server = table.getServer();
 		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(tableId);
 		table.setColumns(new LinkedHashSet<Column>(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change
-		
+
 		/*if ordering not set, zero velue is received so keep sortedByColumn = null, else determine column among all table columns*/
 		Column sortedByColumn = null;
 		if(orderByColumnID > 0){
 			logger.info("orderByColumnID > 0");
-			
+
 			try {
 				sortedByColumn = activeColumns.get(orderByColumnID - 1);
 				logger.info("sortedByColumn: " + sortedByColumn.getName());
@@ -1001,37 +999,37 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 				throw new ServiceException("orderByColumnID position was not found: " + orderByColumnID);
 			}
 		}
-		
+
 		logger.info("table : " + tableId + " , server: " + server.getId() + " , sortedBy Column: " + 
-		(sortedByColumn == null ? null : sortedByColumn.getId())); 
-				
+				(sortedByColumn == null ? null : sortedByColumn.getId())); 
+
 		if(filtersParam.isEmpty()){
 			total = dynamicDAO.getCount(server, table, filtersParam).longValue();
 			logger.info("count - no filters, total: " + total);
 			filtered = total;
-			
+
 		} else {
 			logger.info("count - with filters");
 			filtered =  dynamicDAO.getCount(server, table, filtersParam).longValue();
 			logger.info("count - with filters, filtered count: " + filtered );
 			final List<Filter> emptyFilterListForCount = new ArrayList<Filter>(); //NEVER use NULL for Filters, only empty collection
 			total =  dynamicDAO.getCount(server, table, emptyFilterListForCount).longValue();
-			
+
 		}
-		
+
 		/*get data with col names and metadata resolved*/
 		columns = dynamicDAO.getTableDataWithColumnNamesAndDropdowns(table, server, sortedByColumn, filtersParam, orderDirection, startIndex, length);
-		
+
 		/*get column metadata + data*/
 		//columns = dynamicDAO.getTableDataWithColumnMetadata(table, server, sortedByColumn, filtersTODO, orderDirection, startIndex, length);
-		
-		
+
+
 		logger.info("Total: " + total + ", Filtered: " + filtered + ", Result Count: " + columns.size());
 
 		return getPaginatedTableResponse(columns != null ? columns : new ArrayList<Column>(), total, filtered);
-		
+
 	}
 
-	
+
 
 }
