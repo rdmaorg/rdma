@@ -1,3 +1,11 @@
+.buttonsDatatable.affix {
+    z-index: 99;
+    top: 0px;
+    background: #29698e;
+    width: 100%;
+    padding: 11px;
+}
+
 .navbar-nav>.user-menu>.dropdown-menu>li.user-header {
 	height: auto;
 }

@@ -133,7 +133,7 @@ var configureDataTable = function(columnsMetadata){
 		 },
 		 "columns": columnsData,
 		 idSrc : 'rowNumber',
-         dom : "Blfrtip",
+         dom : "lfrtip",
          keys: {
              columns: ':not(:first-child)',
              keys: [ 9 ]
@@ -143,23 +143,23 @@ var configureDataTable = function(columnsMetadata){
              selector: 'td:first-child'
          },
          lengthMenu: [ [10, 25, 50, 100], [10, 25, 50, 100] ],
-		 buttons: [
-              { extend: "create", editor: datatableEditor },
-              { extend: "edit",   editor: datatableEditor },
-              { extend: "remove", editor: datatableEditor },
-              { extend: "csv", 
-            	text:"Download",
-                exportOptions: {
-                  modifier: {
-                    search: 'none'
-                  }
-                } },
-              {text: 'upload', 
-                	action:function ( e, dt, node, config ) {
-                		$('#tableid').val(tableId); 
-                        $('#fileUpload').get(0).click();
-                    }}
-          ]
+//		 buttons: [
+//              { extend: "create", editor: datatableEditor },
+//              { extend: "edit",   editor: datatableEditor },
+//              { extend: "remove", editor: datatableEditor },
+//              { extend: "csv", 
+//            	text:"Download",
+//                exportOptions: {
+//                  modifier: {
+//                    search: 'none'
+//                  }
+//                } },
+//              {text: 'upload', 
+//                	action:function ( e, dt, node, config ) {
+//                		$('#tableid').val(tableId); 
+//                        $('#fileUpload').get(0).click();
+//                    }}
+//          ]
 	};
 	tableData = $('#table_data').configureDataTable(config, {
 		url: mapPathVariablesInUrl(restUri.datatable.table, {'id': tableId}),
@@ -177,12 +177,37 @@ var configureDataTable = function(columnsMetadata){
 	    	}, 4000);
 		}
 	});
+	new $.fn.dataTable.Buttons( tableData, {
+		buttons: [
+	              { extend: "create", editor: datatableEditor },
+	              { extend: "edit",   editor: datatableEditor },
+	              { extend: "remove", editor: datatableEditor },
+	              { extend: "csv", 
+	            	text:"Download",
+	                exportOptions: {
+	                  modifier: {
+	                    search: 'none'
+	                  }
+	                } },
+	              {text: 'upload', 
+	                	action:function ( e, dt, node, config ) {
+	                		$('#tableid').val(tableId); 
+	                        $('#fileUpload').get(0).click();
+	                    }}
+	          ]
+	} );
+	
+	tableData.buttons(0, null).container().appendTo(
+			$('#datatableButtonsDiv'), tableData.table().container()
+	);
 	
 	verifyEnabledButtons(tableData);
 	
 	configureUploadButton();
 	
 	addDownloadButton(tableData);
+	
+	
 	
 	
 	// Activate an inline edit on click of a table cell
