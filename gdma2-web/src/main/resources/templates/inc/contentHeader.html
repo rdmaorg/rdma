@@ -1,7 +1,7 @@
-<header class="main-header fh-fixedHeader" xmlns:th="http://www.thymeleaf.org">
+<header class="main-header" xmlns:th="http://www.thymeleaf.org">
 
   <!-- Header Navbar: style can be found in header.less -->
-  <nav class="navbar navbar-inverse bootstro" data-bootstro-content="DDMA is a complex tool to lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque placerat quam eget felis hendrerit, ac sodales enim vulputate. Etiam purus quam, mattis convallis tristique a, blandit sed diam." data-bootstro-width="400px" data-bootstro-placement="bottom" data-bootstro-step="0">
+  <nav id="topNavBar" class="navbar navbar-inverse">
 
 
       <ul class="nav navbar-nav">
@@ -13,15 +13,14 @@
 			  <span class="logo-lg"><b th:text="${@environment.getProperty('application.description')}"></b></span>
 			</a>		  
 		</li>
-        <li>
-		    <!-- Sidebar toggle button-->
-		    <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
-		      <span class="sr-only">Toggle navigation</span>
-		    </a>
-	    </li>
-	    <li>	    
+	    <li>
 		</li>
 	  </ul>
+	  <ul class="nav navbar-nav ">
+        <li style="color: #fff; padding-top: 15px; padding-bottom: 15px; line-height: 20px; position: relative; display: block; padding: 10px 15px;">
+		    <span id="serverName"></span> - <span id="tableName"></span>
+        </li>
+      </ul>
 	  <ul class="nav navbar-nav pull-right">
         <li class="dropdown user user-menu">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">          

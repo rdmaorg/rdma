@@ -133,7 +133,7 @@ var configureDataTable = function(columnsMetadata){
 		 },
 		 "columns": columnsData,
 		 idSrc : 'rowNumber',
-         dom : "lfrtip",
+         dom : "rtip",
          keys: {
              columns: ':not(:first-child)',
              keys: [ 9 ]
@@ -143,23 +143,9 @@ var configureDataTable = function(columnsMetadata){
              selector: 'td:first-child'
          },
          lengthMenu: [ [10, 25, 50, 100], [10, 25, 50, 100] ],
-//		 buttons: [
-//              { extend: "create", editor: datatableEditor },
-//              { extend: "edit",   editor: datatableEditor },
-//              { extend: "remove", editor: datatableEditor },
-//              { extend: "csv", 
-//            	text:"Download",
-//                exportOptions: {
-//                  modifier: {
-//                    search: 'none'
-//                  }
-//                } },
-//              {text: 'upload', 
-//                	action:function ( e, dt, node, config ) {
-//                		$('#tableid').val(tableId); 
-//                        $('#fileUpload').get(0).click();
-//                    }}
-//          ]
+         fixedHeader: {
+		    	headerOffset: $('#topNavBar').outerHeight() + $('#datatableControlWrapper').outerHeight()
+		    	},
 	};
 	tableData = $('#table_data').configureDataTable(config, {
 		url: mapPathVariablesInUrl(restUri.datatable.table, {'id': tableId}),
@@ -177,6 +163,8 @@ var configureDataTable = function(columnsMetadata){
 	    	}, 4000);
 		}
 	});
+	
+	//CONTROL BUTTONS
 	new $.fn.dataTable.Buttons( tableData, {
 		buttons: [
 	              { extend: "create", editor: datatableEditor },
@@ -199,13 +187,20 @@ var configureDataTable = function(columnsMetadata){
 	
 	tableData.buttons(0, null).container().appendTo(
 			$('#datatableButtonsDiv'), tableData.table().container()
-	);
-	
-	verifyEnabledButtons(tableData);
-	
-	configureUploadButton();
-	
+	);	
+	verifyEnabledButtons(tableData);	
+	configureUploadButton();	
 	addDownloadButton(tableData);
+	
+	//SEARCH FILTER INPUT
+	$('#dataTableSearchFilterInput').keyup(function(){
+		tableData.search($(this).val()).draw() ;
+	})
+	
+	
+	$('#dataTableLength').change(function() {
+		tableData.page.len( $(this).val() ).draw();
+	});
 	
 	
 	
@@ -223,7 +218,11 @@ var configureDataTable = function(columnsMetadata){
   		submitOnBlur: true
 		} );
   } );
-	
+
+  $(window).scroll(function(){
+		var topH = $(this).scrollTop() - parseInt($('.content').css('padding-top'));	
+		$("#datatableControlWrapper").css("top",topH+"px");
+	})
 }
 
 var createEditorFields = function(columnsMetadata){

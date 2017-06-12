@@ -10,43 +10,33 @@
 	      	<div th:replace="inc/alerts"></div>	
 	      	<div th:replace="inc/success"></div>	
 		  <!-- Content Header (Page header) -->
-		  <section class="content-header">
-		    <h1>
-		      <span id="serverName"></span> - <span id="tableName"></span>
-		      <small><i class="fa fa-home"></i> Home</small>
-		    </h1>	
+		  <section class="content-header" style="padding: 0;">
 	      	<div th:replace="inc/spinner"></div>    
 		  </section>
-		
 		  <!-- Main content -->
 		  <section class="content">		
 		  	<div id="tableRow" style="display: none">
-		  		<div id="datatableButtonsDiv" class=" buttonsDatatable" data-spy="affix" data-offset-top="123"></div>
+			  	<div class="datatableControlContainer">
+			  		<div id="datatableControlWrapper" class="buttonsDatatable dataTables_wrapper" data-spy="affix" data-offset-top="15">
+				  		<div id="datatableButtonsDiv" ></div>
+				  		<div id="table_data_length" class="dataTables_length"><label>Show <select id="dataTableLength" name="table_data_length" aria-controls="table_data" class="form-control input-sm"><option value="10">10</option><option value="25">25</option><option value="50">50</option><option value="100">100</option></select> entries</label></div>
+				  		<div id="datatableSearchFilter" class="dataTables_filter"><label>Search:<input type="search" id="dataTableSearchFilterInput" class="form-control input-sm" placeholder="" aria-controls="table_data" /></label></div>
+		  			</div>
+		  		</div>
 			  	<table id="table_data"  class="table table-condensed table-striped table-hover dt-responsive" cellspacing="0" width="100%">
 					<thead>
-						<tr id="tableHeaderRow">								
+						<tr id="tableHeaderRow">
 						</tr>
 					</thead>
 				</table>
 			</div>	
 		  </section>
-		  
-		  <!-- CSV BULK FILE UPLOAD TEST
-		  Data Module - Table page with data, adding upload f-tion to INSERT CSV data to remote DB table 
-		  (pick tableId and put in hidden param e.g. tableId=107) 
-		  Request URL:https://localhost/gdma2/rest/datatable/upload
-			Request Method:POST
-			Content-Disposition: form-data; name="tableid"
-			
-		   -->
 		  <div id="uploadDataTableDiv">
 				<form id="uploadDataTableForm" name="uploadDataTableForm" method="POST" enctype="multipart/form-data">
 			    <input type="file" name="fileUpload" id="fileUpload" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" style="position:absolute; top:-100px;"/>
 			    <input type= "hidden" name="tableid" id="tableid"/>			    
 		  </form>
 		  </div>
-		  <!-- END CSV BULK FILE UPLOAD TEST -->
-		  
 		  <!-- /.content -->
 		</div>	
 		<footer th:replace="inc/footer"></footer>

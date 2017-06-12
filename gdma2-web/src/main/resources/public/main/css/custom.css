@@ -1,13 +1,28 @@
 .buttonsDatatable.affix {
     z-index: 99;
-    top: 0px;
-    background: #29698e;
+    background: #ecf0f5;
     width: 100%;
-    padding: 11px;
+    padding: 5px 0 0px;
+    position: absolute;
 }
+.datatableControlContainer {
+	height: 35px;
+	display: block;
+	position: relative;
+}
+	
 
 .navbar-nav>.user-menu>.dropdown-menu>li.user-header {
 	height: auto;
+}
+
+.navbar.navbar-inverse {
+    width: 100%;	
+    position: fixed;
+}
+
+.content-wrapper {
+	padding-top: 52px;
 }
 
 .dropdown-menu.dropdown-menu-right {
