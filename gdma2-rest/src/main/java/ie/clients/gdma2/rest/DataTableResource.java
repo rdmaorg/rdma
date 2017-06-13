@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -27,6 +29,7 @@ import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.domain.ui.DropDownColumn;
 import ie.clients.gdma2.domain.ui.Filter;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
+import ie.clients.gdma2.spi.ServiceException;
 
 /*
 @Controller
@@ -105,6 +108,71 @@ public class DataTableResource extends BaseDataTableResource{
 		resp.setDraw(getDraw(reqParams));
 		logger.debug("getColumnsPaginatedTable ended");
 		return resp;
+	}
+	
+	/*
+	 * URL: https://localhost/gdma2/rest/datatable/download/csv/table/133
+	 * 
+	 * Download :
+	 *  a) current screen(paginated request) or 
+	 *  b) ALL data for table  //ALL values: TODO extend ResultSetExtractor to support	 URL param : length = -1 
+	 *    to be able to support 
+	 *    		 select * from table and extract all from Resultset)
+	 *	
+	 *	Download preselected file type (extension in URL: /download/csv) 
+	 *   
+	 *  Based on getTableData() - once paginated response is returned,  add HEADERS and file creator for each extension*/
+	@RequestMapping(value = "/download/{extension}/table/{id}", method = RequestMethod.GET )
+	public void downloadData(@PathVariable("extension") String extension, @PathVariable("id") Integer tableId,
+			@RequestParam Map<String, String> reqParams, HttpServletResponse httpServletResponse)  {
+		
+		logger.info("downloadData, with extension:" + extension + " for table: " + tableId);
+		String searchTerm = getSearchValue(reqParams);
+		int orderByColumnPosition = getOrderByColumn(reqParams); //values are not 0,1,2... but 0, column1 PK, column2 PK like : 0,12,14,478
+		logger.info("orderByColumn, column Position: " + orderByColumnPosition);
+		
+		PaginatedTableResponse<Column> resp = serviceFacade.getMetadataService().getTableDataWithColumnNamesAndDropdowns(
+				tableId, 
+				searchTerm,
+				orderByColumnPosition,
+				getOrderByDirection(reqParams),
+				getStartIndex(reqParams),
+				getLength(reqParams));
+		
+		
+		try {
+			
+			String dataExport = serviceFacade.getDataModuleService().dataExport(tableId, extension,resp);
+			
+			httpServletResponse.getOutputStream().write(dataExport.getBytes());
+			httpServletResponse.setContentType("text/csv");
+			httpServletResponse.setHeader("Content-Disposition", "attachment;filename=data-export.csv");
+			httpServletResponse.setContentLength(dataExport.getBytes().length);
+			
+			/*
+			String dataExport = serviceFacade.getDataModuleService().dataExport(tableId, extension,resp);
+			//TODO externalize 'extension' specifics to proper util class. Create Excel and PDF file creators. 
+			// For excel consider: use org.apache.poi (see ExcelCreator.java in GDMA1) 
+			//and for PDF: The Apache FOP Project
+			if("csv".equalsIgnoreCase(extension)){
+				logger.info("csv file type");
+				httpServletResponse.setContentType("text/csv");
+				httpServletResponse.setHeader("Content-Disposition", "attachment;filename=data-export.csv");	
+			} else if("excel".equalsIgnoreCase(extension)) {
+				httpServletResponse.setContentType("application/vnd.ms-excel");
+				httpServletResponse.setHeader("Content-Disposition", "attachment;filename=data-export.xls");
+			} else if ("pdf".equals(extension)){
+				httpServletResponse.setContentType("application/pdf");
+				httpServletResponse.setHeader("Content-Disposition", "attachment;filename=data-export.pdf");
+				
+			}
+			
+			
+			*/
+		} catch (IOException e) {
+			logger.info("Error while downloading file");
+			throw new ServiceException(e.getMessage(), e);
+		}
 	}
 	
 	@RequestMapping(value = "/tablewithdropdowntest/{id}", method = RequestMethod.GET)

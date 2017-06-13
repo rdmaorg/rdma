@@ -7,9 +7,14 @@ import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.UpdateDataRequest;
 import ie.clients.gdma2.domain.UpdateDataRequestDummy;
 import ie.clients.gdma2.domain.UserAccess;
+import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
+import ie.clients.gdma2.spi.ServiceException;
 import ie.clients.gdma2.spi.interfaces.DataModuleService;
+import ie.clients.gdma2.util.CsvDownloader;
 import ie.clients.gdma2.util.EntityUtils;
+import ie.clients.gdma2.util.TableRowDTO;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -28,7 +33,7 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 
 	private static final Logger logger = LoggerFactory.getLogger(DataModuleServiceImpl.class);
 
-		@Override
+	@Override
 	public List<Server> getActiveServers() {
 		logger.info("getActiveServers" );
 		logger.info("user: " + userContextProvider.getLoggedInUserName());
@@ -49,9 +54,9 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 	public List<Column> getActiveColumns(Integer tableId) {
 		logger.info("getActiveColumns");
 		logger.info("user: " + userContextProvider.getLoggedInUserName());
-		
+
 		List<Column> activeTableList = repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(tableId);
-		
+
 		//remove tables and all parent objects
 		for (Column column : activeTableList) {
 			column.setTable(null);
@@ -202,9 +207,9 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 		UpdateDataRequestDummy dummyDelete = new UpdateDataRequestDummy();
 		//SINGLE PK TEST
 		//UpdateDataRequest updateDataRequest = dummyDelete.createDummyDeleteRecordsForAutoIncrementTable_new_table_test_autoincrement(6, 136);
-		
+
 		//COMPOSITE PK TEST (make sure DB table classicmodels.voting is used and metadata is fetched in admin module)
-		
+
 		/*tableId = 4189
 		 * 
 				Columns
@@ -212,12 +217,12 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 				2259	questionID	
 				2261	vote	
 				2262	votenumber
-				
+
 				 PRIMARY KEY (`questionID`,`personID`)
-		*/
-		
+		 */
+
 		UpdateDataRequest updateDataRequest = dummyDelete.createDummyDeleteRecordsForVote(6, 4189);
-		
+
 		return dynamicDAO.deleteRecords(updateDataRequest);
 	}
 
@@ -241,7 +246,7 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 		}
 
 		return dynamicDAO.bulkImport(server, table, columns, file);
-		
+
 	}
 
 
@@ -252,6 +257,30 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 		return repositoryManager.getUserAccessRepository().getUserAccessForUserOnTable(userContextProvider.getLoggedInUserName(), tableId);
 	}
 
+
+	/*based on file type initiate proper file type creator
+	 * load metadata column names to created HEADER
+	 * iterate over paginated result and add BODY*/
+	@Override
+	public <T> String dataExport(Integer tableId, String extension,	PaginatedTableResponse<T> resp) {
+
+		Table table = repositoryManager.getTableRepository().findOne(tableId);
+		if (null == table){
+			throw new ServiceException("Error! Table with id:" + tableId + "does not exists!");
+		}
+
+		//make sure order of column in Header match order of column data in Body (paginated response)
+		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(tableId);
+		List<String> headers = new ArrayList<String>();
+		for (Column column : activeColumns) {
+			headers.add(column.getName());
+		}
+
+		List<TableRowDTO> rows = (List<TableRowDTO>) resp.getData();
+		//TODO based on 'extension' call ExcelDownloader or PDFDwonloader
+		return CsvDownloader.createCSV(headers, rows);
+
+	}
 
 
 }
