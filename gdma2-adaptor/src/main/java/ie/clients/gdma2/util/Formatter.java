@@ -12,98 +12,127 @@ import java.util.Date;
  */
 public class Formatter {
 
-    public static String dateFormat = "yyyy-MM-dd";
+	//java.sql.Date = 91
+	public static String dateFormat = "yyyy-MM-dd";
+	public static String dateFormat2 = "dd/MM/yyyy";
 
-    public static String dateFormat2 = "dd-MM-yyyy";
 
-    public static String timeFormat = "HH:mm:ss";
+	//java.sql.Time = 92
+	public static String timeFormat = "HH:mm:ss";
 
-    private static SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
+	//java.sql.Timestamp = 93
+	// (at some DB's also called DATETIME),
+	public static String timeStampFormat = "yyyy-MM-dd HH:mm:ss"; 
 
-    private static SimpleDateFormat sdf2 = new SimpleDateFormat(dateFormat2);
+	private static SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
 
-    private static SimpleDateFormat sdf3 = new SimpleDateFormat(timeFormat);
-    
-    public static String escapeQuotes(String in) {
-        if (in == null)
-            return null;
-        else
-            return in.replaceAll("[\"']", "\\\"");
-    }
+	private static SimpleDateFormat sdf2 = new SimpleDateFormat(dateFormat2);
 
-    public static String escapeNewLines(String in) {
-        if (in == null)
-            return null;
-        else
-            return in.replaceAll("[\r\n]+", "\\\\n");
-    }
+	private static SimpleDateFormat sdf3 = new SimpleDateFormat(timeFormat);
 
-    public static String escapeAll(String in) {
-        in = escapeQuotes(in);
-        in = escapeNewLines(in);
-        return in;
-    }
+	private static SimpleDateFormat sdf4 = new SimpleDateFormat(timeStampFormat);
 
-    public static String formatDate(Date date) {
-        if (date == null)
-            return "";
-        else
-            return sdf.format(date);
-    }
+	public static String escapeQuotes(String in) {
+		if (in == null)
+			return null;
+		else
+			return in.replaceAll("[\"']", "\\\"");
+	}
 
-    // Try 2 ways of parsing
-    // First - treat it as a long
-    // Second - treat it as a string
-    public static Date parseDate(String value) throws Exception {
-        Date date = null;
-        try {
-            date = new Date(Long.parseLong(value));
-        } catch (Exception e) {
-            date = null;
-        }
-        if (date == null) {
-            try {
-                date = sdf.parse(value);
-            } catch (Exception e) {
-                try {
-                    date = sdf2.parse(value);
-                } catch (Exception e2) {
-                    throw new Exception("Could not parse value [" + value + "] into a date");
-                }
-            }
-        }
+	public static String escapeNewLines(String in) {
+		if (in == null)
+			return null;
+		else
+			return in.replaceAll("[\r\n]+", "\\\\n");
+	}
 
-        return date;
-    }
+	public static String escapeAll(String in) {
+		in = escapeQuotes(in);
+		in = escapeNewLines(in);
+		return in;
+	}
 
-    public static String getDateStringFromTimestamp(String timestamp) throws ParseException {
-        String value = "";
+	public static String formatDate(Date date) {
+		if (date == null)
+			return "";
+		else
+			return sdf.format(date);
+	}
 
-        if (timestamp != null)
-            value = formatDate(new Date(Long.parseLong(timestamp)));
+	// Try 2 ways of parsing
+	// First - treat it as a long
+	// Second - treat it as a string
+	public static Date parseDate(String value) throws Exception {
+		Date date = null;
+		try {
+			date = new Date(Long.parseLong(value));
+		} catch (Exception e) {
+			date = null;
+		}
+		if (date == null) {
+			try {
+				date = sdf.parse(value);
+			} catch (Exception e) {
+				try {
+					date = sdf2.parse(value);
+				} catch (Exception e2) {
+					throw new Exception("Could not parse value [" + value + "] into a date");
+				}
+			}
+		}
 
-        return value;
-    }
+		return date;
+	}
 
-    // Try 2 ways of parsing
-    // First - treat it as a long
-    // Second - treat it as a string
-    public static String parseTime(String value) throws Exception {
-        Date date = null;
-        try {
-            date = new Date(Long.parseLong(value));
-        } catch (Exception e) {
-            date = null;
-        }
-        if (date == null) {
-            try {
-                date = sdf3.parse(value);
-            } catch (Exception e) {
-                throw new Exception("Could not pase value [" + value + "] into a time");
-            }
-        }
 
-        return value;
-    }
-    
+	public static Date parseDateTime(String value) throws Exception {
+
+		Date date = null;
+		try {
+			date = new Date(Long.parseLong(value));
+		} catch (Exception e) {
+			date = null;
+		}
+		if (date == null) {
+			try {
+				date = sdf4.parse(value);
+			} catch (Exception e) {
+				throw new Exception("Could not pase value [" + value + "] into a datetime");
+			}
+		}
+
+		return date;
+
+	}
+
+	public static String getDateStringFromTimestamp(String timestamp) throws ParseException {
+		String value = "";
+
+		if (timestamp != null)
+			value = formatDate(new Date(Long.parseLong(timestamp)));
+
+		return value;
+	}
+
+	// Try 2 ways of parsing
+	// First - treat it as a long
+	// Second - treat it as a string
+	public static String parseTime(String value) throws Exception {
+		Date date = null;
+		try {
+			date = new Date(Long.parseLong(value));
+		} catch (Exception e) {
+			date = null;
+		}
+		if (date == null) {
+			try {
+				date = sdf3.parse(value);
+			} catch (Exception e) {
+				throw new Exception("Could not pase value [" + value + "] into a time");
+			}
+		}
+
+		return value;
+	}
+
 }

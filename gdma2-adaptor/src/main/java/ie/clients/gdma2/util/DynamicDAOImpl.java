@@ -743,44 +743,44 @@ public class DynamicDAOImpl implements DynamicDAO{
 					} catch (Exception ex) {
 						logger.info("Could not parse the date: " + filter.getFilterValue(), ex);
 					}
-				} /*else if (SqlUtil.isDateTime(filter.getColumnType())) {
-                LOG.debug("DATETIME filter detected: " + filter.getFilterValue());
-				try {
-                    param = Formatter.parseDate(filter.getFilterValue());
-					LOG.debug("DATETIME as parameter: " + param);
-				} catch (Exception ex) {
-					LOG.error("Could not parse the DATETIME: " + filter.getFilterValue(), ex);
+				} else if (SQLUtil.isDateTime(filter.getColumnType())) {
+					logger.info("DATETIME filter detected: " + filter.getFilterValue());
+					try {
+						param = Formatter.parseDateTime(filter.getFilterValue());
+						logger.info("DATETIME as parameter: " + param);
+					} catch (Exception ex) {
+						logger.info("Could not parse the DATETIME: " + filter.getFilterValue(), ex);
+					}
+				}else if (SQLUtil.isTime(filter.getColumnType())) {
+					try {
+						param = Formatter.parseTime(filter.getFilterValue());
+						logger.info("Time as parameter: " + param);
+					} catch (Exception ex) {
+						logger.info("Could not parse the time: " + filter.getFilterValue(), ex);
+					}
+				} else {
+					// For LIKE stmt
+					//deal with "Begins With" filter operator
+					if(filter.getFilterOperator() == 5)
+					{
+						param = param + "%";
+					}
+					//deal with "Contains" filter operator
+					else if(filter.getFilterOperator() == 6)
+					{
+						param = "%" + param + "%";
+					}
+					//deal with "Ends With" filter operator
+					else if(filter.getFilterOperator() == 7)
+					{
+						param = "%" + param;
+					}
+					else
+					{
+						param = param;
+					}
+					logger.info("Generic parameter: " + param);
 				}
-            	}*/else if (SQLUtil.isTime(filter.getColumnType())) {
-            		try {
-            			param = Formatter.parseTime(filter.getFilterValue());
-            			logger.info("Time as parameter: " + param);
-            		} catch (Exception ex) {
-            			logger.info("Could not parse the time: " + filter.getFilterValue(), ex);
-            		}
-            	} else {
-            		// For LIKE stmt
-            		//deal with "Begins With" filter operator
-            		if(filter.getFilterOperator() == 5)
-            		{
-            			param = param + "%";
-            		}
-            		//deal with "Contains" filter operator
-            		else if(filter.getFilterOperator() == 6)
-            		{
-            			param = "%" + param + "%";
-            		}
-            		//deal with "Ends With" filter operator
-            		else if(filter.getFilterOperator() == 7)
-            		{
-            			param = "%" + param;
-            		}
-            		else
-            		{
-            			param = param;
-            		}
-            		logger.info("Generic parameter: " + param);
-            	}
 				params.add(param);
 			}
 		}
@@ -962,7 +962,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 		logger.info("columns, size " + columns.size());
 		logger.info("parameters, size " + parameters.size());
 		for (Column metadataColumn : metadataColumnSet) {
-			
+
 			logdetails(metadataColumn);//TODO REMOVE
 
 			if (StringUtils.hasText(metadataColumn.getSpecial())) {
@@ -1048,11 +1048,11 @@ public class DynamicDAOImpl implements DynamicDAO{
 		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(table.getId());
 		table.setColumns(new LinkedHashSet(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change this and pass colums to utility method themselves
 
-		
-		
-		
+
+
+
 		List<List<ColumnDataUpdate>> columnsUpdate = updateRequest.getUpdates();
-		
+
 		/**/
 		logger.info("*******TODO DELETE *************");
 		List<List<ColumnDataUpdate>> updates = columnsUpdate;
@@ -1060,7 +1060,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 			for (ColumnDataUpdate columnDataUpdate : list) {
 				logger.info(columnDataUpdate.getColumnId() + "  "  + columnDataUpdate.getOldColumnValue() + "  " + columnDataUpdate.getNewColumnValue());
 			}
-			
+
 		}
 		logger.info("********TODO DELETE ***********");
 		/**/
@@ -1127,7 +1127,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 								}
 							} //internal for end
 
-							
+
 							//ADD PKs at the end of both colums collection and key at : parameters.addAll(keys); //so they match positions
 							for (ColumnDataUpdate columnUpdate : list) {
 								Column column = repositoryManager.getColumnRepository().findOne(columnUpdate.getColumnId());
@@ -1135,11 +1135,11 @@ public class DynamicDAOImpl implements DynamicDAO{
 									logger.info("6: column IS PK! Getting old value from request and type from metadata");
 									columns.add(column);
 									keys.add(SQLUtil.convertToType(columnUpdate.getOldColumnValue(), column.getColumnType()));
-									
+
 								} 
 							} //internal for end
-							
-							
+
+
 							if (CollectionUtils.isEmpty(parameters)) {
 								throw new InvalidDataAccessResourceUsageException("No update values found!");
 							}
@@ -1149,12 +1149,12 @@ public class DynamicDAOImpl implements DynamicDAO{
 							}
 							logger.info("6: before handling special columns");
 							//TODO !!!
-							
+
 							parameters.addAll(keys); //add keys at the end because they are always last in:  
 							// UPDATE new_table_test_autoincrement SET year = ?, name = ?, employment_date = ? WHERE  (id = ?) 
 							//...now positions are matched for mapping by index and collections of columns and  parameters have the same size
 							handleSpecialColumns(table.getColumns(), columns, parameters);
-							
+
 							String sql = SQLUtil.createUpdateStatement(server, table, columns);
 							logger.info("Update SQL query: " + sql);
 							logger.info("parameters: " + parameters);
@@ -1200,7 +1200,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 		}
 
 		List<List<ColumnDataUpdate>> columnsUpdate = updateRequest.getUpdates();
-		
+
 		for (List<ColumnDataUpdate> list : columnsUpdate) {
 			for (ColumnDataUpdate columnDataUpdate : list) {
 				logger.info("dumy col Id: " + columnDataUpdate.getColumnId() + " old val: " + columnDataUpdate.getOldColumnValue() + " new val:" + columnDataUpdate.getNewColumnValue());
@@ -1312,12 +1312,12 @@ public class DynamicDAOImpl implements DynamicDAO{
 		//paginatedResponse.setSortDir(paginatedRequest.getDir());
 
 			//return paginatedResponse;
-		
+
 
 		return records;
-		*/
-		
-		
+		 */
+
+
 		List<TableRowDTO> rows =(List<TableRowDTO>) jdbcTemplate.query(psc.newPreparedStatementCreator(params), 
 				new PagedResultSetExtractor(new TableDataRowMapper(),
 						startIndex,length));
@@ -1332,9 +1332,9 @@ public class DynamicDAOImpl implements DynamicDAO{
 				logger.info("columnName: " + column.getColumnName() + " , val: " + (column.getVal()==null ? "" : column.getVal()) );
 			}
 		}
-		
+
 		return rows;
-		
+
 
 	}
 
@@ -1411,8 +1411,8 @@ public class DynamicDAOImpl implements DynamicDAO{
 		}
 
 		//return rows;
-		
-		
+
+
 		//set values for every column
 		for(Column col: table.getColumns()){
 			addValuesToColumnMetadata(rows, col);
@@ -1420,7 +1420,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 		//load display values for dropdowns if any
 		//resolveLookupTables(table.getColumns());
-				
+
 		//remove table and other parent object to make smaller JSON repsponse
 		for (Column column : table.getColumns()) {
 			column.setTable(null);
@@ -1449,14 +1449,14 @@ public class DynamicDAOImpl implements DynamicDAO{
 			BigInteger rowNumber = tableRowDTO.getRowNumber();
 			logger.info("rownumber: " + rowNumber.intValue());
 
-			
+
 			List<TableColumn> columns = tableRowDTO.getColumns();
 			for (TableColumn column : columns) {
 				logger.info("columnName: " + column.getColumnName() + " , val: " + (column.getVal()==null ? "" : column.getVal()) );
 
 				if(metadataColumn.getName().equalsIgnoreCase(column.getColumnName())){
 					//columnValues.add(column.getVal() == null ? "" : column.getVal().toString());
-					
+
 					valMap.put(rowNumber.intValue(), column.getVal() == null ? "" : column.getVal().toString());
 				}
 
@@ -1467,8 +1467,8 @@ public class DynamicDAOImpl implements DynamicDAO{
 	}
 
 
-	
-	
+
+
 
 	/* 
 
@@ -1544,12 +1544,12 @@ public class DynamicDAOImpl implements DynamicDAO{
 		final List<Object> params = convertFiltersToSqlParameterValues(filters);
 		logger.info("params: " +  params);
 
-		
+
 		List<TableRowDTO> rows =(List<TableRowDTO>) jdbcTemplate.query(psc.newPreparedStatementCreator(params), 
 				new PagedResultSetExtractor(new TableDataRowMapper(),
 						startIndex,length));
 
-		
+
 		logger.info("RESULT: list data with column names:");
 		for (TableRowDTO tableRowDTO : rows) {
 
@@ -1566,15 +1566,15 @@ public class DynamicDAOImpl implements DynamicDAO{
 			if(col.getDropDownColumnDisplay() != null && col.getDropDownColumnStore() != null){
 				replaceFKvaluesWithDropdown(rows, col);	
 			}
-				
+
 		}
 		return rows;
 		//return TableDataFormatUtil.createPlainList(rows);
 		//return TableDataFormatUtil.createListWithMap(rows);
 	}
 
-	
-	
+
+
 	/*locate Lookup columns : one that have that have metadataColumn.getDropDownColumnDisplay and  metadataColumn.getDropDownColumnStore() defined
 	 * for each such column create 1 SQL to load ALL remote Lookup data by calling: getDropDownData()
 	 *  a) iterrate over Table data matrix, in each row locate column of this type 
@@ -1630,8 +1630,8 @@ public class DynamicDAOImpl implements DynamicDAO{
 	private void replaceFKvaluesWithDropdown(List<TableRowDTO> rows, Column metadataColumn) {
 		logger.info("replaceFKvaluesWithDropdown");
 		logger.info("column:" + metadataColumn.getName().toUpperCase() + " has Lokup columns defined: " 
-		+ " display: " + metadataColumn.getDropDownColumnDisplay().getName().toLowerCase() + " , store:" + metadataColumn.getDropDownColumnStore().getName().toUpperCase());
-		
+				+ " display: " + metadataColumn.getDropDownColumnDisplay().getName().toLowerCase() + " , store:" + metadataColumn.getDropDownColumnStore().getName().toUpperCase());
+
 		//fetch Lookup table - all values	
 		List<List<Object>> dropDownDataRows = getDropDownData(metadataColumn.getDropDownColumnDisplay(), metadataColumn.getDropDownColumnStore());
 
@@ -1639,21 +1639,21 @@ public class DynamicDAOImpl implements DynamicDAO{
 		sql created: SELECT gender.id, gender.gender_name FROM gender ORDER BY gender.gender_name asc
 
 		 RESULT: [0, 23, Female], [1, 22, Male], [2, 25, Not Aplicable], [3, 24, Unkown]
-		*/
-		
+		 */
+
 		/*
 		for (List<Object> ddRows : dropDownDataRows) {
 			for (Object row : ddRows) {
 				logger.info(row.toString()); // 0 23 FEMALE 
 			}
-			
+
 		}
-		*/
-		
+		 */
+
 		/*----------*/
 		logger.info("form DropDownColumn object for each Lookup value");
-		
-		
+
+
 		//List<TableRowDTO> rows
 		for (TableRowDTO tableRowDTO : rows) {
 			logger.info("rownumber: " + tableRowDTO.getRowNumber().intValue());
@@ -1661,7 +1661,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 			List<TableColumn> columns = tableRowDTO.getColumns();
 			for (TableColumn columnDTO : columns) {
 				logger.info("columnName: " + columnDTO.getColumnName() + " , val: " + (columnDTO.getVal()==null ? "" : columnDTO.getVal()) );
-				
+
 				//match metadata column name with result set column name
 				if(metadataColumn.getName().equalsIgnoreCase(columnDTO.getColumnName())){
 					logger.info("Lookup column: "  +metadataColumn.getName().toUpperCase() + " detected, replacing value with DropDownColumn object");
@@ -1670,18 +1670,18 @@ public class DynamicDAOImpl implements DynamicDAO{
 					dropdownColumn.setDid(metadataColumn.getDropDownColumnDisplay().getId());
 					dropdownColumn.setSid(metadataColumn.getDropDownColumnStore().getId());
 					dropdownColumn.setDropdownOptions(dropDownDataRows);
-							
+
 					//replace FK value (membership_id = 101) with DropDownColumn
 					columnDTO.setVal(dropdownColumn); //instead of concrete value e.g. 24 put complete Drodwon object
 				}
 
 			}//columns
 		}//rows
-		
-		
+
+
 	}
-	
-	
+
+
 	//TODO test TRANSACTIONS, test NULL values, test non-autoinc, test value with quotes, test mysql/other DB vendors, test more columns in header than in body
 	//this code will INSERT partially new data id some row in CSV contains bad data - check if needs to be done in transaction
 	@Override

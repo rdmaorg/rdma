@@ -411,7 +411,7 @@ public class SQLUtil {
 				}
 				break;
 			case Types.DATE:
-			case Types.TIMESTAMP:
+			//case Types.TIMESTAMP:
 				try {
 					if (StringUtils.hasText(data)) {
 						oReturn = Formatter.parseDate(data);
@@ -422,6 +422,17 @@ public class SQLUtil {
 					throw new TypeMismatchDataAccessException("Vaule [" + data + "] could not be parsed as a date. ");
 				}
 				break;
+			case Types.TIMESTAMP:
+				try {
+					if (StringUtils.hasText(data)) {
+						oReturn = Formatter.parseDateTime(data);//chech wheater to return String or Date?
+					} else {
+						return null;
+					}
+				} catch (Exception e) {
+					throw new TypeMismatchDataAccessException("Vaule [" + data + "] could not be parsed as a datetime. ");
+				}
+				break;	
 			case Types.TIME:
 				try {
 					if (StringUtils.hasText(data)) {
@@ -490,7 +501,7 @@ public class SQLUtil {
 
 		switch (sqlDataType) {
 		case Types.DATE:
-		case Types.TIMESTAMP:
+		//case Types.TIMESTAMP:
 			blnReturn = true;
 			break;
 		default:
@@ -501,6 +512,23 @@ public class SQLUtil {
 		return blnReturn;
 
 	}
+	
+	public static boolean isDateTime(int sqlDataType) {
+		boolean blnReturn = false;
+
+			switch (sqlDataType) {
+			case Types.TIMESTAMP:
+				blnReturn = true;
+				break;
+			default:
+				blnReturn = false;
+				break;
+			}
+
+			return blnReturn;
+
+		}
+		
 
 	public static boolean isTime(int sqlDataType) {
 		boolean blnReturn = false;
@@ -572,6 +600,8 @@ public class SQLUtil {
 		logger.info("SQL Select query: " + stringBuilder.toString());
 		return stringBuilder.toString();
 	}
+
+	
 
 
 
