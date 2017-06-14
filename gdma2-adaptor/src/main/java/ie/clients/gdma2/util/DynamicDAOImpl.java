@@ -873,7 +873,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 		}
 
 		//TODO check conditions : does column need to be active...
-		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(table.getId());
+		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrueAndDisplayedTrue(table.getId());
 		table.setColumns(new LinkedHashSet(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change this and pass colums to utility method themselves
 
 
@@ -1045,7 +1045,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 		}
 
 		//TODO check conditions : does column need to be active...
-		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(table.getId());
+		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrueAndDisplayedTrue(table.getId());
 		table.setColumns(new LinkedHashSet(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change this and pass colums to utility method themselves
 
 

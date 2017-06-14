@@ -70,7 +70,7 @@ public class DataTableResource extends BaseDataTableResource{
 		return serviceFacade.getDataModuleService().getActiveTables(serverId);
 	}
 	
-	/*get all Active columns STRUCTURE (OR METADATA) for given Active table on Active server, based on userName
+	/*get all Active and DISPLAYABLE columns STRUCTURE (OR METADATA) for given Active table on Active server, based on userName
 	 * 		https://localhost/gdma2/rest/datatable/columns/table/133  
 	 * in GDMA1 : GdmaAjaxFacade.getTableDetails*/
 	@RequestMapping(value = "/columns/table/{tableId}", method = RequestMethod.GET)

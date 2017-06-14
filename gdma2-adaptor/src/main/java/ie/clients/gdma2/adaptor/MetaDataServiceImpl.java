@@ -510,7 +510,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 	@Override
 	public List<Column> findByTableIdAndActiveTrue(Integer tableId) {
-		return IteratorUtils.toList(repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(tableId).iterator());
+		return IteratorUtils.toList(repositoryManager.getColumnRepository().findByTableIdAndActiveTrueAndDisplayedTrue(tableId).iterator());
 
 	}
 
@@ -897,7 +897,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 		table = repositoryManager.getTableRepository().findOne(tableId);
 		server = table.getServer();
-		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(tableId);
+		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrueAndDisplayedTrue(tableId);
 		table.setColumns(new LinkedHashSet<Column>(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change this and pass colums to utility method themselves
 
 		/*if ordering not set, zero velue is received so keep sortedByColumn = null, else determine column among all table columns*/
@@ -938,6 +938,8 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 	}
 
+	/*incremental text search - in future versions switch to version that is using List<Filter> filtersParam instead of String searchTerm 
+	 * (in method with the same name)*/
 	@Override
 	public PaginatedTableResponse<Column> getTableDataWithColumnNamesAndDropdowns(Integer tableId, String searchTerm,
 			int orderByColumnID, String orderDirection,
@@ -946,7 +948,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 		List<Filter> filtersParam = new ArrayList<Filter>();
 		if (searchTerm != null && !searchTerm.trim().isEmpty()){
-			List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(tableId);
+			List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrueAndDisplayedTrue(tableId);
 			for (Column activeColumn : activeColumns) {
 				if(SQLUtil.isText(activeColumn.getColumnType())){
 
@@ -983,7 +985,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 		table = repositoryManager.getTableRepository().findOne(tableId);
 		server = table.getServer();
-		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(tableId);
+		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrueAndDisplayedTrue(tableId);
 		table.setColumns(new LinkedHashSet<Column>(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change
 
 		/*if ordering not set, zero velue is received so keep sortedByColumn = null, else determine column among all table columns*/

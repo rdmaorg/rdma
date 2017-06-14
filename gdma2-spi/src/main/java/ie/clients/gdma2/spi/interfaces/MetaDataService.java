@@ -102,6 +102,7 @@ public interface MetaDataService {
 	public PaginatedTableResponse<Column> getTableDataWithColumnNamesAndDropdowns(Integer tableId, List<Filter> filtersParam,
 			int orderByColumnID, String orderDirection, int startIndex, int length);
 	
+	/*incremental text search - in future versions switch to version that is using List<Filter> filtersParam instead of String searchTerm (in method above)*/
 	public PaginatedTableResponse<Column> getTableDataWithColumnNamesAndDropdowns(Integer tableId, String searchTerm,
 			int orderByColumnID, String orderDirection, int startIndex, int length);
 

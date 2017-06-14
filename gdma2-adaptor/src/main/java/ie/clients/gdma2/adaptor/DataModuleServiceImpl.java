@@ -55,7 +55,7 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 		logger.info("getActiveColumns");
 		logger.info("user: " + userContextProvider.getLoggedInUserName());
 
-		List<Column> activeTableList = repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(tableId);
+		List<Column> activeTableList = repositoryManager.getColumnRepository().findByTableIdAndActiveTrueAndDisplayedTrue(tableId);
 
 		//remove tables and all parent objects
 		for (Column column : activeTableList) {
@@ -270,7 +270,7 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 		}
 
 		//make sure order of column in Header match order of column data in Body (paginated response)
-		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrue(tableId);
+		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrueAndDisplayedTrue(tableId);
 		List<String> headers = new ArrayList<String>();
 		for (Column column : activeColumns) {
 			headers.add(column.getName());
