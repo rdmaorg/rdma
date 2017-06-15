@@ -108,7 +108,7 @@ var configureDataTable = function(columnsMetadata){
         	}
         }
         //VALIDATING EDIT
-        if (action === 'edit'  ) {
+        if (action === 'edit') {
             for (var i = 0, len = columnsMetadata.length; i < len; i++) {
             	if(columnsMetadata[i].allowUpdate === true){
             		if (!columnsMetadata[i].nullable && columnsMetadata[i].special === 'N'){
@@ -128,17 +128,22 @@ var configureDataTable = function(columnsMetadata){
         if ( this.inError() ) {
         	return false;
         }
-        
     } );
 	
 	// Disable KeyTable while the main editing form is open
-	datatableEditor
-        .on( 'open', function ( e, mode, action ) {
+	datatableEditor.on( 'open', function ( e, mode, action ) {
             if ( mode === 'main' ) {
             	tableData.keys.disable();
+            	if (action === 'create') {
+            		enableDisableAllowInsertFields(columnsMetadata, editorFields);
+            	};
+            	if (action === 'edit') {
+            		enableDisableAllowUpdateFields(columnsMetadata, editorFields);
+            	}
             }
         } )
         .on( 'close', function () {
+        	enableDisableAllowUpdateFields(columnsMetadata, editorFields);
         	tableData.keys.enable();
         } );
 
@@ -231,21 +236,10 @@ var configureDataTable = function(columnsMetadata){
 		tableData.search($(this).val()).draw() ;
 	})
 	
-	
 	$('#dataTableLength').change(function() {
 		tableData.page.len( $(this).val() ).draw();
 	});
 	
-	
-	
-//	
-//	// Activate an inline edit on click of a table cell
-//  $('#table_data').on( 'click', 'tbody td.editable', function (e) {
-//    	datatableEditor.inline( this, { submit: 'allIfChanged',
-//    		submitOnBlur: true
-//    		} );
-//    } );
-//  
 //  //Inline editing on tab focus
   tableData.on( 'key-focus', function ( e, datatable, cell ) {
 	  datatableEditor.inline( cell.index(),{ submit: 'allIfChanged',
@@ -415,11 +409,6 @@ var addDownloadButton = function (datatable){
 var configureUploadButton = function() {
 	$('#fileUpload').on('change', function() {
 	    var file = this.files[0];
-//	    if (file.type != 'text/plain') {
-//	        alert('file type must be text/plain');
-//	        return false;
-//	        // Also see .name, .size
-//	    } else {
 	    	$.ajax({
 	    		// Your server script to process the upload
 	    		url: restUri.datatable.upload,
@@ -463,3 +452,23 @@ var configureUploadButton = function() {
 	});
 	
 }
+
+var enableDisableAllowInsertFields = function(columnsMetadata, editorFields){
+	for(var i = 0; i < columnsMetadata.length; i++){
+		if(columnsMetadata[i].allowInsert === true){
+			datatableEditor.enable(editorFields[i].name);
+		} else {
+			datatableEditor.disable(editorFields[i].name);
+		}
+	}
+};
+
+var enableDisableAllowUpdateFields= function(columnsMetadata, editorFields){
+	for(var i = 0; i < columnsMetadata.length; i++){
+		if(columnsMetadata[i].allowUpdate === true){
+			datatableEditor.enable(editorFields[i].name);
+		} else {
+			datatableEditor.disable(editorFields[i].name);
+		}
+	}
+};
