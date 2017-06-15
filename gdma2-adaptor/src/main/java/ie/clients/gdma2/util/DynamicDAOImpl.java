@@ -136,6 +136,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 				for (Column column : columns) {
 					if( columnNamePK.equalsIgnoreCase(column.getName())){
 						column.setPrimarykey(true);
+						column.setAllowUpdate(false);
 					}
 				}
 			}
