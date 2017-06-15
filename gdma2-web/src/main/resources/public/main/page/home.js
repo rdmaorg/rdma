@@ -83,31 +83,64 @@ var configureDataTable = function(columnsMetadata){
 		fields: editorFields,
         formOptions: {
             inline: {
-                onBlur: 'submit'
+                onBlur: 'submit',
+                submit: 'allIfChanged'
             }
         }
 	}
 	datatableEditor = $('#table_data').configureEditor(configEditor);
 	datatableEditor.on( 'preSubmit', function ( e, data, action ) {
-        if ( action !== 'create' || action !== 'edit'  ) {
+		//VALIDATING CREATE
+        if ( action === 'create') {
             for (var i = 0, len = columnsMetadata.length; i < len; i++) {
-        	  if (!columnsMetadata[i].nullable){
-        		  var field = this.field( 'columns.'+i+'.val' ) ? this.field( 'columns.'+i+'.val' ) : this.field( 'columns.'+i+'.val.value' );
-        		  // Only validate user input values - different values indicate that
-        		  // the end user has not entered a value
-        		  if ( ! field.isMultiValue() ) {
-        			  if ( ! field.val() ) {
-        				  field.error( 'A value must be given for ' + columnsMetadata[i].alias);
-        			  }
-        		  }
-        	  }
+            	if(columnsMetadata[i].allowInsert === true){
+            		if (!columnsMetadata[i].nullable && columnsMetadata[i].special === 'N'){
+            			var field = this.field( 'columns.'+i+'.val' ) ? this.field( 'columns.'+i+'.val' ) : this.field( 'columns.'+i+'.val.value' );
+            			// Only validate user input values - different values indicate that
+            			// the end user has not entered a value
+            			if ( ! field.isMultiValue() ) {
+            				if ( ! field.val() ) {
+            					field.error( 'A value must be given for ' + columnsMetadata[i].alias);
+            				}
+            			}
+            		}
+            	}
         	}
-            // If any error was reported, cancel the submission so it can be corrected
-            if ( this.inError() ) {
-                return false;
-            }
         }
+        //VALIDATING EDIT
+        if (action === 'edit'  ) {
+            for (var i = 0, len = columnsMetadata.length; i < len; i++) {
+            	if(columnsMetadata[i].allowUpdate === true){
+            		if (!columnsMetadata[i].nullable && columnsMetadata[i].special === 'N'){
+            			var field = this.field( 'columns.'+i+'.val' ) ? this.field( 'columns.'+i+'.val' ) : this.field( 'columns.'+i+'.val.value' );
+            			// Only validate user input values - different values indicate that
+            			// the end user has not entered a value
+            			if ( ! field.isMultiValue() ) {
+            				if ( ! field.val() ) {
+            					field.error( 'A value must be given for ' + columnsMetadata[i].alias);
+            				}
+            			}
+            		}
+            	}
+        	}
+        }
+        // If any error was reported, cancel the submission so it can be corrected
+        if ( this.inError() ) {
+        	return false;
+        }
+        
     } );
+	
+	// Disable KeyTable while the main editing form is open
+	datatableEditor
+        .on( 'open', function ( e, mode, action ) {
+            if ( mode === 'main' ) {
+            	tableData.keys.disable();
+            }
+        } )
+        .on( 'close', function () {
+        	tableData.keys.enable();
+        } );
 
 	var columnsData = createDataTableColumns(columnsMetadata);
 	console.log('columnsData: ' + JSON.stringify(columnsData));
@@ -135,8 +168,9 @@ var configureDataTable = function(columnsMetadata){
 		 idSrc : 'rowNumber',
          dom : "rtip",
          keys: {
-             columns: ':not(:first-child)',
-             keys: [ 9 ]
+             columns: '.editable',
+             editor: datatableEditor,
+             editorKeys: 'tab-only'
          },
          select: {
              style:    'os',
@@ -204,15 +238,15 @@ var configureDataTable = function(columnsMetadata){
 	
 	
 	
-	
-	// Activate an inline edit on click of a table cell
-  $('#table_data').on( 'click', 'tbody td:not(:first-child)', function (e) {
-    	datatableEditor.inline( this, { submit: 'allIfChanged',
-    		submitOnBlur: true
-    		} );
-    } );
-  
-  //Inline editing on tab focus
+//	
+//	// Activate an inline edit on click of a table cell
+//  $('#table_data').on( 'click', 'tbody td.editable', function (e) {
+//    	datatableEditor.inline( this, { submit: 'allIfChanged',
+//    		submitOnBlur: true
+//    		} );
+//    } );
+//  
+//  //Inline editing on tab focus
   tableData.on( 'key-focus', function ( e, datatable, cell ) {
 	  datatableEditor.inline( cell.index(),{ submit: 'allIfChanged',
   		submitOnBlur: true
@@ -235,14 +269,17 @@ var createEditorFields = function(columnsMetadata){
 	for(var i = 0; i < columnsMetadata.length; i++){
 		fields[i] = { label: columnsMetadata[i].alias ,
                 	  name: 'columns.'+i+'.val' };
+		if(columnsMetadata[i].special !== 'N'){
+			fields[i].type = "readonly";
+		};
 		if(columnsMetadata[i].columnTypeString.toUpperCase() === fieldTypes.BOOLEAN
 				|| columnsMetadata[i].columnTypeString.toUpperCase() === fieldTypes.TINYINT){
 			fields[i].type = "checkbox";
-		}
+		};
 		if(columnsMetadata[i].dropDownColumnDisplay){
 			fields[i].type = "select";
 			fields[i].name = 'columns.'+i+'.val.value';
-		}
+		};
 	}
 	return fields;
 }
@@ -275,9 +312,15 @@ var createDataTableColumns = function(columnsMetadata){
 	 	  return data;
 		};
 		
+		var className = '';
+		if(columnsMetadata[i].allowUpdate){
+			className = 'editable';
+		}
+		
 		columnsData.push({'data': dataValue,
 		  'editField': editFieldValue, 
-		  'render': renderFunction});
+		  'render': renderFunction,
+		  'className': className});
 	};
 	return columnsData;
 }
