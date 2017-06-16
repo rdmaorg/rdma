@@ -244,7 +244,7 @@ $(document).ready(function(){
 
 var prependIconToButton = function(){
 	var $italicPencil = $('<i>', {'class': 'fa fa-pencil-square-o'});
-	$italicPencil.prependTo(".editServer");
+	$italicPencil.prependTo('.editServer');
 	var $italicTable = $('<i>', {'class': 'fa fa-table'});
-	$italicTable.prependTo(".viewServer");
+	$italicTable.prependTo('.viewServer');
 }

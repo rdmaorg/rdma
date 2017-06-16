@@ -162,7 +162,9 @@ var associateCheckbox = function(rule) {
 		}
 		//method to verify if need check Full Access checkbox or not
 		verifyFullAccess(ck.data('id'));
-		verifyDisplayAccess(ck.data('id'));
+		if( verifyDisplayAccess(ck.data('id')) === true ) {
+			changedCheckboxes[object.id]['allowDisplay'] = true;
+		};
 	});
 }
 
@@ -217,7 +219,9 @@ var verifyFullAccess = function(id){
 var verifyDisplayAccess = function(id){
 	if($("#"+id+"allowU")[0].checked ||	$("#"+id+"allowI")[0].checked || $("#"+id+"allowDel")[0].checked){
 		$("#"+id+"allowD").prop( "checked", true );
+		return true;
 	}
+	return false;
 }
 
 var selectAllCheckBoxes = function(id,check){

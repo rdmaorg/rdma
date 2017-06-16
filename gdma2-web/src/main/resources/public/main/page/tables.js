@@ -171,8 +171,7 @@ $(document).ready(function(){
 
 var prependIconToButton = function(){
 	var $italicPencil = $('<i>', {'class': 'fa fa-pencil-square-o'});
-	$italicPencil.prependTo(".editTable");
-	$italicPencil.prependTo(".editAccess");
+	$italicPencil.prependTo('.editTable, .editAccess');
 	var $italicTable = $('<i>', {'class': 'fa fa-columns'});
-	$italicTable.prependTo(".viewColumns");
+	$italicTable.prependTo('.viewColumns');
 }
