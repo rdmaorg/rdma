@@ -22,9 +22,20 @@ var configureDataTable = function(){
 		            		} 
 			            },			        
 			            { "data": "active","render" : function(data, type, row){ 	
-			            	return '<button class="btn btn-primary btn-xs editServer" data-serverid="'+ row.id+ '"><i class="fa fa-pencil-square-o"></i> Edit</button>'
-			            	+ '&nbsp;'
-			            	+'<button class="btn btn-info btn-xs viewServer" data-serverid="'+ row.id+ '" data-servername="'+ row.name + '"><i class="fa fa-table"></i> Tables</button>'
+			            	//JQUERY sanitizes row.id and row.name
+			            	var $buttonEditServer = $('<button/>', {
+			            		'class':'btn btn-primary btn-xs editServer',
+			                    'data-serverid': row.id,
+			                    text: ' Edit'
+			                });
+			            	var $buttonViewServer = $('<button/>', {
+			            		'class':'btn btn-info btn-xs viewServer',
+			                    'data-serverid': row.id,
+			                    'data-servername': row.name,
+			                    text: ' Tables'
+			                });
+			            	result = $buttonEditServer.prop('outerHTML') + '&nbsp;' + $buttonViewServer.prop('outerHTML'); 
+			            	return result;
 			            	} 
 			            }
 			        ]
@@ -38,6 +49,7 @@ var configureDataTable = function(){
 			associateEditServer();
 			associatePostServer();
 			associateViewServer();
+			prependIconToButton();
 		},
 		error: function(message, e){
 			console.error("ERROR: " + JSON.stringify(e));
@@ -45,6 +57,7 @@ var configureDataTable = function(){
 		}
 	});
 	
+	//WHY DO WE NEED THIS?
 	tblServerList.off( 'responsive-display');
 	tblServerList.on( 'responsive-display', function ( e, datatable, row) {
 		associateDeleteServer();
@@ -227,16 +240,11 @@ $(document).ready(function(){
 		validator.destroy();
     })
 	
-	// Cookie help tutorial    
-    //var exist = $.cookie('endHelper');
-    //if (exist == "1"){
-    //} else {
-    //    bootstro.start(".bootstro", {
-    //        onExit : function(params)
-    //        {
-    //        	$.cookie('endHelper', '1');
-    //        },
-    //   }); 
-    //}
-	
 });
+
+var prependIconToButton = function(){
+	var $italicPencil = $('<i>', {'class': 'fa fa-pencil-square-o'});
+	$italicPencil.prependTo(".editServer");
+	var $italicTable = $('<i>', {'class': 'fa fa-table'});
+	$italicTable.prependTo(".viewServer");
+}

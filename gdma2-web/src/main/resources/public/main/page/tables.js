@@ -24,12 +24,29 @@ var configureDataTable = function(){
 			            	} 
 			            },			            
 			            { "data": "name","render" : function(data, type, row){ 
-			            	var disabled = row.active ? '': ' disabled';
-			            	return '<button class="btn btn-primary btn-xs editTable" data-tableid="'+ row.id+ '" data-tablename="'+ row.alias +'"'+ disabled +'><i class="fa fa-pencil-square-o"></i> Edit Alias</button>'
-			            	+ '&nbsp;'
-			            	+ '<button class="btn btn-primary btn-xs editAccess" data-tableid="'+ row.id+ '" data-tablename="'+ row.alias +'"'+ disabled +'><i class="fa fa-pencil-square-o"></i> Edit Access</button>'
-			            	+ '&nbsp;'
-			            	+'<button class="btn btn-info btn-xs viewColumns" data-tableid="'+ row.id+ '" data-tablename="'+ row.alias +'"'+ disabled +'><i class="fa fa-columns"></i> Columns</button>'
+			            	var disabled = row.active === false;
+			            	var $buttonEditTable = $('<button/>', {
+			            		"class":"btn btn-primary btn-xs editTable",
+			            		'disabled': disabled,
+			            		'data-tableid': row.id,
+			            		'data-tablename': row.alias,
+			                    text: ' Edit Alias'
+			                });
+			            	var $buttonEditAccess = $('<button/>', {
+			            		"class":"btn btn-primary btn-xs editAccess",
+			            		'disabled': disabled,
+			            		'data-tableid': row.id,
+			            		'data-tablename': row.alias,
+			                    text: ' Edit Access'
+			                });
+			            	var $buttonViewColumns = $('<button/>', {
+			            		"class":"btn btn-info btn-xs viewColumns",
+			            		'disabled': disabled,
+			            		'data-tableid': row.id,
+			            		'data-tablename': row.alias,
+			                    text: ' Columns'
+			                });
+			            	return $buttonEditTable.prop('outerHTML') + '&nbsp;' + $buttonEditAccess.prop('outerHTML') + '&nbsp;' +  $buttonViewColumns.prop('outerHTML');
 			            	} 
 			            }
 			        ]
@@ -42,6 +59,7 @@ var configureDataTable = function(){
 			showEditTableAccessModal();
 			associateViewColumns();
 			showEditTableAliasModal();
+			prependIconToButton();
 		}
 	});
 };
@@ -150,3 +168,11 @@ $(document).ready(function(){
     	validator.destroy();
     });
 });
+
+var prependIconToButton = function(){
+	var $italicPencil = $('<i>', {'class': 'fa fa-pencil-square-o'});
+	$italicPencil.prependTo(".editTable");
+	$italicPencil.prependTo(".editAccess");
+	var $italicTable = $('<i>', {'class': 'fa fa-columns'});
+	$italicTable.prependTo(".viewColumns");
+}
