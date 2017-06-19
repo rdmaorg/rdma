@@ -14,9 +14,6 @@ var loadDatatable = function(){
         dataType: 'json'
     }).done(function(data){
     	columnsMetadata = data.filter(filterDisplayed);
-    	console.log('columnsMetadata: ');
-    	console.log(columnsMetadata);
-    	
     	//sort columns by columnID
     	columnsMetadata.sort(function(a, b) {
 		    return parseInt(a.id) - parseInt(b.id);
@@ -47,9 +44,6 @@ var configureDataTable = function(columnsMetadata){
 	var editorFields = createEditorFields(columnsMetadata);
 	var configEditor = {
 		table: "#table_data",
-		createFunction: insertData,
-		editFunction: editData,
-		removeFunction: removeData,
 		idSrc : 'rowNumber',
 		ajax: {
             create: {
@@ -64,7 +58,6 @@ var configureDataTable = function(columnsMetadata){
                 type: 'POST',
                 url:  mapPathVariablesInUrl(restUri.datatable.remove, {'serverId': serverId,'tableId': tableId}),
                 "data": function ( d ) {
-                	console.log('deleting rows: ' + JSON.stringify(d));
             		for(var i in d.data) {
                 		delete d.data[i].rowNumber;
                 		for(var j = 0; j < d.data[i].columns.length;j++){ 
@@ -90,6 +83,7 @@ var configureDataTable = function(columnsMetadata){
 	}
 	datatableEditor = $('#table_data').configureEditor(configEditor);
 	datatableEditor.on( 'preSubmit', function ( e, data, action ) {
+		datatableEditor.error( '' );
 		//VALIDATING CREATE
         if ( action === 'create') {
             for (var i = 0, len = columnsMetadata.length; i < len; i++) {
@@ -148,7 +142,6 @@ var configureDataTable = function(columnsMetadata){
         } );
 
 	var columnsData = createDataTableColumns(columnsMetadata);
-	console.log('columnsData: ' + JSON.stringify(columnsData));
 	var config={
 		 "ajax":{
 			 "url":mapPathVariablesInUrl(restUri.datatable.table, {'id': tableId}),
@@ -175,6 +168,7 @@ var configureDataTable = function(columnsMetadata){
          keys: {
              columns: '.editable',
              editor: datatableEditor,
+             keys: [ 9 ],
              editorKeys: 'tab-only'
          },
          select: {
@@ -239,13 +233,13 @@ var configureDataTable = function(columnsMetadata){
 	$('#dataTableLength').change(function() {
 		tableData.page.len( $(this).val() ).draw();
 	});
-	
-//  //Inline editing on tab focus
+
+  //Inline editing on tab focus
   tableData.on( 'key-focus', function ( e, datatable, cell ) {
-	  datatableEditor.inline( cell.index(),{ submit: 'allIfChanged',
-  		submitOnBlur: true
-		} );
-  } );
+	datatableEditor.inline( cell.index(),{ submit: 'allIfChanged',
+  	submitOnBlur: true
+	});
+  });
 
   $(window).scroll(function(){
 		var topH = $(this).scrollTop() - parseInt($('.content').css('padding-top'));	
@@ -266,8 +260,8 @@ var createEditorFields = function(columnsMetadata){
 		if(columnsMetadata[i].special !== 'N'){
 			fields[i].type = "readonly";
 		};
-		if(columnsMetadata[i].columnTypeString.toUpperCase() === fieldTypes.BOOLEAN
-				|| columnsMetadata[i].columnTypeString.toUpperCase() === fieldTypes.TINYINT){
+		if(columnsMetadata[i].columnTypeString.toUpperCase() === fieldTypes.BOOLEAN){
+//				|| columnsMetadata[i].columnTypeString.toUpperCase() === fieldTypes.TINYINT){
 			fields[i].type = "checkbox";
 		};
 		if(columnsMetadata[i].dropDownColumnDisplay){
@@ -317,24 +311,6 @@ var createDataTableColumns = function(columnsMetadata){
 		  'className': className});
 	};
 	return columnsData;
-}
-
-var insertData = function(d, successCallback, errorCallback){
-	console.log('insertData function triggered');
-	console.log(d.data);
-	successCallback(d);
-}
-
-var editData = function(d, successCallback, errorCallback){
-	console.log('editData function triggered');
-	console.log(d.data);
-	successCallback(d);
-}
-
-var removeData = function(d, successCallback, errorCallback){
-	console.log('removeData function triggered');
-	console.log(d.data);
-	successCallback(d);
 }
 
 var createDropDownColumn = function(displayId, storeId, selectedValue){
@@ -420,7 +396,7 @@ var configureUploadButton = function() {
 	    		contentType: false,
 	    		success: function (data) {
 //	                $("#result").text(data);
-	                console.log("SUCCESS : ", data);
+//	                console.log("SUCCESS : ", data);
 //	                $("#btnSubmit").prop("disabled", false);
 
 	            },

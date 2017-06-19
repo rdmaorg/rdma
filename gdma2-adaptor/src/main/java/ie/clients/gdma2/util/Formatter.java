@@ -2,7 +2,10 @@ package ie.clients.gdma2.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.sql.Timestamp;
 
 /**
  * @author RGILL
@@ -31,6 +34,8 @@ public class Formatter {
 	private static SimpleDateFormat sdf3 = new SimpleDateFormat(timeFormat);
 
 	private static SimpleDateFormat sdf4 = new SimpleDateFormat(timeStampFormat);
+	
+	private static String frontEndTimeStampFormat = "dd-MMM-yyyy HH:mm:ss.SSS";
 
 	public static String escapeQuotes(String in) {
 		if (in == null)
@@ -86,7 +91,6 @@ public class Formatter {
 
 
 	public static Date parseDateTime(String value) throws Exception {
-
 		Date date = null;
 		try {
 			date = new Date(Long.parseLong(value));
@@ -97,14 +101,24 @@ public class Formatter {
 			try {
 				date = sdf4.parse(value);
 			} catch (Exception e) {
+				date = null;
 				throw new Exception("Could not pase value [" + value + "] into a datetime");
 			}
 		}
-
 		return date;
-
 	}
-
+	
+	public static Timestamp parseTimeStamp(String value) throws Exception {
+		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(frontEndTimeStampFormat);
+		try {
+			LocalDateTime formatDateTime = LocalDateTime.parse(value, dateTimeFormatter);
+			dateTimeFormatter = DateTimeFormatter.ofPattern(timeStampFormat);
+			return Timestamp.valueOf(formatDateTime.format(dateTimeFormatter));
+		} catch (Exception e) {
+			throw new Exception("Could not pase value [" + value + "] into a TimeStamp");
+		}
+	}
+	
 	public static String getDateStringFromTimestamp(String timestamp) throws ParseException {
 		String value = "";
 

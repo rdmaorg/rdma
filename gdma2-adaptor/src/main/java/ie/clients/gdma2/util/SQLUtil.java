@@ -1,10 +1,5 @@
 package ie.clients.gdma2.util;
 
-import ie.clients.gdma2.domain.Column;
-import ie.clients.gdma2.domain.Server;
-import ie.clients.gdma2.domain.Table;
-import ie.clients.gdma2.domain.ui.Filter;
-
 import java.math.BigDecimal;
 import java.sql.Types;
 import java.util.List;
@@ -13,6 +8,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.TypeMismatchDataAccessException;
 import org.springframework.util.StringUtils;
+
+import ie.clients.gdma2.domain.Column;
+import ie.clients.gdma2.domain.Server;
+import ie.clients.gdma2.domain.Table;
+import ie.clients.gdma2.domain.ui.Filter;
 
 public class SQLUtil {
 
@@ -425,12 +425,16 @@ public class SQLUtil {
 			case Types.TIMESTAMP:
 				try {
 					if (StringUtils.hasText(data)) {
-						oReturn = Formatter.parseDateTime(data);//chech wheater to return String or Date?
+						try {
+							oReturn = Formatter.parseDateTime(data);//chech wheater to return String or Date?
+						} catch (Exception e) {
+							oReturn = Formatter.parseTimeStamp(data);
+						}
 					} else {
 						return null;
 					}
 				} catch (Exception e) {
-					throw new TypeMismatchDataAccessException("Vaule [" + data + "] could not be parsed as a datetime. ");
+					throw new TypeMismatchDataAccessException("Vaule [" + data + "] could not be parsed as a timestamp. ");
 				}
 				break;	
 			case Types.TIME:
