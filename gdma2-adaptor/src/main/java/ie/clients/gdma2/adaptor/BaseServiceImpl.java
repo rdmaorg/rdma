@@ -1,5 +1,7 @@
 package ie.clients.gdma2.adaptor;
 
+import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +13,8 @@ import org.springframework.data.domain.Sort.Order;
 
 import ie.clients.gdma2.adaptor.repo.RepositoryManager;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
+import ie.clients.gdma2.spi.BusinessException;
+import ie.clients.gdma2.spi.ServiceException;
 import ie.clients.gdma2.spi.interfaces.UserContextProvider;
 import ie.clients.gdma2.util.DynamicDAO;
 
@@ -55,5 +59,37 @@ public abstract class BaseServiceImpl {
 
 		return resp;
 	}
+	
+	@SuppressWarnings("all")
+	protected void throwException(Throwable e) {
+		if (e instanceof BusinessException) {
+			throw (BusinessException) e;
+		}
 
+		if (e instanceof NullPointerException) {
+			throw new RuntimeException(e.getMessage(), e);
+		}
+
+		if (e.getCause() != null && e.getCause() instanceof IOException) {
+			throw new BusinessException("Internal service communication error. Please try again later");
+		}
+
+		String message = e.getMessage() == null ? "" : e.getMessage();
+		String faultCode = "";
+		String faultDesc = "";
+		try {
+			Method getFaultInfo = e.getClass().getMethod("getFaultInfo", null);
+			Object faultInfo = getFaultInfo.invoke(e, null);
+
+			Method getSOAFaultCode = faultInfo.getClass().getMethod("getSOAFaultCode", null);
+			Method getFaultDescription = faultInfo.getClass().getMethod("getFaultDescription", null);
+
+			faultCode = (String) getSOAFaultCode.invoke(faultInfo, null);
+			faultDesc = (String) getFaultDescription.invoke(faultInfo, null);
+
+		} catch (Exception e1) {
+		}
+
+		throw new ServiceException(message, faultCode, faultDesc);
+	}
 }

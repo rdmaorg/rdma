@@ -81,7 +81,6 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	@Override
 	public void deleteConnectionType(Integer id) {
 		repositoryManager.getConnectionTypeRepository().delete(id);
-
 	}
 
 

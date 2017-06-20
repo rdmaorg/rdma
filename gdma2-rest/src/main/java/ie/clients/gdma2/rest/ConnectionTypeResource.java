@@ -1,8 +1,5 @@
 package ie.clients.gdma2.rest;
 
-import ie.clients.gdma2.domain.ConnectionType;
-import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
-
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import ie.clients.gdma2.domain.ConnectionType;
+import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 
 @RestController
 @RequestMapping("rest/connection")
