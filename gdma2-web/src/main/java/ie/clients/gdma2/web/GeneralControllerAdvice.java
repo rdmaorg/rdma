@@ -60,6 +60,10 @@ public class GeneralControllerAdvice {
 		e.printStackTrace();
 		logger.severe(e.getMessage());
 		JsonWrapper jw = new JsonWrapper("{\"error\":\"This registry is currently in use and cannot be deleted\"}");
+		if(e.getMessage().toUpperCase().contains("INSERT") || e.getMessage().toUpperCase().contains("UPDATE")){
+			jw = new JsonWrapper("{\"error\":\"This operation has a data integrity error and cannot be executed\"}");
+		}
+		
 		logger.severe(jw.value());
 		return jw;
 	}
