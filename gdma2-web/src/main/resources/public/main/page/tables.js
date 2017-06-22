@@ -1,4 +1,5 @@
 var serverSessionId = sessionStorage.getItem("id");
+var selector = "#tbl_tables" + serverSessionId;
 var serverSessionName = sessionStorage.getItem("name");
 var selectedTableId = -1;
 var table;
@@ -51,8 +52,7 @@ var configureDataTable = function(){
 			            }
 			        ]
 	};
-	
-	table = $('#tbl_tables').configureDataTable(config, {
+	table = $(selector).configureDataTable(config, {
 		url: mapPathVariablesInUrl(restUri.table.table, {id: serverSessionId}),
 		complete: function(){
 //		hideLoading();
@@ -108,7 +108,7 @@ var associatePostTable = function(){
 				        data: JSON.stringify(tableEdit),
 				        contentType: "application/json; charset=utf-8"
 				    }).done(function(data){
-				    	var table = $('#tbl_tables').DataTable();
+				    	var table = $(selector).DataTable();
 				    	table.draw(false);
 				    	$("#global-success").slideDown(500);
 				    	window.setTimeout(function() {
@@ -160,6 +160,7 @@ var viewTable = function(serverId,tableName) {
 }
 
 $(document).ready(function(){
+	$(".tbl_tables").attr("id",'tbl_tables' + serverSessionId);
 	configureDataTable();	
 	associatePostTable();
     $("#serverName").html(serverSessionName);

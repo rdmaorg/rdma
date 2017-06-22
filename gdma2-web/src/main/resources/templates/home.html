@@ -3,6 +3,12 @@
 	xmlns:th="http://www.thymeleaf.org">
 <head th:replace="inc/header"></head>
 <body class="skin-blue sidebar-mini sidebar-collapse">
+<script th:inline="javascript">
+    var tableId = [[${tableId}]];
+    var serverId = [[${serverId}]];
+    var tableName = [[${tableName}]];
+    var serverName = [[${serverName}]];
+</script>
 	<div class="wrapper">
 		<header th:replace="inc/contentHeader"></header>
 		<aside th:replace="inc/leftPanel"></aside>

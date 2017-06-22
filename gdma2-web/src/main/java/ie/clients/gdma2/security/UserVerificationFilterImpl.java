@@ -160,7 +160,7 @@ public class UserVerificationFilterImpl extends GenericFilterBean implements Use
 		logger.info("servletPath: " + servletPath);
 		// prints /user/list
 		for (PageEnum p : PageEnum.values()) {
-			if (servletPath.equalsIgnoreCase(p.path())) {
+			if (servletPath.equalsIgnoreCase(p.path()) || servletPath.toLowerCase().startsWith(p.path().concat("/"))) {
 				logger.debug("looking for permission on " + servletPath);
 				if (!StringUtils.isBlank(p.role())) {
 					logger.debug("Permission based page, permission available: " + u.isPermitted(p.role()));

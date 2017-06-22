@@ -31,7 +31,7 @@ var buildDataModuleMenu = function(){
         	        success: function(data, textStatus, jqXHR) {
         			$.each(data, function(i, table) {
         	            var serverId = table.server.id;
-        			    $("<li><a href='" + dataModulePage + "' class='table-data' data-id='"+table.id+"' data-tablename='"+table.name+"' data-serverid='"+table.server.id+"' data-servername='"+table.server.name+"'><i class='fa fa-table'></i><span> " + table.name + " </span></a></li>").appendTo("#server" + serverId + " .treeview-menu");
+        			    $("<li><a href='" + dataModulePage + "home/" + table.id + "/" + table.server.id + "/" + table.name + "/" + table.server.name + "' class='table-data' data-id='"+table.id+"' data-tablename='"+table.name+"' data-serverid='"+table.server.id+"' data-servername='"+table.server.name+"'><i class='fa fa-table'></i><span> " + table.name + " </span></a></li>").appendTo("#server" + serverId + " .treeview-menu");
         			});        			
         	        },
         	        contentType: "application/json; charset=utf-8",
@@ -41,7 +41,7 @@ var buildDataModuleMenu = function(){
         	    }).complete(function(e){
         	    	$(".table-data").click(function(){
         		    	var link = $(this);
-        		    	sessionStorage.setItem("tableId", link.data("id"));
+//        		    	sessionStorage.setItem("tableId", link.data("id"));
         		    	sessionStorage.setItem("tableName", link.data("tablename"));
         		    	sessionStorage.setItem("serverId", link.data("serverid"));
         		    	sessionStorage.setItem("serverName", link.data("servername"));

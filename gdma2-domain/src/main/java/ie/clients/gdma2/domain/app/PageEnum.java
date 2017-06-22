@@ -4,6 +4,7 @@ package ie.clients.gdma2.domain.app;
 public enum PageEnum {
 
 	HOME("/", "Home", ApplicationRoleEnum.APPLICATION.role(), "Main Page", ""),
+	HOME_PAGE("/home", "Home", ApplicationRoleEnum.APPLICATION.role(), "Main Page", ""),
 	ADMIN_SERVER("/server", "Server", ApplicationRoleEnum.APPLICATION_ADMIN_SERVER.role(), "Insert/Edit/Remove Servers", "fa-server"),
 	ADMIN_USER("/user", "User", ApplicationRoleEnum.APPLICATION_ADMIN_USER.role(), "Insert/Edit/Remove User Permissions", "fa-user-circle-o"),
 	ADMIN_CONNECTIONS("/connections", "Connections", ApplicationRoleEnum.APPLICATION_ADMIN_CONNECTION.role(), "Insert/Edit/Remove Connections", "fa-plug"),

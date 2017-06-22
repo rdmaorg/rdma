@@ -1,5 +1,5 @@
-var tableId;
-var serverId;
+//var tableId;
+//var serverId;
 var columnsMetadata = new Array();
 var tableData;
 var datatableEditor;
@@ -340,14 +340,16 @@ var createDropDownColumn = function(displayId, storeId, selectedValue){
 
 
 $(document).ready(function(){	
-	$("#serverName").html(sessionStorage.getItem("serverName"));
-	$("#tableName").html(sessionStorage.getItem("tableName"));
-	serverId = sessionStorage.getItem("serverId");
-	tableId = sessionStorage.getItem("tableId");
 	if(tableId){
+		loadBreadCrumbs(tableId);
 		loadDatatable();
 	}
 });
+
+var loadBreadCrumbs = function(tableId){
+	$("#serverName").html(serverName);
+	$("#tableName").html(tableName);
+}
 
 function filterDisplayed(column) {
     return column.displayed === true;

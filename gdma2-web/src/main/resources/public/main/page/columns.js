@@ -93,8 +93,8 @@ var configureDataTable = function(){
                                 }
                             ]
        };
-
-       table = $('#tbl_column').configureDataTable(config, {
+       var selector = '#tbl_column' + tableSessionId;
+       table = $(selector).configureDataTable(config, {
              url: mapPathVariablesInUrl(restUri.column.table, {id: tableSessionId}), 
              complete: function(){
        //           hideLoading();
@@ -415,7 +415,8 @@ var getModifiedObjects = function() {
 
 var lineExpansionEvent = function(){
        //  datatable line expansion event
-    $('#tbl_column tbody').on('click', 'td:first-child', function () {
+	var selector = '#tbl_column' + tableSessionId +' tbody';
+    $(selector).on('click', 'td:first-child', function () {
        associateCheckBoxes();
        associateInputs();
        associateDropDownInputs();
@@ -424,7 +425,8 @@ var lineExpansionEvent = function(){
 }
 
 $(document).ready(function(){
-    configureDataTable();
+	$(".table").attr("id",'tbl_column' + tableSessionId);
+	configureDataTable();
     associateSaveDropDownColumn();   
     $("#serverName").html(serverSessionName);
     $("#tableName").html(sessionStorage.getItem("nameTable"));
