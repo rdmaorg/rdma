@@ -1,18 +1,5 @@
 package ie.clients.gdma2.util;
 
-import ie.clients.gdma2.adaptor.repo.RepositoryManager;
-import ie.clients.gdma2.domain.Column;
-import ie.clients.gdma2.domain.ColumnDataUpdate;
-import ie.clients.gdma2.domain.Server;
-import ie.clients.gdma2.domain.Table;
-import ie.clients.gdma2.domain.UpdateDataRequest;
-import ie.clients.gdma2.domain.UserAccess;
-import ie.clients.gdma2.domain.ui.DropDownColumn;
-import ie.clients.gdma2.domain.ui.Filter;
-import ie.clients.gdma2.spi.ServiceException;
-import ie.clients.gdma2.spi.interfaces.UserContextProvider;
-import ie.clients.gdma2.util.TableRowDTO.TableColumn;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -47,6 +34,19 @@ import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
+
+import ie.clients.gdma2.adaptor.repo.RepositoryManager;
+import ie.clients.gdma2.domain.Column;
+import ie.clients.gdma2.domain.ColumnDataUpdate;
+import ie.clients.gdma2.domain.Server;
+import ie.clients.gdma2.domain.Table;
+import ie.clients.gdma2.domain.UpdateDataRequest;
+import ie.clients.gdma2.domain.UserAccess;
+import ie.clients.gdma2.domain.ui.DropDownColumn;
+import ie.clients.gdma2.domain.ui.Filter;
+import ie.clients.gdma2.spi.ServiceException;
+import ie.clients.gdma2.spi.interfaces.UserContextProvider;
+import ie.clients.gdma2.util.TableRowDTO.TableColumn;
 
 @Repository
 public class DynamicDAOImpl implements DynamicDAO{
@@ -1682,7 +1682,6 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 	}
 
-
 	//TODO test TRANSACTIONS, test NULL values, test non-autoinc, test value with quotes, test mysql/other DB vendors, test more columns in header than in body
 	//this code will INSERT partially new data id some row in CSV contains bad data - check if needs to be done in transaction
 	@Override
@@ -1706,48 +1705,62 @@ public class DynamicDAOImpl implements DynamicDAO{
 				//final Set<Column> columns = table.getColumns();
 				final List<SqlParameter> params = new ArrayList<SqlParameter>();
 
-				String tableList = null;
-				String patternList = null;
-				for (String h : headers) {
-					h = h.trim();
-					Column theColumn = null;
-					for (Column c : columns) {
-						if (c.getName().equals(h)) {
-							theColumn = c;
+				StringBuilder tableList = new StringBuilder();
+				StringBuilder patternList = new StringBuilder();
+				for (String header : headers) {
+					header = header.trim();
+					Column insertColumn = null;
+					for (Column column : columns) {
+						if (header.equals(column.getAlias()) || header.equals(column.getName())) {
+							insertColumn = column;
 							break;
 						}
 					}
-					if (theColumn == null)
-						throw new IOException("The column \"" + h + "\" does not exist in " + table.getName());
+					if (insertColumn == null)
+						throw new IOException("The column \"" + header + "\" does not exist in " + table.getName());
 
-					logger.info("Column is of type " + theColumn.getColumnTypeString());
+					logger.info("Column is of type " + insertColumn.getColumnTypeString());
 
 					if(server.getConnectionUrl().contains("mysql")){
-						if (tableList == null) {
-							tableList = h;
-							patternList = "?";
+						if (tableList.length() == 0) {
+							tableList.append(insertColumn.getName());
+							patternList.append("?");
 						} else {
-							tableList += "," + h;
-							patternList += ",?";
+							tableList.append(",");
+							tableList.append(insertColumn.getName());
+							patternList.append(",?");
 						}
 					}else{
-						if (tableList == null) {
-							tableList = "\"" + h + "\"";
-							patternList = "?";
+						if (tableList.length() == 0) {
+							tableList.append("\"");
+							tableList.append(insertColumn.getName());
+							tableList.append("\"");
+							patternList.append("?");
 						} else {
-							tableList += ",\"" + h + "\"";
-							patternList += ",?";
+							tableList.append(",\""); 
+							tableList.append(insertColumn.getName());
+							tableList.append("\"");
+							patternList.append(",?");
 						}
 					}
-
 
 					// using varchar because all values from CSV are strings
 					//	params.add(new SqlParameter(Types.VARCHAR));
 					//bh changing this as it was breaking date types
-					params.add(new SqlParameter(theColumn.getColumnType()));
+					params.add(new SqlParameter(insertColumn.getColumnType()));
 				}
 
-				final String sql = "INSERT INTO " + server.getPrefix() + "." + table.getName() + " (" + tableList + ") VALUES (" + patternList + ")";
+				final StringBuilder sql = new StringBuilder("INSERT INTO ");
+				if(server.getPrefix().length() > 0){
+					sql.append(server.getPrefix());
+					sql.append(".");
+				}
+				sql.append(table.getName());
+				sql.append(" (");
+				sql.append(tableList);
+				sql.append(") VALUES (");
+				sql.append(patternList);
+				sql.append(")");
 				//final String sql = "INSERT INTO " + table.getName() + " (" + tableList + ") VALUES (" + patternList + ")";
 				logger.info("Preparing sql: [" + sql + "]");
 
@@ -1759,7 +1772,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 				 * 		[INSERT INTO dbo.caste ("id1","caste1","name1") VALUES (?,?,?)]		*/
 
 
-				final PreparedStatementCreatorFactory psc = new PreparedStatementCreatorFactory(sql, params);
+				final PreparedStatementCreatorFactory psc = new PreparedStatementCreatorFactory(sql.toString(), params);
 
 				//START READING DATA
 				String[] row = rdr.readNext();
@@ -1768,7 +1781,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 				try {
 					while (row != null) {
 						logger.info("Row starting with: " + row[0] );
-						jdbcTemplate.update(sql, psc.newPreparedStatementSetter(row));
+						jdbcTemplate.update(sql.toString(), psc.newPreparedStatementSetter(row));
 						counter++;
 						row = rdr.readNext();
 					}
