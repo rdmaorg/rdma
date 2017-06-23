@@ -19,11 +19,13 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringJoiner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
@@ -1700,13 +1702,20 @@ public class DynamicDAOImpl implements DynamicDAO{
 			logger.info("Headers starting with: " + headers[0]);
 
 			if (headers != null) {
-
-
-				//final Set<Column> columns = table.getColumns();
-				final List<SqlParameter> params = new ArrayList<SqlParameter>();
-
-				StringBuilder tableList = new StringBuilder();
-				StringBuilder patternList = new StringBuilder();
+				//UPDATE
+				final List<Integer> keysPosition = new ArrayList<Integer>();
+				final List<SqlParameter> updateParametersTypeList = createUpdateParametersTypeAndKeysPositionList(columns, headers,
+						keysPosition);
+				final String updateStatement = extractUpdateStatement(server, table, columns, headers);
+				final PreparedStatementCreatorFactory updateStatementCreatorFactory = new PreparedStatementCreatorFactory(updateStatement.toString(), updateParametersTypeList);
+				
+				//INSERT
+				final List<SqlParameter> insertParametersTypeList = new ArrayList<SqlParameter>();
+				StringJoiner insertColumnNameListJoiner = new StringJoiner("\",\"", "(\"", "\") ");
+				StringJoiner patternListJoiner = new StringJoiner(","," VALUES (",")");
+				if(server.getConnectionUrl().contains("mysql")){
+					insertColumnNameListJoiner = new StringJoiner(",","(",")");
+				}
 				for (String header : headers) {
 					header = header.trim();
 					Column insertColumn = null;
@@ -1716,83 +1725,59 @@ public class DynamicDAOImpl implements DynamicDAO{
 							break;
 						}
 					}
-					if (insertColumn == null)
+					if (insertColumn == null){
 						throw new IOException("The column \"" + header + "\" does not exist in " + table.getName());
+					}
 
 					logger.info("Column is of type " + insertColumn.getColumnTypeString());
-
-					if(server.getConnectionUrl().contains("mysql")){
-						if (tableList.length() == 0) {
-							tableList.append(insertColumn.getName());
-							patternList.append("?");
-						} else {
-							tableList.append(",");
-							tableList.append(insertColumn.getName());
-							patternList.append(",?");
-						}
-					}else{
-						if (tableList.length() == 0) {
-							tableList.append("\"");
-							tableList.append(insertColumn.getName());
-							tableList.append("\"");
-							patternList.append("?");
-						} else {
-							tableList.append(",\""); 
-							tableList.append(insertColumn.getName());
-							tableList.append("\"");
-							patternList.append(",?");
-						}
-					}
+					patternListJoiner.add("?");
+					insertColumnNameListJoiner.add(insertColumn.getName());
 
 					// using varchar because all values from CSV are strings
 					//	params.add(new SqlParameter(Types.VARCHAR));
 					//bh changing this as it was breaking date types
-					params.add(new SqlParameter(insertColumn.getColumnType()));
+					insertParametersTypeList.add(new SqlParameter(insertColumn.getColumnType()));
 				}
 
-				final StringBuilder sql = new StringBuilder("INSERT INTO ");
+				final StringBuilder insertStatement = new StringBuilder("INSERT INTO ");
 				if(server.getPrefix().length() > 0){
-					sql.append(server.getPrefix());
-					sql.append(".");
+					insertStatement.append(server.getPrefix());
+					insertStatement.append(".");
 				}
-				sql.append(table.getName());
-				sql.append(" (");
-				sql.append(tableList);
-				sql.append(") VALUES (");
-				sql.append(patternList);
-				sql.append(")");
-				//final String sql = "INSERT INTO " + table.getName() + " (" + tableList + ") VALUES (" + patternList + ")";
-				logger.info("Preparing sql: [" + sql + "]");
-
-
-				/*	MYSQL:
-				 * 		[INSERT INTO dbo.caste (id1,caste1,name1) VALUES (?,?,?)]
-				 * 
-				 * OTHER: 
-				 * 		[INSERT INTO dbo.caste ("id1","caste1","name1") VALUES (?,?,?)]		*/
-
-
-				final PreparedStatementCreatorFactory psc = new PreparedStatementCreatorFactory(sql.toString(), params);
-
+				insertStatement.append(table.getName());
+				insertStatement.append(insertColumnNameListJoiner.toString());
+				insertStatement.append(patternListJoiner.toString());
+				logger.info("Preparing sql: [" + insertStatement + "]");
+				final PreparedStatementCreatorFactory pscFactory = new PreparedStatementCreatorFactory(insertStatement.toString(), insertParametersTypeList);
+				
 				//START READING DATA
 				String[] row = rdr.readNext();
 				final JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSourcePool.getTransactionManager(server).getDataSource());
-
-				try {
-					while (row != null) {
+				while (row != null) {
+					try {
 						logger.info("Row starting with: " + row[0] );
-						jdbcTemplate.update(sql.toString(), psc.newPreparedStatementSetter(row));
+						jdbcTemplate.update(insertStatement.toString(), pscFactory.newPreparedStatementSetter(row));
 						counter++;
+						
+					}catch (DataIntegrityViolationException e) {
+						logger.error(e.getMessage());
+						try {
+							counter += executeUpdateFromFileRow(keysPosition, updateStatement,
+									updateStatementCreatorFactory, row, jdbcTemplate);
+						} catch (Exception e2) {
+							logger.error(e2.getMessage());
+						}
+					} catch (DataAccessException ex) {
+						// throw new ServiceException("ERROR: cannot INSERT new data into table",ex);
+                        // throw new ServiceException(ex.getMessage(),ex);
+						//throw new IOException("Could not import data:" + ex.getMessage());
+						logger.error(ex.getMessage());
+					} finally {
 						row = rdr.readNext();
 					}
-				} catch (DataAccessException ex) {
-					//throw new ServiceException("ERROR: cannot INSERT new data into table",ex);
-					throw new ServiceException(ex.getMessage(),ex);
-					//throw new IOException("Could not import data:" + ex.getMessage());
 				}
 			}
 			return counter;
-
 		} catch (IOException e) {
 			logger.error(e.getMessage());
 			e.printStackTrace(); //TODO
@@ -1806,7 +1791,74 @@ public class DynamicDAOImpl implements DynamicDAO{
 			}
 		}
 		return counter;
+	}
 
+	private List<SqlParameter> createUpdateParametersTypeAndKeysPositionList(Set<Column> columns, final String[] headers,
+			final List<Integer> keysPosition) {
+		final List<SqlParameter> updateParametersTypeList = new ArrayList<SqlParameter>();
+		final List<SqlParameter> updateKeyParametersTypeList = new ArrayList<SqlParameter>();
+		int columnPosition = -1;
+		for (String header : headers) {
+			columnPosition++;
+			header = header.trim();
+			for (Column column : columns) {
+				if (header.equals(column.getAlias()) || header.equals(column.getName())) {
+					if (column.isPrimarykey()) {
+						keysPosition.add(columnPosition);
+						updateKeyParametersTypeList.add(new SqlParameter(column.getColumnType()));
+					} else {
+						updateParametersTypeList.add(new SqlParameter(column.getColumnType()));
+					}
+					break;
+				}
+			}
+		}
+		updateParametersTypeList.addAll(updateKeyParametersTypeList);
+		return updateParametersTypeList;
+	}
+
+	private String extractUpdateStatement(Server server, Table table, Set<Column> columns, final String[] headers) {
+		final List<Column> updateColumnsList = new ArrayList<Column>();
+		for (String header : headers) {
+			header = header.trim();
+			for (Column column : columns) {
+				if (header.equals(column.getAlias()) || header.equals(column.getName())) {
+					updateColumnsList.add(column);
+					break;
+				}
+			}
+		}
+		final String updateStatement = SQLUtil.createUpdateStatement(server, table, updateColumnsList);
+		return updateStatement;
+	}
+
+	private int executeUpdateFromFileRow(List<Integer> keysPosition, final String updateStatement,
+			final PreparedStatementCreatorFactory updateStatementCreatorFactory, String[] row,
+			final JdbcTemplate jdbcTemplate) {
+		if (null == keysPosition || keysPosition.isEmpty()) {
+			logger.error("Update Not possible as no Table Primary Key Present in the headers. Please contact your administrator");
+		} else {
+			List updateKeysValues = new ArrayList();
+			List updateValues = new ArrayList();
+			for (int i = 0; i < row.length; i++) {
+				if(keysPosition.contains(i)){
+					updateKeysValues.add(row[i]);		
+				} else {
+					updateValues.add(row[i]);
+				}
+			}
+			if (null == updateKeysValues || updateKeysValues.isEmpty()) {
+				logger.error("Update Not possible as no Table Primary Key Value Set. Please contact your administrator");
+			} else {
+				updateValues.addAll(updateKeysValues); //add keys at the end because they are always last in statement
+				//TODO handleSpecialColumns
+				//handleSpecialColumns(table.getColumns(), columns, updateValues);
+				logger.info("Update SQL query: " + updateStatement);
+				logger.info("parameters: " + updateValues);
+				return jdbcTemplate.update(updateStatement, updateStatementCreatorFactory.newPreparedStatementSetter(updateValues));
+			}
+		}
+		return 0;
 	}
 
 

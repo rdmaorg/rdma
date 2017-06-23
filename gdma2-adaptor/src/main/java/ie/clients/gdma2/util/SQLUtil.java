@@ -3,6 +3,7 @@ package ie.clients.gdma2.util;
 import java.math.BigDecimal;
 import java.sql.Types;
 import java.util.List;
+import java.util.StringJoiner;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -244,32 +245,16 @@ public class SQLUtil {
 			sbInsert.append(server.getPrefix());
 			sbInsert.append('.');
 		}
-
 		sbInsert.append(table.getName());
-		sbInsert.append(" ( ");
-		boolean needComma = false;
+		
+		StringJoiner columnNamesJoiner = new StringJoiner(","," ( "," )");
+		StringJoiner columnValuesJoiner = new StringJoiner(","," VALUES ( "," )");
 		for (Column column : columns) {
-			if (needComma) {
-				sbInsert.append(", ");
-			} else {
-				needComma = true;
-			}
-			sbInsert.append(column.getName());
+			columnNamesJoiner.add(column.getName());
+			columnValuesJoiner.add("?");
 		}
-
-		sbInsert.append(" ) VALUES ( ");
-		needComma = false;
-		for (Column column : columns) {
-			if (needComma) {
-				sbInsert.append(", ");
-			} else {
-				needComma = true;
-			}
-			sbInsert.append('?');
-		}
-
-		sbInsert.append(" )");
-
+		sbInsert.append(columnNamesJoiner.toString());
+		sbInsert.append(columnValuesJoiner.toString());
 		return sbInsert.toString();
 	}
 
