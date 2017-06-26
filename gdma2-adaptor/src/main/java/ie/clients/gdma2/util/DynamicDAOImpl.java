@@ -1710,12 +1710,9 @@ public class DynamicDAOImpl implements DynamicDAO{
 				final PreparedStatementCreatorFactory updateStatementCreatorFactory = new PreparedStatementCreatorFactory(updateStatement.toString(), updateParametersTypeList);
 				
 				//INSERT
-				final List<SqlParameter> insertParametersTypeList = new ArrayList<SqlParameter>();
-				StringJoiner insertColumnNameListJoiner = new StringJoiner("\",\"", "(\"", "\") ");
 				StringJoiner patternListJoiner = new StringJoiner(","," VALUES (",")");
-				if(server.getConnectionUrl().contains("mysql")){
-					insertColumnNameListJoiner = new StringJoiner(",","(",")");
-				}
+				final List<SqlParameter> insertParametersTypeList = new ArrayList<SqlParameter>();
+				StringJoiner insertColumnNameListJoiner = server.getConnectionUrl().contains("mysql") ? new StringJoiner(",","(",")") :  new StringJoiner("\",\"", "(\"", "\") ");
 				for (String header : headers) {
 					header = header.trim();
 					Column insertColumn = null;
