@@ -82,47 +82,6 @@ var configureDataTable = function(columnsMetadata){
         }
 	}
 	datatableEditor = $('#table_data').configureEditor(configEditor);
-	datatableEditor.on( 'preSubmit', function ( e, data, action ) {
-		datatableEditor.error( '' );
-		//VALIDATING CREATE
-        if ( action === 'create') {
-            for (var i = 0, len = columnsMetadata.length; i < len; i++) {
-            	if(columnsMetadata[i].allowInsert === true){
-            		if (!columnsMetadata[i].nullable && columnsMetadata[i].special === 'N'){
-            			var field = this.field( 'columns.'+i+'.val' ) ? this.field( 'columns.'+i+'.val' ) : this.field( 'columns.'+i+'.val.value' );
-            			// Only validate user input values - different values indicate that
-            			// the end user has not entered a value
-            			if ( ! field.isMultiValue() ) {
-            				if ( ! field.val() ) {
-            					field.error( 'A value must be given for ' + columnsMetadata[i].alias);
-            				}
-            			}
-            		}
-            	}
-        	}
-        }
-        //VALIDATING EDIT
-        if (action === 'edit') {
-            for (var i = 0, len = columnsMetadata.length; i < len; i++) {
-            	if(columnsMetadata[i].allowUpdate === true){
-            		if (!columnsMetadata[i].nullable && columnsMetadata[i].special === 'N'){
-            			var field = this.field( 'columns.'+i+'.val' ) ? this.field( 'columns.'+i+'.val' ) : this.field( 'columns.'+i+'.val.value' );
-            			// Only validate user input values - different values indicate that
-            			// the end user has not entered a value
-            			if ( ! field.isMultiValue() ) {
-            				if ( ! field.val() ) {
-            					field.error( 'A value must be given for ' + columnsMetadata[i].alias);
-            				}
-            			}
-            		}
-            	}
-        	}
-        }
-        // If any error was reported, cancel the submission so it can be corrected
-        if ( this.inError() ) {
-        	return false;
-        }
-    } );
 	
 	// Disable KeyTable while the main editing form is open
 	datatableEditor.on( 'open', function ( e, mode, action ) {
@@ -139,8 +98,52 @@ var configureDataTable = function(columnsMetadata){
         .on( 'close', function () {
         	enableDisableAllowUpdateFields(columnsMetadata, editorFields);
         	tableData.keys.enable();
-        } );
-
+        } )
+        .on( 'preSubmit', function ( e, data, action ) {
+        	//WORKAROUND TO REMOVE BACK END ERRORS
+        	var el = $(datatableEditor.dom.formError);
+    		el.html( '' ).css('display', 'none');
+    		
+			//VALIDATING CREATE
+	        if ( action === 'create') {
+	            for (var i = 0, len = columnsMetadata.length; i < len; i++) {
+	            	if(columnsMetadata[i].allowInsert === true){
+	            		if (!columnsMetadata[i].nullable && columnsMetadata[i].special === 'N'){
+	            			var field = this.field( 'columns.'+i+'.val' ) ? this.field( 'columns.'+i+'.val' ) : this.field( 'columns.'+i+'.val.value' );
+	            			// Only validate user input values - different values indicate that
+	            			// the end user has not entered a value
+	            			if ( ! field.isMultiValue() ) {
+	            				if ( ! field.val() ) {
+	            					field.error( 'A value must be given for ' + columnsMetadata[i].alias);
+	            				}
+	            			}
+	            		}
+	            	}
+	        	}
+	        };
+	        //VALIDATING EDIT
+	        if (action === 'edit') {
+	            for (var i = 0, len = columnsMetadata.length; i < len; i++) {
+	            	if(columnsMetadata[i].allowUpdate === true){
+	            		if (!columnsMetadata[i].nullable && columnsMetadata[i].special === 'N'){
+	            			var field = this.field( 'columns.'+i+'.val' ) ? this.field( 'columns.'+i+'.val' ) : this.field( 'columns.'+i+'.val.value' );
+	            			// Only validate user input values - different values indicate that
+	            			// the end user has not entered a value
+	            			if ( ! field.isMultiValue() ) {
+	            				if ( ! field.val() ) {
+	            					field.error( 'A value must be given for ' + columnsMetadata[i].alias);
+	            				};
+	            			};
+	            		};
+	            	};
+	        	};
+	        };
+	        // If any error was reported, cancel the submission so it can be corrected
+	        if ( this.inError() ) {
+	        	return false;
+	        };
+    } );
+	
 	var columnsData = createDataTableColumns(columnsMetadata);
 	var config={
 		 "ajax":{
@@ -206,6 +209,7 @@ var configureDataTable = function(columnsMetadata){
 	              { extend: "csv", 
 	            	text:"Download",
 	                exportOptions: {
+                	  columns:':not(.select-checkbox)',
 	                  modifier: {
 	                    search: 'none'
 	                  }

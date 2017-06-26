@@ -14,7 +14,7 @@
 	<description>Dynamic Data Management Application</description>
 	<packaging>pom</packaging>
 	<organization>
-		<name>Client Solutions Ltd.</name>
+		<name>Client Solutions Ltd</name>
 	</organization>
 	<scm>
 		<connection>scm:hg:http://10.252.220.63/hg/gdma2</connection>
