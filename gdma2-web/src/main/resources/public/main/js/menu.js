@@ -29,9 +29,22 @@ var buildDataModuleMenu = function(){
         	        url: mapPathVariablesInUrl(restUri.datatable.tables, {id: server.id}),
         	        data: { get_param: 'id' },
         	        success: function(data, textStatus, jqXHR) {
+    	        	// sort by alias
+    	        	data.sort(function(a, b) {
+    	        	  var aliasA = a.alias.toUpperCase(); // ignore upper and lowercase
+    	        	  var aliasB = b.alias.toUpperCase(); // ignore upper and lowercase
+    	        	  if (aliasA < aliasB) {
+    	        	    return -1;
+    	        	  }
+    	        	  if (aliasA > aliasB) {
+    	        	    return 1;
+    	        	  }
+    	        	  // names must be equal
+    	        	  return 0;
+    	        	});
         			$.each(data, function(i, table) {
         	            var serverId = table.server.id;
-        			    $("<li><a href='" + dataModulePage + "home/" + table.id + "/" + table.server.id + "/" + table.name + "/" + table.server.name + "' class='table-data' data-id='"+table.id+"' data-tablename='"+table.name+"' data-serverid='"+table.server.id+"' data-servername='"+table.server.name+"'><i class='fa fa-table'></i><span> " + table.name + " </span></a></li>").appendTo("#server" + serverId + " .treeview-menu");
+        			    $("<li><a href='" + dataModulePage + "home/" + table.id + "/" + table.server.id + "/" + table.alias + "/" + table.server.name + "' class='table-data' data-id='"+table.id+"' data-tablename='"+table.name+"' data-serverid='"+table.server.id+"' data-servername='"+table.server.name+"'><i class='fa fa-table'></i><span> " + table.alias + " </span></a></li>").appendTo("#server" + serverId + " .treeview-menu");
         			});        			
         	        },
         	        contentType: "application/json; charset=utf-8",

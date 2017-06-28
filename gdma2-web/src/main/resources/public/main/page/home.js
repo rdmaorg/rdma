@@ -180,8 +180,11 @@ var configureDataTable = function(columnsMetadata){
          },
          lengthMenu: [ [10, 25, 50, 100], [10, 25, 50, 100] ],
          fixedHeader: {
-		    	headerOffset: $('#topNavBar').outerHeight() + $('#datatableControlWrapper').outerHeight()
-		    	},
+	    	headerOffset: $('#topNavBar').outerHeight() + $('#datatableControlWrapper').outerHeight()
+    	 },
+   	     order: [
+    	     [1, 'asc']
+    	 ]
 	};
 	tableData = $('#table_data').configureDataTable(config, {
 		url: mapPathVariablesInUrl(restUri.datatable.table, {'id': tableId}),
@@ -206,6 +209,8 @@ var configureDataTable = function(columnsMetadata){
 	              { extend: "create", editor: datatableEditor },
 	              { extend: "edit",   editor: datatableEditor },
 	              { extend: "remove", editor: datatableEditor },
+	              'selectAll',
+	              'selectNone',
 	              { extend: "csv", 
 	            	text:"Download",
 	                exportOptions: {

@@ -1753,22 +1753,17 @@ public class DynamicDAOImpl implements DynamicDAO{
 				while (row != null) {
 					try {
 						logger.info("Row starting with: " + row[0] );
-						jdbcTemplate.update(insertStatement.toString(), pscFactory.newPreparedStatementSetter(row));
-						counter++;
-						
-					}catch (DataIntegrityViolationException e) {
-						logger.error(e.getMessage());
-						try {
-							counter += executeUpdateFromFileRow(keysPosition, updateStatement,
-									updateStatementCreatorFactory, row, jdbcTemplate);
-						} catch (Exception e2) {
-							logger.error(e2.getMessage());
+						// TODO - Check whether the user has permission to update
+						int updatedRows = executeUpdateFromFileRow(keysPosition, updateStatement,
+								updateStatementCreatorFactory, row, jdbcTemplate);
+						if(updatedRows == 0){
+							// TODO - Check whether the user has permission to insert
+							updatedRows = jdbcTemplate.update(insertStatement.toString(), pscFactory.newPreparedStatementSetter(row));
 						}
-					} catch (DataAccessException ex) {
-						// throw new ServiceException("ERROR: cannot INSERT new data into table",ex);
-                        // throw new ServiceException(ex.getMessage(),ex);
-						//throw new IOException("Could not import data:" + ex.getMessage());
-						logger.error(ex.getMessage());
+						counter += updatedRows; 
+					}catch (Exception e) {
+						e.printStackTrace();
+						logger.error(e.getMessage());
 					} finally {
 						row = rdr.readNext();
 					}
@@ -1778,7 +1773,6 @@ public class DynamicDAOImpl implements DynamicDAO{
 		} catch (IOException e) {
 			logger.error(e.getMessage());
 			e.printStackTrace(); //TODO
-
 		} finally{
 			try {
 				rdr.close();
@@ -1852,7 +1846,12 @@ public class DynamicDAOImpl implements DynamicDAO{
 				//handleSpecialColumns(table.getColumns(), columns, updateValues);
 				logger.info("Update SQL query: " + updateStatement);
 				logger.info("parameters: " + updateValues);
-				return jdbcTemplate.update(updateStatement, updateStatementCreatorFactory.newPreparedStatementSetter(updateValues));
+				try {
+					return jdbcTemplate.update(updateStatement, updateStatementCreatorFactory.newPreparedStatementSetter(updateValues));
+				} catch (Exception e) {
+					e.printStackTrace();
+					logger.error(e.getMessage());
+				}
 			}
 		}
 		return 0;
