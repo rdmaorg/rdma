@@ -219,7 +219,7 @@ var configureDataTable = function(columnsMetadata){
 	                    search: 'none'
 	                  }
 	                } },
-	              {text: 'upload', 
+	              {text: 'Upload', 
 	                	action:function ( e, dt, node, config ) {
 	                		$('#tableid').val(tableId); 
 	                        $('#fileUpload').get(0).click();
@@ -409,7 +409,7 @@ var configureUploadButton = function() {
 	    		success: function (data) {
 //	                $("#result").text(data);
 	                console.log("SUCCESS : ", data);
-	                $("#global-success-text").html(data.numRecords + ' records successful uploaded');
+	                $("#global-success-text").html(data.numRecords + ' record(s) successfully uploaded. Please refresh your page to see the latest changes.');
 	                $("#global-success").slideDown(500);
                     window.setTimeout(function() {
                           $("#global-success").slideUp(500);
