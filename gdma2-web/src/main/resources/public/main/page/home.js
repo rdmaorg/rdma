@@ -396,6 +396,7 @@ var addDownloadButton = function (datatable){
 var configureUploadButton = function() {
 	$('#fileUpload').on('change', function() {
 	    var file = this.files[0];
+	    //$("#fileUpload").prop("disabled", true);
 	    	$.ajax({
 	    		// Your server script to process the upload
 	    		url: restUri.datatable.upload,
@@ -407,15 +408,25 @@ var configureUploadButton = function() {
 	    		contentType: false,
 	    		success: function (data) {
 //	                $("#result").text(data);
-//	                console.log("SUCCESS : ", data);
-//	                $("#btnSubmit").prop("disabled", false);
-
+	                console.log("SUCCESS : ", data);
+	                $("#global-success-text").html(data.numRecords + ' records successful uploaded');
+	                $("#global-success").slideDown(500);
+                    window.setTimeout(function() {
+                          $("#global-success").slideUp(500);
+                          $("#global-success-text").html('Success!');
+                    }, 4000);
 	            },
 	            error: function (e) {
-//	                $("#result").text(e.responseText);
-	                console.log("ERROR : ", e);
-//	                $("#btnSubmit").prop("disabled", false);
+	            	console.log("ERROR : ", e);
+	    			handleError('#global-alert',e);
+	    			window.setTimeout(function() {
+	    	    		$("#global-alert").slideUp(500);
+	    	    	}, 4000);
 
+	            },
+	            complete: function (e) {
+//	            	$("#fileUpload").prop("disabled", false);
+//	            	$('#fileUpload').val(null);
 	            },
 	    		// Custom XMLHttpRequest
 //	    		xhr: function() {

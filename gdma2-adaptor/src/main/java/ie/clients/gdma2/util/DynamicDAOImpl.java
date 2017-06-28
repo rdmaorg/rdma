@@ -1835,7 +1835,11 @@ public class DynamicDAOImpl implements DynamicDAO{
 				if(keysPosition.contains(i)){
 					updateKeysValues.add(row[i]);		
 				} else {
-					updateValues.add(row[i]);
+					if(row[i].isEmpty()){
+						updateValues.add(null);
+					} else {
+						updateValues.add(row[i]);
+					}
 				}
 			}
 			if (null == updateKeysValues || updateKeysValues.isEmpty()) {
