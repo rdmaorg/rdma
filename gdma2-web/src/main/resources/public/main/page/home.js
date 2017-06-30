@@ -277,6 +277,9 @@ var createEditorFields = function(columnsMetadata){
 			fields[i].type = "select";
 			fields[i].name = 'columns.'+i+'.val.value';
 		};
+		if(columnsMetadata[i].columnTypeString.toUpperCase() === "DATE"){
+			fields[i].type = "datetime";
+		};
 	}
 	return fields;
 }
