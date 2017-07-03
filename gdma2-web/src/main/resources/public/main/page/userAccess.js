@@ -138,6 +138,7 @@ var associateCheckBoxes = function() {
 	associateCheckbox("allowInsert");
 	associateCheckbox("allowDelete");
 	associateCheckboxFullAccess();
+	associateCheckboxDisplay();
 }
 
 var associateCheckbox = function(rule) {
@@ -204,6 +205,45 @@ var associateCheckboxFullAccess = function(){
 			changedCheckboxes[object.id][rules.allowDelete] = ck[0].checked;
 		}
 		selectAllCheckBoxes(ck.data('id'),ck[0].checked);
+	});
+}
+
+var associateCheckboxDisplay = function(){
+	$('.allowDisplay').off('change');
+	$('.allowDisplay').change(function(e) {
+		var rules = {
+			allowUpdate: 'allowUpdate',
+			allowInsert: 'allowInsert',
+			allowDelete: 'allowDelete'
+		};
+		var ck = $(e.target);
+		var object = origCheckboxes[ck.data('id')];
+		if (changedCheckboxes[object.id]) {
+			var objAux = changedCheckboxes[object.id];
+			objAux[rules.allowUpdate] = ck[0].checked;
+			objAux[rules.allowInsert] = ck[0].checked;
+			objAux[rules.allowDelete] = ck[0].checked;
+			// verify if the object was changed or not for save only
+			// modified objects
+			if (objectChanged(object, objAux)) {
+				changedCheckboxes[object.id][rules.allowUpdate] = ck[0].checked;
+				changedCheckboxes[object.id][rules.allowInsert] = ck[0].checked;
+				changedCheckboxes[object.id][rules.allowDelete] = ck[0].checked;
+			} else {
+				delete changedCheckboxes[object.id];
+			}
+		} else {
+			// clone the object for maintain the original for comparison
+			changedCheckboxes[object.id] = jQuery.extend({}, object);
+			changedCheckboxes[object.id][rules.allowUpdate] = ck[0].checked;
+			changedCheckboxes[object.id][rules.allowInsert] = ck[0].checked;
+			changedCheckboxes[object.id][rules.allowDelete] = ck[0].checked;
+		}
+		verifyFullAccess(ck.data('id'));
+		var teste = ck[0].checked;
+		if (teste == false) {			
+			selectAllCheckBoxes(ck.data('id'),ck[0].checked);
+		}
 	});
 }
 
