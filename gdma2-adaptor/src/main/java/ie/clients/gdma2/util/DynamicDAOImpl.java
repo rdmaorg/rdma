@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -24,8 +25,6 @@ import java.util.StringJoiner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
@@ -52,6 +51,12 @@ import ie.clients.gdma2.util.TableRowDTO.TableColumn;
 
 @Repository
 public class DynamicDAOImpl implements DynamicDAO{
+
+	private static final String UNKNOWN_USER = "UNKNOWN";
+
+	private static final String SPECIAL_COLUMN_USER = "U";
+
+	private static final String SPECIAL_COLUMN_DATE = "D";
 
 	private static final Logger logger = LoggerFactory.getLogger(DynamicDAOImpl.class);
 
@@ -845,7 +850,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 		}
 		return list; 
 	}
-
+	
 
 	/*TRANSACTIONALLY INSERT multiple rows INTO remote DB
 	 * 
@@ -970,12 +975,12 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 			if (StringUtils.hasText(metadataColumn.getSpecial())) {
 				//USER
-				if ("U".equals(metadataColumn.getSpecial())) {
+				if (SPECIAL_COLUMN_USER.equals(metadataColumn.getSpecial())) {
 					logger.info("special column 'U' detected");
 					String userName = userContextProvider.getLoggedInUserName();
 					logger.info("logged user: " + userName);
 					if(userName == null || userName.isEmpty()){
-						userName = "UNKNOWN"; //TODO ? how and when can this happen???
+						userName = UNKNOWN_USER; //TODO ? how and when can this happen???
 					}
 
 					// first see if by error the column is already included
@@ -988,7 +993,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 						parameters.add(SQLUtil.convertToType(userName, metadataColumn.getColumnType()));
 					}
 					//DATE
-				} else if ("D".equals(metadataColumn.getSpecial())) {
+				} else if (SPECIAL_COLUMN_DATE.equals(metadataColumn.getSpecial())) {
 					logger.info("special column 'D' detected");
 					// first see if by error the column is already included
 					if (columns.contains(metadataColumn)) {
@@ -1684,13 +1689,74 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 	}
 
-	//TODO test TRANSACTIONS, test NULL values, test non-autoinc, test value with quotes, test mysql/other DB vendors, test more columns in header than in body
-	//this code will INSERT partially new data id some row in CSV contains bad data - check if needs to be done in transaction
+	
+	/**
+	 * 
+	 * 1- extract columns from header	 *    
+	 *    UPDATE
+	 *    For each column{
+	 *      check whether column.name/column.alias exist in meta data      
+	 *      extract column type from meta data
+	 *      if(column is a PK){
+	 *         add column to pkList (this will be used to compose update statement)
+	 *         add column position to pkPositionList (this will be used when retrieving values from the file row)
+	 *      } else {
+	 *         add column to updatedColumnsList
+	 *      }
+	 *    }
+	 *    
+	 *    handleSpecialColumns
+	 *       check whether all the special columns are in the updatedColumnsList
+	 *       add special columns(user or timestamp) to the updatedColumnsList       
+	 *       We are assuming a special column value will always be provided by the system
+	 *     
+	 *    Create update statement
+	 *      UPDATE {table.name} set {updatedColumnsList => column.name } = ?  where {pkList => pkColumn.name} = ?
+	 *    
+	 *    INSERT
+	 *    For each column{
+	 *       check whether column.name/column.alias exist in meta data
+	 *       extract column type from meta data
+	 *       add column to insertColumnsList
+	 *    }
+	 *    
+	 *    handleSpecialColumns
+	 *       check whether all the special columns are in the insertColumnsList
+	 *       add special columns(user or timestamp) to the insertColumnsList
+	 *       We are assuming a special column value will always be provided by the system
+	 *    
+	 *    Create insert statement
+	 *     INSERT INTO {table.name} (insertColumnsList)
+	 * 
+	 * 2- Read file rows
+	 *    for each column in the row
+	 *       if column is a dropdownlist {
+	 *          select the store field value from display value in file
+	 *          add store value to updateValueParamsList
+	 *          add store value to insertValueParamsList
+	 *       }
+     *       if column is special {
+     *          get specialValue from system;
+	 *          add specialValue to updateValueParamsList
+	 *          add specialValue to insertValueParamsList
+	 *       }
+     *       if column is PK {
+	 *         add column value to updatePkValueList
+	 *       }
+	 *       
+	 * 
+	 * 
+	 * @param server - server containing the table
+	 * @param table - table containing the columns
+	 * @param columns - columns fetched from table.id
+	 * @param file - file with headers and values
+	 * @return number of successfully updated + successfully inserted rows
+	 */
 	@Override
 	public int bulkImport(Server server, Table table, Set<Column> columns,	MultipartFile file) {
-
+		// TODO test TRANSACTIONS, test NULL values, test non-autoinc, test value with quotes, test mysql/other DB vendors, test more columns in header than in body
+		// this code will INSERT partially new data id some row in CSV contains bad data - check if needs to be done in transaction
 		int counter = 0;
-
 		InputStream inputStream = null;
 		com.opencsv.CSVReader rdr = null;
 
@@ -1703,49 +1769,42 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 			if (headers != null) {
 				//UPDATE
-				final List<Integer> keysPosition = new ArrayList<Integer>();
-				final List<SqlParameter> updateParametersTypeList = createUpdateParametersTypeAndKeysPositionList(columns, headers,
-						keysPosition);
-				final String updateStatement = extractUpdateStatement(server, table, columns, headers);
+				//TODO: What's the difference between getTableColumns and repositoryManager.getColumnRepository().findByTableId(tableId) ??
+				Set<Column> tableColumns = getTableColumns(server, table.getName());
+				final List<Integer> keysPosition = getKeysPositionList(columns, headers);
+				if (null == keysPosition || keysPosition.isEmpty()) {
+					logger.error("Update Not possible as no Table Primary Key Present in the headers. Please contact your administrator");
+					return 0;
+				}
+				
+				final List<Column> columnsList = getColumnsListFromHeader(columns, headers, table);
+				final List<Integer> dropDownColumnPositions = getLookUpColumnPositions(columns, headers);
+				// TODO add special columns which are not present in the file header (not displayed in core module) to columnsList 
+				final String updateStatement = SQLUtil.createUpdateStatement(server, table, columnsList);
+				final List<SqlParameter> updateParametersTypeList = extractUpdateParametersTypeList(columnsList, headers);
 				final PreparedStatementCreatorFactory updateStatementCreatorFactory = new PreparedStatementCreatorFactory(updateStatement.toString(), updateParametersTypeList);
 				
 				//INSERT
+				Map<Integer, List<List>> dropDownDataRowsMap = populateDropDownDataRowsMap(dropDownColumnPositions, columnsList);
+				Map<Integer,String> insertSpecialColumnsMap = extractSpecialColumnsMap(tableColumns, columnsList);
+				
 				StringJoiner patternListJoiner = new StringJoiner(","," VALUES (",")");
 				final List<SqlParameter> insertParametersTypeList = new ArrayList<SqlParameter>();
 				StringJoiner insertColumnNameListJoiner = server.getConnectionUrl().contains("mysql") ? new StringJoiner(",","(",")") :  new StringJoiner("\",\"", "(\"", "\") ");
-				for (String header : headers) {
-					header = header.trim();
-					Column insertColumn = null;
-					for (Column column : columns) {
-						if (header.equals(column.getAlias()) || header.equals(column.getName())) {
-							insertColumn = column;
-							break;
-						}
-					}
-					if (insertColumn == null){
-						throw new IOException("The column \"" + header + "\" does not exist in " + table.getName());
-					}
-
+				for (Column insertColumn : columnsList) {
 					logger.info("Column is of type " + insertColumn.getColumnTypeString());
 					patternListJoiner.add("?");
 					insertColumnNameListJoiner.add(insertColumn.getName());
-
 					// using varchar because all values from CSV are strings
 					//	params.add(new SqlParameter(Types.VARCHAR));
 					//bh changing this as it was breaking date types
 					insertParametersTypeList.add(new SqlParameter(insertColumn.getColumnType()));
 				}
 
-				final StringBuilder insertStatement = new StringBuilder("INSERT INTO ");
-				if(server.getPrefix().length() > 0){
-					insertStatement.append(server.getPrefix());
-					insertStatement.append(".");
-				}
-				insertStatement.append(table.getName());
-				insertStatement.append(insertColumnNameListJoiner.toString());
-				insertStatement.append(patternListJoiner.toString());
+				final String insertStatement = buildBulkInsertStatement(server, table, patternListJoiner,
+						insertColumnNameListJoiner);
 				logger.info("Preparing sql: [" + insertStatement + "]");
-				final PreparedStatementCreatorFactory pscFactory = new PreparedStatementCreatorFactory(insertStatement.toString(), insertParametersTypeList);
+				final PreparedStatementCreatorFactory pscFactory = new PreparedStatementCreatorFactory(insertStatement, insertParametersTypeList);
 				
 				//START READING DATA
 				String[] row = rdr.readNext();
@@ -1754,11 +1813,12 @@ public class DynamicDAOImpl implements DynamicDAO{
 					try {
 						logger.info("Row starting with: " + row[0] );
 						// TODO - Check whether the user has permission to update
-						int updatedRows = executeUpdateFromFileRow(keysPosition, updateStatement,
-								updateStatementCreatorFactory, row, jdbcTemplate);
+						int updatedRows = executeUpdateFromFileRow(keysPosition, updateStatement, updateStatementCreatorFactory, 
+								row, jdbcTemplate, dropDownDataRowsMap, insertSpecialColumnsMap, columnsList);
 						if(updatedRows == 0){
 							// TODO - Check whether the user has permission to insert
-							updatedRows = jdbcTemplate.update(insertStatement.toString(), pscFactory.newPreparedStatementSetter(row));
+							updatedRows = executeInsertFromFileRow(insertStatement, pscFactory, 
+									row, jdbcTemplate, dropDownDataRowsMap,insertSpecialColumnsMap, columnsList);
 						}
 						counter += updatedRows; 
 					}catch (Exception e) {
@@ -1784,10 +1844,63 @@ public class DynamicDAOImpl implements DynamicDAO{
 		return counter;
 	}
 
-	private List<SqlParameter> createUpdateParametersTypeAndKeysPositionList(Set<Column> columns, final String[] headers,
-			final List<Integer> keysPosition) {
-		final List<SqlParameter> updateParametersTypeList = new ArrayList<SqlParameter>();
-		final List<SqlParameter> updateKeyParametersTypeList = new ArrayList<SqlParameter>();
+	private String buildBulkInsertStatement(Server server, Table table, StringJoiner patternListJoiner,
+			StringJoiner insertColumnNameListJoiner) {
+		final StringBuilder insertStatement = new StringBuilder("INSERT INTO ");
+		if(server.getPrefix().length() > 0){
+			insertStatement.append(server.getPrefix());
+			insertStatement.append(".");
+		}
+		insertStatement.append(table.getName());
+		insertStatement.append(insertColumnNameListJoiner.toString());
+		insertStatement.append(patternListJoiner.toString());
+		return insertStatement.toString();
+	}
+	
+	private List<Column> getColumnsListFromHeader(Set<Column> columns, final String[] headers, Table table) throws IOException {
+		List<Column> columnsInFile = new ArrayList<Column>();
+		boolean addedColumn = false;
+		for (String header : headers) {
+			addedColumn = false;
+			header = header.trim();
+			for (Column column : columns) {
+				if (header.equalsIgnoreCase(column.getAlias()) || header.equalsIgnoreCase(column.getName())) {
+					if(columnsInFile.contains(column)){
+						throw new IOException("The column \"" + header + "\" is duplicated in the file header ");
+					}					
+					addedColumn = true;
+					columnsInFile.add(column);
+					break;
+				}
+			}
+			if (addedColumn == false){
+				throw new IOException("The column \"" + header + "\" does not exist in "  + table.getName());
+			}
+		}
+		return columnsInFile;
+	}
+	
+	
+	private List<Integer> getLookUpColumnPositions(Set<Column> columns, final String[] headers) {
+		List<Integer> lookUpColumnPositions = new ArrayList<Integer>();
+		int columnPosition = -1;
+		for (String header : headers) {
+			columnPosition++;
+			header = header.trim();
+			for (Column column : columns) {
+				if (header.equals(column.getAlias()) || header.equals(column.getName())) {
+					if (column.getDropDownColumnDisplay() != null && column.getDropDownColumnStore() != null) {
+						lookUpColumnPositions.add(columnPosition);
+					}
+					break;
+				}
+			}
+		}
+		return lookUpColumnPositions;
+	}
+	
+	private List<Integer> getKeysPositionList(Set<Column> columns, final String[] headers) {
+		List<Integer> keysPosition = new ArrayList<Integer>();
 		int columnPosition = -1;
 		for (String header : headers) {
 			columnPosition++;
@@ -1796,62 +1909,84 @@ public class DynamicDAOImpl implements DynamicDAO{
 				if (header.equals(column.getAlias()) || header.equals(column.getName())) {
 					if (column.isPrimarykey()) {
 						keysPosition.add(columnPosition);
-						updateKeyParametersTypeList.add(new SqlParameter(column.getColumnType()));
-					} else {
-						updateParametersTypeList.add(new SqlParameter(column.getColumnType()));
 					}
 					break;
 				}
+			}
+		}
+		return keysPosition;
+	}
+	
+
+	private List<SqlParameter> extractUpdateParametersTypeList(List<Column> columns, final String[] headers) {
+		final List<SqlParameter> updateParametersTypeList = new ArrayList<SqlParameter>();
+		final List<SqlParameter> updateKeyParametersTypeList = new ArrayList<SqlParameter>();
+		for (Column column : columns) {
+			if (column.isPrimarykey()) {
+				updateKeyParametersTypeList.add(new SqlParameter(column.getColumnType()));
+			} else {
+				updateParametersTypeList.add(new SqlParameter(column.getColumnType()));
 			}
 		}
 		updateParametersTypeList.addAll(updateKeyParametersTypeList);
 		return updateParametersTypeList;
 	}
 
-	private String extractUpdateStatement(Server server, Table table, Set<Column> columns, final String[] headers) {
-		final List<Column> updateColumnsList = new ArrayList<Column>();
-		for (String header : headers) {
-			header = header.trim();
-			for (Column column : columns) {
-				if (header.equals(column.getAlias()) || header.equals(column.getName())) {
-					updateColumnsList.add(column);
-					break;
-				}
-			}
-		}
-		final String updateStatement = SQLUtil.createUpdateStatement(server, table, updateColumnsList);
-		return updateStatement;
-	}
-
 	private int executeUpdateFromFileRow(List<Integer> keysPosition, final String updateStatement,
 			final PreparedStatementCreatorFactory updateStatementCreatorFactory, String[] row,
-			final JdbcTemplate jdbcTemplate) {
+			final JdbcTemplate jdbcTemplate, Map<Integer, List<List>> dropDownDataRowsMap, Map<Integer,String> specialColumnsMap, List<Column> columnsList) {
 		if (null == keysPosition || keysPosition.isEmpty()) {
 			logger.error("Update Not possible as no Table Primary Key Present in the headers. Please contact your administrator");
 		} else {
-			List updateKeysValues = new ArrayList();
-			List updateValues = new ArrayList();
+			List<Object> updateKeysValues = new ArrayList<Object>();
+			List<Object> updateValues = new ArrayList<Object>();
+			
 			for (int i = 0; i < row.length; i++) {
 				if(keysPosition.contains(i)){
-					updateKeysValues.add(row[i]);		
-				} else {
-					if(row[i].isEmpty()){
-						updateValues.add(null);
-					} else {
-						updateValues.add(row[i]);
+//					updateKeysValues.add(row[i]);
+					updateKeysValues.add(SQLUtil.convertToType(row[i], columnsList.get(i).getColumnType()));
+				} else if(row[i].isEmpty()){
+//					updateValues.add(null);
+					updateValues.add(SQLUtil.convertToType(null, columnsList.get(i).getColumnType()));
+				} else if(dropDownDataRowsMap.containsKey(i)){
+					List<List> dropDownDataRows = dropDownDataRowsMap.get(i);
+					for (List dropDownDataRow : dropDownDataRows) {
+						if(dropDownDataRow.get(2).toString().equalsIgnoreCase(row[i])){
+//							updateValues.add(dropDownDataRow.get(1));
+							updateValues.add(SQLUtil.convertToType(dropDownDataRow.get(1).toString(), columnsList.get(i).getColumnType()));
+							break;
+						}
 					}
+				} else if(specialColumnsMap.containsKey(i)){
+					if (SPECIAL_COLUMN_USER.equals(specialColumnsMap.get(i))) {
+						String userName = userContextProvider.getLoggedInUserName();
+						if(userName == null || userName.isEmpty()){
+							userName = UNKNOWN_USER; //TODO ? how and when can this happen???
+						}
+//						insertValues.add(userName);
+						updateValues.add(SQLUtil.convertToType(userName, columnsList.get(i).getColumnType()));
+					} else if (SPECIAL_COLUMN_DATE.equals(specialColumnsMap.get(i))) {
+//						insertValues.add(new Date());
+						updateValues.add(SQLUtil.convertToType(Formatter.formatDate(new Date()), columnsList.get(i).getColumnType()));
+					}
+				} else {
+//					updateValues.add(row[i]);
+					updateValues.add(SQLUtil.convertToType(row[i], columnsList.get(i).getColumnType()));
 				}
 			}
 			if (null == updateKeysValues || updateKeysValues.isEmpty()) {
 				logger.error("Update Not possible as no Table Primary Key Value Set. Please contact your administrator");
 			} else {
 				updateValues.addAll(updateKeysValues); //add keys at the end because they are always last in statement
-				//TODO handleSpecialColumns
-				//handleSpecialColumns(table.getColumns(), columns, updateValues);
+				
+				// this method will add special columns values into updateValues
+				// we can only execute this if columnsListFromHeader contains all special columns in the table
+//				handleSpecialColumns(table.getColumns(), columnsList, updateValues);
 				logger.info("Update SQL query: " + updateStatement);
 				logger.info("parameters: " + updateValues);
 				try {
-					return jdbcTemplate.update(updateStatement, updateStatementCreatorFactory.newPreparedStatementSetter(updateValues));
+//					return jdbcTemplate.update(updateStatement, updateStatementCreatorFactory.newPreparedStatementSetter(updateValues));
+					return jdbcTemplate.update(updateStatement, updateValues.toArray());
 				} catch (Exception e) {
 					e.printStackTrace();
 					logger.error(e.getMessage());
@@ -1859,6 +1994,80 @@ public class DynamicDAOImpl implements DynamicDAO{
 			}
 		}
 		return 0;
+	}
+	
+	private int executeInsertFromFileRow(final String insertStatement, final PreparedStatementCreatorFactory insertStatementCreatorFactory, 
+			String[] row, final JdbcTemplate jdbcTemplate, Map<Integer, List<List>> dropDownDataRowsMap,
+			Map<Integer,String> specialColumnsMap, List<Column> columnsList) {
+		List<Object> insertValues = new ArrayList<Object>();
+		for (int i = 0; i < row.length; i++) {
+			if(row[i].isEmpty()){
+//				insertValues.add(null);
+				insertValues.add(SQLUtil.convertToType(null, columnsList.get(i).getColumnType()));
+			} else if(dropDownDataRowsMap.containsKey(i)){
+				List<List> dropDownDataRows = dropDownDataRowsMap.get(i);
+				for (List dropDownDataRow : dropDownDataRows) {
+					if(dropDownDataRow.get(2).toString().equalsIgnoreCase(row[i])){
+//						insertValues.add(dropDownDataRow.get(1));
+						insertValues.add(SQLUtil.convertToType(dropDownDataRow.get(1).toString(), columnsList.get(i).getColumnType()));
+						break;
+					}
+				}
+			} else if(specialColumnsMap.containsKey(i)){
+				if (SPECIAL_COLUMN_USER.equals(specialColumnsMap.get(i))) {
+					String userName = userContextProvider.getLoggedInUserName();
+					if(userName == null || userName.isEmpty()){
+						userName = UNKNOWN_USER; //TODO ? how and when can this happen???
+					}
+//					insertValues.add(userName);
+					insertValues.add(SQLUtil.convertToType(userName, columnsList.get(i).getColumnType()));
+				} else if (SPECIAL_COLUMN_DATE.equals(specialColumnsMap.get(i))) {
+//					insertValues.add(new Date());
+					insertValues.add(SQLUtil.convertToType(Formatter.formatDate(new Date()), columnsList.get(i).getColumnType()));
+				}
+			} else {
+//				insertValues.add(row[i]);
+				insertValues.add(SQLUtil.convertToType(row[i], columnsList.get(i).getColumnType()));
+			}
+		}
+		logger.info("Update SQL query: " + insertStatement);
+		logger.info("parameters: " + insertValues);
+		try {
+//			return jdbcTemplate.update(insertStatement, insertStatementCreatorFactory.newPreparedStatementSetter(insertValues));
+			return jdbcTemplate.update(insertStatement, insertValues.toArray());
+		} catch (Exception e) {
+			e.printStackTrace();
+			logger.error(e.getMessage());
+		}
+		return 0;
+	}
+	
+	
+	private Map<Integer,String> extractSpecialColumnsMap(Set<Column> metadataColumnSet, List<Column> columns) {
+		logger.info("extractSpecialColumnsMap, size " + metadataColumnSet.size());
+		logger.info("columns, size " + columns.size());
+		Map<Integer,String> specialColumnsMap = new HashMap<Integer,String>();
+		for (Column metadataColumn : metadataColumnSet) {
+			if (StringUtils.hasText(metadataColumn.getSpecial()) && !"N".equals(metadataColumn.getSpecial())) {
+				if (!columns.contains(metadataColumn)) {
+					columns.add(metadataColumn);
+				}
+				int index = columns.indexOf(metadataColumn);
+				logger.info("columns.indexOf(metadataColumn): " + index);
+				specialColumnsMap.put(index, metadataColumn.getSpecial());
+			}
+		}
+		return specialColumnsMap;
+	}
+	
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private Map<Integer, List<List>> populateDropDownDataRowsMap(List<Integer> lookUpColumnPositions,
+			List<Column> columns) {
+		//for performance reasons, putting dropDownDataRows into a Map
+		Map<Integer,List<List>> dropDownDataRowsMap = new HashMap<Integer,List<List>>((lookUpColumnPositions.size()));
+		lookUpColumnPositions.forEach((lookUpColumnPosition) -> dropDownDataRowsMap.put(lookUpColumnPosition, getDropDownData(columns.get(lookUpColumnPosition).getDropDownColumnDisplay(), columns.get(lookUpColumnPosition).getDropDownColumnStore())));
+		return dropDownDataRowsMap;
 	}
 
 
