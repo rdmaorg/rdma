@@ -115,7 +115,7 @@ public class DataTableResource extends BaseDataTableResource{
 	 * 
 	 * Download :
 	 *  a) current screen(paginated request) or 
-	 *  b) ALL data for table  //ALL values: TODO extend ResultSetExtractor to support	 URL param : length = -1 
+	 *  b) ALL data for table  //ALL values: 
 	 *    to be able to support 
 	 *    		 select * from table and extract all from Resultset)
 	 *	
@@ -136,18 +136,20 @@ public class DataTableResource extends BaseDataTableResource{
 				searchTerm,
 				orderByColumnPosition,
 				getOrderByDirection(reqParams),
-				getStartIndex(reqParams),
-				getLength(reqParams));
+				0,
+				-1);
+//				getStartIndex(reqParams),
+//				getLength(reqParams));
 		
 		
 		try {
 			
 			String dataExport = serviceFacade.getDataModuleService().dataExport(tableId, extension,resp);
 			
-			httpServletResponse.getOutputStream().write(dataExport.getBytes());
 			httpServletResponse.setContentType("text/csv");
-			httpServletResponse.setHeader("Content-Disposition", "attachment;filename=data-export.csv");
 			httpServletResponse.setContentLength(dataExport.getBytes().length);
+			httpServletResponse.setHeader("Content-Disposition", "attachment;filename=data-export-table"+tableId+".csv");
+			httpServletResponse.getOutputStream().write(dataExport.getBytes());
 			
 			/*
 			String dataExport = serviceFacade.getDataModuleService().dataExport(tableId, extension,resp);

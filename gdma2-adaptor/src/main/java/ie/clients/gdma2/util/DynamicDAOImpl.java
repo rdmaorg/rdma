@@ -1558,16 +1558,16 @@ public class DynamicDAOImpl implements DynamicDAO{
 						startIndex,length));
 
 
-		logger.info("RESULT: list data with column names:");
-		for (TableRowDTO tableRowDTO : rows) {
-
-			logger.info("row number:" + tableRowDTO.getRowNumber().intValue());
-
-			List<TableColumn> columns = tableRowDTO.getColumns();
-			for (TableColumn column : columns) {
-				logger.info("columnName: " + column.getColumnName() + " , val: " + (column.getVal()==null ? "" : column.getVal()) );
-			}
-		}
+//		logger.info("RESULT: list data with column names:");
+//		for (TableRowDTO tableRowDTO : rows) {
+//
+//			logger.info("row number:" + tableRowDTO.getRowNumber().intValue());
+//
+//			List<TableColumn> columns = tableRowDTO.getColumns();
+//			for (TableColumn column : columns) {
+//				logger.info("columnName: " + column.getColumnName() + " , val: " + (column.getVal()==null ? "" : column.getVal()) );
+//			}
+//		}
 
 		logger.info("detecting Lookup columns...");
 		for(Column col: table.getColumns()){

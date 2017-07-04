@@ -211,19 +211,16 @@ var configureDataTable = function(columnsMetadata){
 	              { extend: "remove", editor: datatableEditor },
 	              'selectAll',
 	              'selectNone',
-	              { extend: "csv", 
-	            	text:"Download",
-	                exportOptions: {
-                	  columns:':not(.select-checkbox)',
-	                  modifier: {
-	                    search: 'none'
-	                  }
+	              { text:"Download",
+	            	  action:function ( e, dt, node, config ) {
+	            		  e.preventDefault();
+	                      $('#downloadDataTableForm').attr('action', mapPathVariablesInUrl(restUri.datatable.download, {'tableId': tableId})).submit();
 	                } },
 	              {text: 'Upload', 
-	                	action:function ( e, dt, node, config ) {
-	                		$('#tableid').val(tableId); 
-	                        $('#fileUpload').get(0).click();
-	                    }}
+                      action:function ( e, dt, node, config ) {
+                		$('#tableid').val(tableId); 
+                        $('#fileUpload').get(0).click();
+                    }}
 	          ]
 	} );
 	

@@ -81,7 +81,9 @@ public class CsvDownloader {
 				} else {
 					addComma = true;
 				}
+//				sbTemp.append('\"');
 				sbTemp.append(column);
+//				sbTemp.append('\"');
 			}
 			sbTemp.append("\r\n");
 

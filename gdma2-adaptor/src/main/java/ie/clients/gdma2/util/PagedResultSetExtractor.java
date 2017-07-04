@@ -72,7 +72,12 @@ public class PagedResultSetExtractor implements org.springframework.jdbc.core.Re
         if (logger.isDebugEnabled()) {
         	logger.debug("rowsPerPage [" + rowsPerPage + "], rowOffset [" + rowOffset + "]");
         }
-        List rows = new ArrayList(rowsPerPage);
+        List rows;
+        if(rowsPerPage > 0){
+        	rows = new ArrayList(rowsPerPage);
+        } else {
+        	rows = new ArrayList();
+        }
 
         // only jump to a row when required
         try {
@@ -88,8 +93,15 @@ public class PagedResultSetExtractor implements org.springframework.jdbc.core.Re
         // rs.setFetchSize(30);
 
         // should be ok as rs starts at 1
-        while (rs.next() && rs.getRow() <= maxRow) {
-            rows.add(rowMapper.mapRow(rs, rs.getRow()));
+        if(maxRow > 0) {
+        	while (rs.next() && rs.getRow() <= maxRow) {
+        		rows.add(rowMapper.mapRow(rs, rs.getRow()));
+        	}
+        } else {
+        	//retrieve all rows
+        	while (rs.next()) {
+        		rows.add(rowMapper.mapRow(rs, rs.getRow()));
+        	}
         }
 
         return rows;
