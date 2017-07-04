@@ -425,6 +425,8 @@ var configureUploadButton = function() {
 
 	            },
 	            complete: function (e) {
+	            	$('#fileUpload')[0].value='';
+	            	tableData.draw();
 //	            	$("#fileUpload").prop("disabled", false);
 //	            	$('#fileUpload').val(null);
 	            },
