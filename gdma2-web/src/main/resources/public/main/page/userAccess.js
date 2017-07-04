@@ -12,6 +12,7 @@ var initiateModalUserAccess = function() {
 var configureUserAccessDatatable = function() {
 	var config = {
 		fixedHeader : true,
+		lengthMenu: [ [10, 25, 50, 100], [10, 25, 50, 100] ],
 		order: [[ 1, "asc" ]],
 		"page" : 0,
 		"stateSave" : false,
