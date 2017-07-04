@@ -249,6 +249,14 @@ table.table-condensed {
     font-family: 'Source Sans Pro','Helvetica Neue',Helvetica,Arial,sans-serif;
 }
 
+div.DTE div.DTE_Form_Error {
+	white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 80%;
+    font-size:12px;
+}
+
 .buttons-row {
     bottom: 0px;
     background: rgba(60, 141, 188, .6);
