@@ -46,6 +46,11 @@
     overflow-y: auto;
 }
 
+.sidebar-menu>li>a {
+	white-space: normal !important;
+	padding-right: 15px !important;
+}
+
 .modal-body label.error {
 	font-size: 11px;
     color: rgba(255,0,0,0.6);
@@ -278,4 +283,14 @@ div.editor-datetime table th {
 
 .medium-confirm-modal{
 	width: 500px;
+}
+
+@media (min-width: 768px) {
+	.sidebar-mini.sidebar-collapse .sidebar-menu>li:hover>a>span.serverN {
+	width:249px !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-right: 55px;
+	}
 }
