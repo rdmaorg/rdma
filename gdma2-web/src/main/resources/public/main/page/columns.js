@@ -430,5 +430,7 @@ $(document).ready(function(){
     associateSaveDropDownColumn();   
     $("#serverName").html(serverSessionName);
     $("#tableName").html(sessionStorage.getItem("nameTable"));
+    $("span[name='serverName']").html(serverSessionName);
+    $("span[name='tableName']").html(sessionStorage.getItem("nameTable"));
 });
 
