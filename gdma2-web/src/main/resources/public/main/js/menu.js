@@ -21,7 +21,7 @@ var buildDataModuleMenu = function(){
     }).done(function(data){
     	$(".sidebar-menu").html('<li class="header">SERVER LIST</li>');
     	$.each(data, function(i, server) {
-    		$("<li id='server" + server.id + "' class='treeview'><a><i class='fa fa-database'></i><span class='serverN'> " + server.name + " </span><span class='pull-right-container'><i class='fa fa-angle-left pull-right'></i></span></a><ul id='list" + server.id + "' class='treeview-menu'><div id='header" + server.id + "'></div></ul></li>").appendTo(".sidebar-menu");
+    		$("<li id='server" + server.id + "' class='treeview'><a><i class='fa fa-server'></i><span class='serverN'> " + server.name + " </span><span class='pull-right-container'><i class='fa fa-angle-left pull-right'></i></span></a><ul id='list" + server.id + "' class='treeview-menu'><div id='header" + server.id + "'></div></ul></li>").appendTo(".sidebar-menu");
     		function tablesId() {
     			showLoading();
         		$.ajax({

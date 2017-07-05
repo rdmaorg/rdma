@@ -273,6 +273,12 @@ div.DTE div.DTE_Form_Error {
     border-radius: 10px;
 }
 
+.menu-open {
+	font-size:24px;
+    color: #fff;
+	padding: 11px;
+}
+
 tbody tr.selectable-row-table {
   	cursor: pointer;
 }
@@ -285,12 +291,18 @@ div.editor-datetime table th {
 	width: 500px;
 }
 
-@media (min-width: 768px) {
-	.sidebar-mini.sidebar-collapse .sidebar-menu>li:hover>a>span.serverN {
+.sidebar-mini.sidebar-collapse .sidebar-menu>li:hover>a>span.serverN {
 	width:249px !important;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding-right: 55px;
-	}
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	padding-right: 35px;
+}
+
+.sidebar-mini.sidebar-collapse .sidebar-menu>li:hover>a .fa-angle-left {
+	display: none;
+}
+
+@media (min-width: 768px) {
+
 }
