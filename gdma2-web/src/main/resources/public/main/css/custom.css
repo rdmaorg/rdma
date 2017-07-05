@@ -108,6 +108,7 @@
     margin: 5px 2%;
     width: 94%;
     font-style: italic;
+    font-size:12px;
 }
 
 #global-alert,#global-success {
