@@ -287,9 +287,9 @@ var associateSaveUserAccess = function() {
 			title : "Save User Access?",
 			btnOkLabel : "Yes",
 			onConfirm : function(event, element) {
-				showLoading();
 				var list = getModifiedObjects();
 				if (list.length > 0) {
+					showLoading();
 					$.ajax({
 						type : "post",
 						url : restUri.userAcces.update,
