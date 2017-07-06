@@ -1,7 +1,5 @@
 package ie.clients.gdma2.util;
 
-import ie.clients.gdma2.domain.ui.DropDownColumn;
-
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
@@ -9,6 +7,8 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import ie.clients.gdma2.domain.ui.DropDownColumn;
 
 /* READ data and include proper dropdown values:
  * 
@@ -130,7 +130,7 @@ public class CsvDownloader {
 		if(isDropDown(object)){
 			return getDropDownValue((DropDownColumn)object);
 		};
-		if (object instanceof Timestamp || object instanceof java.sql.Date || object instanceof Date) {
+		if (object instanceof Date) {
 			return getDateValue(object);
 		} else {
 			return object == null ? "" : object.toString();
@@ -221,7 +221,7 @@ public class CsvDownloader {
 	private static String getDateValue(Object object) {
 		Date date;
 		if (object instanceof Timestamp) {
-			date = new Date(((Timestamp) object).getTime());
+			return object.toString();
 		} else if (object instanceof java.sql.Date) {
 			date = new Date(((java.sql.Date) object).getTime());
 		} else {
