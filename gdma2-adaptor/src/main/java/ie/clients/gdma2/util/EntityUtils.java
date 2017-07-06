@@ -40,7 +40,7 @@ public class EntityUtils {
 				if (!SQLUtil.isText(column.getColumnTypeString())) {
 					throw new IllegalArgumentException("Column [" + column.getName() + "] of type ["
 							+ column.getColumnTypeString()
-							+ "] can not be set to 'special type User' as is is not of type text.");
+							+ "] can not be set to 'special type User' as it is not of type text.");
 				}
 				logger.info("special column USER set for: " + column.getName() + ", Insert or Update are now not allowed manually,"
 						+ " but will be done automatically during add/update record in data module");
@@ -52,7 +52,7 @@ public class EntityUtils {
 				// check column type
 				if (!SQLUtil.isDate(column.getColumnTypeString())) {
 					throw new IllegalArgumentException("Column [" + column.getName()
-							+ "] can not be set to 'special type Date' as is is not of type date.");
+							+ "] can not be set to 'special type Date' as it is not of type date.");
 				}
 				logger.info("special column DATE for: " + column.getName() + ", Insert or Update are now not allowed manually,"
 						+ " but will be done automatically during add/update record in data module");
