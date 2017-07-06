@@ -5,6 +5,7 @@ var initiateModalUserAccess = function() {
 	changedCheckboxes = new Object();
 	origCheckboxes = new Object();
 	$('#tableName').html('<b>&nbsp' + selectedTableName + '</b>');
+	$('#selectedTableName').html('<b>&nbsp' + selectedTableName + '</b>');
 	configureUserAccessDatatable();
 	associateSaveUserAccess();
 }
@@ -38,7 +39,7 @@ var configureUserAccessDatatable = function() {
 					"render" : function(data, type, row) {
 						var checked = isAllChecked(row) ? ' checked'	: '';
 						origCheckboxes[row.id] = row;
-						return '<input id="'+ row.id +'fullA" class="allowFullAccess" data-id="' + row.id
+						return '<input id="'+ row.id +'fullA" name="'+ row.id +'fullA" class="allowFullAccess" data-id="' + row.id
 								+ '" type="checkbox"' + checked + '>';
 					}
 				},
@@ -49,7 +50,7 @@ var configureUserAccessDatatable = function() {
 					"render" : function(data, type, row) {
 						var checked = isCheckedDisplay(row, "allowDisplay") ? ' checked'
 								: '';
-						return '<input id="'+ row.id +'allowD"  class="allowDisplay" data-id="' + row.id
+						return '<input id="'+ row.id +'allowD" name="'+ row.id +'allowD"  class="allowDisplay" data-id="' + row.id
 								+ '" type="checkbox"' + checked + '>';
 					}
 				},
@@ -60,7 +61,7 @@ var configureUserAccessDatatable = function() {
 					"render" : function(data, type, row) {
 						var checked = isChecked(row, "allowUpdate") ? ' checked'
 								: '';
-						return '<input  id="'+ row.id +'allowU" class="allowUpdate" data-id="' + row.id
+						return '<input  id="'+ row.id +'allowU" name="'+ row.id +'allowU" class="allowUpdate" data-id="' + row.id
 								+ '" type="checkbox"' + checked + '>';
 					}
 				},
@@ -71,7 +72,7 @@ var configureUserAccessDatatable = function() {
 					"render" : function(data, type, row) {
 						var checked = isChecked(row, "allowInsert") ? ' checked'
 								: '';
-						return '<input id="'+ row.id +'allowI" class="allowInsert" data-id="' + row.id
+						return '<input id="'+ row.id +'allowI" name="'+ row.id +'allowI" class="allowInsert" data-id="' + row.id
 								+ '" type="checkbox"' + checked + '>';
 					}
 				},
@@ -82,7 +83,7 @@ var configureUserAccessDatatable = function() {
 					"render" : function(data, type, row) {
 						var checked = isChecked(row, "allowDelete") ? ' checked'
 								: '';
-						return '<input id="'+ row.id +'allowDel" class="allowDelete" data-id="' + row.id
+						return '<input id="'+ row.id +'allowDel" name="'+ row.id +'allowDel" class="allowDelete" data-id="' + row.id
 								+ '" type="checkbox"' + checked + '>';
 					}
 				} ]
@@ -180,7 +181,7 @@ var associateCheckboxFullAccess = function(){
 			allowDelete: 'allowDelete'
 		};
 		var ck = $(e.target);
-		var object = origCheckboxes[ck.data('id')];
+		var object = origCheckboxes[ck.data('id')];		
 		if (changedCheckboxes[object.id]) {
 			var objAux = changedCheckboxes[object.id];
 			objAux[rules.allowDisplay] = ck[0].checked;
@@ -213,38 +214,27 @@ var associateCheckboxDisplay = function(){
 	$('.allowDisplay').off('change');
 	$('.allowDisplay').change(function(e) {
 		var rules = {
+			allowDisplay: 'allowDisplay',
 			allowUpdate: 'allowUpdate',
 			allowInsert: 'allowInsert',
 			allowDelete: 'allowDelete'
 		};
 		var ck = $(e.target);
 		var object = origCheckboxes[ck.data('id')];
-		if (changedCheckboxes[object.id]) {
-			var objAux = changedCheckboxes[object.id];
-			objAux[rules.allowUpdate] = ck[0].checked;
-			objAux[rules.allowInsert] = ck[0].checked;
-			objAux[rules.allowDelete] = ck[0].checked;
-			// verify if the object was changed or not for save only
-			// modified objects
-			if (objectChanged(object, objAux)) {
-				changedCheckboxes[object.id][rules.allowUpdate] = ck[0].checked;
-				changedCheckboxes[object.id][rules.allowInsert] = ck[0].checked;
-				changedCheckboxes[object.id][rules.allowDelete] = ck[0].checked;
-			} else {
-				delete changedCheckboxes[object.id];
-			}
-		} else {
-			// clone the object for maintain the original for comparison
-			changedCheckboxes[object.id] = jQuery.extend({}, object);
+		changedCheckboxes[object.id] = jQuery.extend({}, object);
+		changedCheckboxes[object.id][rules.allowDisplay] = ck[0].checked;
+		if (ck[0].checked === false) {			
 			changedCheckboxes[object.id][rules.allowUpdate] = ck[0].checked;
 			changedCheckboxes[object.id][rules.allowInsert] = ck[0].checked;
 			changedCheckboxes[object.id][rules.allowDelete] = ck[0].checked;
-		}
-		verifyFullAccess(ck.data('id'));
-		var teste = ck[0].checked;
-		if (teste == false) {			
 			selectAllCheckBoxes(ck.data('id'),ck[0].checked);
 		}
+		// verify if the object was changed or not 
+		// in order to save only modified objects
+		if (!objectChanged(object, changedCheckboxes[object.id])) {
+			delete changedCheckboxes[object.id];
+		}
+		verifyFullAccess(ck.data('id'));
 	});
 }
 
@@ -270,6 +260,11 @@ var selectAllCheckBoxes = function(id,check){
 	$("#"+id+"allowU").prop( "checked", check );
 	$("#"+id+"allowI").prop( "checked", check );
 	$("#"+id+"allowDel").prop( "checked", check );
+	$("[name='"+id+"allowD']").prop( "checked", check );
+	$("[name='"+id+"allowU']").prop( "checked", check );
+	$("[name='"+id+"allowI']").prop( "checked", check );
+	$("[name='"+id+"allowDel']").prop( "checked", check );
+	
 }
 
 var objectChanged = function(origObject, newObject) {
