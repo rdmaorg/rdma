@@ -999,12 +999,15 @@ public class DynamicDAOImpl implements DynamicDAO{
 					if (columns.contains(metadataColumn)) {
 						int index = columns.indexOf(metadataColumn);
 						logger.info("columns.indexOf(metadataColumn): " + index);
-						parameters.set(index, SQLUtil.convertToType(Formatter.formatDate(new Date()), metadataColumn.getColumnType()));
+						
+//						parameters.set(index, SQLUtil.convertToType(Formatter.formatDate(new Date()), metadataColumn.getColumnType()));
+						parameters.set(index, new Timestamp(new Date().getTime()));
 					} else {
 						columns.add(metadataColumn);
 						// can't be guaranteed that the column is a dated column
 						// so convert to string
-						parameters.add(SQLUtil.convertToType(Formatter.formatDate(new Date()), metadataColumn.getColumnType()));
+//						parameters.add(SQLUtil.convertToType(Formatter.formatDate(new Date()), metadataColumn.getColumnType()));
+						parameters.add(new Timestamp(new Date().getTime()));
 					}
 				}
 			}
@@ -1769,8 +1772,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 			if (headers != null) {
 				//UPDATE
-				//TODO: What's the difference between getTableColumns and repositoryManager.getColumnRepository().findByTableId(tableId) ??
-				Set<Column> tableColumns = getTableColumns(server, table.getName());
+				List<Column> tableColumns = repositoryManager.getColumnRepository().findActiveforTable(table.getId(), null);
 				final List<Integer> keysPosition = getKeysPositionList(columns, headers);
 				if (null == keysPosition || keysPosition.isEmpty()) {
 					logger.error("Update Not possible as no Table Primary Key Present in the headers. Please contact your administrator");
@@ -1942,35 +1944,30 @@ public class DynamicDAOImpl implements DynamicDAO{
 			List<Object> updateValues = new ArrayList<Object>();
 			
 			for (int i = 0; i < row.length; i++) {
-				if(keysPosition.contains(i)){
-//					updateKeysValues.add(row[i]);
-					updateKeysValues.add(SQLUtil.convertToType(row[i], columnsList.get(i).getColumnType()));
-				} else if(row[i].isEmpty()){
-//					updateValues.add(null);
-					updateValues.add(SQLUtil.convertToType(null, columnsList.get(i).getColumnType()));
-				} else if(dropDownDataRowsMap.containsKey(i)){
-					List<List> dropDownDataRows = dropDownDataRowsMap.get(i);
-					for (List dropDownDataRow : dropDownDataRows) {
-						if(dropDownDataRow.get(2).toString().equalsIgnoreCase(row[i])){
-//							updateValues.add(dropDownDataRow.get(1));
-							updateValues.add(SQLUtil.convertToType(dropDownDataRow.get(1).toString(), columnsList.get(i).getColumnType()));
-							break;
-						}
-					}
-				} else if(specialColumnsMap.containsKey(i)){
+				if(specialColumnsMap.containsKey(i)){
 					if (SPECIAL_COLUMN_USER.equals(specialColumnsMap.get(i))) {
 						String userName = userContextProvider.getLoggedInUserName();
 						if(userName == null || userName.isEmpty()){
 							userName = UNKNOWN_USER; //TODO ? how and when can this happen???
 						}
-//						insertValues.add(userName);
 						updateValues.add(SQLUtil.convertToType(userName, columnsList.get(i).getColumnType()));
 					} else if (SPECIAL_COLUMN_DATE.equals(specialColumnsMap.get(i))) {
-//						insertValues.add(new Date());
-						updateValues.add(SQLUtil.convertToType(Formatter.formatDate(new Date()), columnsList.get(i).getColumnType()));
+//						updateValues.add(SQLUtil.convertToType(Formatter.formatDate(new Date()), columnsList.get(i).getColumnType()));
+						updateValues.add(new Timestamp(new Date().getTime()));
+					}
+				}else if(keysPosition.contains(i)){
+					updateKeysValues.add(SQLUtil.convertToType(row[i], columnsList.get(i).getColumnType()));
+				} else if(row[i].isEmpty()){
+					updateValues.add(SQLUtil.convertToType(null, columnsList.get(i).getColumnType()));
+				} else if(dropDownDataRowsMap.containsKey(i)){
+					List<List> dropDownDataRows = dropDownDataRowsMap.get(i);
+					for (List dropDownDataRow : dropDownDataRows) {
+						if(dropDownDataRow.get(2).toString().equalsIgnoreCase(row[i])){
+							updateValues.add(SQLUtil.convertToType(dropDownDataRow.get(1).toString(), columnsList.get(i).getColumnType()));
+							break;
+						}
 					}
 				} else {
-//					updateValues.add(row[i]);
 					updateValues.add(SQLUtil.convertToType(row[i], columnsList.get(i).getColumnType()));
 				}
 			}
@@ -2001,32 +1998,28 @@ public class DynamicDAOImpl implements DynamicDAO{
 			Map<Integer,String> specialColumnsMap, List<Column> columnsList) {
 		List<Object> insertValues = new ArrayList<Object>();
 		for (int i = 0; i < row.length; i++) {
-			if(row[i].isEmpty()){
-//				insertValues.add(null);
+		    if(specialColumnsMap.containsKey(i)){
+		        if (SPECIAL_COLUMN_USER.equals(specialColumnsMap.get(i))) {
+		            String userName = userContextProvider.getLoggedInUserName();
+		            if(userName == null || userName.isEmpty()){
+		                userName = UNKNOWN_USER; //TODO ? how and when can this happen???
+		            }
+		            insertValues.add(SQLUtil.convertToType(userName, columnsList.get(i).getColumnType()));
+			    } else if (SPECIAL_COLUMN_DATE.equals(specialColumnsMap.get(i))) {
+//				insertValues.add(SQLUtil.convertToType(Formatter.formatDate(new Date()), columnsList.get(i).getColumnType()));
+				insertValues.add(new Timestamp(new Date().getTime()));
+			    }
+		    } else if(row[i].isEmpty()){
 				insertValues.add(SQLUtil.convertToType(null, columnsList.get(i).getColumnType()));
 			} else if(dropDownDataRowsMap.containsKey(i)){
 				List<List> dropDownDataRows = dropDownDataRowsMap.get(i);
 				for (List dropDownDataRow : dropDownDataRows) {
 					if(dropDownDataRow.get(2).toString().equalsIgnoreCase(row[i])){
-//						insertValues.add(dropDownDataRow.get(1));
 						insertValues.add(SQLUtil.convertToType(dropDownDataRow.get(1).toString(), columnsList.get(i).getColumnType()));
 						break;
 					}
 				}
-			} else if(specialColumnsMap.containsKey(i)){
-				if (SPECIAL_COLUMN_USER.equals(specialColumnsMap.get(i))) {
-					String userName = userContextProvider.getLoggedInUserName();
-					if(userName == null || userName.isEmpty()){
-						userName = UNKNOWN_USER; //TODO ? how and when can this happen???
-					}
-//					insertValues.add(userName);
-					insertValues.add(SQLUtil.convertToType(userName, columnsList.get(i).getColumnType()));
-				} else if (SPECIAL_COLUMN_DATE.equals(specialColumnsMap.get(i))) {
-//					insertValues.add(new Date());
-					insertValues.add(SQLUtil.convertToType(Formatter.formatDate(new Date()), columnsList.get(i).getColumnType()));
-				}
 			} else {
-//				insertValues.add(row[i]);
 				insertValues.add(SQLUtil.convertToType(row[i], columnsList.get(i).getColumnType()));
 			}
 		}
@@ -2043,9 +2036,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 	}
 	
 	
-	private Map<Integer,String> extractSpecialColumnsMap(Set<Column> metadataColumnSet, List<Column> columns) {
-		logger.info("extractSpecialColumnsMap, size " + metadataColumnSet.size());
-		logger.info("columns, size " + columns.size());
+	private Map<Integer,String> extractSpecialColumnsMap(List<Column> metadataColumnSet, List<Column> columns) {
 		Map<Integer,String> specialColumnsMap = new HashMap<Integer,String>();
 		for (Column metadataColumn : metadataColumnSet) {
 			if (StringUtils.hasText(metadataColumn.getSpecial()) && !"N".equals(metadataColumn.getSpecial())) {
