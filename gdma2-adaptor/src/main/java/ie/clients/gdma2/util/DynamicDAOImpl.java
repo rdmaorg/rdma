@@ -911,7 +911,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 						if(server.getConnectionUrl().toLowerCase().contains(("teradata").toLowerCase()) 
 								&& column.isPrimarykey() && col.getNewColumnValue().equals("")){
 
-						}else{
+						} else if (column.isAllowInsert()){
 							columns.add(column);
 							logger.info("4: params...");
 							parameters.add(SQLUtil.convertToType(col.getNewColumnValue(), column.getColumnType()));
