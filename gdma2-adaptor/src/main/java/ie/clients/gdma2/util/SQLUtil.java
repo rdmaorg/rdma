@@ -358,6 +358,21 @@ public class SQLUtil {
 			case Types.TINYINT:
 			case Types.INTEGER:
 			case Types.BIT:
+				try {
+					if (StringUtils.hasText(data)) {
+						oReturn = Integer.parseInt(data);
+					} else {
+						return null;
+					}
+				} catch (Exception e) {
+					logger.error("Vaule [" + data + "] is BIT and could not be parsed as an integer. trying to parse to boolean");
+					try {
+						oReturn = Boolean.parseBoolean(data);	
+					} catch (Exception e2) {
+						throw new TypeMismatchDataAccessException("Vaule [" + data + "] could not be parsed as an boolean");
+					}
+				}
+				break;
 			case Types.SMALLINT:
 				try {
 					if (StringUtils.hasText(data)) {
