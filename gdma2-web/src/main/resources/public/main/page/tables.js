@@ -164,6 +164,7 @@ $(document).ready(function(){
 	configureDataTable();	
 	associatePostTable();
     $("#serverName").html(serverSessionName);
+    $("span[name='serverName']").html(serverSessionName);
     $("#modalTable").on('hide.bs.modal', function() {
     	var validator = $( "#editAlias" ).validate();
     	validator.destroy();
