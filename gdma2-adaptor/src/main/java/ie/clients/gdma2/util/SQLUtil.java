@@ -563,7 +563,7 @@ public class SQLUtil {
 	public static boolean isText(String sqlDataType) {
 		boolean blnReturn = false;
 		if (StringUtils.hasText(sqlDataType)) {
-			blnReturn = sqlDataType.toUpperCase().startsWith("CHAR") || sqlDataType.toUpperCase().startsWith("VARCHAR") || sqlDataType.toUpperCase().startsWith("LONGVARCHAR") || sqlDataType.toUpperCase().startsWith("NVARCHAR") ;
+			blnReturn = sqlDataType.toUpperCase().startsWith("CHAR") || sqlDataType.toUpperCase().startsWith("NCHAR") || sqlDataType.toUpperCase().startsWith("VARCHAR") || sqlDataType.toUpperCase().startsWith("NVARCHAR") || sqlDataType.toUpperCase().startsWith("LONGVARCHAR") ;
 		}
 		return blnReturn;
 	}

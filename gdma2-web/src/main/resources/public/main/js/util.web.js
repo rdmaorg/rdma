@@ -5,7 +5,7 @@ var getContextPath = function(){
 	
 	var currentURL = window.location.href;
 	currentURL = currentURL.split(contextDelimeter).slice(start, end).join(contextDelimeter);
-	console.log("WebUtil: context path: " + currentURL);
+	//console.log("WebUtil: context path: " + currentURL);
 	return currentURL;
 };
 
