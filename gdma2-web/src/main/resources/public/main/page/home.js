@@ -142,7 +142,12 @@ var configureDataTable = function(columnsMetadata){
 	        if ( this.inError() ) {
 	        	return false;
 	        };
-    } );
+    } )
+	.on( 'submitSuccess', function ( e, json, data ) {
+		if(json.recordCreated === "true"){
+			tableData.draw();
+		};
+    });
 	
 	var columnsData = createDataTableColumns(columnsMetadata);
 	var config={

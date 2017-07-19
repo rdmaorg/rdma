@@ -312,6 +312,7 @@ public class DataTableResource extends BaseDataTableResource{
 		/*----TODO DELETE end */
 		
 		serviceFacade.getDataModuleService().addRecord(dataRequest);
+		reqParams.put("recordCreated", "true");
 		return reqParams;
 	}
 	

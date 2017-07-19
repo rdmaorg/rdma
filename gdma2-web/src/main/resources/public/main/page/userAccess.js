@@ -1,5 +1,6 @@
 var changedCheckboxes = new Object();
 var origCheckboxes = new Object();
+var tableUserAccess;
 
 var initiateModalUserAccess = function() {
 	changedCheckboxes = new Object();
@@ -88,7 +89,7 @@ var configureUserAccessDatatable = function() {
 					}
 				} ]
 	};
-	$('#tbl_userAccess').configureDataTable(config, {
+	tableUserAccess = $('#tbl_userAccess').configureDataTable(config, {
 		url : mapPathVariablesInUrl(restUri.userAcces.table, {
 			id : selectedTableId
 		}),
@@ -102,6 +103,11 @@ var configureUserAccessDatatable = function() {
 			handleError('#global-alert', e);
 		}
 	});
+	
+	tableUserAccess.off( 'responsive-display');
+	tableUserAccess.on( 'responsive-display', function ( e, datatable, row, showHide, update ) {
+		associateCheckBoxes();
+	} );
 }
 
 var isAllChecked = function(row){
@@ -181,7 +187,8 @@ var associateCheckboxFullAccess = function(){
 			allowDelete: 'allowDelete'
 		};
 		var ck = $(e.target);
-		var object = origCheckboxes[ck.data('id')];		
+		var object = origCheckboxes[ck.data('id')];
+		selectAllCheckBoxes(ck.data('id'),ck[0].checked);
 		if (changedCheckboxes[object.id]) {
 			var objAux = changedCheckboxes[object.id];
 			objAux[rules.allowDisplay] = ck[0].checked;
@@ -206,7 +213,6 @@ var associateCheckboxFullAccess = function(){
 			changedCheckboxes[object.id][rules.allowInsert] = ck[0].checked;
 			changedCheckboxes[object.id][rules.allowDelete] = ck[0].checked;
 		}
-		selectAllCheckBoxes(ck.data('id'),ck[0].checked);
 	});
 }
 
@@ -221,45 +227,54 @@ var associateCheckboxDisplay = function(){
 		};
 		var ck = $(e.target);
 		var object = origCheckboxes[ck.data('id')];
-		changedCheckboxes[object.id] = jQuery.extend({}, object);
+		if (typeof changedCheckboxes[object.id] === typeof undefined) {
+			changedCheckboxes[object.id] = jQuery.extend({}, object);
+		};
 		changedCheckboxes[object.id][rules.allowDisplay] = ck[0].checked;
 		if (ck[0].checked === false) {			
 			changedCheckboxes[object.id][rules.allowUpdate] = ck[0].checked;
 			changedCheckboxes[object.id][rules.allowInsert] = ck[0].checked;
 			changedCheckboxes[object.id][rules.allowDelete] = ck[0].checked;
 			selectAllCheckBoxes(ck.data('id'),ck[0].checked);
-		}
+		};
 		// verify if the object was changed or not 
 		// in order to save only modified objects
 		if (!objectChanged(object, changedCheckboxes[object.id])) {
 			delete changedCheckboxes[object.id];
-		}
+		};
 		verifyFullAccess(ck.data('id'));
 	});
 }
 
 var verifyFullAccess = function(id){
-	if($("#"+id+"allowD")[0].checked && $("#"+id+"allowU")[0].checked &&
-			$("#"+id+"allowI")[0].checked && $("#"+id+"allowDel")[0].checked){
-		$("#"+id+"fullA").prop( "checked", true );
+	if(($("[name='"+id+"allowD']")[0].checked || (typeof $("[name='"+id+"allowD']")[1] !== typeof undefined && $("[name='"+id+"allowD']")[1].checked) ) 
+		&& ($("[name='"+id+"allowU']")[0].checked || (typeof $("[name='"+id+"allowU']")[1] !== typeof undefined && $("[name='"+id+"allowU']")[1].checked) )
+		&& ($("[name='"+id+"allowI']")[0].checked || (typeof $("[name='"+id+"allowI']")[1] !== typeof undefined && $("[name='"+id+"allowI']")[1].checked) )
+		&& ($("[name='"+id+"allowDel']")[0].checked || (typeof $("[name='"+id+"allowDel']")[1] !== typeof undefined && $("[name='"+id+"allowDel']")[1].checked) )
+		){
+		$("[name='"+id+"fullA']").prop( "checked", true );
+		$("[name='"+id+"allowD']").prop( "checked", true );
+		$("[name='"+id+"allowU']").prop( "checked", true );
+		$("[name='"+id+"allowI']").prop( "checked", true );
+		$("[name='"+id+"allowDel']").prop( "checked", true );
+		
 	} else {
-		$("#"+id+"fullA").prop( "checked", false );
+		$("[name='"+id+"fullA']").prop( "checked", false );
 	}
 }
 
 var verifyDisplayAccess = function(id){
-	if($("#"+id+"allowU")[0].checked ||	$("#"+id+"allowI")[0].checked || $("#"+id+"allowDel")[0].checked){
-		$("#"+id+"allowD").prop( "checked", true );
+	if(($("[name='"+id+"allowU']")[0].checked || (typeof $("[name='"+id+"allowU']")[1] !== typeof undefined && $("[name='"+id+"allowU']")[1].checked))
+		|| ($("[name='"+id+"allowI']")[0].checked || (typeof $("[name='"+id+"allowI']")[1] !== typeof undefined && $("[name='"+id+"allowI']")[1].checked))
+		|| ($("[name='"+id+"allowDel']")[0].checked || (typeof $("[name='"+id+"allowDel']")[1] !== typeof undefined && $("[name='"+id+"allowDel']")[1].checked)) ){
+		$("[name='"+id+"allowD']").prop( "checked", true );
 		return true;
 	}
+	
 	return false;
 }
 
 var selectAllCheckBoxes = function(id,check){
-	$("#"+id+"allowD").prop( "checked", check );
-	$("#"+id+"allowU").prop( "checked", check );
-	$("#"+id+"allowI").prop( "checked", check );
-	$("#"+id+"allowDel").prop( "checked", check );
 	$("[name='"+id+"allowD']").prop( "checked", check );
 	$("[name='"+id+"allowU']").prop( "checked", check );
 	$("[name='"+id+"allowI']").prop( "checked", check );
