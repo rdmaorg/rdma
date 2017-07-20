@@ -429,7 +429,7 @@ $(document).ready(function(){
 	configureDataTable();
     associateSaveDropDownColumn();   
     $("#serverName").html(serverSessionName);
-    $("#tableName").html(sessionStorage.getItem("nameTable"));
+    $("#tableName").html('&#45;&nbsp;'+ sessionStorage.getItem("nameTable"));
     $("span[name='serverName']").html(serverSessionName);
     $("span[name='tableName']").html(sessionStorage.getItem("nameTable"));
 });

@@ -5,7 +5,7 @@ var tableUserAccess;
 var initiateModalUserAccess = function() {
 	changedCheckboxes = new Object();
 	origCheckboxes = new Object();
-	$('#tableName').html('<b>&nbsp' + selectedTableName + '</b>');
+//	$('#tableName').html('<b>&nbsp' + selectedTableName + '</b>');
 	$('#selectedTableName').html('<b>&nbsp' + selectedTableName + '</b>');
 	configureUserAccessDatatable();
 	associateSaveUserAccess();
