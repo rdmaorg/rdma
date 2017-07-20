@@ -914,7 +914,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 						} else if (column.isAllowInsert()){
 							columns.add(column);
 							logger.info("4: params...");
-							parameters.add(SQLUtil.convertToType(col.getNewColumnValue(), column.getColumnType()));
+							parameters.add(SQLUtil.convertToType(col.getNewColumnValue(), column.getColumnType(), column));
 							logger.info("5: ...params converted");
 						}
 					}
@@ -1121,7 +1121,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 									if (columnUpdate.getNewColumnValue() != null) {
 										logger.info("4: column, not PK, has NEW value set (but can be null?)");
 										columns.add(column);
-										Object obj = SQLUtil.convertToType(columnUpdate.getNewColumnValue(), column.getColumnType());
+										Object obj = SQLUtil.convertToType(columnUpdate.getNewColumnValue(), column.getColumnType(), column);
 
 										if (obj == null && !column.isNullable()) {
 											throw new ServiceException("Column " + column.getName() + " can not be set to NULL and must have a value");
@@ -1956,19 +1956,19 @@ public class DynamicDAOImpl implements DynamicDAO{
 						updateValues.add(new Timestamp(new Date().getTime()));
 					}
 				}else if(keysPosition.contains(i)){
-					updateKeysValues.add(SQLUtil.convertToType(row[i], columnsList.get(i).getColumnType()));
+					updateKeysValues.add(SQLUtil.convertToType(row[i], columnsList.get(i).getColumnType(), columnsList.get(i)));
 				} else if(row[i].isEmpty()){
 					updateValues.add(SQLUtil.convertToType(null, columnsList.get(i).getColumnType()));
 				} else if(dropDownDataRowsMap.containsKey(i)){
 					List<List> dropDownDataRows = dropDownDataRowsMap.get(i);
 					for (List dropDownDataRow : dropDownDataRows) {
 						if(dropDownDataRow.get(2).toString().equalsIgnoreCase(row[i])){
-							updateValues.add(SQLUtil.convertToType(dropDownDataRow.get(1).toString(), columnsList.get(i).getColumnType()));
+							updateValues.add(SQLUtil.convertToType(dropDownDataRow.get(1).toString(), columnsList.get(i).getColumnType(),columnsList.get(i)));
 							break;
 						}
 					}
 				} else {
-					updateValues.add(SQLUtil.convertToType(row[i], columnsList.get(i).getColumnType()));
+					updateValues.add(SQLUtil.convertToType(row[i], columnsList.get(i).getColumnType(),columnsList.get(i)));
 				}
 			}
 			if (null == updateKeysValues || updateKeysValues.isEmpty()) {
@@ -2015,12 +2015,12 @@ public class DynamicDAOImpl implements DynamicDAO{
 				List<List> dropDownDataRows = dropDownDataRowsMap.get(i);
 				for (List dropDownDataRow : dropDownDataRows) {
 					if(dropDownDataRow.get(2).toString().equalsIgnoreCase(row[i])){
-						insertValues.add(SQLUtil.convertToType(dropDownDataRow.get(1).toString(), columnsList.get(i).getColumnType()));
+						insertValues.add(SQLUtil.convertToType(dropDownDataRow.get(1).toString(), columnsList.get(i).getColumnType(), columnsList.get(i)));
 						break;
 					}
 				}
 			} else {
-				insertValues.add(SQLUtil.convertToType(row[i], columnsList.get(i).getColumnType()));
+				insertValues.add(SQLUtil.convertToType(row[i], columnsList.get(i).getColumnType(), columnsList.get(i)));
 			}
 		}
 		logger.info("Update SQL query: " + insertStatement);

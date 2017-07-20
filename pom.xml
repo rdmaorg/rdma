@@ -222,6 +222,13 @@
 			<artifactId>mssql-jdbc</artifactId>
 			<version>6.1.0.jre8</version>
 		</dependency>
+		
+		<!-- PostGres support -->
+		<dependency>
+            <groupId>postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>9.1-901.jdbc4</version>
+        </dependency>
 
 
 		<!-- Apache Commons DBCP 2.0 - implements Database Connection Pooling, 

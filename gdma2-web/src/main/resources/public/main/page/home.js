@@ -362,7 +362,7 @@ $(document).ready(function(){
 
 var loadBreadCrumbs = function(tableId){
 	$("#serverName").html(serverName);
-	$("#tableName").html(tableName);
+	$("#tableName").html('&#45;&nbsp;' + tableName);
 }
 
 function filterDisplayed(column) {

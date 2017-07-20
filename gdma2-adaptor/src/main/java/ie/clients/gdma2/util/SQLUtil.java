@@ -334,6 +334,9 @@ public class SQLUtil {
 		return sbWhere.toString();
 	}
 
+	public static Object convertToType(String data, int sqlDataType) {
+		return convertToType(data, sqlDataType, null);
+	}
 	/**
 	 * ColumnDataUpdate uses : String newColumnValue
 	 * before preparedStatement is executed, this String value needs to be converted into proper type to match DB type, 
@@ -344,7 +347,7 @@ public class SQLUtil {
 	 * @param sqlDataType
 	 * @return
 	 */
-	public static Object convertToType(String data, int sqlDataType) {
+	public static Object convertToType(String data, int sqlDataType, Column column) {
 		Object oReturn = null;
 
 		if (StringUtils.hasText(data)) {
@@ -414,12 +417,20 @@ public class SQLUtil {
 			//case Types.TIMESTAMP:
 				try {
 					if (StringUtils.hasText(data)) {
-						oReturn = Formatter.parseDate(data);
+						if (column != null && column.getColumnTypeString().equalsIgnoreCase("YEAR")){
+							oReturn = new Integer(data);
+						} else {
+							oReturn = Formatter.parseDate(data);
+						}
 					} else {
 						return null;
 					}
 				} catch (Exception e) {
-					throw new TypeMismatchDataAccessException("Vaule [" + data + "] could not be parsed as a date. ");
+					if(column != null){
+						throw new TypeMismatchDataAccessException("Vaule [" + data + "] could not be parsed as " + column.getColumnTypeString());
+					} else {
+						throw new TypeMismatchDataAccessException("Vaule [" + data + "] could not be parsed as a date. ");
+					}
 				}
 				break;
 			case Types.TIMESTAMP:
