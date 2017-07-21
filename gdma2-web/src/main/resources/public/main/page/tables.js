@@ -62,10 +62,18 @@ var configureDataTable = function(){
 			prependIconToButton();
 		}
 	});
+	table.off('responsive-display');
+	table.on('responsive-display', function() {
+		showEditTableAccessModal();
+		associateViewColumns();
+		showEditTableAliasModal();
+		prependIconToButton();
+	});
 };
 
 var showEditTableAccessModal = function(){
-	$(".editAccess").click(function(){
+	$(".editAccess").off('click'); 
+	$(".editAccess").on('click', function(){
 		var btn = $(this);
 		selectedTableId = btn.data('tableid');
 		selectedTableName = btn.data('tablename');
@@ -79,7 +87,8 @@ var showEditTableAccessModal = function(){
 
 //Edit table
 var showEditTableAliasModal = function(){
-	$('.editTable').click(function(){
+	$('.editTable').off('click'); 
+	$('.editTable').on('click', function(){
 //		var btn = $(this);
 		tableEdit = table.row($(this).closest('tr')[0]).data();
 		$("#modalTable").find('form').trigger('reset');
@@ -133,7 +142,8 @@ var associatePostTable = function(){
 
 //View table columns
 var associateViewColumns = function(){
-	$('.viewColumns').click(function(){
+	$('.viewColumns').off('click'); 
+	$('.viewColumns').on('click', function(){
  		var btn = $(this);
  		syncColumns(btn.data('tableid'));
  		viewTable(btn.data('tableid'),btn.data('tablename'));
