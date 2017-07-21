@@ -1538,6 +1538,9 @@ public class DynamicDAOImpl implements DynamicDAO{
 		logger.info("params: " +  params);
 
 
+		/*
+		 * TODO Implement a TableDataRowMapper for MySQL and instantiate via pattern (Strategy pattern possibly)
+		 */
 		List<TableRowDTO> rows =(List<TableRowDTO>) jdbcTemplate.query(psc.newPreparedStatementCreator(params), 
 				new PagedResultSetExtractor(new TableDataRowMapper(),
 						startIndex,length));
