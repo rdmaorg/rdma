@@ -310,6 +310,8 @@ var createDataTableColumns = function(columnsMetadata){
 		    });
 	 	    editor.field('columns.'+data.position+'.val.value').update(options);
 		    return returnValue;
+ 	      } else if (data && data.timestamp){
+ 	    	  return data.timestamp;
  	      }
 	 	  return data;
 		};

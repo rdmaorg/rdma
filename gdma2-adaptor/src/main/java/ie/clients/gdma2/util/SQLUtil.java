@@ -584,7 +584,7 @@ public class SQLUtil {
 		boolean blnReturn = false;
 
 		if (StringUtils.hasText(sqlDataType)) {
-			blnReturn = "DATE".equals(sqlDataType) || "DATETIME".equals(sqlDataType) || "TIME".equals(sqlDataType) || "TIMESTAMP".equals(sqlDataType);
+			blnReturn = "DATE".equals(sqlDataType) || "DATETIME".equals(sqlDataType) || "TIME".equals(sqlDataType) || "TIMESTAMP".equals(sqlDataType) || "DATETIME2".equals(sqlDataType) || "DATETIMEOFFSET".equals(sqlDataType);
 		}
 		return blnReturn;
 	}
