@@ -229,6 +229,19 @@
             <artifactId>postgresql</artifactId>
             <version>9.1-901.jdbc4</version>
         </dependency>
+        
+        <!-- Oracle support-->
+		<!-- Due to Oracle license restrictions, the Oracle JDBC driver is not available in the public Maven repository  -->
+		<!-- https://mvnrepository.com/artifact/com.oracle/ojdbc6 -->
+<!-- 		<dependency> -->
+<!-- 		    <groupId>com.oracle</groupId> -->
+<!-- 		    <artifactId>ojdbc6</artifactId> -->
+<!-- 		    <version>11.1.0.7.0</version> -->
+<!-- 		    <scope>test</scope> -->
+<!-- 		</dependency> -->
+
+
+
 
 
 		<!-- Apache Commons DBCP 2.0 - implements Database Connection Pooling, 

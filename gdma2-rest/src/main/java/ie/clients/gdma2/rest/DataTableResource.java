@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -299,18 +298,7 @@ public class DataTableResource extends BaseDataTableResource{
 	public @ResponseBody Map<String,String> createDataTableData(@PathVariable("serverId") Integer serverId, @PathVariable("tableId") Integer tableId, @RequestParam Map<String, String> reqParams){
 		logger.info("createDataTableData");
 		
-		UpdateDataRequest dataRequest = extractDataRequest(serverId, tableId, reqParams);
-		
-		/*---TODO DELETE*/
-		List<List<ColumnDataUpdate>> updates = dataRequest.getUpdates();
-		for (List<ColumnDataUpdate> list : updates) {
-			for (ColumnDataUpdate columnDataUpdate : list) {
-				logger.info(columnDataUpdate.getColumnId() + "  "  + columnDataUpdate.getOldColumnValue() + "  " + columnDataUpdate.getNewColumnValue());
-			}
-			
-		}
-		/*----TODO DELETE end */
-		
+		UpdateDataRequest dataRequest = serviceFacade.getDataModuleService().extractDataRequest(serverId, tableId, reqParams);
 		serviceFacade.getDataModuleService().addRecord(dataRequest);
 		reqParams.put("recordCreated", "true");
 		return reqParams;
@@ -330,7 +318,7 @@ public class DataTableResource extends BaseDataTableResource{
 	public @ResponseBody PaginatedTableResponse<Column> updateDataTableData(@PathVariable("serverId") Integer serverId, @PathVariable("tableId") Integer tableId, @RequestParam Map<String, String> reqParams){
 		logger.info("updateDataTableData");
 		List<Filter> filterList = new ArrayList<Filter>();
-		List<UpdateDataRequest> updateDataRequestList = extractUpdateDataRequestList(serverId, tableId, reqParams,filterList);
+		List<UpdateDataRequest> updateDataRequestList = serviceFacade.getDataModuleService().extractUpdateDataRequestList(serverId, tableId, reqParams,filterList);
 		int dataRequestListIndex = 0;
 		for (UpdateDataRequest updateDataRequest : updateDataRequestList) {
 			int updatedRecords = serviceFacade.getDataModuleService().updateRecords(updateDataRequest);
@@ -353,7 +341,7 @@ public class DataTableResource extends BaseDataTableResource{
 	 */
 	@RequestMapping(value = "/delete/{serverId}/{tableId}", method = RequestMethod.POST,produces="application/json")
 	public @ResponseBody Map<String,String> deleteTableData(@PathVariable("serverId") Integer serverId, @PathVariable("tableId") Integer tableId, @RequestParam Map<String, String> reqParams){
-		List<UpdateDataRequest> updateDataRequestList = extractUpdateDataRequestList(serverId, tableId, reqParams,new ArrayList<Filter>());
+		List<UpdateDataRequest> updateDataRequestList = serviceFacade.getDataModuleService().extractUpdateDataRequestList(serverId, tableId, reqParams,new ArrayList<Filter>());
 		for (UpdateDataRequest updateDataRequest : updateDataRequestList) {
 			int deletedRecords = serviceFacade.getDataModuleService().deleteRecords(updateDataRequest);
 			logger.debug("deletedRecords: " +deletedRecords);
@@ -408,104 +396,6 @@ public class DataTableResource extends BaseDataTableResource{
 	}
 	
 
-	//TODO - move this method to a Service class
-	/*
-	 * This method will receive the rowData from datatable and convert it to UpdateDataRequest
-	 * 
-	 *  data[11][columns][0][val]:Tseng
-		data[11][columns][1][val]:Foon Yui
-		
-		the key is is "data[11][columns][0][val]" , the Value is "Tseng" 
-	 */
-	private UpdateDataRequest extractDataRequest(Integer serverId, Integer tableId, Map<String, String> reqParams) {
-		UpdateDataRequest dataRequest = new UpdateDataRequest();
-		List<ColumnDataUpdate> row = new ArrayList<ColumnDataUpdate>();
-		dataRequest.setServerId(serverId);
-		dataRequest.setTableId(tableId);
-		reqParams.remove("action");
-		final List<Column> columnsMetadata = getActiveColumns(tableId);
-		columnsMetadata.removeIf(c -> !c.isDisplayed());
-		List<String> extractedRowKeyList = extractRowKeyList(reqParams);
-		for (String rowKey : extractedRowKeyList) {
-			int i = 0,j = 0;
-			for (Column columnMetadata : columnsMetadata) {
-				for (String key: reqParams.keySet()) {
-					if(key.startsWith(rowKey)){
-						if(i == j){
-							ColumnDataUpdate newColumn = new ColumnDataUpdate();
-							newColumn.setColumnId(columnMetadata.getId());
-							newColumn.setNewColumnValue(reqParams.get(key));
-							newColumn.setOldColumnValue(reqParams.get(key));
-							row.add(newColumn);
-						}
-						j++;
-					}
-				}
-				j=0;
-				i++;
-			}
-			dataRequest.getUpdates().add(row);
-			
-		}
-		return dataRequest;
-	}
-	
-	private List<UpdateDataRequest> extractUpdateDataRequestList(Integer serverId, Integer tableId, Map<String, String> reqParams, List<Filter> filterList) {
-		List<UpdateDataRequest> updateDataRequestList = new ArrayList<UpdateDataRequest>();
-		reqParams.remove("action");
-		final List<Column> columnsMetadata = getActiveColumns(tableId);
-		columnsMetadata.removeIf(c -> !c.isDisplayed());
-		List<String> extractedRowKeyList = extractRowKeyList(reqParams);
-		for (String rowKey : extractedRowKeyList) {
-			UpdateDataRequest dataRequest = new UpdateDataRequest();
-			List<ColumnDataUpdate> row = new ArrayList<ColumnDataUpdate>();
-			dataRequest.setServerId(serverId);
-			dataRequest.setTableId(tableId);
-			int i = 0,j = 0;
-			for (Column columnMetadata : columnsMetadata) {
-				for (String key: reqParams.keySet()) {
-					if(key.startsWith(rowKey)){
-						if(i == j){
-							ColumnDataUpdate newColumn = new ColumnDataUpdate();
-							newColumn.setColumnId(columnMetadata.getId());
-							newColumn.setNewColumnValue(reqParams.get(key));
-							newColumn.setOldColumnValue(reqParams.get(key));
-							row.add(newColumn);
-							if(columnMetadata.isPrimarykey()){
-								Filter filter = new Filter();
-								filter.setColumnId(columnMetadata.getId());
-								filter.setColumnName(columnMetadata.getName());
-								filter.setFilterValue(reqParams.get(key));
-								filter.setColumnType(columnMetadata.getColumnType());
-								filterList.add(filter);
-							}
-						}
-						j++;
-					}
-				}
-				j=0;
-				i++;
-			}
-			dataRequest.getUpdates().add(row);
-			updateDataRequestList.add(dataRequest);
-		}
-		return updateDataRequestList;
-	}
-	
-	private List<String> extractRowKeyList(Map<String, String> reqParams) {
-		List<String> rowKeyList = new ArrayList<String>();
-		Set<String> keySet = reqParams.keySet();
-		for (String fullKey : keySet) {
-			String rowKey = fullKey.split("]")[0];
-			rowKey = rowKey.concat("]");
-			if(!rowKeyList.contains(rowKey)){
-				rowKeyList.add(rowKey);	
-			}
-		}
-		return rowKeyList;
-	}
-	
-	
 	/*Get user access for logged in user on single table 
 	 * https://localhost/gdma2/rest/datatable/access/table/133 */
 	@RequestMapping(value = "/access/table/{tableId}", method = RequestMethod.GET)

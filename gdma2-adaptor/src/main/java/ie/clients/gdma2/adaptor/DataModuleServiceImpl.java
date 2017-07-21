@@ -1,5 +1,15 @@
 package ie.clients.gdma2.adaptor;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
 import ie.clients.gdma2.domain.Column;
 import ie.clients.gdma2.domain.ColumnDataUpdate;
 import ie.clients.gdma2.domain.Server;
@@ -7,21 +17,13 @@ import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.UpdateDataRequest;
 import ie.clients.gdma2.domain.UpdateDataRequestDummy;
 import ie.clients.gdma2.domain.UserAccess;
+import ie.clients.gdma2.domain.ui.Filter;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 import ie.clients.gdma2.spi.ServiceException;
 import ie.clients.gdma2.spi.interfaces.DataModuleService;
 import ie.clients.gdma2.util.CsvDownloader;
 import ie.clients.gdma2.util.EntityUtils;
 import ie.clients.gdma2.util.TableRowDTO;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * all implemented operations will use userContextProvider to get authenticated User  
@@ -282,5 +284,97 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 
 	}
 
+	@Override
+	public UpdateDataRequest extractDataRequest(Integer serverId, Integer tableId, Map<String, String> reqParams) {
+		UpdateDataRequest dataRequest = new UpdateDataRequest();
+		List<ColumnDataUpdate> row = new ArrayList<ColumnDataUpdate>();
+		dataRequest.setServerId(serverId);
+		dataRequest.setTableId(tableId);
+		reqParams.remove("action");
+		final List<Column> columnsMetadata = getActiveColumns(tableId);
+		columnsMetadata.removeIf(c -> !c.isDisplayed());
+		List<String> extractedRowKeyList = extractRowKeyList(reqParams);
+		for (String rowKey : extractedRowKeyList) {
+			int i = 0,j = 0;
+			for (Column columnMetadata : columnsMetadata) {
+				for (String key: reqParams.keySet()) {
+					if(key.startsWith(rowKey)){
+						if(i == j){
+							ColumnDataUpdate newColumn = new ColumnDataUpdate();
+							newColumn.setColumnId(columnMetadata.getId());
+							newColumn.setNewColumnValue(reqParams.get(key));
+							newColumn.setOldColumnValue(reqParams.get(key));
+							row.add(newColumn);
+						}
+						j++;
+					}
+				}
+				j=0;
+				i++;
+			}
+			dataRequest.getUpdates().add(row);
+			
+		}
+		return dataRequest;
+	}
+	
+	@Override
+	public List<UpdateDataRequest> extractUpdateDataRequestList(Integer serverId, Integer tableId, Map<String, String> reqParams, List<Filter> filterList) {
+		List<UpdateDataRequest> updateDataRequestList = new ArrayList<UpdateDataRequest>();
+		reqParams.remove("action");
+		final List<Column> columnsMetadata = getActiveColumns(tableId);
+		columnsMetadata.removeIf(c -> !c.isDisplayed());
+		List<String> extractedRowKeyList = extractRowKeyList(reqParams);
+		for (String rowKey : extractedRowKeyList) {
+			UpdateDataRequest dataRequest = new UpdateDataRequest();
+			List<ColumnDataUpdate> row = new ArrayList<ColumnDataUpdate>();
+			dataRequest.setServerId(serverId);
+			dataRequest.setTableId(tableId);
+			int i = 0,j = 0;
+			for (Column columnMetadata : columnsMetadata) {
+				for (String key: reqParams.keySet()) {
+					if(key.startsWith(rowKey)){
+						if(i == j){
+							ColumnDataUpdate newColumn = new ColumnDataUpdate();
+							newColumn.setColumnId(columnMetadata.getId());
+							newColumn.setNewColumnValue(reqParams.get(key));
+							newColumn.setOldColumnValue(reqParams.get(key));
+							if(columnMetadata.isPrimarykey() || columnMetadata.isAllowUpdate() || !"N".equalsIgnoreCase(columnMetadata.getSpecial())){
+								row.add(newColumn);
+							}
+							if(columnMetadata.isPrimarykey()){
+								Filter filter = new Filter();
+								filter.setColumnId(columnMetadata.getId());
+								filter.setColumnName(columnMetadata.getName());
+								filter.setFilterValue(reqParams.get(key));
+								filter.setColumnType(columnMetadata.getColumnType());
+								filterList.add(filter);
+							}
+						}
+						j++;
+					}
+				}
+				j=0;
+				i++;
+			}
+			dataRequest.getUpdates().add(row);
+			updateDataRequestList.add(dataRequest);
+		}
+		return updateDataRequestList;
+	}
+	
+	
+	private List<String> extractRowKeyList(Map<String, String> reqParams) {
+		List<String> rowKeyList = new ArrayList<String>();
+		Set<String> keySet = reqParams.keySet();
+		for (String fullKey : keySet) {
+			String rowKey = fullKey.split("]")[0];
+			rowKey = rowKey.concat("]");
+			if(!rowKeyList.contains(rowKey)){
+				rowKeyList.add(rowKey);	
+			}
+		}
+		return rowKeyList;
+	}
 
 }

@@ -1043,12 +1043,9 @@ public class DynamicDAOImpl implements DynamicDAO{
 	//@Auditable TODO
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public int updateRecords(UpdateDataRequest updateRequest ) {
-		logger.info("start column update");
-
 		Table table = repositoryManager.getTableRepository().findOne(updateRequest.getTableId());
 		Server server = table.getServer();
 		updateRequest.setServerId(server.getId());
-		logger.info("server and table set");
 
 		if( null == server || null == table){
 			logger.error("Error while update: server or table does not exist!");
@@ -1059,22 +1056,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrueAndDisplayedTrue(table.getId());
 		table.setColumns(new LinkedHashSet(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change this and pass colums to utility method themselves
 
-
-
-
 		List<List<ColumnDataUpdate>> columnsUpdate = updateRequest.getUpdates();
-
-		/**/
-		logger.info("*******TODO DELETE *************");
-		List<List<ColumnDataUpdate>> updates = columnsUpdate;
-		for (List<ColumnDataUpdate> list : updates) {
-			for (ColumnDataUpdate columnDataUpdate : list) {
-				logger.info(columnDataUpdate.getColumnId() + "  "  + columnDataUpdate.getOldColumnValue() + "  " + columnDataUpdate.getNewColumnValue());
-			}
-
-		}
-		logger.info("********TODO DELETE ***********");
-		/**/
 
 		DataSourceTransactionManager transactionManager = dataSourcePool.getTransactionManager(server);
 		TransactionTemplate txTemplate = new TransactionTemplate(transactionManager);

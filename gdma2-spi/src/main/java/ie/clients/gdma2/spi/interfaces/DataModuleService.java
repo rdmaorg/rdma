@@ -5,9 +5,11 @@ import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.UpdateDataRequest;
 import ie.clients.gdma2.domain.UserAccess;
+import ie.clients.gdma2.domain.ui.Filter;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -62,6 +64,11 @@ public interface DataModuleService {
 		
 		//user access on Table for logged in user
 		public List<UserAccess> getUserAccessForUserOnTable(Integer tableId);
+		
+		public UpdateDataRequest extractDataRequest(Integer serverId, Integer tableId, Map<String, String> reqParams);
+		
+		public List<UpdateDataRequest> extractUpdateDataRequestList(Integer serverId, Integer tableId,
+				Map<String, String> reqParams, List<Filter> filterList);
 		
 	
 }
