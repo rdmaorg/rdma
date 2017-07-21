@@ -296,7 +296,8 @@ var objectChanged = function(origObject, newObject) {
 }
 
 var associateSaveUserAccess = function() {
-	$("#save-userAccess").click(function(e) {
+	$("#save-userAccess").off('click'); 
+	$("#save-userAccess").on('click', function(e) {
 		$(this).confirmation({
 			placement : "left",
 			title : "Save User Access?",
@@ -334,7 +335,8 @@ var associateSaveUserAccess = function() {
 		$(this).confirmation('show');
 		e.preventDefault();
 	});
-	$("#modal-close-access").click(function(e) {
+	$("#modal-close-access").off('click'); 
+	$("#modal-close-access").on('click', function(e) {
 		if(!jQuery.isEmptyObject(changedCheckboxes)){
 			$(this).confirmation({
 				placement : "right",
@@ -347,7 +349,7 @@ var associateSaveUserAccess = function() {
 			});
 			$(this).confirmation('show');
 		} else {
-			$(this).confirmation('hide');
+//			$(this).confirmation('hide');
 			$('#modalUserAccess').modal('hide');
 		}
 		e.preventDefault();		
