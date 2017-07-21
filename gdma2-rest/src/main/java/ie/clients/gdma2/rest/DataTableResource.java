@@ -147,7 +147,7 @@ public class DataTableResource extends BaseDataTableResource{
 			
 			httpServletResponse.setContentType("text/csv");
 			httpServletResponse.setContentLength(dataExport.getBytes().length);
-			httpServletResponse.setHeader("Content-Disposition", "attachment;filename=data-export-table"+tableId+".csv");
+			httpServletResponse.setHeader("Content-Disposition", "attachment;filename=gdma-data-export-table"+tableId+".csv");
 			httpServletResponse.getOutputStream().write(dataExport.getBytes());
 			
 			/*
