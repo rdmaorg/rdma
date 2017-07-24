@@ -248,17 +248,30 @@ var configureDataTable = function(columnsMetadata){
 		tableData.page.len( $(this).val() ).draw();
 	});
 
-  //Inline editing on tab focus
-  tableData.on( 'key-focus', function ( e, datatable, cell ) {
-	datatableEditor.inline( cell.index(),{ submit: 'allIfChanged',
-  	submitOnBlur: true
-	});
-  });
+	
+    //Inline editing on tab focus
+    tableData.on( 'key-focus', function ( e, datatable, cell ) {
+	  datatableEditor.inline( cell.index(),{ submit: 'allIfChanged',
+  	  submitOnBlur: true
+	  });
+    });
 
-  $(window).scroll(function(){
-		var topH = $(this).scrollTop() - parseInt($('.content').css('padding-top'));	
-		$("#datatableControlWrapper").css("top",topH+"px");
-	})
+    // Activate an inline edit on click of a table cell
+    // or a DataTables Responsive data cell
+    $('#table_data').on( 'click', 'tbody td:not(.child), tbody span.dtr-data', function (e) {
+        // Ignore the Responsive control and checkbox columns
+        if ( $(this).hasClass( 'control' ) || $(this).hasClass('select-checkbox') ) {
+            return;
+        }
+        datatableEditor.inline( this ,{ submit: 'allIfChanged',
+          	submitOnBlur: true
+    	});
+    } );
+    
+    $(window).scroll(function(){
+        var topH = $(this).scrollTop() - parseInt($('.content').css('padding-top'));	
+        $("#datatableControlWrapper").css("top",topH+"px");
+    })
 }
 
 var createEditorFields = function(columnsMetadata){
