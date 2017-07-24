@@ -93,13 +93,13 @@ public class ColumnResource extends BaseDataTableResource{
 		case 11:
 			orderByColumn = "special";
 			break;
+//		case 12:
+//			orderByColumn = "minWidth";
+//			break;
+//		case 13:
+//			orderByColumn = "maxWidth";
+//			break;
 		case 12:
-			orderByColumn = "minWidth";
-			break;
-		case 13:
-			orderByColumn = "maxWidth";
-			break;
-		case 14:
 			orderByColumn = "columnSize";
 			break;
 		//case 15:
