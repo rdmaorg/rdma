@@ -162,7 +162,10 @@ var configureDataTable = function(columnsMetadata){
 					   if(json.data[i].columns[j].val && json.data[i].columns[j].val.dropdownOptions){
 						 json.data[i].columns[j].val.position = j;
 					   } else {
-					     json.data[i].columns[j].position = j;	
+					     json.data[i].columns[j].position = j;
+					     if(json.data[i].columns[j].val && json.data[i].columns[j].val.timestamp){
+					    	 json.data[i].columns[j].val = json.data[i].columns[j].val.timestamp;
+					     }
 					   }
 					 }
 				 }
