@@ -31,21 +31,21 @@ var configureDataTable = function(){
 			            		'disabled': disabled,
 			            		'data-tableid': row.id,
 			            		'data-tablename': row.alias,
-			                    text: ' Edit Alias'
+			                    html: '<i class="fa fa-pencil-square-o"></i> Edit Alias'
 			                });
 			            	var $buttonEditAccess = $('<button/>', {
 			            		"class":"btn btn-primary btn-xs editAccess",
 			            		'disabled': disabled,
 			            		'data-tableid': row.id,
 			            		'data-tablename': row.alias,
-			                    text: ' Edit Access'
+			                    html: '<i class="fa fa-pencil-square-o"></i> Edit Access'
 			                });
 			            	var $buttonViewColumns = $('<button/>', {
 			            		"class":"btn btn-info btn-xs viewColumns",
 			            		'disabled': disabled,
 			            		'data-tableid': row.id,
 			            		'data-tablename': row.alias,
-			                    text: ' Columns'
+			                    html: '<i class="fa fa-columns"></i> Columns'
 			                });
 			            	return $buttonEditTable.prop('outerHTML') + '&nbsp;' + $buttonEditAccess.prop('outerHTML') + '&nbsp;' +  $buttonViewColumns.prop('outerHTML');
 			            	} 
@@ -59,7 +59,7 @@ var configureDataTable = function(){
 			showEditTableAccessModal();
 			associateViewColumns();
 			showEditTableAliasModal();
-			prependIconToButton();
+//			prependIconToButton();
 		}
 	});
 	table.off('responsive-display');
@@ -67,7 +67,7 @@ var configureDataTable = function(){
 		showEditTableAccessModal();
 		associateViewColumns();
 		showEditTableAliasModal();
-		prependIconToButton();
+//		prependIconToButton();
 	});
 };
 
@@ -181,9 +181,9 @@ $(document).ready(function(){
     });
 });
 
-var prependIconToButton = function(){
-	var $italicPencil = $('<i>', {'class': 'fa fa-pencil-square-o'});
-	$italicPencil.prependTo('.editTable, .editAccess');
-	var $italicTable = $('<i>', {'class': 'fa fa-columns'});
-	$italicTable.prependTo('.viewColumns');
-}
+//var prependIconToButton = function(){
+//	var $italicPencil = $('<i>', {'class': 'fa fa-pencil-square-o'});
+//	$italicPencil.prependTo('.editTable, .editAccess');
+//	var $italicTable = $('<i>', {'class': 'fa fa-columns'});
+//	$italicTable.prependTo('.viewColumns');
+//}
