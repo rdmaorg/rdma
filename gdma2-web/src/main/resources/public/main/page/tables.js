@@ -1,6 +1,6 @@
-var serverSessionId = sessionStorage.getItem("id");
+var serverSessionId = getParameterByName("id"); // sessionStorage.getItem("id");
 var selector = "#tbl_tables" + serverSessionId;
-var serverSessionName = sessionStorage.getItem("name");
+var serverSessionName = getParameterByName("name"); // sessionStorage.getItem("name");
 var selectedTableId = -1;
 var table;
 var tableEdit;

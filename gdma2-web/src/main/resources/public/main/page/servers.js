@@ -198,7 +198,7 @@ var associateViewServer = function(){
 	})
 };
 
-var syncTables = function(serverId){
+var syncTables = function(serverId, serverName){
 	showLoading();
 	$.ajax({
         type: "get",
@@ -206,7 +206,7 @@ var syncTables = function(serverId){
         contentType: "application/json; charset=utf-8",
     }).done(function(data){
     }).complete(function(data){
-    	completeSyncServer();
+    	completeSyncServer(serverId, serverName);
     }).fail(function(e){
     	handleError('#global-alert', e);
     }).always(function(){
@@ -214,14 +214,14 @@ var syncTables = function(serverId){
     });
 }
 
-var viewServer = function(serverId,serverName) {
-	syncTables(serverId);
-	sessionStorage.setItem("id",serverId);
-	sessionStorage.setItem("name",serverName);
+var viewServer = function(serverId, serverName) {
+	syncTables(serverId, serverName);
+//	sessionStorage.setItem("id",serverId);
+//	sessionStorage.setItem("name",serverName);
 }
 
 var completeSyncServer = function(serverId,serverName){
-	window.location.href = "tables";
+	window.location.href = "tables?id="+serverId+"&name="+serverName;
 }
 
 $(document).ready(function(){	
