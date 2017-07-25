@@ -3,9 +3,11 @@ var origColumns = new Object();
 var table;
 var selectdedColumnId;
 var selectedColumnName;
-var tableSessionId = sessionStorage.getItem("idTable");
-var serverSessionName = sessionStorage.getItem("name");
-var tableSessionName = sessionStorage.getItem("nameTable");
+var tableSessionId = getParameterByName("tableId"); // sessionStorage.getItem("idTable");
+var tableSessionName = getParameterByName("tableName"); //sessionStorage.getItem("nameTable");
+var serverSessionName = getParameterByName("serverName"); // sessionStorage.getItem("name");
+var serverSessionId = getParameterByName("severId");
+
 var configureDataTable = function(){
        changedColumns = new Object();
        origColumns = new Object();
@@ -429,8 +431,10 @@ $(document).ready(function(){
 	configureDataTable();
     associateSaveDropDownColumn();   
     $("#serverName").html(serverSessionName);
-    $("#tableName").html('&#45;&nbsp;' + sessionStorage.getItem("nameTable"));
+    $("#tableName").html('&#45;&nbsp;' + getParameterByName("tableName")); //sessionStorage.getItem("nameTable"));
     $("span[name='serverName']").html(serverSessionName);
-    $("span[name='tableName']").html(sessionStorage.getItem("nameTable"));
+    var href = $("span[name='serverName']").closest('a').attr('href'); 
+    $("span[name='serverName']").closest('a').attr('href', href+"?severId="+serverSessionId+"&serverName="+serverSessionName);
+    $("span[name='tableName']").html(getParameterByName("tableName")); //sessionStorage.getItem("nameTable"));
 });
 

@@ -221,7 +221,7 @@ var viewServer = function(serverId, serverName) {
 }
 
 var completeSyncServer = function(serverId,serverName){
-	window.location.href = "tables?id="+serverId+"&name="+serverName;
+	window.location.href = "tables?severId="+serverId+"&serverName="+serverName;
 }
 
 $(document).ready(function(){	

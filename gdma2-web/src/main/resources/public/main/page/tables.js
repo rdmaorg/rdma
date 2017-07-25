@@ -1,6 +1,6 @@
-var serverSessionId = getParameterByName("id"); // sessionStorage.getItem("id");
+var serverSessionId = getParameterByName("severId"); // sessionStorage.getItem("id");
 var selector = "#tbl_tables" + serverSessionId;
-var serverSessionName = getParameterByName("name"); // sessionStorage.getItem("name");
+var serverSessionName = getParameterByName("serverName"); // sessionStorage.getItem("name");
 var selectedTableId = -1;
 var table;
 var tableEdit;
@@ -151,7 +151,6 @@ var associateViewColumns = function(){
 };
 
 var syncColumns = function(tableId){
-	
 	$.ajax({
         type: "get",
         url: mapPathVariablesInUrl(restUri.column.sync,{id: tableId}),
@@ -163,10 +162,10 @@ var syncColumns = function(tableId){
     	hideLoading();
     });
 } 
-var viewTable = function(serverId,tableName) {
-	sessionStorage.setItem("idTable",serverId);
-	sessionStorage.setItem("nameTable",tableName);
-	window.location.href = "columns";
+var viewTable = function(tableId,tableName) {
+//	sessionStorage.setItem("idTable",serverId);
+//	sessionStorage.setItem("nameTable",tableName);
+	window.location.href = "columns?severId="+serverSessionId+"&serverName="+serverSessionName+"&tableId="+tableId+"&tableName="+tableName; 
 }
 
 $(document).ready(function(){
