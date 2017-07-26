@@ -4,6 +4,18 @@ var columnsMetadata = new Array();
 var tableData;
 var datatableEditor;
 
+$(document).ready(function(){	
+	if(tableId){
+		loadBreadCrumbs(tableId);
+		loadDatatable();
+	}
+});
+
+var loadBreadCrumbs = function(tableId){
+	$("#serverName").html(serverName);
+	$("#tableName").html('&#45;&nbsp;' + tableName);
+}
+
 //load columns metadata
 var loadDatatable = function(){
 	showLoading();
@@ -368,19 +380,6 @@ var createDropDownColumn = function(displayId, storeId, selectedValue){
     });
     select+='</select>';
  return select;
-}
-
-
-$(document).ready(function(){	
-	if(tableId){
-		loadBreadCrumbs(tableId);
-		loadDatatable();
-	}
-});
-
-var loadBreadCrumbs = function(tableId){
-	$("#serverName").html(serverName);
-	$("#tableName").html('&#45;&nbsp;' + tableName);
 }
 
 function filterDisplayed(column) {

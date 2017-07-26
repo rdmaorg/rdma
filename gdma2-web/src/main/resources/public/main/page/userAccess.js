@@ -152,8 +152,9 @@ var associateCheckBoxes = function() {
 var associateCheckbox = function(rule) {
 	$('.' + rule).off('change');
 	$('.' + rule).change(function(e) {
-		var ck = $(e.target);
+		var ck = $(e.target);		
 		var object = origCheckboxes[ck.data('id')];
+		propagateCheckBoxStatus(object.id, rule, ck[0].checked);
 		if (changedCheckboxes[object.id]) {
 			var objAux = changedCheckboxes[object.id];
 			objAux[rule] = ck[0].checked;
@@ -175,6 +176,20 @@ var associateCheckbox = function(rule) {
 			changedCheckboxes[object.id]['allowDisplay'] = true;
 		};
 	});
+}
+
+var propagateCheckBoxStatus = function(id, rule, checked)  {
+	var setRule = '';
+	if (rule === "allowDisplay"){
+		setRule = "allowD";
+	} else if (rule === "allowUpdate"){
+		setRule = "allowU";
+	} else if (rule === "allowInsert"){
+		setRule = "allowI";
+	} else if (rule === "allowDelete"){
+		setRule = "allowDel";
+	}
+	$("[name='"+id+setRule+"']").prop( "checked", checked );
 }
 
 var associateCheckboxFullAccess = function(){
