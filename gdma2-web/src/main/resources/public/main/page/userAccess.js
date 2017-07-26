@@ -221,7 +221,7 @@ var associateCheckboxFullAccess = function(){
 				delete changedCheckboxes[object.id];
 			}
 		} else {
-			// clone the object for maintain the original for comparison
+			// cloning the object to maintain the original for comparison
 			changedCheckboxes[object.id] = jQuery.extend({}, object);
 			changedCheckboxes[object.id][rules.allowDisplay] = ck[0].checked;
 			changedCheckboxes[object.id][rules.allowUpdate] = ck[0].checked;
@@ -267,14 +267,10 @@ var verifyFullAccess = function(id){
 		&& ($("[name='"+id+"allowI']")[0].checked || (typeof $("[name='"+id+"allowI']")[1] !== typeof undefined && $("[name='"+id+"allowI']")[1].checked) )
 		&& ($("[name='"+id+"allowDel']")[0].checked || (typeof $("[name='"+id+"allowDel']")[1] !== typeof undefined && $("[name='"+id+"allowDel']")[1].checked) )
 		){
-		$("[name='"+id+"fullA']").prop( "checked", true );
-		$("[name='"+id+"allowD']").prop( "checked", true );
-		$("[name='"+id+"allowU']").prop( "checked", true );
-		$("[name='"+id+"allowI']").prop( "checked", true );
-		$("[name='"+id+"allowDel']").prop( "checked", true );
-		
+		$("[name='"+id+"fullA']").prop("checked", true );
+		selectAllCheckBoxes(id, true);
 	} else {
-		$("[name='"+id+"fullA']").prop( "checked", false );
+		$("[name='"+id+"fullA']").prop("checked", false );
 	}
 }
 
@@ -290,11 +286,10 @@ var verifyDisplayAccess = function(id){
 }
 
 var selectAllCheckBoxes = function(id,check){
-	$("[name='"+id+"allowD']").prop( "checked", check );
-	$("[name='"+id+"allowU']").prop( "checked", check );
-	$("[name='"+id+"allowI']").prop( "checked", check );
-	$("[name='"+id+"allowDel']").prop( "checked", check );
-	
+	$("[name='"+id+"allowD']").prop("checked", check );
+	$("[name='"+id+"allowU']").prop("checked", check );
+	$("[name='"+id+"allowI']").prop("checked", check );
+	$("[name='"+id+"allowDel']").prop("checked", check );
 }
 
 var objectChanged = function(origObject, newObject) {

@@ -52,7 +52,7 @@ var buildDataModuleMenu = function(){
         	    }).fail(function(e){
         	    	handleError('#global-alert', e);
         	    }).complete(function(e){
-        	    	$(".table-data").click(function(){
+        	        $(".table-data").click(function(){
         		    	var link = $(this);
 //        		    	sessionStorage.setItem("tableId", link.data("id"));
         		    	sessionStorage.setItem("tableName", link.data("tablename"));

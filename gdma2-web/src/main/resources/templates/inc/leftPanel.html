@@ -20,3 +20,11 @@
 
     <!-- /.sidebar -->
   </aside>	
+  <script>
+    $(document).ready(function() {
+	    $('[data-toggle=offcanvas]').click(function() {
+	        $('.glyphicon').toggleClass('glyphicon-chevron-right');
+	        $('.glyphicon').toggleClass('glyphicon-chevron-left');
+	    });
+    });
+  </script>
