@@ -1,19 +1,53 @@
 <header class="main-header" xmlns:th="http://www.thymeleaf.org">
+    <!-- Logo -->
+<!-- 	<a th:href="@{/}" class="logo"> -->
+<!-- 	  <span class="logo-mini"><img class="img-responsive" th:src="@{/public/main/images/logo-gdma.png}" /></span> -->
+<!-- 	  <span class="logo-lg"><b th:text="${@environment.getProperty('application.description')}"></b></span> -->
+<!-- 	</a> -->
+			 
+<!--     <nav class="navbar navbar-static-top"> -->
+<!--       <div class="navbar-custom-menu navbar-left"> -->
+<!--         <ul class="nav navbar-nav"> -->
+<!--           <li class="dropdown messages-menu"> -->
+<!--               <a href="#" class="glyphicon menu-open glyphicon-chevron-right" data-toggle="offcanvas" role="button"> -->
+<!--                 <span class="sr-only">Toggle navigation</span> -->
+<!--                </a> -->
+<!--           </li> -->
+<!-- 	      <li class="dropdown messages-menu"> -->
+<!--     		<span style="color: #fff; border-color: #337ab7; padding-top: 15px; padding-bottom: 15px; position: relative; display: block; padding: 10px 15px; outline: 0; box-sizing: border-box; cursor: auto; text-align: -webkit-match-parent;">               -->
+<!-- 			   	<span class="hidden-xs" id="serverName"></span>  -->
+<!-- 			   	<span class="hidden-xs" id="tableName"></span> -->
+<!--              </span> -->
+<!-- 	        </li> -->
+<!--         </ul> -->
+<!--     </div> -->
 
+<!--       <div class="navbar-custom-menu"> -->
+<!--         <ul class="nav navbar-nav"> -->
+<!-- 	        <li class="dropdown user user-menu"> -->
+<!-- 	          <a href="#" class="dropdown-toggle" data-toggle="dropdown">           -->
+<!-- 	            <span class="hidden-xs"></span> -->
+<!-- 	          </a> -->
+<!-- 	          <ul class="dropdown-menu" id="gdma-user-dropdown"> -->
+<!-- 	          </ul> -->
+<!-- 	        </li> -->
+<!-- 	        <li sec:authorize="hasAuthority('GDMA_ADMIN')"> -->
+<!-- 	          <a href="#" class="btn btn-flat" id="btn-admin" data-toggle="control-sidebar"><i class="fa fa-gears"></i> <span th:text="#{view.menu.configuration}"></span></a> -->
+<!-- 	        </li> -->
+<!--         </ul> -->
+<!--       </div> -->
+<!--     </nav> -->
+                
   <!-- Header Navbar: style can be found in header.less -->
   <nav id="topNavBar" class="navbar navbar-inverse">
-
-
       <ul class="nav navbar-nav">
         <li>
 			<a th:href="@{/}" class="logo">
-			  <!-- mini logo for sidebar mini 50x50 pixels -->
+<!-- 			  mini logo for sidebar mini 50x50 pixels -->
 			  <span class="logo-mini"><img class="img-responsive" th:src="@{/public/main/images/logo-gdma.png}" /></span>
-			  <!-- logo for regular state and mobile devices -->
+<!-- 			  logo for regular state and mobile devices -->
 			  <span class="logo-lg"><b th:text="${@environment.getProperty('application.description')}"></b></span>
 			</a>		  
-		</li>
-	    <li>
 		</li>
 	  </ul>
 	  <ul class="nav navbar-nav ">
@@ -27,7 +61,6 @@
             <span class="hidden-xs"></span>
           </a>
           <ul class="dropdown-menu dropdown-menu-right">
-            <!-- Menu Footer-->
           </ul>
         </li>
         <li sec:authorize="hasAuthority('GDMA_ADMIN')">

@@ -360,6 +360,16 @@ public class SQLUtil {
 				break;
 			case Types.TINYINT:
 			case Types.INTEGER:
+				try {
+					if (StringUtils.hasText(data)) {
+						oReturn = Integer.parseInt(data);
+					} else {
+						return null;
+					}
+				} catch (Exception e) {
+				    throw new TypeMismatchDataAccessException("Vaule [" + data + "] could not be parsed as an Integer");
+				}
+				break;
 			case Types.BIT:
 				try {
 					if (StringUtils.hasText(data)) {

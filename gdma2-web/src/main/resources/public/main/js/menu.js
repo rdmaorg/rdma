@@ -166,7 +166,7 @@ var loadUserMenu = function(){
     }).done(function(data){	
 		$(".user-menu span").html(data[0].name);
     	$.each(data[0].children, function(i, menu) {
-    		$('<li><a href="/gdma2'+ menu.view +'" class="btn btn-default btn-flat">'+ menu.name +'</a></li>').appendTo(".dropdown-menu-right");
+    		$('<li class="user-footer"><a href="/gdma2'+ menu.view +'" class="btn btn-default btn-flat">'+ menu.name +'</a></li>').appendTo(".dropdown-menu-right");
     	});
 
     }).fail(function(e){
