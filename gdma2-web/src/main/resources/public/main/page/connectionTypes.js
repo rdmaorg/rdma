@@ -33,7 +33,7 @@ var configureDataTable = function() {
 
 var associateEditButton = function() {
 	$('.editConnection').click(function() {
-		var connectionType = table.row(this.closest('tr')).data();
+		var connectionType = table.row($(this).closest('tr')).data();
 		updateModal(connectionType);
 	});
 }

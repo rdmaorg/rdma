@@ -30,9 +30,9 @@
 		value="org.hibernate.dialect.PostgreSQL9Dialect" type="java.lang.String"
 		override="false" />
 	-->
-	<Environment name="jdbc/registry_dialect"
-		value="org.hibernate.dialect.SQLServerDialect" type="java.lang.String"
-		override="false" />
+<!-- 	<Environment name="jdbc/registry_dialect" -->
+<!-- 		value="org.hibernate.dialect.SQLServerDialect" type="java.lang.String" -->
+<!-- 		override="false" /> -->
 	
 
 </Context>

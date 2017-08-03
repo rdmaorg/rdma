@@ -274,12 +274,54 @@
 				<log.location>logs</log.location>
 			</properties>
 		</profile>
-		
+		<profile>
+			<id>tomcat-oracle</id>
+			<properties>
+				<db.jndi>java:comp/env/jdbc/gdma</db.jndi>
+				<log.location>${d}{catalina.home}/logs</log.location>
+				<spring.jmx.enabled>true</spring.jmx.enabled>
+				<!-- Security -->
+				<app.protocol>https</app.protocol>
+				<app.hostname>localhost</app.hostname>
+				<cas.hostname>localhost</cas.hostname>
+				<spring.profiles>localCachingCas</spring.profiles>
+				<db.hibernate.dialect>org.hibernate.dialect.OracleDialect</db.hibernate.dialect>
+			</properties>
+			<dependencies>
+				<!-- Removing embedded tomcat -->
+				<dependency>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+					<scope>provided</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		<profile>
+			<id>tomcat-mysql</id>			
+			<properties>
+				<db.jndi>java:comp/env/jdbc/gdma</db.jndi>
+				<log.location>${d}{catalina.home}/logs</log.location>
+				<spring.jmx.enabled>true</spring.jmx.enabled>
+				<!-- Security -->
+				<app.protocol>https</app.protocol>
+				<app.hostname>localhost</app.hostname>
+				<cas.hostname>localhost</cas.hostname>
+				<spring.profiles>localCachingCas</spring.profiles>
+				<!-- RDMA database dialect  -->
+				<db.hibernate.dialect>org.hibernate.dialect.MySQLDialect</db.hibernate.dialect>
+			</properties>
+			<dependencies>
+				<!-- Removing embedded tomcat -->
+				<dependency>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+					<scope>provided</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+				
 		<profile>
 			<id>tomcat-sqlserver</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 			<properties>
 				<db.jndi>java:comp/env/jdbc/gdma</db.jndi>
 				<log.location>${d}{catalina.home}/logs</log.location>
@@ -305,7 +347,7 @@
 			<id>tomcat</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
-			</activation>
+			</activation>			
 			<properties>
 				<db.jndi>java:comp/env/jdbc/gdma</db.jndi>
 				<log.location>${d}{catalina.home}/logs</log.location>
@@ -315,6 +357,7 @@
 				<app.hostname>localhost</app.hostname>
 				<cas.hostname>localhost</cas.hostname>
 				<spring.profiles>localCachingCas</spring.profiles>
+				<db.hibernate.dialect>org.hibernate.dialect.PostgreSQL9Dialect</db.hibernate.dialect>
 			</properties>
 			<dependencies>
 				<!-- Removing embedded tomcat -->
