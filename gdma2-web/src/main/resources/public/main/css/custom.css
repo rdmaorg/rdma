@@ -11,6 +11,10 @@
 	position: relative;
 }
 	
+.main-sidebar,.main-header .logo {
+	transition: none;
+    -webkit-transition: none;	
+}
 
 .navbar-nav>.user-menu>.dropdown-menu>li.user-header {
 	height: auto;
