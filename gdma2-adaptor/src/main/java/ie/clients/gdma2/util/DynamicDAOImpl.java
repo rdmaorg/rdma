@@ -36,7 +36,11 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.avnet.cs.commons.utils.StringUtil;
+
 import ie.clients.gdma2.adaptor.repo.RepositoryManager;
+import ie.clients.gdma2.domain.AuditHeader;
+import ie.clients.gdma2.domain.AuditRecord;
 import ie.clients.gdma2.domain.Column;
 import ie.clients.gdma2.domain.ColumnDataUpdate;
 import ie.clients.gdma2.domain.Server;
@@ -51,6 +55,10 @@ import ie.clients.gdma2.util.TableRowDTO.TableColumn;
 
 @Repository
 public class DynamicDAOImpl implements DynamicDAO{
+
+	private static final char AUDIT_TYPE_CREATE = 'C';
+	private static final char AUDIT_TYPE_UPDATE = 'U';
+	private static final char AUDIT_TYPE_DELETE = 'D';
 
 	private static final String UNKNOWN_USER = "UNKNOWN";
 
@@ -884,17 +892,18 @@ public class DynamicDAOImpl implements DynamicDAO{
 		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrueAndDisplayedTrue(table.getId());
 		table.setColumns(new LinkedHashSet(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change this and pass colums to utility method themselves
 
-
 		List<List<ColumnDataUpdate>> columnsUpdate = updateRequest.getUpdates();
 
 		DataSourceTransactionManager transactionManager = dataSourcePool.getTransactionManager(server);
 		TransactionTemplate txTemplate = new TransactionTemplate(transactionManager);
 		logger.info("transactionManager obtained");
-
+		
+		List<AuditRecord> auditRecordList = new ArrayList<AuditRecord>();
 		txTemplate.execute(new org.springframework.transaction.support.TransactionCallbackWithoutResult() {
 			@Override
 			protected void doInTransactionWithoutResult(org.springframework.transaction.TransactionStatus status) {
 				logger.info("doInTransactionWithoutResult");
+				int countUpdated = 0;
 				for (List<ColumnDataUpdate> colList : columnsUpdate) {
 					logger.info("1: iterrate in colUpdateList");
 					//create new list of columns loaded from DB, use columnType to convert new value and create paremeters 
@@ -916,6 +925,8 @@ public class DynamicDAOImpl implements DynamicDAO{
 							logger.info("4: params...");
 							parameters.add(SQLUtil.convertToType(col.getNewColumnValue(), column.getColumnType(), column));
 							logger.info("5: ...params converted");
+							AuditRecord ar = extractAuditRecord(col);
+							auditRecordList.add(ar);
 						}
 					}
 
@@ -925,16 +936,17 @@ public class DynamicDAOImpl implements DynamicDAO{
 					logger.info("sql: " + sql);
 					logger.info("parameters: "  + parameters);
 
-
 					JdbcTemplate jdbcTemplate = new JdbcTemplate(transactionManager.getDataSource());
 					//JdbcTemplate jdbcTemplate = dataSourcePool.getJdbcTemplateFromDataDource(server);
 					logger.info("6: UPDATE...");
-					jdbcTemplate.update(sql, parameters.toArray());
+					countUpdated += jdbcTemplate.update(sql, parameters.toArray());
 					logger.info("6: ..UPDATE end");
-
 				}
-
+				if(countUpdated > 0){
+					saveAuditRecords(auditRecordList, table, AUDIT_TYPE_CREATE);		
+				}
 			}
+
 		});//inner class impl
 
 	}
@@ -1055,7 +1067,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 		//TODO check conditions : does column need to be active...
 		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrueAndDisplayedTrue(table.getId());
 		table.setColumns(new LinkedHashSet(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change this and pass colums to utility method themselves
-
+		List<AuditRecord> auditRecordList = new ArrayList<AuditRecord>();
 		List<List<ColumnDataUpdate>> columnsUpdate = updateRequest.getUpdates();
 
 		DataSourceTransactionManager transactionManager = dataSourcePool.getTransactionManager(server);
@@ -1110,7 +1122,12 @@ public class DynamicDAOImpl implements DynamicDAO{
 										}
 
 										parameters.add(obj);
-
+										
+										if (columnValueChanged(columnUpdate)){
+											AuditRecord ar = extractAuditRecord(columnUpdate);
+											auditRecordList.add(ar);
+										}
+										
 										if (obj == null){
 											logger.info("5: obj of data type is null - problem with data type conversion?");
 										} else {
@@ -1120,7 +1137,6 @@ public class DynamicDAOImpl implements DynamicDAO{
 								}
 							} //internal for end
 
-
 							//ADD PKs at the end of both colums collection and key at : parameters.addAll(keys); //so they match positions
 							for (ColumnDataUpdate columnUpdate : list) {
 								Column column = repositoryManager.getColumnRepository().findOne(columnUpdate.getColumnId());
@@ -1128,10 +1144,10 @@ public class DynamicDAOImpl implements DynamicDAO{
 									logger.info("6: column IS PK! Getting old value from request and type from metadata");
 									columns.add(column);
 									keys.add(SQLUtil.convertToType(columnUpdate.getOldColumnValue(), column.getColumnType()));
-
+									AuditRecord ar = extractAuditRecord(columnUpdate);
+									auditRecordList.add(ar);
 								} 
 							} //internal for end
-
 
 							if (CollectionUtils.isEmpty(parameters)) {
 								throw new InvalidDataAccessResourceUsageException("No update values found!");
@@ -1142,7 +1158,6 @@ public class DynamicDAOImpl implements DynamicDAO{
 							}
 							logger.info("6: before handling special columns");
 							//TODO !!!
-
 							parameters.addAll(keys); //add keys at the end because they are always last in:  
 							// UPDATE new_table_test_autoincrement SET year = ?, name = ?, employment_date = ? WHERE  (id = ?) 
 							//...now positions are matched for mapping by index and collections of columns and  parameters have the same size
@@ -1153,17 +1168,49 @@ public class DynamicDAOImpl implements DynamicDAO{
 							logger.info("parameters: " + parameters);
 							JdbcTemplate jdbcTemplate = new JdbcTemplate(transactionManager.getDataSource());
 							countUpdated += jdbcTemplate.update(sql, parameters.toArray());
-
 						}//main for
+						
+						if(countUpdated > 0){
+							saveAuditRecords(auditRecordList, table, AUDIT_TYPE_UPDATE);		
+						}
 
 						logger.info("doInTransaction() - end - return value=" + countUpdated);
 						return countUpdated;
-					}	
+					}
 
 				});//inner interface impl end
 
 		logger.info("updateRecords() - end - return value=" + countUpd);
 		return countUpd;
+	}
+	
+	private Boolean columnValueChanged(ColumnDataUpdate columnUpdate) {
+		if((null != columnUpdate.getNewColumnValue()) && (null != columnUpdate.getOldColumnValue()) 
+				&& (!columnUpdate.getNewColumnValue().equals(columnUpdate.getOldColumnValue()))){
+			return true;
+		}
+		if((null != columnUpdate.getNewColumnValue()) && (null == columnUpdate.getOldColumnValue()) 
+				|| (null == columnUpdate.getNewColumnValue()) && (null != columnUpdate.getOldColumnValue())){
+			return true;
+		}
+		return false;
+	}
+	
+	private AuditRecord extractAuditRecord(ColumnDataUpdate columnUpdate) {
+		AuditRecord ar = new AuditRecord();
+		ar.setColumnID(columnUpdate.getColumnId());
+		ar.setNewValue(StringUtil.abbreviateString(columnUpdate.getNewColumnValue(),255));
+		ar.setOldValue(StringUtil.abbreviateString(columnUpdate.getOldColumnValue(),255));
+		return ar;
+	}
+
+	private AuditHeader instantiateAuditHeader(Table table, char auditType) {
+		AuditHeader ah = new AuditHeader();
+		ah.setModifiedBy(userContextProvider.getLoggedInUserName());
+		ah.setModifiedOn(new Date());
+		ah.setTableID(table.getId());
+		ah.setType(auditType);
+		return ah;
 	}
 
 
@@ -1191,14 +1238,8 @@ public class DynamicDAOImpl implements DynamicDAO{
 			logger.error("Error while delete: server or table does not exist!");
 			return -1; //TODO 
 		}
-
+		List<AuditRecord> auditRecordList = new ArrayList<AuditRecord>();
 		List<List<ColumnDataUpdate>> columnsUpdate = updateRequest.getUpdates();
-
-		for (List<ColumnDataUpdate> list : columnsUpdate) {
-			for (ColumnDataUpdate columnDataUpdate : list) {
-				logger.info("dumy col Id: " + columnDataUpdate.getColumnId() + " old val: " + columnDataUpdate.getOldColumnValue() + " new val:" + columnDataUpdate.getNewColumnValue());
-			}
-		}
 
 		DataSourceTransactionManager transactionManager = dataSourcePool.getTransactionManager(server);
 		TransactionTemplate txTemplate = new TransactionTemplate(transactionManager);
@@ -1221,13 +1262,16 @@ public class DynamicDAOImpl implements DynamicDAO{
 					}
 
 					for (ColumnDataUpdate columnUpdate : list) {
+						logger.info("dumy col Id: " + columnUpdate.getColumnId() + " old val: " + columnUpdate.getOldColumnValue() + " new val:" + columnUpdate.getNewColumnValue());
 						logger.info("1: column list itteration");
 						//Column column = gdmaFacade.getColumnDao().get(columnUpdate.getColumnId());
 						Column column = repositoryManager.getColumnRepository().findOne(columnUpdate.getColumnId());
 						columns.add(column);
 						if (column.isPrimarykey()) {
 							logger.info("2: Pk detected");
-							keys.add(SQLUtil.convertToType(columnUpdate.getOldColumnValue(), column.getColumnType()));
+							keys.add(SQLUtil.convertToType(columnUpdate.getNewColumnValue(), column.getColumnType()));
+							AuditRecord ar = extractAuditRecord(columnUpdate);
+							auditRecordList.add(ar);
 						}
 					}
 
@@ -1235,15 +1279,12 @@ public class DynamicDAOImpl implements DynamicDAO{
 					logger.info("Delete SQL used: " + sql);
 					logger.info("Keys-values used : " + keys);
 
-					/*	
-					 	DELETE FROM new_table_test_autoincrement WHERE  (id = ?) 
- 						DELETE FROM new_table_test_autoincrement WHERE  (id = ?) 
-					 */
-
 					JdbcTemplate jdbcTemplate = new JdbcTemplate(transactionManager.getDataSource());
 					countDeleted += jdbcTemplate.update(sql, keys.toArray());
-
 				}//for
+				if(countDeleted > 0){
+					saveAuditRecords(auditRecordList, table, AUDIT_TYPE_DELETE);
+				}
 				logger.info("count deleted in itteration" + countDeleted);
 				return countDeleted;
 			}
@@ -2046,6 +2087,13 @@ public class DynamicDAOImpl implements DynamicDAO{
 		return dropDownDataRowsMap;
 	}
 
-
+	private void saveAuditRecords(List<AuditRecord> auditRecordList, Table table, char auditType ) {
+		AuditHeader auditHeader = instantiateAuditHeader(table, auditType);
+		AuditHeader persistedAuditHeader = repositoryManager.getAuditHeaderRepository().save(auditHeader);
+		for (AuditRecord auditRecord : auditRecordList) {
+			auditRecord.setAuditHeader(persistedAuditHeader);
+		}
+		repositoryManager.getAuditRecordRepository().save(auditRecordList);
+	}
 
 }

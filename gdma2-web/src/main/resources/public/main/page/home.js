@@ -95,6 +95,12 @@ var configureDataTable = function(columnsMetadata){
 	}
 	datatableEditor = $('#table_data').configureEditor(configEditor);
 	
+//	datatableEditor.add( {
+//        "type":    "hidden",
+//        "name":    "oldValues",
+//        "default": "oldValues"
+//    } );
+	
 	// Disable KeyTable while the main editing form is open
 	datatableEditor.on( 'open', function ( e, mode, action ) {
             if ( mode === 'main' ) {
@@ -111,6 +117,9 @@ var configureDataTable = function(columnsMetadata){
         	enableDisableAllowUpdateFields(columnsMetadata, editorFields);
         	tableData.keys.enable();
         } )
+        .on('initEdit', function(e, node, data) {
+		    datatableEditor.field("oldValues").val(data.columns);
+		})
         .on( 'preSubmit', function ( e, data, action ) {
         	//WORKAROUND TO REMOVE BACK END ERRORS
         	var el = $(datatableEditor.dom.formError);
@@ -176,7 +185,7 @@ var configureDataTable = function(columnsMetadata){
 					   } else {
 					     json.data[i].columns[j].position = j;
 					     if(json.data[i].columns[j].val && json.data[i].columns[j].val.timestamp){
-					    	 json.data[i].columns[j].val = json.data[i].columns[j].val.timestamp;
+					    	 json.data[i].columns[j].val = json.data[i].columns[j].val.timestamp;					    	 
 					     }
 					   }
 					 }
@@ -310,6 +319,13 @@ var createEditorFields = function(columnsMetadata){
 		if(columnsMetadata[i].columnTypeString.toUpperCase() === "DATE"){
 			fields[i].type = "datetime";
 		};
+		
+		fields.push( {
+	        "type":    "hidden",
+	        "name":    "oldValues",
+	        "default": "oldValues"
+	    } );
+		
 	}
 	return fields;
 }

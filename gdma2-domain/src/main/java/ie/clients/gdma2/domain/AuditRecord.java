@@ -1,6 +1,8 @@
 package ie.clients.gdma2.domain;
 
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 
 import com.avnet.cs.commons.dao.BaseEntity;
@@ -16,8 +18,9 @@ import com.avnet.cs.commons.dao.BaseEntity;
 public class AuditRecord extends BaseEntity{
 	
 	/*TODO openQ use AuditHeader object instead od ID?*/
-	@javax.persistence.Column(name = "AUDIT_HEADER_ID")
-    private Integer auditHeaderID;
+	@ManyToOne
+	@JoinColumn(name = "AUDIT_HEADER_ID")
+    private AuditHeader auditHeader;
 	
 	/*TODO openQ use Column object instead od ID?*/
 	@javax.persistence.Column(name = "COLUMN_ID")
@@ -28,20 +31,20 @@ public class AuditRecord extends BaseEntity{
 	
 	@javax.persistence.Column(name = "NEW_VALUE")
     private String newValue;
-
+	
     /**
      * @return Returns the auditHeaderID.
      */
-    public Integer getAuditHeaderID() {
-        return auditHeaderID;
+    public AuditHeader getAuditHeader() {
+        return auditHeader;
     }
 
     /**
      * @param auditHeaderID
      *            The auditHeaderID to set.
      */
-    public void setAuditHeaderID(Integer auditHeaderID) {
-        this.auditHeaderID = auditHeaderID;
+    public void setAuditHeader(AuditHeader auditHeader) {
+        this.auditHeader = auditHeader;
     }
 
     /**
@@ -88,4 +91,5 @@ public class AuditRecord extends BaseEntity{
     public void setOldValue(String oldValue) {
         this.oldValue = oldValue;
     }
+    
 }

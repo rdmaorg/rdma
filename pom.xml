@@ -261,10 +261,16 @@
 
 	<!-- adding opencsv for bulk CV upload  -->
 	<dependency>
-			<groupId>com.opencsv</groupId>
-			<artifactId>opencsv</artifactId>
-			<version>3.8</version>
-		</dependency>
+		<groupId>com.opencsv</groupId>
+		<artifactId>opencsv</artifactId>
+		<version>3.8</version>
+	</dependency>
+	
+	<dependency>
+	    <groupId>com.avnet.cs.commons.utils</groupId>
+	    <artifactId>acs-commons-utils</artifactId>
+	    <version>0.13</version>
+    </dependency>
 	</dependencies>
 
 	<profiles>
@@ -285,7 +291,8 @@
 				<app.hostname>localhost</app.hostname>
 				<cas.hostname>localhost</cas.hostname>
 				<spring.profiles>localCachingCas</spring.profiles>
-				<db.hibernate.dialect>org.hibernate.dialect.OracleDialect</db.hibernate.dialect>
+<!-- 				<db.hibernate.dialect>org.hibernate.dialect.Oracle8iDialect</db.hibernate.dialect> -->
+				<db.hibernate.dialect>org.hibernate.dialect.Oracle10gDialect</db.hibernate.dialect>
 			</properties>
 			<dependencies>
 				<!-- Removing embedded tomcat -->

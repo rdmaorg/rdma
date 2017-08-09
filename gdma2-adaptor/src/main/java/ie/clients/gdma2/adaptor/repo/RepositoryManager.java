@@ -23,7 +23,12 @@ public class RepositoryManager {
 	
 	@Autowired
 	private UserAccessRepository userAccessRepository;
-
+	
+	@Autowired
+	private AuditHeaderRepository auditHeaderRepository;
+	
+	@Autowired
+	private AuditRecordRepository auditRecordRepository;
 	
 	public ConnectionTypeRepository getConnectionTypeRepository() {
 		return connectionTypeRepository;
@@ -73,7 +78,21 @@ public class RepositoryManager {
 	public void setUserAccessRepository(UserAccessRepository userAccessRepository) {
 		this.userAccessRepository = userAccessRepository;
 	}
-	
-	
+
+	public AuditHeaderRepository getAuditHeaderRepository() {
+		return auditHeaderRepository;
+	}
+
+	public void setAuditHeaderRepository(AuditHeaderRepository auditHeaderRepository) {
+		this.auditHeaderRepository = auditHeaderRepository;
+	}
+
+	public AuditRecordRepository getAuditRecordRepository() {
+		return auditRecordRepository;
+	}
+
+	public void setAuditRecordRepository(AuditRecordRepository auditRecordRepository) {
+		this.auditRecordRepository = auditRecordRepository;
+	}
 	
 }

@@ -60,15 +60,16 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 		List<Column> activeTableList = repositoryManager.getColumnRepository().findByTableIdAndActiveTrueAndDisplayedTrue(tableId);
 
 		//remove tables and all parent objects
-		for (Column column : activeTableList) {
-			column.setTable(null);
-			if(column.getDropDownColumnDisplay() != null){
-				column.getDropDownColumnDisplay().setTable(null);
-			}
-			if(column.getDropDownColumnStore() != null){
-				column.getDropDownColumnStore().setTable(null);
-			}
-		}
+		//Daniel Serva 04/08/2017: WHY????
+//		for (Column column : activeTableList) {
+//			column.setTable(null);
+//			if(column.getDropDownColumnDisplay() != null){
+//				column.getDropDownColumnDisplay().setTable(null);
+//			}
+//			if(column.getDropDownColumnStore() != null){
+//				column.getDropDownColumnStore().setTable(null);
+//			}
+//		}
 
 		return activeTableList;
 	}
@@ -303,7 +304,7 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 							ColumnDataUpdate newColumn = new ColumnDataUpdate();
 							newColumn.setColumnId(columnMetadata.getId());
 							newColumn.setNewColumnValue(reqParams.get(key));
-							newColumn.setOldColumnValue(reqParams.get(key));
+							newColumn.setOldColumnValue(reqParams.get(key.replace("[columns]", "[oldValues]")));
 							row.add(newColumn);
 						}
 						j++;
@@ -333,12 +334,13 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 			int i = 0,j = 0;
 			for (Column columnMetadata : columnsMetadata) {
 				for (String key: reqParams.keySet()) {
-					if(key.startsWith(rowKey)){
+					//checking key does not contain "[oldValues]" to avoid unnecessary loops
+					if(key.startsWith(rowKey) && !key.contains("[oldValues]")){
 						if(i == j){
 							ColumnDataUpdate newColumn = new ColumnDataUpdate();
 							newColumn.setColumnId(columnMetadata.getId());
 							newColumn.setNewColumnValue(reqParams.get(key));
-							newColumn.setOldColumnValue(reqParams.get(key));
+							newColumn.setOldColumnValue(reqParams.get(key.replace("[columns]", "[oldValues]")));
 							if(columnMetadata.isPrimarykey() || columnMetadata.isAllowUpdate() || !"N".equalsIgnoreCase(columnMetadata.getSpecial())){
 								row.add(newColumn);
 							}
