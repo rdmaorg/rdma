@@ -260,11 +260,13 @@ table.table-condensed {
 }
 
 div.DTE div.DTE_Form_Error {
-	white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 80%;
-    font-size:12px;
+	font-size: 12px;
+    width: 240px;
+    position: absolute;
+    background: #fff;
+    padding: 5px;
+    border: 1px solid #b11f1f;
+    border-radius: 5px;
 }
 
 .buttons-row {

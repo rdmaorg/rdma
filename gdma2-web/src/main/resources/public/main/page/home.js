@@ -118,7 +118,13 @@ var configureDataTable = function(columnsMetadata){
         	tableData.keys.enable();
         } )
         .on('initEdit', function(e, node, data) {
-		    datatableEditor.field("oldValues").val(data.columns);
+        	//TODO: Daniel to verify
+        	//Usecase: Click on a column, it becomes editable, now click on a column in another row. In this case, the "data" is coming in as null.
+        	//The code datatableEditor.field("oldValues").val(data.columns); was failing.
+        	//So, Farrukh placed the if check. The correct fix may be somewhere else.
+        	if(data && data.columns){
+    		    datatableEditor.field("oldValues").val(data.columns);
+        	}
 		})
         .on( 'preSubmit', function ( e, data, action ) {
         	//WORKAROUND TO REMOVE BACK END ERRORS
@@ -279,14 +285,17 @@ var configureDataTable = function(columnsMetadata){
 
     // Activate an inline edit on click of a table cell
     // or a DataTables Responsive data cell
-    $('#table_data').on( 'click', 'tbody td:not(.child), tbody span.dtr-data', function (e) {
+    tableData.on( 'click', 'tbody td:not(.child), tbody span.dtr-data', function (e) {
         // Ignore the Responsive control and checkbox columns
         if ( $(this).hasClass( 'control' ) || $(this).hasClass('select-checkbox') ) {
             return;
         }
-        datatableEditor.inline( this ,{ submit: 'allIfChanged',
-          	submitOnBlur: true
-    	});
+        //Farrukh: Previously the following line was datatableEditor.inline( this ,{ submit: 'allIfChanged',
+        //Changed this line as per https://datatables.net//forums/discussion/comment/86077/#Comment_86077
+        //TODO: Daniel to verify
+  	  	datatableEditor.inline( tableData.cell(this).index() ,{ submit: 'allIfChanged',
+  	  	  submitOnBlur: true
+	  });
     } );
     
     $(window).scroll(function(){
