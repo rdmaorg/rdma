@@ -146,7 +146,7 @@ var associateViewColumns = function(){
 	$('.viewColumns').on('click', function(){
  		var btn = $(this);
  		syncColumns(btn.data('tableid'),btn.data('tablename'));
- 		viewTable(btn.data('tableid'),btn.data('tablename'));
+ 		//viewTable(btn.data('tableid'),btn.data('tablename'));
 	})
 };
 
