@@ -35,7 +35,9 @@ a {
 	background-color: #2a2a2a;
 }
 
-#addServer,.insert-user,.insert-connection {
+#addServer,
+.insert-user,.insert-user:hover,.insert-user:active,.insert-user:active:hover,.insert-user:focus,
+.insert-connection,.insert-connection:hover,.insert-connection:active,.insert-connection:active:hover,.insert-connection:focus {
 	background-color: #2a2a2a;
 	border:none;
 }
