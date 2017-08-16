@@ -2,6 +2,11 @@
 -- RDMA IMPORT SCRIPT FOR ORACLE DATABASE --
 -- Author: Daniel Serva --
 
+-- pre-requisites --
+--RDMA has to be already created by SpringBoot.
+ 
+USE [GDMA]
+GO
 --import users
 INSERT INTO RDMA.users_gdma2(active, is_admin, is_locked, first_name, last_name, username, user_domain, user_password)
      SELECT (CASE WHEN ACTIVE = 'Y'
@@ -139,3 +144,5 @@ SELECT TABLE_ID, USER_ID
 				ELSE 0
 			END) AS ALLOW_DELETE
   FROM GDMA.dbo.GDMA2_USER_TABLE_ACCESS;
+  
+GO;

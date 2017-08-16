@@ -65,6 +65,8 @@ public class DynamicDAOImpl implements DynamicDAO{
 	private static final String SPECIAL_COLUMN_USER = "U";
 
 	private static final String SPECIAL_COLUMN_DATE = "D";
+	
+	private static final String NOT_SPECIAL_COLUMN = "N";
 
 	private static final Logger logger = LoggerFactory.getLogger(DynamicDAOImpl.class);
 
@@ -1821,12 +1823,14 @@ public class DynamicDAOImpl implements DynamicDAO{
 				StringJoiner insertColumnNameListJoiner = server.getConnectionUrl().contains("mysql") ? new StringJoiner(",","(",")") :  new StringJoiner("\",\"", "(\"", "\") ");
 				for (Column insertColumn : columnsList) {
 					logger.info("Column is of type " + insertColumn.getColumnTypeString());
-					patternListJoiner.add("?");
-					insertColumnNameListJoiner.add(insertColumn.getName());
-					// using varchar because all values from CSV are strings
-					//	params.add(new SqlParameter(Types.VARCHAR));
-					//bh changing this as it was breaking date types
-					insertParametersTypeList.add(new SqlParameter(insertColumn.getColumnType()));
+					if(!insertColumn.getSpecial().equalsIgnoreCase(NOT_SPECIAL_COLUMN) || insertColumn.isAllowInsert()){
+						patternListJoiner.add("?");
+						insertColumnNameListJoiner.add(insertColumn.getName());
+						// using varchar because all values from CSV are strings
+						//	params.add(new SqlParameter(Types.VARCHAR));
+						//bh changing this as it was breaking date types
+						insertParametersTypeList.add(new SqlParameter(insertColumn.getColumnType()));
+					}
 				}
 
 				final String insertStatement = buildBulkInsertStatement(server, table, patternListJoiner,
@@ -2035,19 +2039,22 @@ public class DynamicDAOImpl implements DynamicDAO{
 //				insertValues.add(SQLUtil.convertToType(Formatter.formatDate(new Date()), columnsList.get(i).getColumnType()));
 				insertValues.add(new Timestamp(new Date().getTime()));
 			    }
-		    } else if(row[i].isEmpty()){
-				insertValues.add(SQLUtil.convertToType(null, columnsList.get(i).getColumnType()));
-			} else if(dropDownDataRowsMap.containsKey(i)){
-				List<List> dropDownDataRows = dropDownDataRowsMap.get(i);
-				for (List dropDownDataRow : dropDownDataRows) {
-					if(dropDownDataRow.get(2).toString().equalsIgnoreCase(row[i])){
-						insertValues.add(SQLUtil.convertToType(dropDownDataRow.get(1).toString(), columnsList.get(i).getColumnType(), columnsList.get(i)));
-						break;
-					}
-				}
-			} else {
-				insertValues.add(SQLUtil.convertToType(row[i], columnsList.get(i).getColumnType(), columnsList.get(i)));
-			}
+		    } else if(columnsList.get(i).isAllowInsert()){
+		    	if( row[i].isEmpty() ) {
+		    		insertValues.add(SQLUtil.convertToType(null, columnsList.get(i).getColumnType()));
+		    	} else if(dropDownDataRowsMap.containsKey(i)){
+		    		List<List> dropDownDataRows = dropDownDataRowsMap.get(i);
+		    		for (List dropDownDataRow : dropDownDataRows) {
+		    			if(dropDownDataRow.get(2).toString().equalsIgnoreCase(row[i])){
+		    				insertValues.add(SQLUtil.convertToType(dropDownDataRow.get(1).toString(), columnsList.get(i).getColumnType(), columnsList.get(i)));
+		    				break;
+		    			}
+		    		}
+		    	} else {
+		    		insertValues.add(SQLUtil.convertToType(row[i], columnsList.get(i).getColumnType(), columnsList.get(i)));
+		    	}
+		    }
+		    	
 		}
 		logger.info("Update SQL query: " + insertStatement);
 		logger.info("parameters: " + insertValues);
