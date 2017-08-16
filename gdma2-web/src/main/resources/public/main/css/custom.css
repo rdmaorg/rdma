@@ -333,8 +333,9 @@ div.editor-datetime table th {
 		width: 50%;
 	}
 	.dropdown.user.user-menu {
-		background: none !important;
-		padding-left: 0 !important;
+	    background-position: 5px center !important;
+	    padding-left: 23px !important;
+	    background-size: 28px !important;
 	}
 	.buttonsDatatable.affix {
 		width: 100% !important;
@@ -343,10 +344,6 @@ div.editor-datetime table th {
 		padding:5px !important;
 		bottom:0 !important;
 	}
-	
-	table.fixedHeader-floating.no-footer {
-		top:140px !important;
-	}
 	.control-sidebar {
 	    padding-top: 120px !important;
 	}
@@ -354,12 +351,19 @@ div.editor-datetime table th {
 		margin-top: 15px;
 		float:right;
 	}
-	.dataTables_length {
-		display: inline-block;
-		float:none;
+	.buttonsDatatable {
+		width: 100% !important;
+	}
+	table.fixedHeader-floating.no-footer {
+		display: none;
 	}
 	div.dataTables_wrapper div.dataTables_length, div.dataTables_wrapper div.dataTables_filter, div.dataTables_wrapper div.dataTables_info, div.dataTables_wrapper div.dataTables_paginate {
 		font-size:12px;
+	}
+	.dataTables_wrapper > .row > .col-sm-6 {
+	    height: 30px;
+	    width: 50%;
+	    float: left;
 	}
 	.nav .menu-open {
 		position: absolute;
