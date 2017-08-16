@@ -6,7 +6,19 @@ $(document).ready(function(){
 	loadAdminMenu();
 });
 
+function dynamicSort(property) {
 
+    var sortOrder = 1;
+    if(property[0] === "-") {
+        sortOrder = -1;
+        property = property.substr(1);
+    }
+    return function (a,b) {
+
+        var result = (a[property].toLowerCase() < b[property].toLowerCase()) ? -1 : (a[property].toLowerCase() > b[property].toLowerCase()) ? 1 : 0;
+        return result * sortOrder;
+    }
+} 
 
 var buildDataModuleMenu = function(){
 	// Get Server list
@@ -20,6 +32,7 @@ var buildDataModuleMenu = function(){
         dataType: 'json'
     }).done(function(data){
     	$(".sidebar-menu").html('<li class="header">SERVER LIST</li>');
+    	data.sort(dynamicSort("name"));
     	$.each(data, function(i, server) {
     		$("<li id='server" + server.id + "' class='treeview'><a><i class='fa fa-server'></i><span class='serverN'> " + server.name + " </span><span class='pull-right-container'><i class='fa fa-angle-left pull-right'></i></span></a><ul id='list" + server.id + "' class='treeview-menu'><div id='header" + server.id + "'></div></ul></li>").appendTo(".sidebar-menu");
     		function tablesId() {
@@ -42,6 +55,7 @@ var buildDataModuleMenu = function(){
     	        	  // names must be equal
     	        	  return 0;
     	        	});
+    	        	
         			$.each(data, function(i, table) {
         	            var serverId = table.server.id;
         			    $("<li><a href='" + dataModulePage + "home/" + table.id + "/" + table.server.id + "/" + table.alias + "/" + table.server.name + "' class='table-data' data-id='"+table.id+"' data-tablename='"+table.name+"' data-serverid='"+table.server.id+"' data-servername='"+table.server.name+"'><i class='fa fa-table'></i><span> " + table.alias + " </span></a></li>").appendTo("#server" + serverId + " .treeview-menu");
