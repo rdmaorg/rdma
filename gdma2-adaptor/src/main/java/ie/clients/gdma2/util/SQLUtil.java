@@ -508,8 +508,11 @@ public class SQLUtil {
 
 		switch (sqlDataType) {
 		case Types.CHAR:
+		case Types.NCHAR:
 		case Types.VARCHAR:
+		case Types.NVARCHAR:
 		case Types.LONGVARCHAR:
+		case Types.LONGNVARCHAR:
 			blnReturn = true;
 			break;
 		default:
