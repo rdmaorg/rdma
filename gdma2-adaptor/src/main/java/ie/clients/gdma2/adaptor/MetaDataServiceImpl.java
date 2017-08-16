@@ -466,6 +466,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	/*COLUMN section*/
 
 	@Override
+	@Transactional
 	public boolean getRemoteTableColumnsMetadata(Integer tableId) {
 		synhronizeColumnsForTable(tableId); 
 		//return IteratorUtils.toList(repositoryManager.getColumnRepository().findByTableId(tableId).iterator());

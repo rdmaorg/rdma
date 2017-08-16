@@ -205,6 +205,7 @@ var syncTables = function(serverId, serverName){
         url: mapPathVariablesInUrl(restUri.table.sync_table_server,{id: serverId}),
         contentType: "application/json; charset=utf-8",
     }).done(function(data){
+    	completeSyncServer(serverId, serverName);
     }).complete(function(data){
     	completeSyncServer(serverId, serverName);
     }).fail(function(e){

@@ -145,17 +145,18 @@ var associateViewColumns = function(){
 	$('.viewColumns').off('click'); 
 	$('.viewColumns').on('click', function(){
  		var btn = $(this);
- 		syncColumns(btn.data('tableid'));
+ 		syncColumns(btn.data('tableid'),btn.data('tablename'));
  		viewTable(btn.data('tableid'),btn.data('tablename'));
 	})
 };
 
-var syncColumns = function(tableId){
+var syncColumns = function(tableId, tableName){
 	$.ajax({
         type: "get",
         url: mapPathVariablesInUrl(restUri.column.sync,{id: tableId}),
         contentType: "application/json; charset=utf-8",
     }).done(function(data){
+ 		viewTable(btn.data('tableid'),btn.data('tablename'));
     }).fail(function(e){
     	handleError('#global-alert', e);
     }).always(function(){
