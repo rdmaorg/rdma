@@ -414,6 +414,13 @@
 					<artifactId>spring-boot-starter-tomcat</artifactId>
 					<scope>provided</scope>
 				</dependency>
+				<!-- Removing Postgresql driver as it is already available in tomcat -->
+				<dependency>
+		            <groupId>postgresql</groupId>
+		            <artifactId>postgresql</artifactId>
+		            <version>9.1-901.jdbc4</version>
+		            <scope>provided</scope>
+		        </dependency>
 			</dependencies>
 		</profile>
 	</profiles>
