@@ -2,8 +2,9 @@
     z-index: 99;
     background: #ecf0f5;
     width: 100%;
+    top:50px;
     padding: 5px 0 0px;
-    position: absolute;
+    position: fixed;
 }
 .datatableControlContainer {
 	height: 35px;
@@ -26,7 +27,7 @@
 }
 
 .content-wrapper {
-	padding-top: 52px;
+	padding-top: 50px;
 }
 
 .dropdown-menu.dropdown-menu-right {
@@ -314,6 +315,71 @@ div.editor-datetime table th {
 	display: none;
 }
 
-@media (min-width: 768px) {
-
+@media (max-width: 767px) {
+	.content {
+		margin-top:90px;
+	}
+	.menu-names {
+		width:100%;
+		clear:both;
+	}
+	
+	.menu-config {
+		width:100%;
+	}
+	
+	.menu-config li {
+		float:left;
+		width: 50%;
+	}
+	.dropdown.user.user-menu {
+		background: none !important;
+		padding-left: 0 !important;
+	}
+	.buttonsDatatable.affix {
+		width: 100% !important;
+		left:0;
+		top:auto !important;
+		padding:5px !important;
+		bottom:0 !important;
+	}
+	
+	table.fixedHeader-floating.no-footer {
+		top:140px !important;
+	}
+	.control-sidebar {
+	    padding-top: 120px !important;
+	}
+	.content-header {
+		margin-top: 15px;
+		float:right;
+	}
+	.dataTables_length {
+		display: inline-block;
+		float:none;
+	}
+	div.dataTables_wrapper div.dataTables_length, div.dataTables_wrapper div.dataTables_filter, div.dataTables_wrapper div.dataTables_info, div.dataTables_wrapper div.dataTables_paginate {
+		font-size:12px;
+	}
+	.nav .menu-open {
+		position: absolute;
+		z-index: 999;		
+	    padding: 16px 10px;
+	}
+	.datatableControlContainer {
+		height: auto;
+	}
+	.main-sidebar {
+		padding-top: 0 !important;
+		z-index: 1031;
+	}
+	.sidebar-mini.sidebar-collapse .sidebar-menu>li:hover>a>span.serverN {
+		white-space: normal !important;
+	}
+	.sidebar-mini.sidebar-collapse .sidebar-menu>li:hover>.treeview-menu {
+		width:auto !important;
+	}
+	.sidebar-menu .treeview-menu>li>a {
+		font-size: 13px !important;
+	}
 }

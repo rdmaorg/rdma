@@ -42,6 +42,9 @@
   <nav id="topNavBar" class="navbar navbar-inverse">
       <ul class="nav navbar-nav">
         <li>
+            <a href="#" class="glyphicon glyphicon-chevron-right menu-open visible-xs" data-toggle="offcanvas" role="button">
+		      <span class="sr-only">Toggle navigation</span>
+		    </a>
 			<a th:href="@{/}" class="logo">
 <!-- 			  mini logo for sidebar mini 50x50 pixels -->
 			  <span class="logo-mini"><img class="img-responsive" th:src="@{/public/main/images/logo-gdma.png}" /></span>
@@ -50,21 +53,21 @@
 			</a>		  
 		</li>
 	  </ul>
-	  <ul class="nav navbar-nav ">
-        <li style="color: #fff; padding-top: 15px; padding-bottom: 15px; line-height: 20px; position: relative; display: block; padding: 10px 15px;">
-		    <span id="serverName"></span> <span id="tableName"></span>
-        </li>
-      </ul>
-	  <ul class="nav navbar-nav pull-right">
+	  <ul class="nav navbar-nav menu-config pull-right">
         <li class="dropdown user user-menu">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">          
-            <span class="hidden-xs"></span>
+            <span></span>
           </a>
           <ul class="dropdown-menu dropdown-menu-right">
           </ul>
         </li>
         <li sec:authorize="hasAuthority('GDMA_ADMIN')">
           <a href="#" class="btn btn-flat" id="btn-admin" data-toggle="control-sidebar"><i class="fa fa-gears"></i> <span th:text="#{view.menu.configuration}"></span></a>
+        </li>
+      </ul>
+	  <ul class="nav navbar-nav menu-names">
+        <li style="color: #fff; padding-top: 15px; padding-bottom: 15px; line-height: 20px; position: relative; display: block; padding: 10px 15px;">
+		    <span id="serverName"></span> <span id="tableName"></span>
         </li>
       </ul>
   </nav>

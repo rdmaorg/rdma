@@ -298,9 +298,17 @@ var configureDataTable = function(columnsMetadata){
 	  });
     } );
     
-    $(window).scroll(function(){
+    /*$(window).scroll(function(){
         var topH = $(this).scrollTop() - parseInt($('.content').css('padding-top'));	
         $("#datatableControlWrapper").css("top",topH+"px");
+    })*/
+    $(window).scroll(function(){
+        var topH = $('.table.fixedHeader-floating').css('width');	
+        $("#datatableControlWrapper").css("width",topH);
+    });
+    $(window).resize(function(){
+        var topH = $('.table.fixedHeader-floating').css('width');	
+        $("#datatableControlWrapper").css("width",topH);
     })
 }
 

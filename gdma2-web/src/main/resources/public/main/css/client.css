@@ -3,7 +3,8 @@ a {
 }
 
 .sidebar-mini.sidebar-collapse .main-header .navbar, table thead tr,.skin-blue .main-header .logo,.skin-blue .main-header .navbar,.modal-header,
-.bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-primary, .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary {
+.bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-primary, .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary,
+.dropdown-menu.dropdown-menu-right,.navbar-nav>.user-menu>.dropdown-menu>.user-footer {
 	background:#e60000 !important;
 }
 
@@ -34,8 +35,7 @@ a {
 	background-color: #2a2a2a;
 }
 
-#addServer {
+#addServer,.insert-user,.insert-connection {
 	background-color: #2a2a2a;
 	border:none;
-	
 }
