@@ -156,6 +156,10 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		logger.info("saving/update server");
 		int serverId = server.getId(); 
 		logger.info("serverId: " +  serverId);
+		
+		server.setConnectionUrl(server.getConnectionUrl().trim());
+		server.setPrefix(server.getPrefix().trim());
+		
 		//check if user is INSERT/UPDATE (-1 is for INSERT)
 		//INSERT
 		if(serverId < 0 ){

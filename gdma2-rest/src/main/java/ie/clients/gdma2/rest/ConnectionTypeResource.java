@@ -67,6 +67,8 @@ public class ConnectionTypeResource extends BaseDataTableResource{
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	public void saveConnectionType(@RequestBody ConnectionType connectionType){
 		logger.debug("saveConnectionType: " + connectionType.getName());
+		connectionType.setConnectionClass(connectionType.getConnectionClass().trim());
+		connectionType.setSqlGetTables(connectionType.getSqlGetTables().trim());
 		serviceFacade.getMetadataService().saveConnectionType(connectionType);
 	}
 
