@@ -156,7 +156,7 @@ var syncColumns = function(tableId, tableName){
         url: mapPathVariablesInUrl(restUri.column.sync,{id: tableId}),
         contentType: "application/json; charset=utf-8",
     }).done(function(data){
- 		viewTable(btn.data('tableid'),btn.data('tablename'));
+ 		viewTable(tableId,tableName);
     }).fail(function(e){
     	handleError('#global-alert', e);
     }).always(function(){
