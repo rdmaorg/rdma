@@ -104,6 +104,10 @@
   background-color:#3c8dbc;
 }
 
+.navbar-nav > li > a {
+	line-height: 17px;
+}
+
 .filterinput {
 	background: rgba(255,255,255,0.2);
     border: none;

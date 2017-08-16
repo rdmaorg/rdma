@@ -1,0 +1,41 @@
+a {
+	color:#e60000;
+}
+
+.sidebar-mini.sidebar-collapse .main-header .navbar, table thead tr,.skin-blue .main-header .logo,.skin-blue .main-header .navbar,.modal-header,
+.bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-primary, .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary {
+	background:#e60000 !important;
+}
+
+.pagination > .active > a, .pagination > .active > span, .pagination > .active > a:hover, .pagination > .active > span:hover, .pagination > .active > a:focus,
+.pagination > .active > span:focus,.control-sidebar .btn-primary,.control-sidebar .btn-primary:active,.control-sidebar .btn-primary.hover,
+.modal-footer .btn-primary,.modal-footer .btn-primary:active,.modal-footer .btn-primary.hover   {
+	background:#e60000 !important;
+	border-color:#e60000 !important;
+}
+
+.skin-blue .sidebar-menu>li:hover>a, .skin-blue .sidebar-menu>li.active>a {
+	border-left-color:#e60000 !important;
+}
+
+.dropdown.user.user-menu{
+	background: url(/gdma2/public/main/images/client_logo.png) no-repeat;
+    background-size: 36px;
+    background-position: left center;
+    padding-left: 60px;
+}
+
+.skin-blue .main-header .logo {
+	background: rgba(0,0,0,0.2) !important;
+}
+
+.skin-blue .wrapper, .skin-blue .main-sidebar, .skin-blue .left-side,
+.input-edit.fa.fa-pencil:before, .input-edit.fa.fa-bars:before {
+	background-color: #2a2a2a;
+}
+
+#addServer {
+	background-color: #2a2a2a;
+	border:none;
+	
+}
