@@ -315,6 +315,10 @@ div.editor-datetime table th {
 	display: none;
 }
 
+div.DTED_Lightbox_Wrapper {
+	z-index: 9999;
+}
+
 @media (max-width: 767px) {
 	.content {
 		margin-top:90px;
