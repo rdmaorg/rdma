@@ -1143,9 +1143,9 @@ public class DynamicDAOImpl implements DynamicDAO{
 							for (ColumnDataUpdate columnUpdate : list) {
 								Column column = repositoryManager.getColumnRepository().findOne(columnUpdate.getColumnId());
 								if (column.isPrimarykey()) {
-									logger.info("6: column IS PK! Getting old value from request and type from metadata");
+									logger.info("6: column IS PK! Getting new value from request and type from metadata");
 									columns.add(column);
-									keys.add(SQLUtil.convertToType(columnUpdate.getOldColumnValue(), column.getColumnType()));
+									keys.add(SQLUtil.convertToType(columnUpdate.getNewColumnValue(), column.getColumnType()));
 									AuditRecord ar = extractAuditRecord(columnUpdate);
 									auditRecordList.add(ar);
 								} 
