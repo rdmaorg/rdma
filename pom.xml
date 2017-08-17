@@ -28,7 +28,13 @@
 		<developer>
 			<id>805096</id>
 			<name>Farrukh Mirza</name>
-			<email>Farrukh.Mirza@avnet.com</email>
+			<email>Farrukh.Mirza@techdata.com</email>
+			<organization>Client Solutions</organization>
+		</developer>
+		<developer>
+			<id>806587</id>
+			<name>Daniel Serva</name>
+			<email>Daniel.Serva@techdata.com</email>
 			<organization>Client Solutions</organization>
 		</developer>
 	</developers>
@@ -468,6 +474,8 @@
 		<application.debug>true</application.debug>
 		<spring.security.version>4.2.1.RELEASE</spring.security.version>
 		<java.version>1.8</java.version>
+
+		<application.context>rdma</application.context>
 
 		<repo.id>nexus-repo</repo.id>
 		<repo.release>http://linux.vm.tomcat/nexus/content/repositories/releases</repo.release>

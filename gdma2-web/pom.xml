@@ -18,7 +18,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<build>
-		<finalName>${parent.artifactId}</finalName>
+		<finalName>${application.context}</finalName>
 		<resources>
 			<resource>
 				<directory>src/main/resources</directory>
