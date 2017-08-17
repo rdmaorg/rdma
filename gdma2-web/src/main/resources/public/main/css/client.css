@@ -4,7 +4,7 @@ a {
 
 .sidebar-mini.sidebar-collapse .main-header .navbar, table thead tr,.skin-blue .main-header .logo,.skin-blue .main-header .navbar,.modal-header,
 .bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-primary, .bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary,
-.dropdown-menu.dropdown-menu-right,.navbar-nav>.user-menu>.dropdown-menu>.user-footer {
+.dropdown-menu.dropdown-menu-right,.navbar-nav>.user-menu>.dropdown-menu>.user-footer, .treeview-menu::-webkit-scrollbar-thumb {
 	background:#e60000 !important;
 }
 
