@@ -10,8 +10,8 @@
 	<groupId>ie.clients.gdma</groupId>
 	<artifactId>gdma2</artifactId>
 	<version>0.1-SNAPSHOT</version>
-	<name>DDMA-II</name>
-	<description>Dynamic Data Management Application</description>
+	<name>RDMA</name>
+	<description>RDMA</description>
 	<packaging>pom</packaging>
 	<organization>
 		<name>Client Solutions Ltd</name>

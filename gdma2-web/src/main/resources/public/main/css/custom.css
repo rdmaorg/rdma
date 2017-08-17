@@ -11,6 +11,10 @@
 	display: block;
 	position: relative;
 }
+
+.main-header .logo .logo-lg {
+	margin-top:10px;
+}
 	
 .main-sidebar,.main-header .logo {
 	transition: none;
