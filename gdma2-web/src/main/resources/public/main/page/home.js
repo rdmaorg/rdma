@@ -450,6 +450,7 @@ var addDownloadButton = function (datatable){
 
 var configureUploadButton = function() {
 	$('#fileUpload').on('change', function() {
+		showLoading();
 	    var file = this.files[0];
 	    //$("#fileUpload").prop("disabled", true);
 	    	$.ajax({
@@ -480,6 +481,7 @@ var configureUploadButton = function() {
 
 	            },
 	            complete: function (e) {
+	            	hideLoading();
 	            	$('#fileUpload')[0].value='';
 	            	tableData.draw();
 //	            	$("#fileUpload").prop("disabled", false);
