@@ -1036,6 +1036,24 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 	}
 
+	@Transactional
+	@Override
+	public void log(String activity) {
+		super.logActivity(activity);
+	}
+
+	@Transactional
+	@Override
+	public void log(String clientIP, String activity) {
+		super.logActivity(clientIP, activity);
+	}
+
+	@Transactional
+	@Override
+	public void log(String clientIP, String activity, String performedBy) {
+		super.logActivity(clientIP, activity, performedBy);
+	}
+
 
 
 }

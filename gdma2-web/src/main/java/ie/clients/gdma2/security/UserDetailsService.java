@@ -3,6 +3,8 @@ package ie.clients.gdma2.security;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,8 @@ public class UserDetailsService implements AuthenticationUserDetailsService {
 
 	@Autowired
 	private ServiceFacade serviceFacade;
+	@Autowired(required=false)
+	private HttpServletRequest req;
 
 	@Override
 	public UserDetails loadUserDetails(Authentication authentication)
@@ -59,7 +63,10 @@ public class UserDetailsService implements AuthenticationUserDetailsService {
 					authorities.add(new SimpleGrantedAuthority(ApplicationRoleEnum.APPLICATION_ADMIN_TABLE.role()));
 					authorities.add(new SimpleGrantedAuthority(ApplicationRoleEnum.APPLICATION_ADMIN_COLUMNS.role()));
 				}
-				logger.info(user.getUserName() + " has Logged In.");
+				logger.info(user.getUserName() + " has Logged In with details ["+(String) authentication.getDetails()+"], req ["+(req!=null?req.getRemoteAddr():"")+"]");
+				
+				
+				serviceFacade.getMetadataService().log((req!=null?req.getRemoteAddr():""), "Logged In.", userName);
 			}
 
 		}

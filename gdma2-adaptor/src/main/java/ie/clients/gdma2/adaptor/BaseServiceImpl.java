@@ -3,15 +3,20 @@ package ie.clients.gdma2.adaptor;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.domain.Sort.Order;
 
+import com.avnet.cs.commons.utils.StringUtil;
+
 import ie.clients.gdma2.adaptor.repo.RepositoryManager;
+import ie.clients.gdma2.domain.AuditActivity;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 import ie.clients.gdma2.spi.BusinessException;
 import ie.clients.gdma2.spi.ServiceException;
@@ -22,13 +27,37 @@ public abstract class BaseServiceImpl {
 
 	@Autowired
 	protected RepositoryManager repositoryManager;
-	
+
 	@Autowired
 	protected DynamicDAO dynamicDAO;
-	
+
 	@Autowired
 	protected UserContextProvider userContextProvider;
-	
+
+	protected void logActivity(String activity) {
+		logActivity("", activity);
+	}
+
+	protected void logActivity(String clientIP, String activity) {
+		logActivity(clientIP, activity, "");
+	}
+
+	protected void logActivity(String clientIP, String activity, String performedBy) {
+		final String UNKNOWN_LOCATION = "UNKNOWN LOCATION";
+		final int MAX_ACTIVITY_LENGTH = 2030;
+
+		if (StringUtils.isNotBlank(activity)) {
+			AuditActivity a = new AuditActivity();
+			a.setActivityOn(new Date());
+			a.setActivityBy(StringUtils.isBlank(performedBy) ? userContextProvider.getLoggedInUserName() : performedBy);
+			a.setActivityFrom(StringUtils.isBlank(clientIP) ? UNKNOWN_LOCATION : clientIP);
+			a.setActivity(StringUtil.abbreviateString(activity, MAX_ACTIVITY_LENGTH));
+			
+			
+			repositoryManager.getAuditActivityRepository().save(a);
+		}
+	}
+
 	protected PageRequest getPagingRequest(String orderBy, String orderDirection, int startIndex, int length,
 			long totalRecords) {
 
@@ -49,7 +78,6 @@ public abstract class BaseServiceImpl {
 		return new PageRequest(page, size, sort);
 	}
 
-	
 	protected <T> PaginatedTableResponse<T> getPaginatedTableResponse(List<T> data, long totalRecords,
 			long filteredRecords) {
 		PaginatedTableResponse<T> resp = new PaginatedTableResponse<T>();
@@ -59,7 +87,7 @@ public abstract class BaseServiceImpl {
 
 		return resp;
 	}
-	
+
 	@SuppressWarnings("all")
 	protected void throwException(Throwable e) {
 		if (e instanceof BusinessException) {

@@ -1,24 +1,10 @@
 package ie.clients.gdma2;
 
-import java.io.Serializable;
-import java.util.List;
-
-import ie.clients.gdma2.adaptor.MetaDataServiceImpl;
-import ie.clients.gdma2.domain.Server;
-import ie.clients.gdma2.domain.Table;
-import ie.clients.gdma2.spi.interfaces.MetaDataService;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
-import org.springframework.web.filter.CommonsRequestLoggingFilter;
 
 /**
  * @author 805096

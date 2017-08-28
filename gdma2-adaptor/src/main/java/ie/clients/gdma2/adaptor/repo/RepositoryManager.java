@@ -30,6 +30,9 @@ public class RepositoryManager {
 	@Autowired
 	private AuditRecordRepository auditRecordRepository;
 	
+	@Autowired
+	private AuditActivityRepository auditActivityRepository;
+	
 	public ConnectionTypeRepository getConnectionTypeRepository() {
 		return connectionTypeRepository;
 	}
@@ -94,5 +97,14 @@ public class RepositoryManager {
 	public void setAuditRecordRepository(AuditRecordRepository auditRecordRepository) {
 		this.auditRecordRepository = auditRecordRepository;
 	}
+
+	public AuditActivityRepository getAuditActivityRepository() {
+		return auditActivityRepository;
+	}
+
+	public void setAuditActivityRepository(AuditActivityRepository auditActivityRepository) {
+		this.auditActivityRepository = auditActivityRepository;
+	}
+
 	
 }
