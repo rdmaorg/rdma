@@ -11,10 +11,10 @@ echo "Deleted all logs"
 
 
 cd "%CATALINA_HOME%\webapps"
-del gdma2.war
-rmdir /s /q gdma2
+del rdma.war
+rmdir /s /q rdma
 
 cd %OLD_DIR%
-copy "gdma2-web\target\gdma2.war" "%CATALINA_HOME%\webapps"
+copy "gdma2-web\target\rdma.war" "%CATALINA_HOME%\webapps"
 
 echo "Done!!!"

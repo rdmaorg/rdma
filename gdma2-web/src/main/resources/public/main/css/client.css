@@ -20,7 +20,8 @@ a {
 }
 
 .dropdown.user.user-menu{
-	background: url(/gdma2/public/main/images/client_logo.png) no-repeat;
+	/*background: url(/gdma2/public/main/images/client_logo.png) no-repeat;*/
+	background: url(../images/client_logo.png) no-repeat;
     background-size: 36px;
     background-position: left center;
     padding-left: 60px;

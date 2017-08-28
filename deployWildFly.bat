@@ -6,6 +6,6 @@ echo "Built the parent project"
 
 
 cd %OLD_DIR%
-copy "gdma2-web\target\gdma2.war" "%JBOSS_HOME%\standalone\deployments"
+copy "gdma2-web\target\rdma.war" "%JBOSS_HOME%\standalone\deployments"
 
 echo "Done!!!"
