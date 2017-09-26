@@ -56,8 +56,9 @@ var restUri = {
 		create: getRestBaseUri() + '/datatable/create/{serverId}/{tableId}',
 		update: getRestBaseUri() + '/datatable/update/{serverId}/{tableId}',
 		remove: getRestBaseUri() + '/datatable/delete/{serverId}/{tableId}',
-		upload: getRestBaseUri() + '/datatable/upload',
+		upload: getRestBaseUri() + '/datatable/upload',		
 		download: getRestBaseUri() + '/datatable/download/csv/table/{tableId}',
+		metaData: getRestBaseUri() + '/datatable/metadata/{tableId}',
 	}
 	
 };

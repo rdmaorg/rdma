@@ -20,8 +20,7 @@ public class TableDataRowMapper implements org.springframework.jdbc.core.RowMapp
 		for (int i = 1; i <= columnCount; i++) {
 			String columnName = rsmd.getColumnName(i);
 			Object resultSetValue = JdbcUtils.getResultSetValue(rs, i);
-			TableRowDTO.TableColumn column =  tableRowDTO.new TableColumn(columnName, resultSetValue);
-			tableRowDTO.getColumns().add(column);
+			tableRowDTO.getColumns().put(columnName, resultSetValue);
 		}
 		return tableRowDTO;
 	}

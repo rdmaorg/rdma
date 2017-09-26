@@ -1,6 +1,8 @@
 package ie.clients.gdma2.domain;
 
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.persistence.Entity;
@@ -10,6 +12,8 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.UniqueConstraint;
 
 import com.avnet.cs.commons.dao.BaseEntity;
+
+import ie.clients.gdma2.domain.ui.DataTableDropDown;
 
 /**
  * @author rgill
@@ -86,6 +90,17 @@ public class Column extends BaseEntity{
 	
 	@javax.persistence.Transient
 	private Map<Integer, String> columnValues = new LinkedHashMap<Integer, String>();
+
+	@javax.persistence.Transient
+	private List<DataTableDropDown> datatableEditorFieldOptions = new ArrayList<DataTableDropDown>();
+	
+	public List<DataTableDropDown> getDatatableEditorFieldOptions() {
+		return datatableEditorFieldOptions;
+	}
+	
+	public void setDatatableEditorFieldOptions(List<DataTableDropDown> datatableEditorFieldOptions) {
+		this.datatableEditorFieldOptions = datatableEditorFieldOptions;
+	}
 	
 	public Map<Integer, String> getColumnValues() {
 		return columnValues;
@@ -97,23 +112,6 @@ public class Column extends BaseEntity{
 	
 	
 	
-	/*
-	@javax.persistence.Transient
-	private List<String> columnValues = new ArrayList<String>();
-	
-	public List<String> getColumnValues() {
-		return columnValues;
-	}
-
-	public void setColumnValues(List<String> columnValues) {
-		this.columnValues = columnValues;
-	}
-	*/
-
-	
-	
-	
-
 	public Integer getColumnSize() {
 		return columnSize;
 	}

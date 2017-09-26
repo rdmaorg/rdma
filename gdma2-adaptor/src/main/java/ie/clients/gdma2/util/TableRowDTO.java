@@ -2,81 +2,19 @@ package ie.clients.gdma2.util;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
-
-{  
-   "data":[  
-      {  
-         "rowNumber":1,
-         "columns":[  
-            {  
-               "columnName":"country",
-               "val":"France"
-            },
-            {  
-               "columnName":"city",
-               "val":"Nantes"
-            },
-            {  
-               "columnName":"contactFirstName",
-               "val":"Carine "
-            },
-            {  
-               "columnName":"membership_id",
-               "val":{  
-                  "value":"101",
-                  "did":2255,
-                  "sid":2254,
-                  "dropdownOptions":[  
-                     [  
-                        0,
-                        103,
-                        "gold"
-                     ],
-                     [  
-                        1,
-                        101,
-                        "ordinary"
-                     ],
-                     [  
-                        2,
-                        102,
-                        "silver"
-                     ]
-                  ]
-               }
-            },
-          
-            {  
-               "columnName":"state",
-               "val":null
-            }
-         ]
-      },
-      {  
-         "rowNumber":2,
-         "columns":[  
-            {  
-               "columnName":"country",
-               "val":"USA"
-            }
-          ]
-      }
-   ],
-   "draw":0,
-   "recordsTotal":122,
-   "recordsFiltered":122
-}
-            
  * @author Avnet
  *
  */
 public class TableRowDTO {
 
 	private BigInteger rowNumber;
-	private List<TableRowDTO.TableColumn> columns = new ArrayList<TableRowDTO.TableColumn>();
+	private Map<String,Object> columns = new LinkedHashMap<String,Object>();
 	
 	public BigInteger getRowNumber() {
 		return rowNumber;
@@ -85,63 +23,26 @@ public class TableRowDTO {
 	public void setRowNumber(BigInteger rowNumber) {
 		this.rowNumber = rowNumber;
 	}
-
-	public List<TableRowDTO.TableColumn> getColumns() {
+	
+	public Map<String,Object> getColumns() {
 		return columns;
 	}
 
-	public void setColumns(List<TableRowDTO.TableColumn> columns) {
+	public void setColumns(Map<String,Object> columns) {
 		this.columns = columns;
 	}
 
-	private void exampleRowCreation(){
-		columns.add(new TableColumn("name", new String("some name")));
-		columns.add(new TableColumn("age", new Integer(47)));
-		
-		//	TableRowDTO.TableColumn tableRow =  tableRowDTO.new TableColumn(columnName, resultSetValue);
-	}
-	
-	
-	/*every cell in the row is column represented with name and value*/
-	public class TableColumn{
-		private String columnName;
-		private Object val;
-		
-		public TableColumn(String name, Object val) {
-			this.columnName = name;
-			this.val = val;
-		}
-
-		public String getColumnName() {
-			return columnName;
-		}
-
-		public void setColumnName(String columnName) {
-			this.columnName = columnName;
-		}
-
-		public Object getVal() {
-			return val;
-		}
-
-		public void setVal(Object val) {
-			this.val = val;
-		}
-		
-		
-	}
-	
 	void populateandTest(){
 		List<TableRowDTO> rows = new ArrayList<TableRowDTO>();
 		
 		TableRowDTO row1 = new TableRowDTO();
 		row1.setRowNumber(new BigInteger("0"));
 		
-		List<TableRowDTO.TableColumn> colsrow1 = new ArrayList<TableRowDTO.TableColumn>();
+		Map<String,Object> colsrow1 = new LinkedHashMap<String,Object>();
 		
-		colsrow1.add(new TableColumn("name", new String("Ana")));
-		colsrow1.add(new TableColumn("age", new Integer(47)));
-		colsrow1.add(new TableColumn("adress", new String("AA_street")));
+		colsrow1.put("name", new String("Ana"));
+		colsrow1.put("age", new Integer(47));
+		colsrow1.put("adress", new String("AA_street"));
 		
 		row1.setColumns(colsrow1);
 		
@@ -149,11 +50,11 @@ public class TableRowDTO {
 		TableRowDTO row2 = new TableRowDTO();
 		row2.setRowNumber(new BigInteger("1"));
 		
-		List<TableRowDTO.TableColumn> colsrow2 = new ArrayList<TableRowDTO.TableColumn>();
+		Map<String,Object> colsrow2 = new LinkedHashMap<String,Object>();
 		
-		colsrow2.add(new TableColumn("name", new String("Pier")));
-		colsrow2.add(new TableColumn("age", new Integer(22)));
-		colsrow2.add(new TableColumn("adress", new String("BB_street")));
+		colsrow2.put("name", new String("Pier"));
+		colsrow2.put("age", new Integer(22));
+		colsrow2.put("adress", new String("BB_street"));
 		
 		row2.setColumns(colsrow2);
 		
@@ -162,11 +63,11 @@ public class TableRowDTO {
 		TableRowDTO row3 = new TableRowDTO();
 		row3.setRowNumber(new BigInteger("2"));
 		
-		List<TableRowDTO.TableColumn> colsrow3 = new ArrayList<TableRowDTO.TableColumn>();
+		Map<String,Object> colsrow3 = new LinkedHashMap<String,Object>();
 		
-		colsrow3.add(new TableColumn("name", new String("Eve")));
-		colsrow3.add(new TableColumn("age", new Integer(48)));
-		colsrow3.add(new TableColumn("adress", new String("CC_street")));
+		colsrow3.put("name", new String("Eve"));
+		colsrow3.put("age", new Integer(48));
+		colsrow3.put("adress", new String("CC_street"));
 		
 		row3.setColumns(colsrow3);
 		
@@ -186,10 +87,7 @@ public class TableRowDTO {
 		for (TableRowDTO tableRowDTO : rows) {
 			System.out.println(tableRowDTO.getRowNumber());
 			
-			List<TableColumn> columnList = tableRowDTO.getColumns();
-			for (TableColumn col : columnList) {
-				System.out.print(" | " + col.getColumnName() + ": " + col.getVal());
-			}
+			Map<String,Object> columnList = tableRowDTO.getColumns();
 			System.out.println();
 		}
 		
@@ -203,11 +101,6 @@ public class TableRowDTO {
 			
 			List<Object> plainRow = new ArrayList<Object>();
 			plainRow.add(tableRowDTO.getRowNumber());
-			
-			List<TableColumn> columnList = tableRowDTO.getColumns();
-			for (TableColumn col : columnList) {
-				plainRow.add(col.getVal());
-			}
 			plainRowList.add(plainRow);
 		}
 	
@@ -236,6 +129,5 @@ public class TableRowDTO {
 		TableRowDTO t = new TableRowDTO();
 		t.populateandTest();
 	}
-	
-	
+
 }

@@ -21,7 +21,8 @@ var loadDatatable = function(){
 	showLoading();
 	$.ajax({
         type: "get",
-        url: mapPathVariablesInUrl(restUri.datatable.columnsMetaData, {'id': tableId}),
+//        url: mapPathVariablesInUrl(restUri.datatable.columnsMetaData, {'id': tableId}),
+        url: mapPathVariablesInUrl(restUri.datatable.metaData, {'tableId': tableId}),
         contentType: "application/json; charset=utf-8",
         dataType: 'json'
     }).done(function(data){
@@ -44,11 +45,11 @@ var loadDatatable = function(){
     	}, 4000);
     }).complete(function(e){
     	configureDataTable(columnsMetadata);
+    	
     }).always(function(){
     	hideLoading();
     	$("#tableRow").show();
     });
-	
 }
 
 //configureEditor
@@ -73,7 +74,6 @@ var configureDataTable = function(columnsMetadata){
             		for(var i in d.data) {
                 		delete d.data[i].rowNumber;
                 		for(var j = 0; j < d.data[i].columns.length;j++){ 
-                			delete d.data[i].columns[j].columnPK;
                 			delete d.data[i].columns[j].position;
                 			delete d.data[i].columns[j].columnName;
                 			if(d.data[i].columns[j].val && d.data[i].columns[j].val.dropdownOptions){
@@ -94,12 +94,6 @@ var configureDataTable = function(columnsMetadata){
         }
 	}
 	datatableEditor = $('#table_data').configureEditor(configEditor);
-	
-//	datatableEditor.add( {
-//        "type":    "hidden",
-//        "name":    "oldValues",
-//        "default": "oldValues"
-//    } );
 	
 	// Disable KeyTable while the main editing form is open
 	datatableEditor.on( 'open', function ( e, mode, action ) {
@@ -136,7 +130,8 @@ var configureDataTable = function(columnsMetadata){
 	            for (var i = 0, len = columnsMetadata.length; i < len; i++) {
 	            	if(columnsMetadata[i].allowInsert === true){
 	            		if (!columnsMetadata[i].nullable && columnsMetadata[i].special === 'N'){
-	            			var field = this.field( 'columns.'+i+'.val' ) ? this.field( 'columns.'+i+'.val' ) : this.field( 'columns.'+i+'.val.value' );
+	            			var field = this.field('columns.'+columnsMetadata[i].name );
+	            			
 	            			// Only validate user input values - different values indicate that
 	            			// the end user has not entered a value
 	            			if ( ! field.isMultiValue() ) {
@@ -153,7 +148,8 @@ var configureDataTable = function(columnsMetadata){
 	            for (var i = 0, len = columnsMetadata.length; i < len; i++) {
 	            	if(columnsMetadata[i].allowUpdate === true){
 	            		if (!columnsMetadata[i].nullable && columnsMetadata[i].special === 'N'){
-	            			var field = this.field( 'columns.'+i+'.val' ) ? this.field( 'columns.'+i+'.val' ) : this.field( 'columns.'+i+'.val.value' );
+	            			var field = this.field( 'columns.'+columnsMetadata[i].name );
+	            			
 	            			// Only validate user input values - different values indicate that
 	            			// the end user has not entered a value
 	            			if ( ! field.isMultiValue() ) {
@@ -180,24 +176,15 @@ var configureDataTable = function(columnsMetadata){
 	var config={
 		 "ajax":{
 			 "url":mapPathVariablesInUrl(restUri.datatable.table, {'id': tableId}),
-			 "dataSrc": function (json) {
-				 //json does not contain columns configured as 'displayed=false' in admin module
-				 var return_data = new Array();
-				 for(var i=0;i< json.data.length; i++){
-					 for(var j=0;j< json.data[i].columns.length; j++){
-					   json.data[i].columns[j].columnPK = ''+columnsMetadata[j].id;
-					   if(json.data[i].columns[j].val && json.data[i].columns[j].val.dropdownOptions){
-						 json.data[i].columns[j].val.position = j;
-					   } else {
-					     json.data[i].columns[j].position = j;
-					     if(json.data[i].columns[j].val && json.data[i].columns[j].val.timestamp){
-					    	 json.data[i].columns[j].val = json.data[i].columns[j].val.timestamp;					    	 
-					     }
-					   }
-					 }
+			 "dataSrc": function (dataTableResponse) {
+				 //dataTableResponse does not contain columns configured as 'displayed=false'                                                                                         in admin module
+				 for(var i=0;i< dataTableResponse.data.length; i++){
+				     if(dataTableResponse.data[i].columns.val && dataTableResponse.data[i].columns.val.timestamp){
+				    	 dataTableResponse.data[i].columns.val = dataTableResponse.data[i].columns.val.timestamp;					    	 
+				     }
 				 }
 				 editor = this.datatableEditor;
-				 return json.data;
+				 return dataTableResponse.data;
 			 }
 		 },
 		 "columns": columnsData,
@@ -274,7 +261,6 @@ var configureDataTable = function(columnsMetadata){
 	$('#dataTableLength').change(function() {
 		tableData.page.len( $(this).val() ).draw();
 	});
-
 	
     //Inline editing on tab focus
     tableData.on( 'key-focus', function ( e, datatable, cell ) {
@@ -298,10 +284,6 @@ var configureDataTable = function(columnsMetadata){
 	  });
     } );
     
-    /*$(window).scroll(function(){
-        var topH = $(this).scrollTop() - parseInt($('.content').css('padding-top'));	
-        $("#datatableControlWrapper").css("top",topH+"px");
-    })*/
     $(window).scroll(function(){
         var topH = $('.table.fixedHeader-floating').css('width');	
         $("#datatableControlWrapper").css("width",topH);
@@ -321,17 +303,16 @@ var createEditorFields = function(columnsMetadata){
 	var fields = [];
 	for(var i = 0; i < columnsMetadata.length; i++){
 		fields[i] = { label: columnsMetadata[i].alias ,
-                	  name: 'columns.'+i+'.val' };
+                	  name: 'columns.'+columnsMetadata[i].name };
 		if(columnsMetadata[i].special !== 'N'){
 			fields[i].type = "readonly";
 		};
 		if(columnsMetadata[i].columnTypeString.toUpperCase() === fieldTypes.BOOLEAN){
-//				|| columnsMetadata[i].columnTypeString.toUpperCase() === fieldTypes.TINYINT){
 			fields[i].type = "checkbox";
 		};
 		if(columnsMetadata[i].dropDownColumnDisplay){
 			fields[i].type = "select";
-			fields[i].name = 'columns.'+i+'.val.value';
+			fields[i].options = columnsMetadata[i].datatableEditorFieldOptions;
 		};
 		if(columnsMetadata[i].columnTypeString.toUpperCase() === "DATE"){
 			fields[i].type = "datetime";
@@ -347,35 +328,53 @@ var createEditorFields = function(columnsMetadata){
 	return fields;
 }
 
+//Creates a datatable render function for a dropdown column.
+//datatableEditorFieldOptions - the dropdown options list json object
+var getDropDownColumnRenderFunction = function (datatableEditorFieldOptions) {
+    return function ( data, type, row ) {
+ 	  var returnValue = data; 
+ 	  //What we are doing is binding the variable (editorFieldOptions) within  
+ 	  //each function to a separate, unchanging value outside of the function
+ 	  var editorFieldOptions = datatableEditorFieldOptions;
+ 	  editorFieldOptions.forEach(function(obj) { 
+ 		  if(data == obj.value){
+ 			 returnValue = obj.label;  
+ 		  }
+ 	  });
+	  return returnValue;
+	};
+}
+
 var createDataTableColumns = function(columnsMetadata){
 	var columnsData = [];
+	
+	//initializing with the checkbox as the first column
 	columnsData.push({
          data: null,
          defaultContent: '',
          className: 'select-checkbox',
          orderable: false
      });
+	
 	for(var i = 0; i < columnsMetadata.length; i++){
-		var dataValue = 'columns.'+i+'.val';
-		var editFieldValue = columnsMetadata[i].dropDownColumnDisplay ? 'columns.'+i+'.val.value' : 'columns.'+i+'.val';
+		var dataValue = 'columns.'+columnsMetadata[i].name;
+		var editFieldName = 'columns.'+columnsMetadata[i].name;
 		
 		var renderFunction = function ( data, type, row ) {
-	 	  if(data && data.dropdownOptions){
-	 	    var options = [];
-	 	    var returnValue = data.value; 
-	 	    $.each(data.dropdownOptions, function(k,v){
-	 	      options.push({'label':v[2], 'value':v[1]});
-	 	      if(data.value == v[1]){
-	 	        returnValue = v[2];
-	 	      }
-		    });
-	 	    editor.field('columns.'+data.position+'.val.value').update(options);
-		    return returnValue;
- 	      } else if (data && data.timestamp){
+ 	      if (data && data.timestamp){
  	    	  return data.timestamp;
  	      }
 	 	  return data;
 		};
+		
+		//At runtime we have the data but we don't know which column the data belongs to. 
+		//Also, the columns order and type are dynamic as well.
+		//The solution is to create the renderFunction dynamically.
+		//We pass datatableEditorFieldOptions as a parameter and the return is a regular datatable render function.
+		//Every column has it's own renderFunction.
+		if(columnsMetadata[i].datatableEditorFieldOptions[0] != null){
+			renderFunction = getDropDownColumnRenderFunction(columnsMetadata[i].datatableEditorFieldOptions);
+		}
 		
 		var className = '';
 		if(columnsMetadata[i].allowUpdate){
@@ -383,36 +382,11 @@ var createDataTableColumns = function(columnsMetadata){
 		}
 		
 		columnsData.push({'data': dataValue,
-		  'editField': editFieldValue, 
+		  'editField': editFieldName, 
 		  'render': renderFunction,
 		  'className': className});
 	};
 	return columnsData;
-}
-
-var createDropDownColumn = function(displayId, storeId, selectedValue){
-	$.ajax({
-        type: "get",
-        url: mapPathVariablesInUrl(restUri.datatable.dropdown, {'did': displayId, 'sid':storeId}),
-        contentType: "application/json; charset=utf-8",
-        dataType: 'json'
-    }).done(function(data){
-    	//maybe not necessary
-//    	data.sort(function(a, b) {
-//		    return parseInt(a[0]) - parseInt(b[0]);
-//		});
-    	var select = '<select class="special" id="' + storeId + '" data-id="' + storeId + '">';
-		$.each(data, function(i, column) {
-			selectedValue === column[1] ? select+= '<option value="'+ column[1] +'" selected>'+ column[2] +'</option>' : select+= '<option value="'+ column[1] +'">'+ column[2] +'</option>';
-		});
-    }).fail(function(e){
-    	handleError('#global-alert', e);
-    	window.setTimeout(function() {
-    		$("#global-alert").slideUp(500);
-    	}, 4000);
-    });
-    select+='</select>';
- return select;
 }
 
 function filterDisplayed(column) {
@@ -463,7 +437,6 @@ var configureUploadButton = function() {
 	    		cache: false,
 	    		contentType: false,
 	    		success: function (data) {
-//	                $("#result").text(data);
 	                console.log("SUCCESS : ", data);
 	                $("#global-success-text").html(data.numRecords + ' record(s) successfully uploaded. Please refresh your page to see the latest changes.');
 	                $("#global-success").slideDown(500);
@@ -484,30 +457,9 @@ var configureUploadButton = function() {
 	            	hideLoading();
 	            	$('#fileUpload')[0].value='';
 	            	tableData.draw();
-//	            	$("#fileUpload").prop("disabled", false);
-//	            	$('#fileUpload').val(null);
 	            },
-	    		// Custom XMLHttpRequest
-//	    		xhr: function() {
-//	    			var myXhr = $.ajaxSettings.xhr();
-//	    			if (myXhr.upload) {
-//	    				// For handling the progress of the upload
-//	    				myXhr.upload.addEventListener('progress', function(e) {
-//	    					if (e.lengthComputable) {
-//	    						$('progress').attr({
-//	    							value: e.loaded,
-//	    							max: e.total,
-//	    						});
-//	    					}
-//	    				} , false);
-//	    			}
-//	    			return myXhr;
-//	    		},
 	    	});
-//	    }
-	    
 	});
-	
 }
 
 var enableDisableAllowInsertFields = function(columnsMetadata, editorFields){

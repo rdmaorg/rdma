@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import com.avnet.cs.commons.utils.StringUtil;
 
 import ie.clients.gdma2.adaptor.repo.RepositoryManager;
 import ie.clients.gdma2.domain.AuditActivity;
+import ie.clients.gdma2.domain.ui.PaginatedEditableTableResponse;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 import ie.clients.gdma2.spi.BusinessException;
 import ie.clients.gdma2.spi.ServiceException;
@@ -84,6 +86,17 @@ public abstract class BaseServiceImpl {
 		resp.setData(data);
 		resp.setRecordsTotal(totalRecords);
 		resp.setRecordsFiltered(filteredRecords);
+
+		return resp;
+	}
+	
+	protected <T,K,V> PaginatedEditableTableResponse<T,K,V> getPaginatedEditableTableResponse(List<T> data, long totalRecords,
+			long filteredRecords, Map<K,List<V>> optionList) {
+		PaginatedEditableTableResponse<T,K,V> resp = new PaginatedEditableTableResponse<T,K,V>();
+		resp.setData(data);
+		resp.setRecordsTotal(totalRecords);
+		resp.setRecordsFiltered(filteredRecords);
+		resp.setOptions(optionList);
 
 		return resp;
 	}

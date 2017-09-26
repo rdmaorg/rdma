@@ -1,16 +1,18 @@
 package ie.clients.gdma2.util;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.springframework.web.multipart.MultipartFile;
+
 import ie.clients.gdma2.domain.Column;
 import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.UpdateDataRequest;
+import ie.clients.gdma2.domain.ui.DataTableDropDown;
 import ie.clients.gdma2.domain.ui.Filter;
-
-import java.util.List;
-import java.util.Set;
-
-import org.springframework.data.domain.PageRequest;
-import org.springframework.web.multipart.MultipartFile;
 
 
 public interface DynamicDAO {
@@ -38,34 +40,9 @@ public interface DynamicDAO {
 		
 	/*  OLD CODE - GDMA 1*/
 
-
-	
-
 	/*count data for table with/without filterw in WHERE clause*/
 	public Long getCount(Server server, Table table, List<Filter> filters);
 	
-	/*get just row data */
-	public List getTableData(Table table, Server server, Column orderByColumn,
-			List<Filter> filters, String orderDirection, int startIndex,
-			int length);
-
-	/*Column Entity is extended with List<String> columnValues, so this method returns metadata+data based on JSON for column metadata representation */
-	public List getTableDataWithColumnMetadata(Table table, Server server,
-			Column orderByColumn, List<Filter> filters, String orderDirection,
-			int startIndex, int length);
-	
-	/*expanding getTableData() to include column name for each cell and populate Lookup columns in second step after metadata resolves DD columns*/
-	public List getTableDataWithColumnNamesAndDropdowns(Table table, Server server,
-			Column orderByColumn, List<Filter> filters, String orderDirection,
-			int startIndex, int length);
-
-	
-	
-	/*
-	public PaginatedResponse get(PaginatedRequest paginatedRequest);
-
-	public void addRecord(UpdateRequest updateRequest);
-	*/
 	/*DATA module - add record to the table */
 	public void addRecord(UpdateDataRequest updateRequest);
 	
@@ -129,7 +106,25 @@ public interface DynamicDAO {
 	 */
 	public int bulkImport(Server server, Table table, Set<Column> columns, MultipartFile file);
 
-	
-	
+	/**
+	 * 
+	 * @param table
+	 * @param server
+	 * @param orderByColumn
+	 * @param filters
+	 * @param orderDirection
+	 * @param startIndex
+	 * @param length
+	 * @return
+	 */
+	public List getEditableTableData(Table table, Server server, Column orderByColumn, List<Filter> filters,
+			String orderDirection, int startIndex, int length);
+
+	/**
+	 * 
+	 * @param table
+	 * @return
+	 */
+	public Map<String, List<DataTableDropDown>> getDatatableEditorOptions(Table table);
 
 }

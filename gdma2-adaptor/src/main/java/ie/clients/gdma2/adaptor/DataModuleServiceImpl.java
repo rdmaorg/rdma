@@ -1,6 +1,7 @@
 package ie.clients.gdma2.adaptor;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -17,6 +18,7 @@ import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.UpdateDataRequest;
 import ie.clients.gdma2.domain.UpdateDataRequestDummy;
 import ie.clients.gdma2.domain.UserAccess;
+import ie.clients.gdma2.domain.ui.DataTableDropDown;
 import ie.clients.gdma2.domain.ui.Filter;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 import ie.clients.gdma2.spi.ServiceException;
@@ -73,7 +75,31 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 
 		return activeTableList;
 	}
+	
+	public List<Column> getTableMetadata(Integer tableId) {
+		List<Column> tableMetadata = getActiveColumns(tableId);
+		populateDatatableEditorOptions(tableMetadata);
+		return tableMetadata;
+	}
 
+	private List<Column> populateDatatableEditorOptions(List<Column> tableMetadata){
+		tableMetadata.forEach(metadataColumn->{
+			if(metadataColumn.getDropDownColumnDisplay() != null && metadataColumn.getDropDownColumnStore() != null){
+				//fetch Lookup table - all values	
+				List<DataTableDropDown> datatableEditorFieldOptions = new ArrayList<DataTableDropDown>();
+				List<List<Object>> dropDownDataRows = dynamicDAO.getDropDownData(metadataColumn.getDropDownColumnDisplay(), metadataColumn.getDropDownColumnStore());
+				for (List<Object> list : dropDownDataRows) {
+					DataTableDropDown dataTableDropDown = new DataTableDropDown();
+					dataTableDropDown.setValue(list.get(1).toString());
+					dataTableDropDown.setLabel(list.get(2).toString());
+					datatableEditorFieldOptions.add(dataTableDropDown);
+				}
+				logger.info("columnName: " + metadataColumn.getName());
+				metadataColumn.setDatatableEditorFieldOptions(datatableEditorFieldOptions);
+			}
+		});
+		return tableMetadata;
+	}
 
 	@Override
 	public UserAccess getUserAccessDetails(Long serverId, Long tableId) {

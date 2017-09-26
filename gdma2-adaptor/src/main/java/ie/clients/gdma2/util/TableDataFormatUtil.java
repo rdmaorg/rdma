@@ -1,7 +1,5 @@
 package ie.clients.gdma2.util;
 
-import ie.clients.gdma2.util.TableRowDTO.TableColumn;
-
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -147,10 +145,9 @@ public class TableDataFormatUtil {
 			List<Object> plainRow = new ArrayList<Object>();
 			plainRow.add(tableRowDTO.getRowNumber());
 			
-			List<TableColumn> columnList = tableRowDTO.getColumns();
-			for (TableColumn col : columnList) {
-				plainRow.add(col.getVal());
-			}
+			tableRowDTO.getColumns().forEach((k,v)->{
+				plainRow.add(v);				
+			});
 			plainRowList.add(plainRow);
 		}
 	
@@ -247,10 +244,7 @@ public class TableDataFormatUtil {
 			LinkedHashMap<String, Object> plainRow= new LinkedHashMap<String,Object>();
 			plainRow.put("rowNumber",tableRowDTO.getRowNumber());
 			
-			List<TableColumn> columnList = tableRowDTO.getColumns();
-			for (TableColumn col : columnList) {
-				plainRow.put(col.getColumnName(),col.getVal());
-			}
+			plainRow.putAll(tableRowDTO.getColumns());
 			plainRowList.add(plainRow);
 		}
 	

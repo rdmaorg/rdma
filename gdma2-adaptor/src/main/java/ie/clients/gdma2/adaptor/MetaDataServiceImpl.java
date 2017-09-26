@@ -1,8 +1,10 @@
 package ie.clients.gdma2.adaptor;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.IteratorUtils;
@@ -20,8 +22,10 @@ import ie.clients.gdma2.domain.Server;
 import ie.clients.gdma2.domain.Table;
 import ie.clients.gdma2.domain.User;
 import ie.clients.gdma2.domain.UserAccess;
+import ie.clients.gdma2.domain.ui.DataTableDropDown;
 import ie.clients.gdma2.domain.ui.Filter;
 import ie.clients.gdma2.domain.ui.IncrementalTextSearchFilter;
+import ie.clients.gdma2.domain.ui.PaginatedEditableTableResponse;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 import ie.clients.gdma2.spi.ServiceException;
 import ie.clients.gdma2.spi.interfaces.MetaDataService;
@@ -880,68 +884,6 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 	}
 
-
-
-	@SuppressWarnings("unchecked")
-	@Override
-	public PaginatedTableResponse<Column> getTableData(Integer tableId, List<Object> filtersParam,
-			int orderByColumnID, String orderDirection,
-			int startIndex, int length) {
-
-		logger.info("getTableData : " + tableId);
-
-		Table table = null;
-		Server server = null;
-		List<Column> columns = null;
-
-
-		List<Filter> filtersTODO = new ArrayList<Filter>(); //NEVER use NULL for Filters, only empty collection
-		long total = 0;
-		long filtered = 0;
-
-		table = repositoryManager.getTableRepository().findOne(tableId);
-		server = table.getServer();
-		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrueAndDisplayedTrue(tableId);
-		table.setColumns(new LinkedHashSet<Column>(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change this and pass colums to utility method themselves
-
-		/*if ordering not set, zero velue is received so keep sortedByColumn = null, else determine column among all table columns*/
-		Column sortedByColumn = null;
-		if(orderByColumnID > 0){
-			logger.info("orderByColumnID > 0");
-
-			try {
-				sortedByColumn = activeColumns.get(orderByColumnID - 1);
-			} catch (IndexOutOfBoundsException e) {
-				logger.info("orderByColumnID position was not found");
-				throw new ServiceException("orderByColumnID position was not found: " + orderByColumnID);
-			}
-		}
-
-		logger.info("table : " + tableId + " , server: " + server.getId() + " , sortedBy Column: " + 
-				(sortedByColumn == null ? null : sortedByColumn.getId())); 
-
-		if(filtersTODO.isEmpty()){
-			logger.info("count - no filters");
-			total = dynamicDAO.getCount(server, table, filtersTODO).longValue();
-			filtered = total;
-
-		} else {
-			logger.info("count - with filters");
-			filtered =  dynamicDAO.getCount(server, table, filtersTODO).longValue();
-			final List<Filter> emptyFilterListForCount = new ArrayList<Filter>(); //NEVER use NULL for Filters, only empty collection
-			total =  dynamicDAO.getCount(server, table, emptyFilterListForCount).longValue();
-
-		}
-
-		/*get just data - as in GDMA1*/
-		columns = dynamicDAO.getTableData(table, server, sortedByColumn, filtersTODO, orderDirection, startIndex, length);
-
-		logger.info("Total: " + total + ", Filtered: " + filtered + ", Result Count: " + columns.size());
-
-		return getPaginatedTableResponse(columns != null ? columns : new ArrayList<Column>(), total, filtered);
-
-	}
-
 	/*incremental text search - in future versions switch to version that is using List<Filter> filtersParam instead of String searchTerm 
 	 * (in method with the same name)*/
 	@Override
@@ -976,11 +918,9 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			int startIndex, int length) {
 
 		logger.info("getTableData : " + tableId);
-
 		Table table = null;
 		Server server = null;
 		List<Column> columns = null;
-
 
 		//List<Filter> filtersTODO = new ArrayList<Filter>(); //NEVER use NULL for Filters, only empty collection
 
@@ -992,11 +932,10 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrueAndDisplayedTrue(tableId);
 		table.setColumns(new LinkedHashSet<Column>(activeColumns));//IF BIDIRECTION IS TO BE REMOVED - to change
 
-		/*if ordering not set, zero velue is received so keep sortedByColumn = null, else determine column among all table columns*/
+		/*if ordering not set, zero value is received so keep sortedByColumn = null, else determine column among all table columns*/
 		Column sortedByColumn = null;
 		if(orderByColumnID > 0){
 			logger.info("orderByColumnID > 0");
-
 			try {
 				sortedByColumn = activeColumns.get(orderByColumnID - 1);
 				logger.info("sortedByColumn: " + sortedByColumn.getName());
@@ -1020,20 +959,17 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			logger.info("count - with filters, filtered count: " + filtered );
 			final List<Filter> emptyFilterListForCount = new ArrayList<Filter>(); //NEVER use NULL for Filters, only empty collection
 			total =  dynamicDAO.getCount(server, table, emptyFilterListForCount).longValue();
-
 		}
 
-		/*get data with col names and metadata resolved*/
-		columns = dynamicDAO.getTableDataWithColumnNamesAndDropdowns(table, server, sortedByColumn, filtersParam, orderDirection, startIndex, length);
-
-		/*get column metadata + data*/
-		//columns = dynamicDAO.getTableDataWithColumnMetadata(table, server, sortedByColumn, filtersTODO, orderDirection, startIndex, length);
-
+		columns = dynamicDAO.getEditableTableData(table, server, sortedByColumn, filtersParam, orderDirection, startIndex, length);
 
 		logger.info("Total: " + total + ", Filtered: " + filtered + ", Result Count: " + columns.size());
-
-		return getPaginatedTableResponse(columns != null ? columns : new ArrayList<Column>(), total, filtered);
-
+//		Map<String, List<DataTableDropDown>> optionList = dynamicDAO.getDatatableEditorOptions(table);
+		Map<String, List<DataTableDropDown>> optionList = null;
+		PaginatedEditableTableResponse<Column,String,DataTableDropDown> paginatedEditableTableResponse = 
+				getPaginatedEditableTableResponse(columns != null ? columns : new ArrayList<Column>(), total, filtered, 
+						optionList != null ? optionList: new LinkedHashMap<String,List<DataTableDropDown>>());
+		return paginatedEditableTableResponse ;
 	}
 
 	@Transactional

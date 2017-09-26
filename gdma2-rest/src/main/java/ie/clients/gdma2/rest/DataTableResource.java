@@ -78,6 +78,12 @@ public class DataTableResource extends BaseDataTableResource{
 		return serviceFacade.getDataModuleService().getActiveColumns(tableId);
 	}
 	
+	@RequestMapping(value = "/metadata/{tableId}", method = RequestMethod.GET)
+	public List<Column> getActiveColumnsMetadata(@PathVariable("tableId") Integer tableId){
+		logger.info("getActiveColumnsForActiveTableOnActiveServer");
+		return serviceFacade.getDataModuleService().getTableMetadata(tableId);
+	}
+	
 	
 	/*DATA PART*/
 	

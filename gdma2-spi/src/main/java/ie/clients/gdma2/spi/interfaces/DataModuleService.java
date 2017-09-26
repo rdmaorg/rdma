@@ -70,5 +70,7 @@ public interface DataModuleService {
 		public List<UpdateDataRequest> extractUpdateDataRequestList(Integer serverId, Integer tableId,
 				Map<String, String> reqParams, List<Filter> filterList);
 		
+		public List<Column> getTableMetadata(Integer tableId);
+		
 	
 }
