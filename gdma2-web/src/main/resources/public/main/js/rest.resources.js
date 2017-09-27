@@ -58,7 +58,10 @@ var restUri = {
 		remove: getRestBaseUri() + '/datatable/delete/{serverId}/{tableId}',
 		upload: getRestBaseUri() + '/datatable/upload',		
 		download: getRestBaseUri() + '/datatable/download/csv/table/{tableId}',
-		metaData: getRestBaseUri() + '/datatable/metadata/{tableId}',
-	}
+		metaData: getRestBaseUri() + '/datatable/metadata/{tableId}'
+	},
+	log : {
+		audit: getRestBaseUri() + '/logs/audit'
+	},
 	
 };

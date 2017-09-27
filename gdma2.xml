@@ -1,4 +1,4 @@
-<Context path="/gdma2" docBase="gdma2">
+<Context path="/rdma" docBase="gdma2">
 
 	<!-- maxActive: Maximum number of database connections in pool. Make sure 
 		you configure your mysqld max_connections large enough to handle all of your 

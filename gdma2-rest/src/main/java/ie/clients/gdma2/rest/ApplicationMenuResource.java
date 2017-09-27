@@ -48,6 +48,12 @@ public class ApplicationMenuResource extends BaseResource {
 					.description(PageEnum.ADMIN_CONNECTIONS.details())
 					.iconClass(PageEnum.ADMIN_CONNECTIONS.iconClass()));
 		}
+		if (u.isPermitted(PageEnum.ADMIN_AUDIT_LOG.role())) {
+			menuItem.child(new MenuItem().name(PageEnum.ADMIN_AUDIT_LOG.description())
+					.view(PageEnum.ADMIN_AUDIT_LOG.path()).authority(PageEnum.ADMIN_AUDIT_LOG.role())
+					.description(PageEnum.ADMIN_AUDIT_LOG.details())
+					.iconClass(PageEnum.ADMIN_AUDIT_LOG.iconClass()));
+		}
 
 		return b.add(menuItem).end();
 	}

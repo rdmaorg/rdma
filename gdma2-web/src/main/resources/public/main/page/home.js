@@ -369,9 +369,8 @@ var createDataTableColumns = function(columnsMetadata){
 		
 		//At runtime we have the data but we don't know which column the data belongs to. 
 		//Also, the columns order and type are dynamic as well.
-		//The solution is to create the renderFunction dynamically.
+		//The solution is to create the renderFunction dynamically so every column has it's own renderFunction.
 		//We pass datatableEditorFieldOptions as a parameter and the return is a regular datatable render function.
-		//Every column has it's own renderFunction.
 		if(columnsMetadata[i].datatableEditorFieldOptions[0] != null){
 			renderFunction = getDropDownColumnRenderFunction(columnsMetadata[i].datatableEditorFieldOptions);
 		}

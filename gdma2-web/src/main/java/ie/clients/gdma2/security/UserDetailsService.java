@@ -57,11 +57,14 @@ public class UserDetailsService implements AuthenticationUserDetailsService {
 				}
 				if(user!=null && user.isAdmin()){
 					authorities.add(new SimpleGrantedAuthority(ApplicationRoleEnum.APPLICATION_ADMIN.role()));
+					/*
 					authorities.add(new SimpleGrantedAuthority(ApplicationRoleEnum.APPLICATION_ADMIN_USER.role()));
 					authorities.add(new SimpleGrantedAuthority(ApplicationRoleEnum.APPLICATION_ADMIN_CONNECTION.role()));
 					authorities.add(new SimpleGrantedAuthority(ApplicationRoleEnum.APPLICATION_ADMIN_SERVER.role()));
 					authorities.add(new SimpleGrantedAuthority(ApplicationRoleEnum.APPLICATION_ADMIN_TABLE.role()));
 					authorities.add(new SimpleGrantedAuthority(ApplicationRoleEnum.APPLICATION_ADMIN_COLUMNS.role()));
+					authorities.add(new SimpleGrantedAuthority(ApplicationRoleEnum.APPLICATION_ADMIN_AUDIT_LOG.role()));
+					*/
 				}
 				logger.info(user.getUserName() + " has Logged In with details ["+(String) authentication.getDetails()+"], req ["+(req!=null?req.getRemoteAddr():"")+"]");
 				

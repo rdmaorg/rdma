@@ -319,8 +319,9 @@ div.editor-datetime table th {
 	display: none;
 }
 
+/*z-index fixed to avoid conflicting with calendar datetime picker*/
 div.DTED_Lightbox_Wrapper {
-	z-index: 9999;
+	z-index: 2040;
 }
 
 @media (max-width: 767px) {

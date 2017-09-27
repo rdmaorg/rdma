@@ -1,6 +1,7 @@
 package ie.clients.gdma2.spi;
 
 import ie.clients.gdma2.spi.interfaces.DataModuleService;
+import ie.clients.gdma2.spi.interfaces.LoggingService;
 import ie.clients.gdma2.spi.interfaces.MetaDataService;
 import ie.clients.gdma2.spi.interfaces.UserContextProvider;
 
@@ -18,6 +19,9 @@ public class ServiceFacade {
 	
 	@Autowired
 	private UserContextProvider userContextProvider;
+	
+	@Autowired
+	private LoggingService loggingService;
 	
 	public MetaDataService getMetadataService() {
 		return metadataService;
@@ -43,7 +47,13 @@ public class ServiceFacade {
 		this.userContextProvider = userContextProvider;
 	}
 	
+	public LoggingService getLoggingService() {
+		return loggingService;
+	}
 	
+	public void setLoggingService(LoggingService loggingService) {
+		this.loggingService = loggingService;
+	}
 	
 	
 }
