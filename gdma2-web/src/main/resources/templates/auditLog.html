@@ -10,7 +10,7 @@
 			<div th:replace="inc/alerts"></div>
 			<!-- Content Header (Page header) -->
 			<section class="content-header">
-				<h1 th:text="#{view.log.activity.heading}"></h1>
+				<h1 th:text="#{view.log.audit.heading}"></h1>
 				<div th:replace="inc/spinner"></div>
 				<div th:replace="inc/alerts"></div>	
 	      		<div th:replace="inc/success"></div>	
@@ -21,15 +21,15 @@
 					cellspacing="0" width="100%">
 					<thead>
 						<tr>
-							<th width="5%" th:text="#{view.log.activity.table.heading.id}"></th>
-							<th width="10%" th:text="#{view.log.activity.table.heading.auditHeader.id}"></th>
-							<th width="10%" th:text="#{view.log.activity.table.heading.auditHeader.tableID}"></th>
-							<th width="5%" th:text="#{view.log.activity.table.heading.auditHeader.type}"></th>
-							<th width="10%" th:text="#{view.log.activity.table.heading.auditHeader.modifiedBy}"></th>
-							<th width="15%" th:text="#{view.log.activity.table.heading.auditHeader.modifiedOn}"></th>
-							<th width="10%" th:text="#{view.log.activity.table.heading.columnID}"></th>
-							<th width="15%" th:text="#{view.log.activity.table.heading.oldValue}"></th>
-							<th width="15%" th:text="#{view.log.activity.table.heading.newValue}"></th>
+							<th width="5%" th:text="#{view.log.audit.table.heading.id}"></th>
+							<th width="10%" th:text="#{view.log.audit.table.heading.auditHeader.id}"></th>
+							<th width="10%" th:text="#{view.log.audit.table.heading.auditHeader.tableID}"></th>
+							<th width="5%" th:text="#{view.log.audit.table.heading.auditHeader.type}"></th>
+							<th width="10%" th:text="#{view.log.audit.table.heading.auditHeader.modifiedBy}"></th>
+							<th width="15%" th:text="#{view.log.audit.table.heading.auditHeader.modifiedOn}"></th>
+							<th width="10%" th:text="#{view.log.audit.table.heading.columnID}"></th>
+							<th width="15%" th:text="#{view.log.audit.table.heading.oldValue}"></th>
+							<th width="15%" th:text="#{view.log.audit.table.heading.newValue}"></th>
 						</tr>
 					</thead>
 				</table>

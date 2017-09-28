@@ -61,7 +61,8 @@ var restUri = {
 		metaData: getRestBaseUri() + '/datatable/metadata/{tableId}'
 	},
 	log : {
-		audit: getRestBaseUri() + '/logs/audit'
+		audit: getRestBaseUri() + '/logs/audit',
+		activity: getRestBaseUri() + '/logs/activity'
 	},
 	
 };

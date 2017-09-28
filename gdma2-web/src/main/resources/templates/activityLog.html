@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org">
+<head th:replace="inc/header"></head>
+<body class="skin-blue sidebar-mini sidebar-collapse">
+	<div class="wrapper">
+		<header th:replace="inc/contentHeader"></header>
+		<aside th:replace="inc/leftPanel"></aside>
+		<div class="content-wrapper" style="min-height: 368px;">
+			<div th:replace="inc/alerts"></div>
+			<!-- Content Header (Page header) -->
+			<section class="content-header">
+				<h1 th:text="#{view.log.activity.heading}"></h1>
+				<div th:replace="inc/spinner"></div>
+				<div th:replace="inc/alerts"></div>	
+	      		<div th:replace="inc/success"></div>	
+			</section>
+			<!-- Main content -->
+			<section class="content">
+				<table id="tbl_activity_log" class="table table-condensed table-striped table-hover dt-responsive"
+					cellspacing="0" width="100%">
+					<thead>
+						<tr>
+							<th width="20%" th:text="#{view.log.activity.table.heading.id}"></th>
+							<th width="20%" th:text="#{view.log.activity.table.heading.activity}"></th>
+							<th width="20%" th:text="#{view.log.activity.table.heading.activityFrom}"></th>
+							<th width="20%" th:text="#{view.log.activity.table.heading.activityBy}"></th>
+							<th width="20%" th:text="#{view.log.activity.table.heading.activityOn}"></th>
+						</tr>
+					</thead>
+				</table>
+			</section>
+		</div>
+
+		<footer th:replace="inc/footer"></footer>
+		<aside th:replace="inc/rightPanel"></aside>
+		<script th:src="@{/public/main/page/activityLog.js}"></script>
+	</div>
+
+</body>
+</html>

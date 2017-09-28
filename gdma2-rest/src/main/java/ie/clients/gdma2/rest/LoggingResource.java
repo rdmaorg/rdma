@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import ie.clients.gdma2.domain.AuditActivity;
 import ie.clients.gdma2.domain.AuditRecord;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 
@@ -20,7 +21,7 @@ public class LoggingResource extends BaseDataTableResource{
 
 	@RequestMapping(value="audit")
 	public PaginatedTableResponse<AuditRecord> getAuditLogs(@RequestParam  Map<String, String> reqParams){
-		logger.debug("getConnectionTypeTable");
+		logger.debug("getAuditLogs");
 		
 		String orderByColumn = "id";
 		switch (getOrderByColumn(reqParams)){
@@ -59,6 +60,46 @@ public class LoggingResource extends BaseDataTableResource{
 		logger.debug("orderByColumn: " + orderByColumn);
 
 		PaginatedTableResponse<AuditRecord> resp = serviceFacade.getLoggingService().getPaginatedAuditLogs(
+				getSearchValue(reqParams),
+				orderByColumn,
+				getOrderByDirection(reqParams),
+				getStartIndex(reqParams),
+				getLength(reqParams)
+				);
+
+		resp.setDraw(getDraw(reqParams));
+		return resp;
+	}
+	
+	@RequestMapping(value="activity")
+	public PaginatedTableResponse<AuditActivity> getActivityLogs(@RequestParam  Map<String, String> reqParams){
+		logger.debug("getActivityLogs");
+		
+		String orderByColumn = "id";
+		switch (getOrderByColumn(reqParams)){
+		case 0:
+			orderByColumn = "id";
+			break;
+		case 1:
+			orderByColumn = "activity";
+			break;
+		case 2:
+			orderByColumn = "activityFrom";
+			break;
+		case 3:
+			orderByColumn = "activityBy";
+			break;
+		case 4:
+			orderByColumn = "activityOn";
+			break;
+		default:
+			orderByColumn = "id";
+			break;
+		}
+
+		logger.debug("orderByColumn: " + orderByColumn);
+
+		PaginatedTableResponse<AuditActivity> resp = serviceFacade.getLoggingService().getPaginatedActivityLogs(
 				getSearchValue(reqParams),
 				orderByColumn,
 				getOrderByDirection(reqParams),

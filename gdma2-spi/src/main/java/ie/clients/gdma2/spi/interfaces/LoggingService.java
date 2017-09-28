@@ -1,5 +1,6 @@
 package ie.clients.gdma2.spi.interfaces;
 
+import ie.clients.gdma2.domain.AuditActivity;
 import ie.clients.gdma2.domain.AuditRecord;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
 
@@ -13,4 +14,7 @@ public interface LoggingService {
 	public void log(String clientIP, String activity, String performedBy);
 	public void log(String clientIP, String activity);
 	public void log(String activity);
+
+	public PaginatedTableResponse<AuditActivity> getPaginatedActivityLogs(String searchValue, String orderByColumn,
+			String orderByDirection, int startIndex, int length);
 }

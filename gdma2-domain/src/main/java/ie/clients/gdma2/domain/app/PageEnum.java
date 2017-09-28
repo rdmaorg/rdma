@@ -11,6 +11,7 @@ public enum PageEnum {
 	ADMIN_TABLE("/tables", "Tables", ApplicationRoleEnum.APPLICATION_ADMIN.role(), "Insert/Edit/Remove Tables", ""),
 	ADMIN_COLUMNS("/columns", "Columns", ApplicationRoleEnum.APPLICATION_ADMIN.role(), "Insert/Edit/Remove/Configure Columns", ""),
 	ADMIN_AUDIT_LOG("/auditlog", "AuditLog", ApplicationRoleEnum.APPLICATION_ADMIN.role(), "Audit Log", "fa-plug"),
+	ADMIN_ACTIVITY_LOG("/activitylog", "ActivityLog", ApplicationRoleEnum.APPLICATION_ADMIN.role(), "Activity Log", "fa-plug"),
 	ERROR("/public/error", "Error", "", "", ""),
 	LOGOUT("/logout", "Logout", "", "", ""), 
 	CAS_LOGIN("/login/cas", "Login", "", "", ""), 
