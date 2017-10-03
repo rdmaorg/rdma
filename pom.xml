@@ -478,8 +478,8 @@
 		<application.context>rdma</application.context>
 
 		<repo.id>nexus-repo</repo.id>
-		<repo.release>http://linux.vm.tomcat/nexus/content/repositories/releases</repo.release>
-		<repo.snapshot>http://linux.vm.tomcat/nexus/content/repositories/snapshots</repo.snapshot>
+		<repo.release>http://csolnexus2.clients.local/repository/maven-releases</repo.release>
+		<repo.snapshot>http://csolnexus2.clients.local/repository/maven-snapshots</repo.snapshot>
 	</properties>
 
 	<modules>
