@@ -434,12 +434,12 @@
 	<distributionManagement>
 		<repository>
 			<id>${repo.id}</id>
-			<name>release</name>
+			<name>Releases</name>
 			<url>${repo.release}</url>
 		</repository>
 		<snapshotRepository>
 			<id>${repo.id}</id>
-			<name>snapshot</name>
+			<name>Snapshot</name>
 			<url>${repo.snapshot}</url>
 		</snapshotRepository>
 	</distributionManagement>
