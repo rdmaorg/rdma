@@ -23,7 +23,17 @@
 		<tag>HEAD</tag>
 	</scm>
 
-
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-release-plugin</artifactId>
+                <!-- configuration>
+                
+                    <releaseProfiles>prod</releaseProfiles>
+                </configuration -->
+            </plugin>
+        </plugins>
+    </build>
 	<developers>
 		<developer>
 			<id>805096</id>
