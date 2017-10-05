@@ -4,11 +4,11 @@
 	<parent>
 		<groupId>ie.clients.gdma</groupId>
 		<artifactId>gdma2</artifactId>
-		<version>0.1</version>
+		<version>0.2-SNAPSHOT</version>
 	</parent>
 	<groupId>ie.clients.gdma</groupId>
 	<artifactId>gdma2-adaptor</artifactId>
-	<version>0.1</version>
+	<version>0.2-SNAPSHOT</version>
 	<name>gdma2-adaptor</name>
 	<url>http://maven.apache.org</url>
 	<properties>

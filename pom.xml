@@ -8,7 +8,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ie.clients.gdma</groupId>
 	<artifactId>gdma2</artifactId>
-	<version>0.1</version>
+	<version>0.2-SNAPSHOT</version>
 	<name>RDMA</name>
 	<description>RDMA</description>
 	<packaging>pom</packaging>
@@ -19,7 +19,7 @@
 		<connection>scm:hg:http://10.252.220.63/hg/gdma2</connection>
 		<developerConnection>scm:hg:http://10.252.220.63/hg/gdma2</developerConnection>
 		<url>http://10.252.220.63/hg/gdma2</url>
-		<tag>gdma2-0.1</tag>
+		<tag>HEAD</tag>
 	</scm>
 
     <build>
