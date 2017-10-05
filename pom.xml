@@ -490,6 +490,8 @@
 		<repo.id>nexus-repo</repo.id>
 		<repo.release>http://csolnexus2.clients.local/repository/maven-releases</repo.release>
 		<repo.snapshot>http://csolnexus2.clients.local/repository/maven-snapshots</repo.snapshot>
+		
+		<additionalparam>-Xdoclint:none</additionalparam>
 	</properties>
 
 	<modules>
