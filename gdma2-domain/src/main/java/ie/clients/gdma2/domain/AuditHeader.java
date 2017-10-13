@@ -3,6 +3,8 @@ package ie.clients.gdma2.domain;
 import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 
 import com.avnet.cs.commons.dao.BaseEntity;
@@ -19,8 +21,10 @@ public class AuditHeader extends BaseEntity{
 
 	/*TODO openQ use table object instead od ID?*/
 	/*DB table being modified*/
-	@javax.persistence.Column(name = "TABLE_ID")
-    private Integer tableID;
+//	@javax.persistence.Column(name = "TABLE_ID")
+	@ManyToOne
+	@JoinColumn(name = "TABLE_ID")
+    private Table tableID;
 
 	/*auditType - UPDATE, DELETE, ADD*/
 	@javax.persistence.Column(name = "AUDIT_TYPE")
@@ -34,14 +38,14 @@ public class AuditHeader extends BaseEntity{
 	@javax.persistence.Column(name = "MODIFIED_ON")
     private Date modifiedOn;
 
-    public Integer getTableID() {
-        return tableID;
-    }
-
-    public void setTableID(Integer tableID) {
-        this.tableID = tableID;
-    }
-
+	public Table getTableID() {
+		return tableID;
+	}
+	
+	public void setTableID(Table tableID) {
+		this.tableID = tableID;
+	}
+	
     public char getType() {
         return type;
     }

@@ -23,8 +23,10 @@ public class AuditRecord extends BaseEntity{
     private AuditHeader auditHeader;
 	
 	/*TODO openQ use Column object instead od ID?*/
-	@javax.persistence.Column(name = "COLUMN_ID")
-    private Integer columnID;
+//	@javax.persistence.Column(name = "COLUMN_ID")
+	@ManyToOne
+	@JoinColumn(name = "COLUMN_ID")
+    private Column columnID;
 	
 	@javax.persistence.Column(name = "OLD_VALUE")
     private String oldValue;
@@ -47,20 +49,15 @@ public class AuditRecord extends BaseEntity{
         this.auditHeader = auditHeader;
     }
 
-    /**
-     * @return Returns the columnID.
-     */
-    public Integer getColumnID() {
-        return columnID;
-    }
+	public Column getColumnID() {
+		return columnID;
+	}
+	
+	public void setColumnID(Column columnID) {
+		this.columnID = columnID;
+	}
 
-    /**
-     * @param columnID
-     *            The columnID to set.
-     */
-    public void setColumnID(Integer columnID) {
-        this.columnID = columnID;
-    }
+
 
     /**
      * @return Returns the newValue.

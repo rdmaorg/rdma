@@ -1185,7 +1185,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 	
 	private AuditRecord extractAuditRecord(ColumnDataUpdate columnUpdate) {
 		AuditRecord ar = new AuditRecord();
-		ar.setColumnID(columnUpdate.getColumnId());
+		ar.setColumnID(repositoryManager.getColumnRepository().findOne(columnUpdate.getColumnId()));
 		ar.setNewValue(StringUtil.abbreviateString(columnUpdate.getNewColumnValue(),255));
 		ar.setOldValue(StringUtil.abbreviateString(columnUpdate.getOldColumnValue(),255));
 		return ar;
@@ -1195,7 +1195,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 		AuditHeader ah = new AuditHeader();
 		ah.setModifiedBy(userContextProvider.getLoggedInUserName());
 		ah.setModifiedOn(new Date());
-		ah.setTableID(table.getId());
+		ah.setTableID(table);
 		ah.setType(auditType);
 		return ah;
 	}

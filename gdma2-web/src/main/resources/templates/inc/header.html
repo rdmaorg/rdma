@@ -30,7 +30,9 @@
 	<link th:href="@{/public/lib/switch/css/bootstrap-switch.min.css}" rel="stylesheet" />
 	
 	<link th:href="@{/public/main/css/custom.css}" rel="stylesheet" />
-	<link th:href="@{/public/main/css/client.css}" rel="stylesheet" />
+	<link th:href="@{/public/lib/bootstrap/css/{theme}(theme=${@environment.getProperty('bootstrap.theme')})}" rel="stylesheet" />
+	<link th:href="@{/public/main/css/{theme}(theme=${@environment.getProperty('client.theme')})}" rel="stylesheet" />
+	
     
     <!--[if (lt IE 9) & (!IEMobile)]>
 		<script th:src="@{/public/lib/html5support/js/selectivizr-min.js}"></script>

@@ -29,27 +29,24 @@ public class LoggingResource extends BaseDataTableResource{
 			orderByColumn = "id";
 			break;
 		case 1:
-			orderByColumn = "auditHeader.id";
+			orderByColumn = "auditHeader.tableID.name";
 			break;
 		case 2:
-			orderByColumn = "auditHeader.tableID";
-			break;
-		case 3:
 			orderByColumn = "auditHeader.type";
 			break;
-		case 4:
+		case 3:
 			orderByColumn = "auditHeader.modifiedBy";
 			break;
-		case 5:
+		case 4:
 			orderByColumn = "auditHeader.modifiedOn";
 			break;
-		case 6:
-			orderByColumn = "columnID";
+		case 5:
+			orderByColumn = "columnID.name";
 			break;
-		case 7:
+		case 6:
 			orderByColumn = "oldValue";
 			break;
-		case 8:
+		case 7:
 			orderByColumn = "newValue";
 			break;
 		default:

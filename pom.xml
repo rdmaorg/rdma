@@ -485,6 +485,8 @@
 		<java.version>1.8</java.version>
 
 		<application.context>rdma</application.context>
+		<bootstrap.theme>bootstrap-theme-vodafone.min.css</bootstrap.theme>
+		<client.theme>client-vodafone.css</client.theme>
 
 		<repo.id>nexus-repo</repo.id>
 		<repo.release>http://csolnexus2.clients.local/repository/maven-releases</repo.release>
