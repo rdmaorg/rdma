@@ -503,5 +503,6 @@
 		<module>gdma2-domain</module>
 		<module>gdma2-security-cas</module>
 		<module>gdma2-config</module>
+		<module>gdma2-test</module>
 	</modules>
 </project>
