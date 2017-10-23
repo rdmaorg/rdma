@@ -1,5 +1,6 @@
 Feature: Login Action
 
+  @Run
   Scenario: Verifying existence of each element on the LogIn Page
     Given User is on the LogIn Page
     Then All elements are visible on the LogIn Page
@@ -8,6 +9,7 @@ Feature: Login Action
     Given User is on the LogIn Page
     Then Correct text is displayed for each element on the LogIn Page
 
+  @Run
   Scenario: Successful Login
     Given User is on the LogIn Page
     When User enters valid username and password

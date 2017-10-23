@@ -1,4 +1,4 @@
-package ie.clients.gdma2.test.step;
+package ie.clients.gdma2.test.step.data;
 
 import java.util.List;
 
@@ -8,6 +8,7 @@ import org.openqa.selenium.WebElement;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import ie.clients.gdma2.test.page.DataModulePage;
+import ie.clients.gdma2.test.step.Init;
 
 public class DeselectAll extends Init {
 
