@@ -1,5 +1,7 @@
 package ie.clients.gdma2.rest;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -11,4 +13,13 @@ public abstract class BaseResource {
 
 	@Autowired
 	protected ServiceFacade serviceFacade;
+	
+	@Autowired(required=false)
+	private HttpServletRequest req;
+	
+	protected void logActivity(String activity){
+		serviceFacade.getLoggingService().log((req!=null?req.getRemoteAddr():""), activity);
+	}
+	
+	
 }

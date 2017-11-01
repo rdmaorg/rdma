@@ -88,6 +88,7 @@ public class TableResource extends BaseDataTableResource{
 	public void saveTable(@RequestBody Table table){
 		logger.debug("*** saveTable: " +  table.getName());
 		serviceFacade.getMetadataService().saveTable(table);
+		logActivity("Table configuration persisted: " + table);
 	}
 
 
@@ -95,6 +96,7 @@ public class TableResource extends BaseDataTableResource{
 	public void deleteTable(@PathVariable("id") Integer tableId){
 		logger.debug("*** deleteTable with Id: " +  tableId);
 		serviceFacade.getMetadataService().deleteTable(tableId);
+		logActivity("Table configuration deleted. Table id: " + tableId);
 	}
 
 

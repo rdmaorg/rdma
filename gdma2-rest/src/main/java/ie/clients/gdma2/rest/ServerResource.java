@@ -82,6 +82,7 @@ public class ServerResource extends BaseDataTableResource {
 	public void saveServer(@RequestBody Server server){
 		logger.info("saveServer " + server.getName() );
 		serviceFacade.getMetadataService().saveServer(server);
+		logActivity("Server configuration persisted: " + server);
 	}
 
 

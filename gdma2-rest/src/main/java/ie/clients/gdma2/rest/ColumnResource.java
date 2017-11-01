@@ -131,8 +131,11 @@ public class ColumnResource extends BaseDataTableResource{
 	@RequestMapping(value = "save", method = RequestMethod.POST)
 	public List<Column> saveColumns(@RequestBody List<Column> columnList){
 		logger.debug("saveColumns");
-		return serviceFacade.getMetadataService().saveColumns(columnList);
-		
+		List<Column> savedColumns = serviceFacade.getMetadataService().saveColumns(columnList); 
+		for (Column column : savedColumns) {
+			logActivity("Column configuration persisted: " + column);
+		}
+		return savedColumns;
 	}
 	
 	
@@ -140,6 +143,7 @@ public class ColumnResource extends BaseDataTableResource{
 	public void deleteColumn(@PathVariable("id") Integer columnId){
 		logger.debug("deleteColumn " + columnId);
 		serviceFacade.getMetadataService().deleteColumn(columnId);
+		logActivity("Column deleted. id: " + columnId);
 	}
 	
 	

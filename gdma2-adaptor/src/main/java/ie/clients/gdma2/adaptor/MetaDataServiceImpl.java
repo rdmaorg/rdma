@@ -79,14 +79,12 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	@Override
 	public void saveConnectionType(ConnectionType connectionType) {
 		repositoryManager.getConnectionTypeRepository().save(connectionType);
-		log("ConnectionType configuration persisted: " + connectionType);
 	}
 
 	@Transactional
 	@Override
 	public void deleteConnectionType(Integer id) {
 		repositoryManager.getConnectionTypeRepository().delete(id);
-		log("ConnectionType configuration deleted. id: " + id);
 	}
 
 
@@ -162,15 +160,11 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		logger.info("saving/update server");
 		int serverId = server.getId(); 
 		logger.info("serverId: " +  serverId);
-		String activity;
 		
 		server.setConnectionUrl(server.getConnectionUrl().trim());
 		server.setPrefix(server.getPrefix().trim());
 		
-		if(serverId < 0 ){
-			activity = "INSERT";
-		} else {
-			activity = "UPDATE";
+		if (!(serverId < 0 )){
 			Server serverBeforeUpdate = repositoryManager.getServerRepository().findOne(serverId);
 			if(EntityUtils.PASSWORD_MASK.equals(server.getPassword())){
 				logger.info("no change - keep old password");
@@ -182,7 +176,6 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			}
 		}				
 		repositoryManager.getServerRepository().save(server);
-		log("Server configuration " + activity + " persisted: " + server);
 	}
 
 
@@ -198,7 +191,7 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	@Override
 	public void deleteServer(Server server) {
 		repositoryManager.getServerRepository().delete(server);
-		log("Server deleted: " + server);
+//		log("Server deleted: " + server);
 	}
 
 
@@ -304,7 +297,6 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	@Override
 	public Table saveTable(Table table) {
 		table = repositoryManager.getTableRepository().save(table);
-		log("Table configuration persisted: " + table);
 		return table;
 	}
 
@@ -312,8 +304,6 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	@Override
 	public void deleteTable(int id) {
 		repositoryManager.getTableRepository().delete(id);
-		log("Table configuration deleted. Table id: " + id);
-
 	}
 
 
@@ -463,10 +453,6 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		//This isn't so bad either, because the hashed password can only be seen by the user who saved the password.
 		//In subsequent calls, the password will be empty anyway.
 		//		 return emptyPasswords(savedUsers);
-		for (User user : savedUsers) {
-			log("User persisted: " + user);	
-		}
-		
 		return savedUsers;
 	}
 
@@ -477,8 +463,6 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 		//DELETE USER_ACCESS first or FK constraint will be violeted for all existing UI.user_id = id of deleted user
 		repositoryManager.getUserAccessRepository().deleteForUser(id);
 		repositoryManager.getUserRepository().delete(id);
-		log("User deleted. user id: " + id);
-
 	}
 
 	/*COLUMN section*/
@@ -515,21 +499,13 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			EntityUtils.applyColumnRules(column);
 		}
 		List<Column> cl = IteratorUtils.toList(repositoryManager.getColumnRepository().save(columnList).iterator());
-		for (Column column : cl) {
-			log("Column configuration persisted: " + column);
-		}
 		return cl;
-		
 	}
-
-
 
 	@Transactional
 	@Override
 	public void deleteColumn(int id) {
 		repositoryManager.getColumnRepository().delete(id);
-		log("Column deleted. id: " + id);
-
 	}
 
 	@Override
@@ -756,8 +732,6 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	@Override
 	public void saveUserAccess(UserAccess userAccess) {
 		repositoryManager.getUserAccessRepository().save(userAccess);
-		log("UserAccess persisted: " + userAccess);
-
 	}
 
 	@Transactional
@@ -771,7 +745,6 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	@Override
 	public void deleteUserAccess(Integer id) {
 		repositoryManager.getUserAccessRepository().delete(id);
-		log("UserAccess deleted. id: " + id);
 	}
 
 
@@ -988,12 +961,6 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 				getPaginatedEditableTableResponse(columns != null ? columns : new ArrayList<Column>(), total, filtered, 
 						optionList != null ? optionList: new LinkedHashMap<String,List<DataTableDropDown>>());
 		return paginatedEditableTableResponse ;
-	}
-
-	@Transactional
-	@Override
-	public void log(String activity) {
-		super.logActivity(activity);
 	}
 
 	@Transactional

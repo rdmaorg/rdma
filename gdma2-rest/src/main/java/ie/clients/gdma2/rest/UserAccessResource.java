@@ -66,6 +66,7 @@ public class UserAccessResource extends BaseDataTableResource {
 	void saveUserAccess(@RequestBody UserAccess userAccess){
 		logger.debug("saveUserAccess for table ans user: " + userAccess.getTable().getName() + ", " + userAccess.getUser().getUserName());
 		serviceFacade.getMetadataService().saveUserAccess(userAccess);
+		logActivity("UserAccess persisted: " + userAccess);
 	}
 	
 	/*update multiple UserAccess entities*/
@@ -80,6 +81,7 @@ public class UserAccessResource extends BaseDataTableResource {
 	void deleteUserAccess(@PathVariable("id") Integer id){
 		logger.debug("deleteUserAccess: " + id);
 		serviceFacade.getMetadataService().deleteUserAccess(id);
+		logActivity("UserAccess deleted. id: " + id);
 	}
 	
 

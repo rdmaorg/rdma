@@ -105,5 +105,4 @@ public interface MetaDataService {
 	
 	public void log(String clientIP, String activity, String performedBy);
 	public void log(String clientIP, String activity);
-	public void log(String activity);
 }

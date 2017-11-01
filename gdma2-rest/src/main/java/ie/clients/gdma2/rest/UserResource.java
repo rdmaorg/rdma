@@ -87,6 +87,9 @@ public class UserResource extends BaseDataTableResource{
 		//TODO: Empty the password
 		//return serviceFacade.getMetadataService().saveUsers(users);
 		List<User> savedUsers = serviceFacade.getMetadataService().saveUsers(users);
+		for (User user : savedUsers) {
+			logActivity("User persisted: " + user);	
+		}
 		
 		//EntityUtils.emptyPasswordsForUsers(users); problem - Entitity utils cannot be imported, doing manually ?TODO
 		if(savedUsers != null && !savedUsers.isEmpty()){
@@ -106,6 +109,7 @@ public class UserResource extends BaseDataTableResource{
 	public void deleteUser(@PathVariable("id") Integer id){
 		logger.debug("*** deleteUser()" + id);
 		serviceFacade.getMetadataService().deleteUser(id);
+		logActivity("User deleted. user id: " + id);
 	}
 	
 	/*get user by ID: 	http://localhost:8080/gdma2/rest/user/id/4 */

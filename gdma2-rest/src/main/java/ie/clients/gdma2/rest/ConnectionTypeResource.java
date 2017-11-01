@@ -70,11 +70,13 @@ public class ConnectionTypeResource extends BaseDataTableResource{
 		connectionType.setConnectionClass(connectionType.getConnectionClass().trim());
 		connectionType.setSqlGetTables(connectionType.getSqlGetTables().trim());
 		serviceFacade.getMetadataService().saveConnectionType(connectionType);
+		logActivity("ConnectionType configuration persisted: " + connectionType);
 	}
 
 	@RequestMapping(value = "delete/{id}", method = RequestMethod.DELETE)
 	public void deleteConnectionType(@PathVariable("id") Integer id){
 		serviceFacade.getMetadataService().deleteConnectionType(id);
+		logActivity("ConnectionType configuration deleted. id: " + id);
 	}
 
 	
