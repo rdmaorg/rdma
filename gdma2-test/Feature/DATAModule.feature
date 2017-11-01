@@ -8,38 +8,37 @@ Feature: Data module page checkout
     Given User is on the Data module Page
     Then Correct text is displayed for each element on the Data module Page
 
-  ##Test Data:NewEntry_DataModule.properties file
   Scenario: Insert and Delete new record
     Given User set full access rights for Classic Models - Mobile_Phone table
-    When User navigates to the Classic Models - Mobile_Phone table in DATA module
+    And User navigates to the Classic Models - Mobile_Phone table in DATA module
     And User press New button
     And User populate all fields on the create new entry form
-    And Select Create button
+    When Select Create button
     Then New entry is successfully saved
     And User successfully removed new record from database
 
   Scenario: Edit record details - single row
     Given User set full access rights for Classic Models - Mobile_Phone table
-    When User navigates to the Classic Models - Mobile_Phone table in DATA module
+    And User navigates to the Classic Models - Mobile_Phone table in DATA module
     And User press New button
     And User populate all fields on the create new entry form
     And Select Create button
     And User press Edit button for this new record
     And User edit record details
-    And Select Update button
+    When Select Update button
     Then Details are successfully edit
 
   ##Test Data:NewEntry2_DataModule.properties file
   Scenario: Edit record details - multiple row
     Given User set full access rights for Classic Models - Mobile_Phone table
-    When User navigates to the Classic Models - Mobile_Phone table in DATA module
+    And User navigates to the Classic Models - Mobile_Phone table in DATA module
     And User press New button
     And User populate all fields on the create new entry form
     And Select Create button
     And User create one more record
     And User press Edit button for these two new records
     And User edit record details for these two new items
-    And Select Update button
+    When Select Update button
     Then Details for both items are successfully edit
 
   Scenario: Select all functionality

@@ -95,7 +95,8 @@ var configureDataTable = function(){
                                 }
                             ]
        };
-       var selector = '#tbl_column' + tableSessionId;
+       //var selector = '#tbl_column' + tableSessionId;
+       var selector = '#' + tableSessionId + 'tbl_column';
        table = $(selector).configureDataTable(config, {
              url: mapPathVariablesInUrl(restUri.column.table, {id: tableSessionId}), 
              complete: function(){
@@ -417,7 +418,9 @@ var getModifiedObjects = function() {
 
 var lineExpansionEvent = function(){
        //  datatable line expansion event
-	var selector = '#tbl_column' + tableSessionId +' tbody';
+	//var selector = '#tbl_column' + tableSessionId +' tbody';
+	var selector = '#' + tableSessionId + 'tbl_column' +' tbody';
+	
     $(selector).on('click', 'td:first-child', function () {
        associateCheckBoxes();
        associateInputs();
@@ -427,7 +430,8 @@ var lineExpansionEvent = function(){
 }
 
 $(document).ready(function(){
-	$(".table").attr("id",'tbl_column' + tableSessionId);
+	//$(".table").attr("id",'tbl_column' + tableSessionId);
+	$(".table").attr("id",tableSessionId + 'tbl_column');
 	configureDataTable();
     associateSaveDropDownColumn();   
     $("#serverName").html(serverSessionName);

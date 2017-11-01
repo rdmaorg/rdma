@@ -8,7 +8,6 @@ Feature: Connection Types page checkout
     Given User is on the Connection Type Page
     Then Correct text is displayed for each element on the Connection Type Page
 
-  ##Test Data: ConnectionType.properties
   Scenario: Insert new connection type - success
     Given User is on the Connection Type Page
     When User press Insert Connection button
@@ -16,7 +15,7 @@ Feature: Connection Types page checkout
     And Press Save button on the Insert New Connection form
     And Press Save Connection type button to confirm the save
     Then New connection type is created and it is displayed on the connection types list page
-
+  
   Scenario: Insert new connection type - fail
     Given User is on the Connection Type Page
     When User press Insert Connection button

@@ -40,7 +40,7 @@ public class DownloadFile extends Init {
 	 
 			//Pass FProfile parameter In webdriver to use preferences to download file.
 			WebDriver driver= new FirefoxDriver(options);
-			driver.get("https://localhost/rdma");
+			driver.get(appURL);
 	        
 			//click to download
 			Navigation.login(driver, username, password);
@@ -62,16 +62,11 @@ public class DownloadFile extends Init {
 			Thread.sleep(3000);
 	 
 			driver.close();
-	 
-		
-		
 	}
 
 	@Then("^File is successfully downloaded$")
 	public void file_is_successfully_downloaded() throws Throwable {
-		
 		Log.info("File is successfully downloaded");
-	    
 	}
 
 

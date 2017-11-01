@@ -17,7 +17,7 @@ import ie.clients.gdma2.test.step.Init;
 public class TablesPageBasicCheck extends Init{
 
 	@Given("^User is on the Tables Page$")
-	public void user_is_on_the_Tables_Page() throws Throwable {
+	public void userIsOnTheTablesPage() throws Throwable {
 	   
 		Navigation.login(driver, username, password);
 		HomePage homepage= new HomePage(driver);
@@ -39,7 +39,7 @@ public class TablesPageBasicCheck extends Init{
 	}
 
 	@Then("^All elements are visible on the Tables Page$")
-	public void all_elements_are_visible_on_the_Tables_Page() throws Throwable {
+	public void allElementsAreVisibleOnTheTablesPage() throws Throwable {
 	    
 		TablesPage tables= new TablesPage(driver);
 		Class<TablesPage> tp = TablesPage.class;
@@ -61,21 +61,15 @@ public class TablesPageBasicCheck extends Init{
 					String fldResponse = fld.get(tables).toString();
 					Assert.assertTrue(!fldResponse.contains("Proxy element for: DefaultElementLocator"));
 					Log.info("All elements are visible on the page");
-				
-
 				} catch (Throwable e) {
 					Log.error("An element is missing on the page");
-					
-				
 				}
 			}
-
 		}	
-		
 	}
 
 	@Then("^Correct text is displayed for each element on the Tables Page$")
-	public void correct_text_is_displayed_for_each_element_on_the_Tables_Page() throws Throwable {
+	public void isCorrectTextDisplayedForEachElementOnTheTablesPage() throws Throwable {
 		
 		TablesPage tables= new TablesPage(driver);
 		/*Assert.assertEquals("Servers", tables.serverNavigation.getText());
@@ -113,7 +107,6 @@ public class TablesPageBasicCheck extends Init{
 		Assert.assertTrue(tables.versionFooter.getText().contains("Version:"));
 		Log.info("Correct text is displayed for version footer");
 		Log.info("Correct text is displayed for all elements on the page");
-		
 	   
 	}
 

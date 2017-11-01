@@ -14,7 +14,7 @@ public interface AuditRecordRepository extends PagingAndSortingRepository<AuditR
 	@Query("select count(ar) from AuditRecord ar where upper(ar.columnID.name) like ?1 "
 			+ " or upper(ar.oldValue) like ?1 "
 			+ " or upper(ar.newValue) like ?1 "
-			+ " or upper(''||ar.auditHeader.tableID) like ?1 "
+			+ " or upper(''||ar.auditHeader.tableID.name) like ?1 "
 			+ " or upper(ar.auditHeader.type) like ?1 "
 			+ " or upper(''||ar.auditHeader.modifiedBy) like ?1 "
 			+ " or upper(''||ar.auditHeader.modifiedOn) like ?1 ")
@@ -23,7 +23,7 @@ public interface AuditRecordRepository extends PagingAndSortingRepository<AuditR
 	@Query("select ar from AuditRecord ar where upper(ar.columnID.name) like ?1 "
 			+ " or upper(ar.oldValue) like ?1 "
 			+ " or upper(ar.newValue) like ?1 "
-			+ " or upper(''||ar.auditHeader.tableID) like ?1 "
+			+ " or upper(''||ar.auditHeader.tableID.name) like ?1 "
 			+ " or upper(ar.auditHeader.type) like ?1 "
 			+ " or upper(''||ar.auditHeader.modifiedBy) like ?1 "
 			+ " or upper(''||ar.auditHeader.modifiedOn) like ?1 ")

@@ -144,7 +144,7 @@ var loadAdminMenu = function(){
         dataType: 'json'
     }).done(function(data){	
     	$.each(data[0].children, function(i, menu) {
-    		$('<div class="form-group"><a class="btn btn-primary btn-block btn-sm" href="'+getContextPath()+ menu.view +'"><h3><i class="fa '+ menu.iconClass +'" aria-hidden="true"></i><br>'+ menu.name +'</h3><p>'+ menu.description +'</p></a></div>').appendTo("#control-sidebar-settings-tab");	
+    		$('<div class="form-group"><a id="btn-admin-'+ menu.name.toLowerCase() +'" class="btn btn-primary btn-block btn-sm" href="'+getContextPath()+ menu.view +'"><h3><i class="fa '+ menu.iconClass +'" aria-hidden="true"></i><br>'+ menu.name +'</h3><p>'+ menu.description +'</p></a></div>').appendTo("#control-sidebar-settings-tab");	
     	});
     }).fail(function(e){
     	handleError('#global-alert', e);

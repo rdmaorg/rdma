@@ -25,58 +25,58 @@ public class ColumnsPage {
 	@FindBy(xpath="html/body/div[1]/div[1]/section[1]/h1/span")
 	public WebElement columnsTitle;
 	
-	@FindBy(id="tbl_column185_length")
+	@FindBy(css="div[id$='tbl_column_length']")
 	public WebElement showEntries;
 	
-	@FindBy(id="tbl_column185_filter")
+	@FindBy(css="div[id$='tbl_column_filter']")
 	public WebElement search;
 	
-	@FindBy(xpath=".//*[@id='tbl_column185']/thead/tr/th[1]")
+	@FindBy(css="table thead tr th:nth-child(1)")
 	public WebElement idLabel;
 	
-	@FindBy(xpath=".//*[@id='tbl_column185']/thead/tr/th[2]")
+	@FindBy(css="table thead tr th:nth-child(2)")
 	public WebElement nameLabel;
 	
-	@FindBy(xpath=".//*[@id='tbl_column185']/thead/tr/th[3]")
+	@FindBy(css="table thead tr th:nth-child(3)")
 	public WebElement aliasLabel;
 	
-	@FindBy(xpath=".//*[@id='tbl_column185']/thead/tr/th[4]")
+	@FindBy(css="table thead tr th:nth-child(4)")
 	public WebElement colTypeLabel;
 	
-	@FindBy(xpath=".//*[@id='tbl_column185']/thead/tr/th[5]")
+	@FindBy(css="table thead tr th:nth-child(5)")
 	public WebElement primaryKeyLabel;
 	
-	@FindBy(xpath=".//*[@id='tbl_column185']/thead/tr/th[6]")
+	@FindBy(css="table thead tr th:nth-child(6)")
 	public WebElement displayLabel;
 	
-	@FindBy(xpath=".//*[@id='tbl_column185']/thead/tr/th[7]")
+	@FindBy(css="table thead tr th:nth-child(7)")
 	public WebElement insertLabel;
 	
-	@FindBy(xpath=".//*[@id='tbl_column185']/thead/tr/th[8]")
+	@FindBy(css="table thead tr th:nth-child(8)")
 	public WebElement updateLabel;
 	
-	@FindBy(xpath=".//*[@id='tbl_column185']/thead/tr/th[9]")
+	@FindBy(css="table thead tr th:nth-child(9)")
 	public WebElement nullLabel;
 	
-	@FindBy(xpath=".//*[@id='tbl_column185']/thead/tr/th[10]")
+	@FindBy(css="table thead tr th:nth-child(10)")
 	public WebElement dropdownDisplayLabel;
 	
-	@FindBy(xpath=".//*[@id='tbl_column185']/thead/tr/th[11]")
+	@FindBy(css="table thead tr th:nth-child(11)")
 	public WebElement dropdownStoreLabel;
 	
-	@FindBy(xpath=".//*[@id='tbl_column185']/thead/tr/th[12]")
+	@FindBy(css="table thead tr th:nth-child(12)")
 	public WebElement specialLabel;
 	
-	@FindBy(xpath=".//*[@id='tbl_column185']/thead/tr/th[13]")
+	@FindBy(css="table thead tr th:nth-child(13)")
 	public WebElement colSizeLabel;
 	
-	@FindBy(id="tbl_column185_info")
+	@FindBy(id="tbl_column_info")
 	public WebElement showing;
 	
-	@FindBy(id="tbl_column185_previous")
+	@FindBy(css="[id$='tbl_column_previous']")
 	public WebElement previousButton;
 	
-	@FindBy(id="tbl_column185_next")
+	@FindBy(css="[id$='tbl_column_next']")
 	public WebElement nextButton;
 	
 	@FindBy(xpath="html/body/div[1]/footer/strong")

@@ -3,7 +3,7 @@ var configureDataTable = function() {
 	var config = {
 		fixedHeader : true,
 		lengthMenu: [ [10, 25, 50, 100], [10, 25, 50, 100] ],
-		order : [ [ 1, "asc" ] ],
+		order : [ [ 4, "asc" ] ],
 		idSrc : 'id',
 		"columns": [
 		            { "data": "id" },

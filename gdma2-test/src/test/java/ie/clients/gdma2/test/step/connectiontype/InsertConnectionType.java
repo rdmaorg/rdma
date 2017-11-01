@@ -23,7 +23,7 @@ public class InsertConnectionType extends Init{
 //Scenario: Insert new connection type - success
 	
 	@When("^User press Insert Connection button$")
-	public void user_press_Insert_Connection_button() throws Throwable {
+	public void userPressInsertConnectionButton() throws Throwable {
 		
 		ConnectionTypesPage connectiontype= new ConnectionTypesPage(driver);
 		connectiontype.insertConnectionButton.click();
@@ -32,7 +32,7 @@ public class InsertConnectionType extends Init{
 	}
 
 	@And("^Populate all fields on the form$")
-	public void populate_all_fields_on_the_form() throws Throwable {
+	public void populateAllFieldsOnTheForm() throws Throwable {
 		
 		ConnectionTypesPage connectiontype= new ConnectionTypesPage(driver);
 		connectiontype.insertConnectionNameField.sendKeys(name);
@@ -44,7 +44,7 @@ public class InsertConnectionType extends Init{
 	}
 
 	@And("^Press Save button on the Insert New Connection form$")
-	public void press_Save_button() throws Throwable {
+	public void pressSaveButton() throws Throwable {
 		ConnectionTypesPage connectiontype= new ConnectionTypesPage(driver);
 		connectiontype.saveButton.click();
 		Log.info("User select save button");
@@ -53,7 +53,7 @@ public class InsertConnectionType extends Init{
 	}
 	
 	@And("^Press Save Connection type button to confirm the save$")
-	public void press_Save_Connection_type_button_to_confirm_the_save() throws Throwable {
+	public void pressSaveConnectionTypeButtonToConfirmTheSave() throws Throwable {
 		
 		 WebElement confirmSave= driver.findElement(By.className("popover-content"));
 		 confirmSave.findElement(By.className("btn-success")).click();
@@ -65,21 +65,21 @@ public class InsertConnectionType extends Init{
 	}
 
 	@Then("^New connection type is created and it is displayed on the connection types list page$")
-	public void new_connection_type_is_created_and_it_is_displayed_on_the_connection_types_list_page() throws Throwable {
+	public void newConnectionTypeIsCreatedAndItIsDisplayedOnTheConnectionTypesListPage() throws Throwable {
 	   
 		
 		WebElement table= driver.findElement(By.id("tbl_connection")); //locate table
-		List<WebElement>row_table=table.findElements(By.tagName("tr")); //locate rows
-		int numberOfRows=row_table.size(); //calculate number of rows
+		List<WebElement>rowTable=table.findElements(By.tagName("tr")); //locate rows
+		int numberOfRows=rowTable.size(); //calculate number of rows
 		
 		for (int i=0; i<numberOfRows; i++) //loop will execute till the last row of table
 		{
-			List<WebElement>columns_table=row_table.get(i).findElements(By.tagName("td")); //locate columns
-			int columns_count=columns_table.size();
+			List<WebElement>columnsTable=rowTable.get(i).findElements(By.tagName("td")); //locate columns
+			int columnsCount=columnsTable.size();
 			
-			for (int column = 0; column < columns_count; column++)
+			for (int column = 0; column < columnsCount; column++)
 			{
-				String cellText= columns_table.get(column).getText();
+				String cellText= columnsTable.get(column).getText();
 				if (cellText.contains(name))
 				{
 					Log.info("New connection type is successfully created");
@@ -100,7 +100,7 @@ public class InsertConnectionType extends Init{
 //Scenario: Insert new connection type - fail
 	
 	@And("^User doesnt populate any field on the Insert New Connection form$")
-	public void user_doesnt_populate_any_field_on_the_Insert_New_Connection_form() throws Throwable {
+	public void userDoesntPopulateAnyFieldOnTheInsertNewConnectionForm() throws Throwable {
 	  
 		ConnectionTypesPage connectiontype= new ConnectionTypesPage(driver);
 		connectiontype.insertConnectionNameField.clear();
@@ -111,7 +111,7 @@ public class InsertConnectionType extends Init{
 	}
 
 	@Then("^Create new connection action faild and correct warning message is displayed$")
-	public void create_new_connection_action_faild_and_correct_warning_message_is_displayed() throws Throwable {
+	public void createNewConnectionActionFaildAndCorrectWarningMessageIsDisplayed() throws Throwable {
 		
 		ConnectionTypesPage connectiontype= new ConnectionTypesPage(driver);
 		connectiontype.nameError.isDisplayed();
@@ -127,7 +127,7 @@ public class InsertConnectionType extends Init{
 //  Scenario: Cancel save action
 	
 	@And("^Populate all fields on the form with new test data$")
-	public void populate_all_fields_on_the_form_with_new_test_data() throws Throwable {
+	public void populateAllFieldsOnTheFormWithNewTestData() throws Throwable {
 		
 		ConnectionTypesPage connectiontype= new ConnectionTypesPage(driver);
 		connectiontype.insertConnectionNameField.sendKeys("Name - test cancel save");
@@ -138,7 +138,7 @@ public class InsertConnectionType extends Init{
 	}
 
 	@And("^Press Cancel Connection type button to cancel the save action$")
-	public void press_Cancel_Connection_type_button_to_cancel_the_save_action() throws Throwable {
+	public void pressCancelConnectionTypeButtonToCancelTheSaveAction() throws Throwable {
 	
 		WebElement cancelSave= driver.findElement(By.cssSelector("a[class='btn btn-sm btn-default'][data-dismiss='confirmation']"));
 		cancelSave.click();
@@ -150,20 +150,20 @@ public class InsertConnectionType extends Init{
 	}
 
 	@Then("^Save action is successfully canceled and connection type is not created$")
-	public void save_action_is_successfully_canceled_and_connection_type_is_not_created() throws Throwable {
+	public void saveActionIsSuccessfullyCanceledAndConnectionTypeIsNotCreated() throws Throwable {
 		
 		WebElement table= driver.findElement(By.id("tbl_connection")); //locate table
-		List<WebElement>row_table=table.findElements(By.tagName("tr")); //locate rows
-		int numberOfRows=row_table.size(); //calculate number of rows
+		List<WebElement>rowTable=table.findElements(By.tagName("tr")); //locate rows
+		int numberOfRows=rowTable.size(); //calculate number of rows
 		
 		for (int i=0; i<numberOfRows; i++) //loop will execute till the last row of table
 		{
-			List<WebElement>columns_table=row_table.get(i).findElements(By.tagName("td")); //locate columns
-			int columns_count=columns_table.size();
+			List<WebElement>columnsTable=rowTable.get(i).findElements(By.tagName("td")); //locate columns
+			int columnsCount=columnsTable.size();
 			
-			for (int column = 0; column < columns_count; column++)
+			for (int column = 0; column < columnsCount; column++)
 			{
-				String cellText= columns_table.get(column).getText();
+				String cellText= columnsTable.get(column).getText();
 				if (cellText.contains("Name - test cancel save"))
 				{
 					Log.error("Error:Cancel save button is not working as expected");

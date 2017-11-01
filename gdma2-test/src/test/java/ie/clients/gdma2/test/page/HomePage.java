@@ -21,7 +21,7 @@ public class HomePage {
 	@FindBy(xpath=".//*[@id='control-sidebar-settings-tab']/h3")
 	public WebElement adminSettings;
 	
-	@FindBy(xpath=".//*[@id='control-sidebar-settings-tab']/div[1]/a")
+	@FindBy(id="btn-admin-server")
 	public WebElement serverButton;
 	
 	@FindBy(xpath=".//*[@id='control-sidebar-settings-tab']/div[2]/a")

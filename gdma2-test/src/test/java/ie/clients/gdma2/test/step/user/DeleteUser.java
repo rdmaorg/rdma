@@ -19,7 +19,7 @@ public class DeleteUser extends Init{
 	  String userId = PropertyHandler.getProperty("test.data.user1.id");
 	  WebElement deleteButton=driver.findElement(By.cssSelector("button[class='btn btn-warning btn-xs deleteUser'][data-userid='"+userId+"']"));
 	  deleteButton.click();
-	  Log.info("User select delete button for user with id=143");
+	  Log.info("User select delete button for user with id="+userId);
 		
 	}
 

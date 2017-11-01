@@ -142,4 +142,11 @@ public class User extends BaseEntity {
         return userName.hashCode();
     }
 
+	@Override
+	public String toString() {
+		return "User [firstName=" + firstName + ", lastName=" + lastName + ", userName=" + userName + ", domain="
+				+ domain + ", admin=" + admin + ", locked=" + locked + ", active=" + active + ", userAccess="
+				+ userAccess + "]";
+	}
+
 }

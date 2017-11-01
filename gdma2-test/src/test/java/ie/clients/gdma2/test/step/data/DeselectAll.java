@@ -14,7 +14,7 @@ public class DeselectAll extends Init {
 
 
 	@When("^User select Deselect ALL button$")
-	public void user_select_Deselect_ALL_button() throws Throwable {
+	public void userSelectDeselectALLButton() throws Throwable {
 		
 		DataModulePage dataModule= new DataModulePage(driver);
 		dataModule.selectAll.click();
@@ -25,7 +25,7 @@ public class DeselectAll extends Init {
 	}
 
 	@Then("^All items are now deselected$")
-	public void all_items_are_now_deselected() throws Throwable {
+	public void allItemsAreNowDeselected() throws Throwable {
 	   
 		List<WebElement> element= driver.findElements(By.cssSelector("td[class='select-checkbox']"));
 		int lenght=element.size();

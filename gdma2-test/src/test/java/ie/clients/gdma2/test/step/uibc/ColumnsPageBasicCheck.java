@@ -2,9 +2,11 @@ package ie.clients.gdma2.test.step.uibc;
 
 import java.lang.reflect.Field;
 import java.util.concurrent.TimeUnit;
+
 import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 
 import cucumber.api.java.en.Given;
@@ -13,36 +15,43 @@ import ie.clients.gdma2.test.app.Navigation;
 import ie.clients.gdma2.test.page.ColumnsPage;
 import ie.clients.gdma2.test.page.HomePage;
 import ie.clients.gdma2.test.step.Init;
+import ie.clients.gdma2.test.utility.TestUtils;
 
 public class ColumnsPageBasicCheck extends Init{
 	
-	@Given("^User is on the Columns Page$")
-	public void user_is_on_the_Columns_Page() throws Throwable {
+	@Given("^User is on (.*) Columns Page of server (.*)$")
+	public void userIsOnTheColumnsPage(String tableName, String serverName) throws Throwable {
 	
-		Navigation.login(driver, username, password);
+		Navigation.login(driver, username, password);		
 		HomePage homepage= new HomePage(driver);
 		homepage.configurationButton.click();
 		driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
+		wait.until(ExpectedConditions.elementToBeClickable(homepage.serverButton));     
 		homepage.serverButton.click();
 		driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
 		Select oselect= new Select(driver.findElement(By.name("tbl_server_length")));
 		oselect.selectByValue("100");
-		WebElement tableButtonForClassicModelServer= driver.findElement(By.cssSelector("button[data-servername='classicmodel']"));
+		TestUtils.waitForJQuery(driver);
+		WebElement tableButtonForClassicModelServer= driver.findElement(By.cssSelector("button[data-servername='"+serverName+"']"));
+		wait.until(ExpectedConditions.elementToBeClickable(tableButtonForClassicModelServer));
 		tableButtonForClassicModelServer.click();
 		Thread.sleep(5000);
-		Select oselect2= new Select(driver.findElement(By.name("tbl_tables6_length")));
+		Select oselect2= new Select(driver.findElement(By.cssSelector("select[name*=tbl_tables]")));
 		oselect2.selectByValue("100");
-		Thread.sleep(2000);
-		WebElement columnsButtonForClassicModelsTable=driver.findElement(By.cssSelector("button[class='btn btn-info btn-xs viewColumns'][data-tableid='185']"));
+		userNavigatesToColumnPage(tableName);
+	}
+	
+	public void userNavigatesToColumnPage(String tableName) throws Throwable{
+		TestUtils.waitForJQuery(driver);
+		WebElement columnsButtonForClassicModelsTable=driver.findElement(By.cssSelector("button[class='btn btn-info btn-xs viewColumns'][data-tablename='"+tableName+"']"));
+		wait.until(ExpectedConditions.elementToBeClickable(columnsButtonForClassicModelsTable));
 		columnsButtonForClassicModelsTable.click();
-		Thread.sleep(5000);
 		Log.info("User select columns button for Customers table");
-		
 		
 	}
 
 	@Then("^All elements are visible on the Columns Page$")
-	public void all_elements_are_visible_on_the_Columns_Page() throws Throwable {
+	public void allElementsAreVisibleOnTheColumnsPage() throws Throwable {
 	    
 		ColumnsPage columns= new ColumnsPage(driver);
 		Class<ColumnsPage> cp = ColumnsPage.class;
@@ -64,8 +73,6 @@ public class ColumnsPageBasicCheck extends Init{
 					String fldResponse = fld.get(columns).toString();
 					Assert.assertTrue(!fldResponse.contains("Proxy element for: DefaultElementLocator"));
 					Log.info("All elements are visible on the page");
-				
-
 				} catch (Throwable e) {
 					Log.error("An element is missing on the page");
 					
@@ -78,7 +85,7 @@ public class ColumnsPageBasicCheck extends Init{
 	}
 
 	@Then("^Correct text is displayed for each element on the Columns Page$")
-	public void correct_text_is_displayed_for_each_element_on_the_Columns_Page() throws Throwable {
+	public void correctTextIsDisplayedForEachElementOnColumnsPage() throws Throwable {
 		
 		//Tables_Page tables= new Tables_Page(driver);
 		ColumnsPage columns= new ColumnsPage(driver);

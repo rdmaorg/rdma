@@ -12,7 +12,7 @@ public class ConnectionTypesDropDown extends Init{
 	//Scenario: Check the values for Connection type drop-down menu
 	
 		@Then("^Verify that valid number of connection types are displayed within Connection types dropdown menu$")
-		public void verify_that_valid_number_of_connection_types_are_displayed_within_Connection_types_dropdown_menu() throws Throwable {
+		public void verifyValidNumberOfConnectionTypesAreDisplayedWithinConnectionTypesDropdownMenu() throws Throwable {
 		   
 			Select dropDown= new Select(driver.findElement(By.id("connectionType")));
 			List<WebElement>options=dropDown.getOptions();

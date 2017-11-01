@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -35,6 +37,9 @@ public abstract class BaseServiceImpl {
 
 	@Autowired
 	protected UserContextProvider userContextProvider;
+	
+	@Autowired(required=false)
+	private HttpServletRequest req;
 
 	protected void logActivity(String activity) {
 		logActivity("", activity);
@@ -52,7 +57,7 @@ public abstract class BaseServiceImpl {
 			AuditActivity a = new AuditActivity();
 			a.setActivityOn(new Date());
 			a.setActivityBy(StringUtils.isBlank(performedBy) ? userContextProvider.getLoggedInUserName() : performedBy);
-			a.setActivityFrom(StringUtils.isBlank(clientIP) ? UNKNOWN_LOCATION : clientIP);
+			a.setActivityFrom(StringUtils.isBlank(clientIP) ? req!=null ? req.getRemoteAddr(): UNKNOWN_LOCATION : clientIP);
 			a.setActivity(StringUtil.abbreviateString(activity, MAX_ACTIVITY_LENGTH));
 			
 			
