@@ -18,7 +18,7 @@ public class DeactivateTable extends Init {
 	String id="7078";  // Before test execution set valid id of table which you want to deactivate (id of test_table1)
 
 	@When("^Choose one active table from the list$")
-	public void choose_one_active_table_from_the_list() throws Throwable {
+	public void chooseOneActiveTableFromTheList() throws Throwable {
 	  
 		WebElement table= driver.findElement(By.id("tbl_tables6")); //locate table
 		List<WebElement>row_table=table.findElements(By.tagName("tr")); //locate rows
@@ -51,7 +51,7 @@ public class DeactivateTable extends Init {
 	
 
 	@And("^Connect to DB and deactivate the table$")
-	public void connect_to_DB_and_deactivate_the_table() throws Throwable {
+	public void connectToDBAndDeactivateTheTable() throws Throwable {
 		
 		SqlConnection.update(id);
 		Log.info("User execute update sql statement");
@@ -61,7 +61,7 @@ public class DeactivateTable extends Init {
 	}
 
 	@Then("^Verify that table is successfully deactivated$")
-	public void verify_that_table_is_successfully_deactivated() throws Throwable {
+	public void verifyThatTableIsSuccessfullyDeactivated() throws Throwable {
 		
 		HomePage homepage= new HomePage(driver);
 		homepage.configurationButton.click();

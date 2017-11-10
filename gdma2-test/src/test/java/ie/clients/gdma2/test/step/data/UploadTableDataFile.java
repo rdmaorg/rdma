@@ -19,7 +19,7 @@ import ie.clients.gdma2.test.step.Init;
 public class UploadTableDataFile extends Init {
 	
 	@When("^User navigates to the ClassicModels - Books table in Data module Page$")
-	public void user_navigates_to_the_ClassicModels_Books_table_in_Data_module_Page() throws Throwable {
+	public void userNavigatesToTheClassicModelsBooksTableInDataModulePage() throws Throwable {
 		
 		Navigation.login(driver, username, password);
 		WebElement serverInData= driver.findElement(By.cssSelector("li[id='server6'][class='treeview']"));
@@ -34,7 +34,7 @@ public class UploadTableDataFile extends Init {
 	}
 
 	@And("^User select Upload button$")
-	public void user_select_Upload_button() throws Throwable {
+	public void userSelectUploadButton() throws Throwable {
 		//Robot class is used to (generate native system input events) take the control of mouse and keyboard. 
 		//Once you get the control, you can do any type of operation related to mouse and keyboard through with java code
 		//Step 1- We have to copy the file location in system clipboard.
@@ -58,7 +58,7 @@ public class UploadTableDataFile extends Init {
 	}
 
 	@Then("^File is successfully uploaded$")
-	public void file_is_successfully_uploaded() throws Throwable {
+	public void isFileSuccessfullyUploaded() throws Throwable {
 		
 		WebElement table= driver.findElement(By.id("table_data")); //locate table
 		List<WebElement>row_table=table.findElements(By.tagName("tr")); //locate rows

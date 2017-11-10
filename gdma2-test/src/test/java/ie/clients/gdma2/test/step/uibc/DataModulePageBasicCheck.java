@@ -15,7 +15,7 @@ import ie.clients.gdma2.test.step.Init;
 public class DataModulePageBasicCheck extends Init{
 
 	@Given("^User is on the Data module Page$")
-	public void user_is_on_the_Data_module_Page() throws Throwable {
+	public void userIsOnTheDataModulePage() throws Throwable {
 	    
 		Navigation.login(driver, username, password);
 		WebElement serverInData= driver.findElement(By.cssSelector("li[id='server6'][class='treeview']"));
@@ -31,7 +31,7 @@ public class DataModulePageBasicCheck extends Init{
 	}
 
 	@Then("^All elements are visible on the Data module Page$")
-	public void all_elements_are_visible_on_the_Data_module_Page() throws Throwable {
+	public void allElementsAreVisibleOnTheDataModulePage() throws Throwable {
 
 		DataModulePage datamodulepage= new DataModulePage(driver);
 		Class<DataModulePage> dm = DataModulePage.class;
@@ -65,7 +65,7 @@ public class DataModulePageBasicCheck extends Init{
 	}
 
 	@Then("^Correct text is displayed for each element on the Data module Page$")
-	public void correct_text_is_displayed_for_each_element_on_the_Data_module_Page() throws Throwable {
+	public void correctTextIsDisplayedForEachElementOnTheDataModulePage() throws Throwable {
 	
 		DataModulePage datamodulepage= new DataModulePage(driver);
 		Assert.assertEquals("Select all", datamodulepage.selectAll.getText());

@@ -14,7 +14,7 @@ public class LoginPageBasicCheck extends Init {
 
 
 	@Given("^User is on the LogIn Page$") 
-	public void user_is_on_the_LogIn_Page() throws Throwable {
+	public void userIsOnTheLogInPage() throws Throwable {
 
 		
 		driver.get(appURL);
@@ -23,7 +23,7 @@ public class LoginPageBasicCheck extends Init {
 	}
 
 	@Then("^All elements are visible on the LogIn Page$")
-	public void all_elements_are_visible_on_the_LogIn_Page() throws Throwable {
+	public void allElementsAreVisibleOnTheLogInPage() throws Throwable {
 
 		LoginPage login = new LoginPage(driver);
 		Class<LoginPage> l = LoginPage.class;
@@ -57,7 +57,7 @@ public class LoginPageBasicCheck extends Init {
 	}
 
 	@Then("^Correct text is displayed for each element on the LogIn Page$")
-	public void correct_text_is_displayed_for_each_element_on_the_LogIn_Page() throws Throwable {
+	public void correctTextIsDisplayedForEachElementOnTheLogInPage() throws Throwable {
 
 		LoginPage login = new LoginPage(driver);
 		Assert.assertEquals("Central Authentication Service",login.CASHeaderTitle.getText());

@@ -15,7 +15,7 @@ public class EditTableAlias extends Init {
 
 
 	@When("^User press Edit Alias button$")
-	public void user_press_Edit_Alias_button() throws Throwable {
+	public void userPressEditAliasBbutton() throws Throwable {
 	  
 		WebElement editAliasButton=driver.findElement(By.cssSelector("button[class='btn btn-primary btn-xs editTable'][data-tableid='185']"));
 		editAliasButton.click();
@@ -24,7 +24,7 @@ public class EditTableAlias extends Init {
 	}
 
 	@And("^User edit alias field$")
-	public void user_edit_alias_field() throws Throwable {
+	public void userEditAliasField() throws Throwable {
 
 		WebElement elementName= driver.findElement(By.id("tableNameModal"));
 		String name = elementName.getAttribute("value");
@@ -61,7 +61,7 @@ public class EditTableAlias extends Init {
 	}
 	
 	@And("^Press submit button on the edit Alias page$")
-	public void press_submit_button_on_the_edit_Alias_page() throws Throwable {
+	public void pressSubmitButtonOnTheEditAliasPage() throws Throwable {
 		
 		EditTableAliasPage edittablealias= new EditTableAliasPage(driver);
 		edittablealias.saveButton.click();
@@ -70,7 +70,7 @@ public class EditTableAlias extends Init {
 	}
 
 	@And("^Confirm save alias action by clicking on the Yes button$")
-	public void confirm_save_alias_action_by_clicking_on_the_Yes_button() throws Throwable {
+	public void confirmSaveAliasActionByClickingOnTheYesButton() throws Throwable {
 	   
 		EditTableAliasPage edittablealias= new EditTableAliasPage(driver);
 		edittablealias.confirmSave.click();
@@ -82,7 +82,7 @@ public class EditTableAlias extends Init {
 	
 
 	@Then("^Table alias is successfully edit$")
-	public void table_alias_is_successfully_edit() throws Throwable {
+	public void tableAliasIsSuccessfullyEdit() throws Throwable {
 		
 		WebElement table= driver.findElement(By.id("tbl_tables6")); //locate table
 		List<WebElement>row_table=table.findElements(By.tagName("tr")); //locate rows

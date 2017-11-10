@@ -13,7 +13,7 @@ import ie.clients.gdma2.test.utility.PropertyHandler;
 public class NoAdminRights extends Init{
 
 	@Given("^Log in as NoAdmin user$")
-	public void log_in_as_NoAdmin_user() throws Throwable {
+	public void logInAsNoAdminUser() throws Throwable {
 		   
 		   String usernameNoAdmin= PropertyHandler.getPropertyFrom("src/test/resources/testData/NoAdminUser.properties", "username");
 		   String passwordNoAdmin=PropertyHandler.getPropertyFrom("src/test/resources/testData/NoAdminUser.properties", "password");
@@ -26,7 +26,7 @@ public class NoAdminRights extends Init{
 	}
 
 	@Then("^No Admin user doesnt see configuration button$")
-	public void no_Admina_user_doesnt_see_configuration_button() throws Throwable { 
+	public void configurationButtonIsNotDisplayedForNotAdminUser() throws Throwable { 
 		   
 		  // Assert.assertFalse(driver.findElement(By.id("btn-admin")).isDisplayed());
 		 

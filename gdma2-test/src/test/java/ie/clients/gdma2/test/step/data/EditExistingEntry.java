@@ -24,7 +24,7 @@ public class EditExistingEntry extends Init {
 	// single row
 	
 	@And("^User press Edit button for this new record$")
-	public void User_press_Edit_button_for_this_new_record() throws Throwable {
+	public void UserPressEditButtonForThisNewRecord() throws Throwable {
 		
 		driver.findElement(By.xpath(".//*[@id='table_data']/tbody/tr[6]/td[1]")).click();
 		driver.findElement(By.cssSelector("a[class='dt-button buttons-selected buttons-edit']")).click();
@@ -33,7 +33,7 @@ public class EditExistingEntry extends Init {
 	}
 
 	@And("^User edit record details$")
-	public void user_edit_record_details() throws Throwable {
+	public void userEditRecordDetails() throws Throwable {
 	   
 		Select oSelect= new Select(driver.findElement(By.id("DTE_Field_columns-vendorID")));
 		oSelect.selectByValue("5");
@@ -45,7 +45,7 @@ public class EditExistingEntry extends Init {
 	}
 
 	@And("^Select Update button$")
-	public void select_Update_button() throws Throwable {
+	public void selectUpdateButton() throws Throwable {
 	    
 		driver.findElement(By.cssSelector("button[class='btn'][tabindex='0']")).click();
 		Log.info("User select update button");
@@ -54,7 +54,7 @@ public class EditExistingEntry extends Init {
 	}
 
 	@Then("^Details are successfully edit$")
-	public void details_are_successfully_edit() throws Throwable {
+	public void detailsAreSuccessfullyEdit() throws Throwable {
 		
 		WebElement table= driver.findElement(By.id("table_data")); //locate table
 		List<WebElement>row_table=table.findElements(By.tagName("tr")); //locate rows
@@ -92,7 +92,7 @@ public class EditExistingEntry extends Init {
 	//multiple row
 	
 	@And("^User create one more record$")
-	public void user_create_one_more_record() throws Throwable {
+	public void userCreateOneMoreRecord() throws Throwable {
 	   
 		
 		DataModulePage datamodule= new DataModulePage(driver);
@@ -118,7 +118,7 @@ public class EditExistingEntry extends Init {
 	}
 
 	@And("^User press Edit button for these two new records$")
-	public void user_press_Edit_button_for_these_two_new_records() throws Throwable {
+	public void userPressEditButtonForTheseTwoNewRecords() throws Throwable {
 		
 		driver.findElement(By.xpath(".//*[@id='table_data']/tbody/tr[6]/td[1]")).click();
 		Actions action= new Actions(driver);
@@ -131,7 +131,7 @@ public class EditExistingEntry extends Init {
 	}
 
 	@And("^User edit record details for these two new items$")
-	public void user_edit_record_details_for_these_two_new_items() throws Throwable {
+	public void userEditRecordDetailsForTheseTwoNewItems() throws Throwable {
 		
 		driver.findElement(By.xpath("html/body/div[3]/div/div/div/div[1]/div[3]/div/form/div/div[2]/div/div[2]")).click();
 		Select oselect= new Select(driver.findElement(By.id("DTE_Field_columns-vendorID")));
@@ -143,7 +143,7 @@ public class EditExistingEntry extends Init {
 	}
 
 	@Then("^Details for both items are successfully edit$")
-	public void details_for_both_items_are_successfully_edit() throws Throwable {
+	public void detailsForBothItemsAreSuccessfullyEdit() throws Throwable {
 	    
 		WebElement table= driver.findElement(By.id("table_data")); //locate table
 		List<WebElement>row_table=table.findElements(By.tagName("tr")); //locate rows

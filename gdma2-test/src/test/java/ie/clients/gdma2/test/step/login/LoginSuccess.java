@@ -12,7 +12,7 @@ public class LoginSuccess extends Init{
 	
 	
 	@When("^User enters valid username and password$")
-	public void user_enters_valid_username_and_password() throws Throwable {
+	public void userEntersValidUsernameAndPassword() throws Throwable {
 	
 		LoginPage login= new LoginPage(driver);
 		login.usernameField.sendKeys(username);
@@ -21,7 +21,7 @@ public class LoginSuccess extends Init{
 	}
 
 	@And("^User press Login button$")
-	public void user_press_Login_button() throws Throwable {
+	public void userPressLoginButton() throws Throwable {
 	   
 		LoginPage login = new LoginPage(driver);
 		login.loginButton.click();
@@ -29,7 +29,7 @@ public class LoginSuccess extends Init{
 	}
 
 	@Then("^User is successfully logged in$")
-	public void user_is_successfully_logged_in() throws Throwable {
+	public void IsUserSuccessfullyLoggedIn() throws Throwable {
 		
 		driver.findElement(By.cssSelector("a[class='dropdown-toggle'][data-toggle='dropdown']"));
 		Log.info("User is successfully logged in");

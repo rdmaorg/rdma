@@ -12,7 +12,7 @@ import ie.clients.gdma2.test.step.Init;
 public class HomePageBasicCheck extends Init{
 
 	@Given("^User is on the Home Page$")
-	public void user_is_on_the_Home_Page() throws Throwable {
+	public void userIsOnTheHomePage() throws Throwable {
 		
 		Navigation.login(driver, username, password);
 		Log.info("Home page is displayed");
@@ -20,7 +20,7 @@ public class HomePageBasicCheck extends Init{
 	}
 
 	@Then("^All elements are visible on the Home Page$")
-	public void all_elements_are_visible_on_the_Home_Page() throws Throwable {
+	public void allElementsAreVisibleOnTheHomePage() throws Throwable {
 		
 		HomePage homepage= new HomePage(driver);
 		Class<HomePage> h = HomePage.class;
@@ -54,7 +54,7 @@ public class HomePageBasicCheck extends Init{
 	}
 
 	@Then("^Correct text is displayed for each element on the Home Page$")
-	public void correct_text_is_displayed_for_each_element_on_the_Home_Page() throws Throwable {
+	public void correctTextIsDisplayedForEachElementOnTheHomePage() throws Throwable {
 	
 		HomePage homepage= new HomePage(driver);
 		Assert.assertTrue(homepage.copyrightFooter.getText().contains("Copyright ©"));

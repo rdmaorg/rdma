@@ -20,7 +20,7 @@ public class DeleteServer extends Init {
 	String id="39";
 
 	@And("^Connect to DB and deactivate the server$")
-	public void connect_to_DB_and_deactivate_the_server() throws Throwable {
+	public void connectToDBAndDeactivateTheServer() throws Throwable {
 		
 		SqlConnection.delete(id);
 		Log.info("User execute delete sql statement");
@@ -28,7 +28,7 @@ public class DeleteServer extends Init {
 	}
 
 	@Then("^Verify that server is successfully deleted$")
-	public void verify_that_server_is_successfully_deleted() throws Throwable {
+	public void verifyThatServerIsSuccessfullyDeleted() throws Throwable {
 		
 		Navigation.login(driver, username, password);
 		HomePage homepage= new HomePage(driver);

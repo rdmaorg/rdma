@@ -13,7 +13,7 @@ import ie.clients.gdma2.test.step.Init;
 public class EditServer extends Init {
 
 	@When("^User choose one server from the list and select edit button$")
-	public void user_choose_one_server_from_the_list_and_select_edit_button() throws Throwable {
+	public void userChooseOneServerFromTheListAndSelectEditButton() throws Throwable {
 		
 		WebElement editButton= driver.findElement(By.cssSelector("button[class='btn btn-primary btn-xs editServer'][data-serverid='36']"));
 		editButton.click();
@@ -22,7 +22,7 @@ public class EditServer extends Init {
 	}
 
 	@And("^User edit server name$")
-	public void user_edit_server_name() throws Throwable {
+	public void userEditServerName() throws Throwable {
 		
 		InsertNewServerPage insertserver= new InsertNewServerPage(driver);
 		insertserver.insNameField.sendKeys("EDITAUT");
@@ -31,7 +31,7 @@ public class EditServer extends Init {
 	}
 
 	@Then("^Server details are successfully edit and new changes are visible on the list$")
-	public void server_details_are_successfully_edit_and_new_changes_are_visible_on_the_list() throws Throwable {
+	public void serverDetailsAreSuccessfullyEditAndNewChangesAreVisibleOnTheList() throws Throwable {
 		
 		WebElement table= driver.findElement(By.id("tbl_server")); //locate table
 		List<WebElement>row_table=table.findElements(By.tagName("tr")); //locate rows

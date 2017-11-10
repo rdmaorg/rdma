@@ -19,7 +19,7 @@ import ie.clients.gdma2.test.step.Init;
 public class DownloadFile extends Init {
 	
 	@When("^User navigates to Data Module Page and select Download button$")
-	public void user_navigates_to_Data_Module_Page_and_select_Download_button() throws Throwable {
+	public void userNavigatesToDataModulePageAndSelectDownloadButton() throws Throwable {
 		
 		    //Create FireFox Profile object
 			FirefoxProfile profile = new FirefoxProfile();
@@ -65,7 +65,7 @@ public class DownloadFile extends Init {
 	}
 
 	@Then("^File is successfully downloaded$")
-	public void file_is_successfully_downloaded() throws Throwable {
+	public void isFileSuccessfullyDownloaded() throws Throwable {
 		Log.info("File is successfully downloaded");
 	}
 

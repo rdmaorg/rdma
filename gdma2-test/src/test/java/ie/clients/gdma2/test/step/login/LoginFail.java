@@ -11,7 +11,7 @@ public class LoginFail extends Init{
 	//  Scenario: Login Fail - invalid credentials
 	
 	@When("^User enters invalid username and password$")
-	public void user_enters_invalid_username_and_password() throws Throwable {
+	public void userEntersInvalidUsernameAndPassword() throws Throwable {
 		LoginPage login= new LoginPage(driver);
 		login.usernameField.sendKeys("test1");
 		login.passwordField.sendKeys("test2");
@@ -21,7 +21,7 @@ public class LoginFail extends Init{
 
 
 	@Then("^Login failed and correct warning message is displayed$")
-	public void login_failed_and_correct_warning_message_is_displayed() throws Throwable {
+	public void loginFailedAndCorrectWarningMessageIsDisplayed() throws Throwable {
 		
 		LoginPage login= new LoginPage(driver);
 		login.warningInvalidCredentials.isDisplayed();
@@ -33,7 +33,7 @@ public class LoginFail extends Init{
 	//Scenario: Login Fail - without populating any field on the form
 	
 	@When("^User doesnt populate any field on the form$")
-	public void user_doesnt_populate_any_field_on_the_form() throws Throwable {
+	public void userDoesntPopulateAnyFieldOnTheForm() throws Throwable {
 	 
 		LoginPage login= new LoginPage(driver);
 		login.usernameField.clear();
@@ -43,7 +43,7 @@ public class LoginFail extends Init{
 	}
 
 	@Then("^Login failed and correct warning message (\\d+) is displayed$")
-	public void login_failed_and_correct_warning_message_is_displayed(int arg1) throws Throwable {
+	public void loginFailedAndCorrectWarningMessageIsDisplayed(int arg1) throws Throwable {
 	    
 		LoginPage login = new LoginPage(driver);
 		login.warningUsernameError.isDisplayed();
@@ -57,7 +57,7 @@ public class LoginFail extends Init{
 	//Scenario: Clear function
 	
 	@And("^User press Clear button$")
-	public void user_press_Clear_button() throws Throwable {
+	public void userPressClearButton() throws Throwable {
 		LoginPage login = new LoginPage(driver);
 		login.clearButton.click();
 		Log.info("User press Clear button");
@@ -65,7 +65,7 @@ public class LoginFail extends Init{
 	}
 
 	@Then("^User credentials are successfully deleted$")
-	public void user_credentials_are_successfully_deleted() throws Throwable {
+	public void userCredentialsAreSuccessfullyDeleted() throws Throwable {
 		
 		LoginPage login = new LoginPage(driver);
 		login.usernameField.getText().isEmpty();

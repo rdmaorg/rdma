@@ -20,7 +20,7 @@ public class ConnectionTypesPageBasicCheck extends Init{
 
 	
 	@Given("^User is on the Connection Type Page$")
-	public void user_is_on_the_Connection_Type_Page() throws Throwable {
+	public void userIsOnTheConnectionTypePage() throws Throwable {
 	   
 		Navigation.login(driver, username, password);
 		HomePage homepage= new HomePage(driver);
@@ -37,7 +37,7 @@ public class ConnectionTypesPageBasicCheck extends Init{
 	}
 
 	@Then("^All elements are visible on the Connection Type Page$")
-	public void all_elements_are_visible_on_the_Connection_Type_Page() throws Throwable {
+	public void allElementsAreVisibleOnTheConnectionTypePage() throws Throwable {
 		
 		ConnectionTypesPage connectiontypes= new ConnectionTypesPage(driver);
 		Class<ConnectionTypesPage> ct = ConnectionTypesPage.class;
@@ -71,7 +71,7 @@ public class ConnectionTypesPageBasicCheck extends Init{
 	}
 
 	@Then("^Correct text is displayed for each element on the Connection Type Page$")
-	public void correct_text_is_displayed_for_each_element_on_the_Connection_Type_Page() throws Throwable {
+	public void correctTextIsDisplayedForEachElementOnTheConnectionTypePage() throws Throwable {
 		
 		ConnectionTypesPage connectiontypes= new ConnectionTypesPage(driver);
 		Assert.assertEquals("Connection Types", connectiontypes.connectionTypeTitle.getText());

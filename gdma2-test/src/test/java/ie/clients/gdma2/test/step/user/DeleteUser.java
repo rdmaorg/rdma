@@ -15,7 +15,7 @@ public class DeleteUser extends Init{
 	
 	
 	@When("^User choose a user from the list and press Delete button$")
-	public void user_choose_a_user_from_the_list_and_press_Delete_button() throws Throwable {
+	public void userChooseAUserFromTheListAndPressDeleteButton() throws Throwable {
 	  String userId = PropertyHandler.getProperty("test.data.user1.id");
 	  WebElement deleteButton=driver.findElement(By.cssSelector("button[class='btn btn-warning btn-xs deleteUser'][data-userid='"+userId+"']"));
 	  deleteButton.click();
@@ -24,7 +24,7 @@ public class DeleteUser extends Init{
 	}
 
 	@And("^User confirm delete button$")
-	public void user_confirm_delete_button() throws Throwable {
+	public void userConfirmDeleteButton() throws Throwable {
 	    
 		WebElement confirmDelete=driver.findElement(By.cssSelector("a[class='btn btn-sm btn-success'][data-apply='confirmation']"));
 		confirmDelete.click();
@@ -34,7 +34,7 @@ public class DeleteUser extends Init{
 	}
 
 	@Then("^User is successfully removed from the page$")
-	public void user_is_successfully_removed_from_the_page() throws Throwable {
+	public void userIsSuccessfullyRemovedFromThePage() throws Throwable {
 		
 		String name= PropertyHandler.getProperty("test.data.user1.name");
 		String lastName=PropertyHandler.getProperty("test.data.user1.lastName");

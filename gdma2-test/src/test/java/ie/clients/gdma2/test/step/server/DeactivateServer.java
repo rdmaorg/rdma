@@ -14,7 +14,7 @@ import ie.clients.gdma2.test.step.Init;
 public class DeactivateServer extends Init {
 
 	@When("^User choose one active server and grant full access on one table within this server$")
-	public void user_choose_one_active_server_from_the_list_and_select_edit_button() throws Throwable {
+	public void userChooseOneActiveServerFromTheListAndSelectEditButton() throws Throwable {
 	    
 		WebElement editButton = driver.findElement(By.cssSelector("button[class='btn btn-primary btn-xs editServer'][data-serverid='9']"));
 		editButton.click();
@@ -33,17 +33,17 @@ public class DeactivateServer extends Init {
 	}
 
 	@And("^User select edit button$")
-	public void user_select_edit_button() throws Throwable {
+	public void userSelectEditBbutton() throws Throwable {
 	  //implemented in previous step
 	}
 	
 	@And("^User select active button$")
-	public void user_select_active_button() throws Throwable {
+	public void userSelectActiveButton() throws Throwable {
 		//implemented in previous step
 	}
 
 	@Then("^Server is successfully deactivate and users who has access on this server cannot see them in data module$")
-	public void server_is_successfully_deactivate_and_users_who_has_access_on_this_server_cannot_see_them_in_data_module() throws Throwable {
+	public void serverIsSuccessfullyDeactivateAndUsersWhoHasAccessOnThisServerCannotSeeThemInDataModule() throws Throwable {
 
 		
 		boolean value2= ElementPresence.isElementPresence(driver, By.id("server9"));

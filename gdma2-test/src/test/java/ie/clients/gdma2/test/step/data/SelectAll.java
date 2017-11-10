@@ -23,7 +23,7 @@ public class SelectAll extends Init{
 	}
 
 	@Then("^All items are selected$")
-	public void all_items_are_selected() throws Throwable {
+	public void allItemsAreSelected() throws Throwable {
 		
 		
 		List<WebElement> element= driver.findElements(By.cssSelector("td[class='select-checkbox']"));

@@ -16,7 +16,7 @@ import ie.clients.gdma2.test.step.Init;
 public class EditUserAccessPageBasicCheck extends Init {
 
 	@Given("^User is on the User Access Page$")
-	public void user_is_on_the_User_Access_Page() throws Throwable {
+	public void userIsOnTheUserAccessPage() throws Throwable {
 		
 		Navigation.login(driver, username, password);
 		HomePage homepage= new HomePage(driver);
@@ -34,7 +34,7 @@ public class EditUserAccessPageBasicCheck extends Init {
 	}
 
 	@Then("^All elements are visible on the User Access Page$")
-	public void all_elements_are_visible_on_the_User_Access_Page() throws Throwable {
+	public void allElementsAreVisibleOnTheUserAccessPage() throws Throwable {
 		
 		EditUserAccessPage edituseraccess=new EditUserAccessPage(driver);
 		Class<EditUserAccessPage> eia = EditUserAccessPage.class;
@@ -68,7 +68,7 @@ public class EditUserAccessPageBasicCheck extends Init {
 	}
 
 	@Then("^Correct text is displayed for each element on the User Access Page$")
-	public void correct_text_is_displayed_for_each_element_on_the_User_Access_Page() throws Throwable {
+	public void correctTextIsDisplayedForEachElementOnTheUserAccessPage() throws Throwable {
 		
 		EditUserAccessPage edituseraccess=new EditUserAccessPage(driver);
 		Assert.assertEquals("User Access", edituseraccess.userAccessTitle.getText());

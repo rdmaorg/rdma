@@ -17,7 +17,7 @@ import ie.clients.gdma2.test.step.Init;
 public class ServersPageBasicCheck extends Init{
 	
 	@Given("^User is on the Servers Page$")
-	public void user_is_on_the_Servers_Page() throws Throwable {
+	public void userIsOnTheServersPage() throws Throwable {
 		
 		Navigation.login(driver, username, password);
 		HomePage homepage= new HomePage(driver);
@@ -34,7 +34,7 @@ public class ServersPageBasicCheck extends Init{
 	}
 
 	@Then("^All elements are visible on the Servers Page$")
-	public void all_elements_are_visible_on_the_Servers_Page() throws Throwable {
+	public void allElementsAreVisibleOnTheServersPage() throws Throwable {
 	 
 		ServersPage serverpage= new ServersPage(driver);
 		Class<ServersPage> sp = ServersPage.class;
@@ -67,7 +67,7 @@ public class ServersPageBasicCheck extends Init{
 	}
 
 	@Then("^Correct text is displayed for each element on the Servers Page$")
-	public void correct_text_is_displayed_for_each_element_on_the_Servers_Page() throws Throwable {
+	public void correctTextIsDisplayedForEachElementOnTheServersPage() throws Throwable {
 	  
 		ServersPage serverpage= new ServersPage(driver);
 		Assert.assertEquals("Servers", serverpage.serversTitle.getText());
