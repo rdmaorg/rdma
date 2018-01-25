@@ -71,6 +71,15 @@ var configureDataTable = function(){
                                                                          + '" type="checkbox"' + checked + '>';
                                                  }
                                 },
+                                { "data": "searchable" ,
+                                    "className": "text-center",
+                                    "orderable" : false,
+                                    "render" : function(data, type, row) {
+                                               var checked = row.searchable ? ' checked'  : '';
+                                               return '<input id="searchable'+ row.id +'" class="allow-search" data-id="' + row.id
+                                                            + '" type="checkbox"' + checked + '>';
+                                    }
+                                },
                                 { "data": "dropDownColumnDisplay", "orderable" : false, "render" : function(data, type, row){ 
                                         var value = verifyValue(row,"dropDownColumnDisplay") === null ? "": verifyValue(row,"dropDownColumnDisplay").name;
                                         return '<div class="column-display input-edit fa fa-bars" data-id="' + row.id+ '"><input type="text" id="columnDisplay'+row.id+'" class=" input-disabled" value="'+ value +'"></div>' ;
@@ -159,6 +168,7 @@ var associateCheckBoxes = function(){
        associateCheckBox("allow-insert", "allowInsert");
        associateCheckBox("allow-update", "allowUpdate");
        associateCheckBox("nullable", "nullable");
+       associateCheckBox("allow-search", "searchable");
 }
 
 var associateCheckBox = function(classes, variableName){
@@ -303,6 +313,9 @@ var objectChanged = function(originalObject, changedObject){
 		return true;
 	}
 	if(originalObject.allowUpdate !== changedObject.allowUpdate){
+		return true;
+	}
+	if(originalObject.searchable !== changedObject.searchable){
 		return true;
 	}
 	if(originalObject.nullable !== changedObject.nullable){

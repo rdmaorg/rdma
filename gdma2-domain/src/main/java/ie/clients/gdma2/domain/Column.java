@@ -84,7 +84,10 @@ public class Column extends BaseEntity{
 
 	@javax.persistence.Column(name = "ACTIVE", nullable = false)
 	private boolean active = true;
-	
+
+	@javax.persistence.Column(name = "SEARCHABLE", nullable = false)
+	private boolean searchable = true;
+
 	@javax.persistence.Column(name = "COLUMN_ALIAS")
 	private String alias;
 	
@@ -263,6 +266,14 @@ public class Column extends BaseEntity{
 		this.alias = alias;
 	}
 
+	public boolean isSearchable() {
+		return searchable;
+	}
+
+	public void setSearchable(boolean searchable) {
+		this.searchable = searchable;
+	}
+
 	public boolean equals(Object other) {
 		if (this == other)
 			return true;
@@ -282,7 +293,7 @@ public class Column extends BaseEntity{
 				+ ", primarykey=" + primarykey + ", special=" + special
 				+ ", minWidth=" + minWidth + ", maxWidth=" + maxWidth
 				+ ", orderby=" + orderby + ", columnSize=" + columnSize
-				+ ", active=" + active + ", alias=" + alias + ", getId()="
+				+ ", active=" + active + ", searchable=" + searchable + ", alias=" + alias + ", getId()="
 				+ getId() + "]";
 	}
 

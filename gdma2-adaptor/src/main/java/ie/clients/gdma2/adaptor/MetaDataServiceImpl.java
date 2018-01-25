@@ -889,13 +889,28 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			List<Column> activeColumns = repositoryManager.getColumnRepository()
 					.findByTableIdAndActiveTrueAndDisplayedTrue(tableId);
 			for (Column activeColumn : activeColumns) {
-				if (SQLUtil.isText(activeColumn.getColumnType())) {
+/*				if(SQLUtil.isNumeric(activeColumn.getColumnType())){
+					Filter joinFilter = new IncrementalMatchTypeSearchFilter(searchTerm.trim(),
+							activeColumn.getId(), activeColumn.getName(), activeColumn.getColumnType());
+
+					filtersParam.add(joinFilter);
+				}
+				else 
+			if(SQLUtil.isDateTime(activeColumn.getColumnType()) || SQLUtil.isDate(activeColumn.getColumnType()) || SQLUtil.isTime(activeColumn.getColumnType()) ){
+					Filter joinFilter = new IncrementalTextSearchFilter(searchTerm.trim(),
+							activeColumn.getId(), activeColumn.getName(), activeColumn.getColumnType());
+
+					filtersParam.add(joinFilter);
+				}
+				else
+*/				 
+				if (SQLUtil.isText(activeColumn.getColumnType()) && activeColumn.isSearchable()) {
 
 					Filter filter = new IncrementalTextSearchFilter(searchTerm.trim(), activeColumn.getId(),
 							activeColumn.getName(), activeColumn.getColumnType());
 					filtersParam.add(filter);
 
-				} else if (activeColumn.getDropDownColumnDisplay() != null
+				} else if ( activeColumn.isSearchable() && activeColumn.getDropDownColumnDisplay() != null
 						&& SQLUtil.isText(activeColumn.getDropDownColumnDisplay().getColumnType())) {
 					Filter filter = new IncrementalTextSearchFilter(searchTerm.trim(),
 							activeColumn.getDropDownColumnDisplay().getId(),
