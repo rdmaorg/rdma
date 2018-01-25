@@ -183,9 +183,14 @@ public class SQLUtil {
 						{
 							stringBuilder.append(" NOT ");
 						}
+						//CONCAT function works on postgresql, MSSQLServer 2012+, MySQL
+						//And is documented to work on Oracle and Teradata
+						//Although Oracle may only allow varchar (textual) fields to be concatenated
+//						stringBuilder.append("CONCAT(");
 						stringBuilder.append(table.getName());
 						stringBuilder.append('.');
 						stringBuilder.append(filter.getColumnName());
+//						stringBuilder.append(", '')");
 
 						switch (filter.getFilterOperator()) {
 						case 0:  stringBuilder.append(" = ?"); break; 
