@@ -912,6 +912,11 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 
 				} else if ( activeColumn.isSearchable() && activeColumn.getDropDownColumnDisplay() != null
 						&& SQLUtil.isText(activeColumn.getDropDownColumnDisplay().getColumnType())) {
+					//Instead of incorporating JOIN statements, we are using select queries because the joined table could be on a different server or database
+					//In such cases, we cannot use joins.
+					//The below code is searching for the search term in the joined table and picking up the column store value
+					//And then creating a EQUAL_TO filter on the column store value
+					//Another aspect of the same problem is that the ordering on joined table can only be done by column store value and not column display value (which is in the separate table)
 					Filter filter = new IncrementalTextSearchFilter(searchTerm.trim(),
 							activeColumn.getDropDownColumnDisplay().getId(),
 							activeColumn.getDropDownColumnDisplay().getName(),
