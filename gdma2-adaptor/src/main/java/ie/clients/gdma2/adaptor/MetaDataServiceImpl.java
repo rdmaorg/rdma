@@ -1,6 +1,7 @@
 package ie.clients.gdma2.adaptor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -24,6 +25,7 @@ import ie.clients.gdma2.domain.User;
 import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.domain.ui.DataTableDropDown;
 import ie.clients.gdma2.domain.ui.Filter;
+import ie.clients.gdma2.domain.ui.IncrementalMatchTypeSearchFilter;
 import ie.clients.gdma2.domain.ui.IncrementalTextSearchFilter;
 import ie.clients.gdma2.domain.ui.PaginatedEditableTableResponse;
 import ie.clients.gdma2.domain.ui.PaginatedTableResponse;
@@ -32,6 +34,7 @@ import ie.clients.gdma2.spi.interfaces.MetaDataService;
 import ie.clients.gdma2.util.EntityUtils;
 import ie.clients.gdma2.util.HashUtil;
 import ie.clients.gdma2.util.SQLUtil;
+import ie.clients.gdma2.util.TableRowDTO;
 
 @Service
 public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataService {
@@ -879,26 +882,55 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 	 * (in method with the same name)*/
 	@Override
 	public PaginatedTableResponse<Column> getTableDataWithColumnNamesAndDropdowns(Integer tableId, String searchTerm,
-			int orderByColumnID, String orderDirection,
-			int startIndex, int length) {
-
+			int orderByColumnID, String orderDirection, int startIndex, int length) {
 
 		List<Filter> filtersParam = new ArrayList<Filter>();
-		if (searchTerm != null && !searchTerm.trim().isEmpty()){
-			List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrueAndDisplayedTrue(tableId);
+		if (searchTerm != null && !searchTerm.trim().isEmpty()) {
+			List<Column> activeColumns = repositoryManager.getColumnRepository()
+					.findByTableIdAndActiveTrueAndDisplayedTrue(tableId);
 			for (Column activeColumn : activeColumns) {
-				if(SQLUtil.isText(activeColumn.getColumnType())){
+				if (SQLUtil.isText(activeColumn.getColumnType())) {
 
-					Filter filter = new IncrementalTextSearchFilter(
-							searchTerm.trim(), activeColumn.getId(), activeColumn.getName(), activeColumn.getColumnType());
+					Filter filter = new IncrementalTextSearchFilter(searchTerm.trim(), activeColumn.getId(),
+							activeColumn.getName(), activeColumn.getColumnType());
 					filtersParam.add(filter);
 
+				} else if (activeColumn.getDropDownColumnDisplay() != null
+						&& SQLUtil.isText(activeColumn.getDropDownColumnDisplay().getColumnType())) {
+					Filter filter = new IncrementalTextSearchFilter(searchTerm.trim(),
+							activeColumn.getDropDownColumnDisplay().getId(),
+							activeColumn.getDropDownColumnDisplay().getName(),
+							activeColumn.getDropDownColumnDisplay().getColumnType());
+					List<Filter> filterJoinList = new ArrayList<Filter>();
+					filterJoinList.add(filter);
+
+					Table t=activeColumn.getDropDownColumnDisplay().getTable();
+					t.setColumns(new LinkedHashSet<Column>(Arrays.asList(activeColumn.getDropDownColumnStore(), activeColumn.getDropDownColumnDisplay())));
+					
+					List<TableRowDTO> rows = dynamicDAO.getEditableTableData(t, 
+							t.getServer(), activeColumn.getDropDownColumnStore(), filterJoinList, "asc",
+							0, length);
+					if (rows != null) {
+						logger.info(rows.size() + " Rows found for creating join filter.");
+						for (TableRowDTO r : rows) {
+							Object storeColumnData = r.getColumns().get(activeColumn.getDropDownColumnStore().getName()); // dropDownColumnStore
+//							Object displayColumnData = r.getColumns().get(activeColumn.getDropDownColumnDisplay().getName());//dropDownColumnDisplay
+
+							logger.info("Adding join filter for Column Id [" + activeColumn.getId() + "] Column Name ["
+									+ activeColumn.getName() + "] Column Type [" + activeColumn.getColumnType()
+									+ "] for Value [" + storeColumnData + "]");
+							Filter joinFilter = new IncrementalMatchTypeSearchFilter(storeColumnData + "",
+									activeColumn.getId(), activeColumn.getName(), activeColumn.getColumnType());
+
+							filtersParam.add(joinFilter);
+						}
+					}
+					
 				}
 			}
 		}
 
-		return getTableDataWithColumnNamesAndDropdowns(tableId, filtersParam,
-				orderByColumnID, orderDirection,
+		return getTableDataWithColumnNamesAndDropdowns(tableId, filtersParam, orderByColumnID, orderDirection,
 				startIndex, length);
 	}
 
