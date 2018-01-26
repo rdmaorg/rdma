@@ -12,6 +12,7 @@ var configureDataTable = function() {
 				{ "data" : "name" },
 				{ "data" : "connectionClass" },
 				{ "data" : "sqlGetTables"},
+				{ "data" : "sqlCastColumnForSearch"},
 				{"data" : "active","orderable": false, className: "text-center", "render" : function(data, type, row) {
 						return '<button class="btn btn-primary btn-xs editConnection"><i class="fa fa-pencil-square-o"></i> Edit</button>'
 								+ '&nbsp;'
@@ -43,6 +44,7 @@ var updateModal = function(connectionType) {
 	$('#name').val(connectionType.name);
 	$('#connectionClass').val(connectionType.connectionClass);
 	$('#sqlGetTables').val(connectionType.sqlGetTables);
+	$('#sqlCastColumnForSearch').val(connectionType.sqlCastColumnForSearch);
 	$('#modalConnectionType').modal('show');
 	$("#modalConnectionType").on('shown.bs.modal', function() {
 		$("#name").focus();
@@ -112,7 +114,8 @@ var associatePostConnection = function() {
 						id: connectionId,
 						name: $("#name").val(),
 						connectionClass: $('#connectionClass').val(),
-						sqlGetTables: $('#sqlGetTables').val()
+						sqlGetTables: $('#sqlGetTables').val(),
+						sqlCastColumnForSearch: $('#sqlCastColumnForSearch').val()
 					};
 					$.ajax({
 						type : "post",

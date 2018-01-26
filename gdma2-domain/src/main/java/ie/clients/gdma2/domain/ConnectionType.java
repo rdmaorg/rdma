@@ -27,6 +27,9 @@ public class ConnectionType extends BaseEntity {
 	@javax.persistence.Column(name = "SELECT_GET_TABLES", nullable = false)
 	private String sqlGetTables;
 
+	@javax.persistence.Column(name = "CAST_COLUMN_FOR_SEARCH", nullable = false)
+	private String sqlCastColumnForSearch;
+
 	@javax.persistence.Column(name = "CONNECTION_CLASS", nullable = false)
 	private String connectionClass;
 
@@ -54,6 +57,14 @@ public class ConnectionType extends BaseEntity {
 		this.connectionClass = connectionClass;
 	}
 
+	public String getSqlCastColumnForSearch() {
+		return sqlCastColumnForSearch;
+	}
+
+	public void setSqlCastColumnForSearch(String sqlCastColumnForSearch) {
+		this.sqlCastColumnForSearch = sqlCastColumnForSearch;
+	}
+
 	public boolean equals(Object other) {
 		if (this == other)
 			return true;
@@ -71,7 +82,7 @@ public class ConnectionType extends BaseEntity {
 	public String toString() {
 		return "ConnectionType [name=" + name + ", sqlGetTables="
 				+ sqlGetTables + ", connectionClass=" + connectionClass
-				+ ", getId()=" + getId() + "]";
+				+ ", sqlCastColumnForSearch=" + sqlCastColumnForSearch+ ", getId()=" + getId() + "]";
 	}
 
 	

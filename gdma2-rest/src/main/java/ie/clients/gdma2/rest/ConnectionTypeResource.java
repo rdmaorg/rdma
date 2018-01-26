@@ -69,6 +69,7 @@ public class ConnectionTypeResource extends BaseDataTableResource{
 		logger.debug("saveConnectionType: " + connectionType.getName());
 		connectionType.setConnectionClass(connectionType.getConnectionClass().trim());
 		connectionType.setSqlGetTables(connectionType.getSqlGetTables().trim());
+		connectionType.setSqlCastColumnForSearch(connectionType.getSqlCastColumnForSearch().trim());
 		serviceFacade.getMetadataService().saveConnectionType(connectionType);
 		logActivity("ConnectionType configuration persisted: " + connectionType);
 	}

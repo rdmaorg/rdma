@@ -1,5 +1,6 @@
 package ie.clients.gdma2.adaptor;
 
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -889,29 +890,23 @@ public class MetaDataServiceImpl extends BaseServiceImpl implements MetaDataServ
 			List<Column> activeColumns = repositoryManager.getColumnRepository()
 					.findByTableIdAndActiveTrueAndDisplayedTrue(tableId);
 			for (Column activeColumn : activeColumns) {
-/*				if(SQLUtil.isNumeric(activeColumn.getColumnType())){
-					Filter joinFilter = new IncrementalMatchTypeSearchFilter(searchTerm.trim(),
-							activeColumn.getId(), activeColumn.getName(), activeColumn.getColumnType());
+//				if (SQLUtil.isText(activeColumn.getColumnType()) && activeColumn.isSearchable()) {
+				if (activeColumn.isSearchable() && activeColumn.getDropDownColumnDisplay() == null) {
+					//Change Author: Farrukh Mirza
+					//This now works for all data types including date and integer
+					//In SQLUtil.java, the column is type casted to varchar depending on the database flavour and then like clause is used.
+					//For this reason, the filter type is always sent as Types.VARCHAR so that in DynamicDaoImpl.convertFiltersToSqlParameterValues() only invokes the like section of the code
+					//The casting script is fetched from ConnectionTypes table.
 
-					filtersParam.add(joinFilter);
-				}
-				else 
-			if(SQLUtil.isDateTime(activeColumn.getColumnType()) || SQLUtil.isDate(activeColumn.getColumnType()) || SQLUtil.isTime(activeColumn.getColumnType()) ){
-					Filter joinFilter = new IncrementalTextSearchFilter(searchTerm.trim(),
-							activeColumn.getId(), activeColumn.getName(), activeColumn.getColumnType());
-
-					filtersParam.add(joinFilter);
-				}
-				else
-*/				 
-				if (SQLUtil.isText(activeColumn.getColumnType()) && activeColumn.isSearchable()) {
-
+//					Filter filter = new IncrementalTextSearchFilter(searchTerm.trim(), activeColumn.getId(),
+//							activeColumn.getName(), activeColumn.getColumnType());
 					Filter filter = new IncrementalTextSearchFilter(searchTerm.trim(), activeColumn.getId(),
-							activeColumn.getName(), activeColumn.getColumnType());
+							activeColumn.getName(), Types.VARCHAR);
 					filtersParam.add(filter);
 
 				} else if ( activeColumn.isSearchable() && activeColumn.getDropDownColumnDisplay() != null
 						&& SQLUtil.isText(activeColumn.getDropDownColumnDisplay().getColumnType())) {
+					//Author: Farrukh Mirza
 					//Instead of incorporating JOIN statements, we are using select queries because the joined table could be on a different server or database
 					//In such cases, we cannot use joins.
 					//The below code is searching for the search term in the joined table and picking up the column store value

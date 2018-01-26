@@ -2,6 +2,7 @@ package ie.clients.gdma2.util;
 
 import java.math.BigDecimal;
 import java.sql.Types;
+import java.text.MessageFormat;
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -183,14 +184,27 @@ public class SQLUtil {
 						{
 							stringBuilder.append(" NOT ");
 						}
-						//CONCAT function works on postgresql, MSSQLServer 2012+, MySQL
-						//And is documented to work on Oracle and Teradata
-						//Although Oracle may only allow varchar (textual) fields to be concatenated
-//						stringBuilder.append("CONCAT(");
-						stringBuilder.append(table.getName());
-						stringBuilder.append('.');
-						stringBuilder.append(filter.getColumnName());
-//						stringBuilder.append(", '')");
+
+
+						//Author: Farrukh Mirza
+						//The syntax for Type Casting and Concatenation are different for each database.
+						//Therefore, they are fetched from ConnectionType configuration.
+						//This method is only applied for Like FilterOperation
+						//For all other operation like =, <, >, <=, >= absolute table name is used only.
+						if(filter.getFilterOperator() == 0 || filter.getFilterOperator() == 1 || filter.getFilterOperator() == 2 || filter.getFilterOperator() == 3 || filter.getFilterOperator() == 4){
+							stringBuilder.append(table.getName());
+							stringBuilder.append('.');
+							stringBuilder.append(filter.getColumnName());
+						}	else {
+							stringBuilder.append(MessageFormat.format(table.getServer().getConnectionType().getSqlCastColumnForSearch(), table.getName()+'.'+filter.getColumnName()));
+						}
+
+						//////// OLD CODE - Start //////
+						//Commenting Author: Farrukh Mirza
+//						stringBuilder.append(table.getName());
+//						stringBuilder.append('.');
+//						stringBuilder.append(filter.getColumnName());
+						//////// OLD CODE - End //////
 
 						switch (filter.getFilterOperator()) {
 						case 0:  stringBuilder.append(" = ?"); break; 
