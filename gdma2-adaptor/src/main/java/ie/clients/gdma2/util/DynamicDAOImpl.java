@@ -137,6 +137,13 @@ public class DynamicDAOImpl implements DynamicDAO{
 	 * as criteria)
 	 *   so another approach is to use DatabaseMetaData from connection
 	 *  //TODO make sure handling exceptions and see if connection closing is needed here or DS takes care of it
+	 *  
+	 *  Changes: @Author: Farrukh Mirza
+	 *  	Added code to fetch catalog and schema from connection if the method is available in relevant DB driver.
+	 *  	Reuse the catalog and schema from connection in meta.getPrimaryKeys( ... );
+	 *  	Using EntityUtils to apply column rules with EntityUtils.applyColumnRules(column); after setting the primary key.
+	 *  	Closing primaryKeysRS with primaryKeysRS.close();
+	 *  	These changes are testing in a separate spike.
 	 * */
 	private void determinePrimaryKey(JdbcTemplate jdbcTemplate,
 			String tableName, Set<Column> columns)  {
@@ -145,7 +152,20 @@ public class DynamicDAOImpl implements DynamicDAO{
 		try {
 			connection = jdbcTemplate.getDataSource().getConnection();
 			DatabaseMetaData meta = connection.getMetaData();
-			ResultSet primaryKeysRS = meta.getPrimaryKeys(null, null, tableName);
+			String catalog = null;
+			String schema = null;
+			try {
+				catalog = connection.getCatalog();
+			} catch (Throwable t) {
+				logger.error("Keeping Catalog null!", t);
+			}
+			try {
+				schema = connection.getSchema();
+			} catch (Throwable t) {
+				logger.error("Keeping Schema null!", t);
+			}
+
+			ResultSet primaryKeysRS = meta.getPrimaryKeys(catalog, schema, tableName);
 
 			while(primaryKeysRS.next()){
 				String columnNamePK = primaryKeysRS.getString("COLUMN_NAME");
@@ -153,10 +173,12 @@ public class DynamicDAOImpl implements DynamicDAO{
 				for (Column column : columns) {
 					if( columnNamePK.equalsIgnoreCase(column.getName())){
 						column.setPrimarykey(true);
-						column.setAllowUpdate(false);
+//						column.setAllowUpdate(false);
+						EntityUtils.applyColumnRules(column);
 					}
 				}
 			}
+			primaryKeysRS.close();
 		} catch (SQLException e) {
 			logger.error("Error while getting PK column  " + e);
 			//TODO !!!

@@ -1,7 +1,7 @@
 set OLD_DIR=%cd%
 
 rem Building the parent project
-call mvn clean install -Ptomcat
+call mvn clean install -Ptomcat -DskipTests
 echo "Built the parent project"
 
 cd %CATALINA_HOME%\logs
