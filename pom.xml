@@ -16,9 +16,9 @@
 		<name>Client Solutions Ltd</name>
 	</organization>
 	<scm>
-		<connection>scm:hg:http://10.252.220.63/hg/gdma2</connection>
-		<developerConnection>scm:hg:http://10.252.220.63/hg/gdma2</developerConnection>
-		<url>http://10.252.220.63/hg/gdma2</url>
+		<connection>scm:git:https://bitbucket.avtcloud.com/scm/csl/rdma.git</connection>
+		<developerConnection>scm:git:https://bitbucket.avtcloud.com/scm/csl/rdma.git</developerConnection>
+		<url>https://bitbucket.avtcloud.com/scm/csl/rdma</url>
 		<tag>HEAD</tag>
 	</scm>
 
