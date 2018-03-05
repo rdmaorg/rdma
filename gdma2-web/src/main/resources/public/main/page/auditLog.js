@@ -31,7 +31,8 @@ var configureDataTable = function() {
 		            { "data": "auditHeader.modifiedOn" },
 		            { "data": "columnID.name" },
 		            { "data": "oldValue" },
-		            { "data": "newValue" }
+		            { "data": "newValue" },
+		            { "data": "auditHeader.whereClause" }
 		        ]
 	};
 

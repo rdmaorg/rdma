@@ -37,6 +37,9 @@ public class AuditHeader extends BaseEntity{
 	/*date of modification, usually current java.util.Date */
 	@javax.persistence.Column(name = "MODIFIED_ON")
     private Date modifiedOn;
+	
+	@javax.persistence.Column(name = "WHERE_CLAUSE")
+	private String whereClause;
 
 	public Table getTableID() {
 		return tableID;
@@ -69,5 +72,13 @@ public class AuditHeader extends BaseEntity{
     public void setModifiedOn(Date modifiedOn) {
         this.modifiedOn = modifiedOn;
     }
+
+	public String getWhereClause() {
+		return whereClause;
+	}
+
+	public void setWhereClause(String whereClause) {
+		this.whereClause = whereClause;
+	}
 
 }

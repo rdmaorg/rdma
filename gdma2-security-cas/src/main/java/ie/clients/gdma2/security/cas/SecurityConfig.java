@@ -216,7 +216,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Bean
 	public CasAuthenticationEntryPoint casAuthenticationEntryPoint() {
 		CasAuthenticationEntryPoint casAuthenticationEntryPoint = new CasAuthenticationEntryPoint();
-		casAuthenticationEntryPoint.setLoginUrl(baseUrl() + casConfig.getEntryPoint());
+//		casAuthenticationEntryPoint.setLoginUrl(baseUrl() + casConfig.getEntryPoint());
+		casAuthenticationEntryPoint.setLoginUrl(casUrl() + casConfig.getEntryPoint());
 		casAuthenticationEntryPoint.setServiceProperties(serviceProperties());
 		return casAuthenticationEntryPoint;
 	}

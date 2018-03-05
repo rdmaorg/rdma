@@ -913,6 +913,8 @@ public class DynamicDAOImpl implements DynamicDAO{
 			protected void doInTransactionWithoutResult(org.springframework.transaction.TransactionStatus status) {
 				logger.info("doInTransactionWithoutResult");
 				int countUpdated = 0;
+				String whereClause = "";
+				
 				for (List<ColumnDataUpdate> colList : columnsUpdate) {
 					logger.info("1: iterrate in colUpdateList");
 					//create new list of columns loaded from DB, use columnType to convert new value and create paremeters 
@@ -941,25 +943,24 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 					handleSpecialColumns(table.getColumns(), columns, parameters);
 					final String sql = SQLUtil.createInsertStatement(server, table, columns);
-
+					
 					logger.info("sql: " + sql);
 					logger.info("parameters: "  + parameters);
 
 					JdbcTemplate jdbcTemplate = new JdbcTemplate(transactionManager.getDataSource());
-					//JdbcTemplate jdbcTemplate = dataSourcePool.getJdbcTemplateFromDataDource(server);
+//					whereClause = injectKeysIntoWhereClause(sql, parameters.toArray());
 					logger.info("6: UPDATE...");
 					countUpdated += jdbcTemplate.update(sql, parameters.toArray());
 					logger.info("6: ..UPDATE end");
 				}
 				if(countUpdated > 0){
-					saveAuditRecords(auditRecordList, table, AUDIT_TYPE_CREATE);		
+					saveAuditRecords(auditRecordList, table, AUDIT_TYPE_CREATE, whereClause);		
 				}
 			}
 
 		});//inner class impl
 
 	}
-
 
 
 	/**
@@ -1093,6 +1094,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 						logger.info("0: doInTransaction" +  status + " , start");
 
 						int countUpdated = 0;
+						String whereClause = "";
 
 						for (List<ColumnDataUpdate> list : columnsUpdate) {//will perform multiple SQL UPDATEs row by row
 
@@ -1173,14 +1175,16 @@ public class DynamicDAOImpl implements DynamicDAO{
 							handleSpecialColumns(table.getColumns(), columns, parameters);
 
 							String sql = SQLUtil.createUpdateStatement(server, table, columns);
+							whereClause = SQLUtil.createWhereClause(server, table, columns);
 							logger.info("Update SQL query: " + sql);
 							logger.info("parameters: " + parameters);
 							JdbcTemplate jdbcTemplate = new JdbcTemplate(transactionManager.getDataSource());
 							countUpdated += jdbcTemplate.update(sql, parameters.toArray());
+							whereClause = injectKeysIntoWhereClause(whereClause, parameters.toArray());
 						}//main for
 						
 						if(countUpdated > 0){
-							saveAuditRecords(auditRecordList, table, AUDIT_TYPE_UPDATE);		
+							saveAuditRecords(auditRecordList, table, AUDIT_TYPE_UPDATE, whereClause);		
 						}
 
 						logger.info("doInTransaction() - end - return value=" + countUpdated);
@@ -1213,12 +1217,13 @@ public class DynamicDAOImpl implements DynamicDAO{
 		return ar;
 	}
 
-	private AuditHeader instantiateAuditHeader(Table table, char auditType) {
+	private AuditHeader instantiateAuditHeader(Table table, char auditType, String whereClause) {
 		AuditHeader ah = new AuditHeader();
 		ah.setModifiedBy(userContextProvider.getLoggedInUserName());
 		ah.setModifiedOn(new Date());
 		ah.setTableID(table);
 		ah.setType(auditType);
+		ah.setWhereClause(whereClause);
 		return ah;
 	}
 
@@ -1261,6 +1266,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 					org.springframework.transaction.TransactionStatus status) {
 				logger.info("doInTransaction");
 				int countDeleted = 0;
+				String whereClause = "";
 				for (List<ColumnDataUpdate> list : columnsUpdate) {
 
 					List<Column> columns = new ArrayList<Column>();
@@ -1285,14 +1291,18 @@ public class DynamicDAOImpl implements DynamicDAO{
 					}
 
 					final String sql = SQLUtil.createDeleteStatement(server, table, columns);
+					whereClause = SQLUtil.createWhereClause(server, table, columns);
 					logger.info("Delete SQL used: " + sql);
 					logger.info("Keys-values used : " + keys);
+					
+					whereClause = injectKeysIntoWhereClause(whereClause, keys.toArray());
+					
 
 					JdbcTemplate jdbcTemplate = new JdbcTemplate(transactionManager.getDataSource());
 					countDeleted += jdbcTemplate.update(sql, keys.toArray());
 				}//for
 				if(countDeleted > 0){
-					saveAuditRecords(auditRecordList, table, AUDIT_TYPE_DELETE);
+					saveAuditRecords(auditRecordList, table, AUDIT_TYPE_DELETE, whereClause);
 				}
 				logger.info("count deleted in itteration" + countDeleted);
 				return countDeleted;
@@ -1304,7 +1314,14 @@ public class DynamicDAOImpl implements DynamicDAO{
 		return countDel;
 	}
 
-
+	private String injectKeysIntoWhereClause(String whereClause, Object[] array) {
+		String result = whereClause;
+		int questionMarksCount = StringUtils.countOccurrencesOf(whereClause, "?");
+		for(int i = array.length - questionMarksCount; i < array.length; i++){
+			result = result.replaceFirst("\\?", array[i] == null ? "null" : array[i].toString());
+		}
+		return result;
+	}
 	@Override
 	public List getEditableTableData(Table table, Server server, Column orderByColumn,
 			List<Filter> filters,
@@ -1735,8 +1752,9 @@ public class DynamicDAOImpl implements DynamicDAO{
 		return dropDownDataRowsMap;
 	}
 
-	private void saveAuditRecords(List<AuditRecord> auditRecordList, Table table, char auditType ) {
-		AuditHeader auditHeader = instantiateAuditHeader(table, auditType);
+	private void saveAuditRecords(List<AuditRecord> auditRecordList, Table table, char auditType, String whereClause ) {
+		AuditHeader auditHeader = instantiateAuditHeader(table, auditType, whereClause);
+		
 		AuditHeader persistedAuditHeader = repositoryManager.getAuditHeaderRepository().save(auditHeader);
 		for (AuditRecord auditRecord : auditRecordList) {
 			auditRecord.setAuditHeader(persistedAuditHeader);

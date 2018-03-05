@@ -49,6 +49,9 @@ public class LoggingResource extends BaseDataTableResource{
 		case 7:
 			orderByColumn = "newValue";
 			break;
+		case 8:
+			orderByColumn = "auditHeader.whereClause";
+			break;
 		default:
 			orderByColumn = "id";
 			break;

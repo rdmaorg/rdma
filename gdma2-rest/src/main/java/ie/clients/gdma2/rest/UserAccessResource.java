@@ -73,7 +73,11 @@ public class UserAccessResource extends BaseDataTableResource {
 	@RequestMapping(value="update", method = RequestMethod.POST)
 	public List<UserAccess> updateUserAccess(@RequestBody List<UserAccess> userAccessList){
 		logger.debug("updatedUserAccess: list of " + userAccessList.size());
-		return serviceFacade.getMetadataService().saveUserAccessList(userAccessList);
+		List<UserAccess> savedUserAccessList = serviceFacade.getMetadataService().saveUserAccessList(userAccessList);
+		for (UserAccess userAccess : savedUserAccessList) {
+			logActivity("UserAccess persisted: " + userAccess);
+		}
+		return savedUserAccessList;
 	}
 	
 	/*TEST ONLY - deletion of UserAccess can happen only during table RESYNCH see resolveDeletedTables() in DynamicDAO*/
