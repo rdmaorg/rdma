@@ -441,6 +441,32 @@
 		        </dependency>
 			</dependencies>
 		</profile>
+		
+		<profile>
+			<id>musgrave-psq</id>
+			<properties>
+				<db.jndi>java:comp/env/jdbc/rdma</db.jndi>
+				<log.location>${d}{catalina.home}/logs</log.location>
+				<spring.jmx.enabled>true</spring.jmx.enabled>
+				<!-- Security -->
+				<app.protocol>https</app.protocol>
+				<app.hostname>10.216.2.20</app.hostname>
+				<cas.hostname>10.216.2.20</cas.hostname>
+				<spring.profiles>localCachingCas</spring.profiles>
+				<db.hibernate.dialect>org.hibernate.dialect.SQLServerDialect</db.hibernate.dialect>
+
+				<authentication.local>true</authentication.local>
+			</properties>
+			<dependencies>
+				<!-- Removing embedded tomcat -->
+				<dependency>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+					<scope>provided</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		
 	</profiles>
 
 	<distributionManagement>
