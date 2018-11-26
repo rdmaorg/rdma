@@ -9,7 +9,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ie.clients.gdma2.domain.ui.DropDownColumn;
+import ie.clients.gdma2.domain.Column;
+import ie.clients.gdma2.domain.ui.DataTableDropDown;
 
 /* READ data and include proper dropdown values:
  */   
@@ -23,6 +24,102 @@ public class CsvDownloader {
 
 	private static final Logger logger = LoggerFactory.getLogger(CsvDownloader.class);
 
+	/*
+	 * @Author: Farrukh Mirza
+	 * Following code has been modified by Farrukh
+	 * Reason: 	When downloading a table that is joined to a lookup table
+	 * 			The result set contains lookup store value (foreign key) instead of lookup display value
+	 * 			However, when importing the same CSV, RDMA expects the lookup display value and not the lookup store value
+	 * 			This results in error while UPSERTING the csv
+	 * 
+	 * 			The following changes are expected to return the lookup display value instead, hence fixing the process. 
+	 * 
+	 * 		Please also see DataModuleServiceImpl::dataExport()
+	 * 
+	 */
+	public static String createCSV(List<Column> columns, List<TableRowDTO> rows) {
+
+		//create header first
+		StringBuilder sbTemp = new StringBuilder();
+		if (rows != null && rows.size() > 0) {
+			boolean addComma = false;
+			for (Column column : columns) {
+				if (addComma) {
+					sbTemp.append(',');
+				} else {
+					addComma = true;
+				}
+				sbTemp.append(column.getName()); //TODO: Farrukh: Should this be Alias? Depends on Import
+			}
+			sbTemp.append(EOL);
+
+			//create rows
+			for (TableRowDTO tableRowDTO : rows) {
+				StringJoiner rowDataJoiner = new StringJoiner(COLUMN_VALUE_DELIMITER);
+				logger.info("row number:" + tableRowDTO.getRowNumber());
+				
+				
+				for (Column column : columns) {
+					Object v = tableRowDTO.getColumns().get(column.getName());
+					
+					logger.info("Processing: " + column.getName() + ": " + v);
+					
+					String colValue = v == null ? " " : getValue(column, v);
+					//If the column value contains a comma(s), then surround the value with double quotes so the comma(s) are escaped 
+					//to ensure that the resultant CSV file will not be 'skewed'.
+					if (colValue.indexOf(COLUMN_VALUE_DELIMITER) != -1) {
+						StringBuilder columnValueBuilder = new StringBuilder("");
+						columnValueBuilder.append(COLUMN_VALUE_PRE_SUFFIX);
+						columnValueBuilder.append(colValue.replaceAll(COLUMN_VALUE_PRE_SUFFIX, "\"\""));
+						columnValueBuilder.append(COLUMN_VALUE_PRE_SUFFIX);
+						colValue = columnValueBuilder.toString(); 
+					} 
+					rowDataJoiner.add(colValue);
+				}
+				
+				
+				
+				
+				sbTemp.append(rowDataJoiner);
+				sbTemp.append(EOL);
+			}
+		}  else {
+			sbTemp.append("No records found\r\n");
+		}
+		return sbTemp.toString();
+	}	
+
+	private static String getValue(Column column, Object value) {
+		if(column.getDatatableEditorFieldOptions() !=null && !column.getDatatableEditorFieldOptions().isEmpty()  /*isDropDown(value)*/){
+			logger.info("Processing dropdown field: " + column.getName() + ": " + column.getDatatableEditorFieldOptions());
+			return getDropDownLabelForValue(column.getDatatableEditorFieldOptions(), value.toString());
+		};
+		if (value instanceof Date) {
+			return getDateValue(value);
+		} else {
+			return value == null ? "" : value.toString();
+		}
+	}
+
+	private static String getDropDownLabelForValue(List<DataTableDropDown> dropDownValues, String value /*value : 101 */){
+		logger.info("getDropDownValue");
+		//if dropdown value not set return ' '
+		if(value == null || StringUtils.isBlank(value)){
+			return " ";
+		}
+		String valueLocated = null;
+		for (DataTableDropDown ddLists : dropDownValues) {
+			if(value.equalsIgnoreCase(ddLists.getValue())) {
+				logger.info("MATCH!");
+				valueLocated = ddLists.getLabel();
+				break;
+			}
+		}//for 
+		logger.info("value:" + valueLocated);
+		return valueLocated;
+	}
+
+	/*
 	public static String createCSV(List<String> headers, List<TableRowDTO> rows) {
 
 		//create header first
@@ -78,7 +175,7 @@ public class CsvDownloader {
 	}
 
 	private static boolean isDropDown(Object object){
-		logger.info("isDropDown");
+		logger.info("isDropDown: " + (object instanceof ie.clients.gdma2.domain.ui.DropDownColumn));
 		return (object instanceof ie.clients.gdma2.domain.ui.DropDownColumn);
 	}
 	
@@ -111,6 +208,7 @@ public class CsvDownloader {
 		logger.info("value:" + valueLocated);
 		return valueLocated;
 	}
+	*/
 
 	private static String getDateValue(Object object) {
 		Date date;

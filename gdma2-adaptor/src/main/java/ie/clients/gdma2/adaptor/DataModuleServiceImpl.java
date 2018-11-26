@@ -298,16 +298,37 @@ public class DataModuleServiceImpl extends BaseServiceImpl implements DataModule
 			throw new ServiceException("Error! Table with id:" + tableId + "does not exists!");
 		}
 
+		/*
+		 * @Author: Farrukh Mirza
+		 * Following code has been modified by Farrukh
+		 * Reason: 	When downloading a table that is joined to a lookup table
+		 * 			The result set contains lookup store value (foreign key) instead of lookup display value
+		 * 			However, when importing the same CSV, RDMA expects the lookup display value and not the lookup store value
+		 * 			This results in error while UPSERTING the csv
+		 * 
+		 * 			The following changes are expected to return the lookup display value instead, hence fixing the process. 
+		 */
+		
+		////// Farrukh Commented - Start /////////
 		//make sure order of column in Header match order of column data in Body (paginated response)
-		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrueAndDisplayedTrue(tableId);
-		List<String> headers = new ArrayList<String>();
-		for (Column column : activeColumns) {
-			headers.add(column.getName());
-		}
-
+//		List<Column> activeColumns = repositoryManager.getColumnRepository().findByTableIdAndActiveTrueAndDisplayedTrue(tableId);
+//		
+//		List<String> headers = new ArrayList<String>();
+//		for (Column column : activeColumns) {
+//			headers.add(column.getName());
+//		}
+//
+//		List<TableRowDTO> rows = (List<TableRowDTO>) resp.getData();
+//		//TODO based on 'extension' call ExcelDownloader or PDFDwonloader
+//		return CsvDownloader.createCSV(headers, rows);
+		////// Farrukh Commented - End /////////
+		
+		
+		////// Farrukh Changes - Start /////////
+		List<Column> activeColumns =getTableMetadata(tableId); 
 		List<TableRowDTO> rows = (List<TableRowDTO>) resp.getData();
-		//TODO based on 'extension' call ExcelDownloader or PDFDwonloader
-		return CsvDownloader.createCSV(headers, rows);
+		return CsvDownloader.createCSV(activeColumns, rows);
+		////// Farrukh Changes - End /////////
 
 	}
 
