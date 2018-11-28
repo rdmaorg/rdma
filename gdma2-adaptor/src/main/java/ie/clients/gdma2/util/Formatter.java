@@ -25,6 +25,7 @@ public class Formatter {
 	// java.sql.Timestamp = 93
 	// (at some DB's also called DATETIME),
 	public static String timeStampFormat = "yyyy-MM-dd HH:mm:ss";
+	public static String timeStampFormat_ExcelWorkaround = "dd/MM/yyyy HH:mm:ss";
 
 	private static SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
 
@@ -33,6 +34,8 @@ public class Formatter {
 	private static SimpleDateFormat sdf3 = new SimpleDateFormat(timeFormat);
 
 	private static SimpleDateFormat sdf4 = new SimpleDateFormat(timeStampFormat);
+
+	private static SimpleDateFormat sdf4_ExcelWorkaround = new SimpleDateFormat(timeStampFormat_ExcelWorkaround);
 
 	private static String frontEndTimeStampFormat = "dd-MMM-yyyy HH:mm:ss.SSS";
 
@@ -113,8 +116,12 @@ public class Formatter {
 			try {
 				date = sdf4.parse(value);
 			} catch (Exception e) {
-				date = null;
-				throw new Exception("Could not parse value [" + value + "] into a datetime");
+				try {
+					date = sdf4_ExcelWorkaround.parse(value);
+				} catch (Exception e2) {
+					date = null;
+					throw new Exception("Could not parse value [" + value + "] into a datetime");
+				}
 			}
 		}
 		return date;
