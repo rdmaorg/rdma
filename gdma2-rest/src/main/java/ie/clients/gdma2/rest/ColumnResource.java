@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping(value = "/rest/column")
 public class ColumnResource extends BaseDataTableResource{
 
-	private static Logger logger = LoggerFactory.getLogger(ServerResource.class);
+	private static Logger logger = LoggerFactory.getLogger(ColumnResource.class);
 
 	@RequestMapping(value = "list")
 	public List<Column> getAllColumns(){
@@ -62,9 +62,6 @@ public class ColumnResource extends BaseDataTableResource{
 		case 2:
 			orderByColumn = "alias";
 			break;
-		//case 3: 
-			//orderByColumn = "columnType";
-			//break;
 		case 3: 
 			orderByColumn = "columnTypeString";
 			break;
@@ -83,31 +80,28 @@ public class ColumnResource extends BaseDataTableResource{
 		case 8:
 			orderByColumn = "nullable";
 			break;
-		case 9: //order by column0_.dd_lookup_display asc limit ?    
+		case 9:
+			orderByColumn = "searchable";
+			break;
+		case 10: //order by column0_.dd_lookup_display asc limit ?    
 			//if this is to be used at all consider : column0_.dd_lookup_display.name in columns.js and here
 			orderByColumn = "dropDownColumnDisplay";  
 			break;
-		case 10:
+		case 11:
 			orderByColumn = "dropDownColumnStore";
 			break;
-		case 11:
+		case 12:
 			orderByColumn = "special";
 			break;
-//		case 12:
-//			orderByColumn = "minWidth";
-//			break;
-//		case 13:
-//			orderByColumn = "maxWidth";
-//			break;
-		case 12:
+		case 13:
+			orderByColumn = "sortOrder";
+			break;
+		case 14:
 			orderByColumn = "columnSize";
 			break;
-		//case 15:
-			//	orderByColumn = "orderby";
-			//	break;	
 		}
 		
-		logger.info("orderByColumn: " + orderByColumn);
+		logger.info("orderByColumn Req.Param: "+getOrderByColumn(reqParams)+", orderByColumn: " + orderByColumn);
 		PaginatedTableResponse<Column> resp = serviceFacade.getMetadataService().getActiveLocalColumnsForTable(
 				tableId,
 				getSearchValue(reqParams),

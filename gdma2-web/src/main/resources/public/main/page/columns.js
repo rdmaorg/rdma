@@ -92,7 +92,15 @@ var configureDataTable = function(){
                                 },
                                 { "data": "special","render" : function(data, type, row){ 
                                         return createDropDownSpecial(row.id, row.special);
-                                }                               
+                                	}                               
+                                },
+                                { "data": "sortOrder", "render" : function(data, type, row){ 
+                                    var value = row.sortOrder === null ? "0": row.sortOrder;
+                                    return '<div class="input-edit fa fa-pencil sort-order" data-id="' + row.id+ '">'+
+                                    '<input type="text" id="colS'+row.id+'" maxlength="3" class=" input-disabled" value="'+ value +'"'+
+                                    ' onkeypress="return event.charCode >= 48 && event.charCode <= 57" data-id="' + row.id+ '">'+
+                                    '</div>' ;
+                             		}                   
                                 },
                                 { "data": "columnSize", "render" : function(data, type, row){ 
                                         var value = row.columnSize === null ? "": row.columnSize;
@@ -100,7 +108,7 @@ var configureDataTable = function(){
                                         '<input type="text" id="colS'+row.id+'" maxlength="3" class=" input-disabled" value="'+ value +'"'+
                                         ' onkeypress="return event.charCode >= 48 && event.charCode <= 57" data-id="' + row.id+ '">'+
                                         '</div>' ;
-                                 }                   
+                                 	}                   
                                 }
                             ]
        };
@@ -180,6 +188,7 @@ var associateCheckBox = function(classes, variableName){
 
 var associateInputs = function(){
        associateInput("column-size", "columnSize");
+       associateInput("sort-order", "sortOrder");
        associateInput("alias", "alias");
        
 }
@@ -331,6 +340,9 @@ var objectChanged = function(originalObject, changedObject){
 		return true;
 	}
 	if(originalObject.columnSize+"" !== changedObject.columnSize+""){
+		return true;
+	}
+	if(originalObject.sortOrder+"" !== changedObject.sortOrder+""){
 		return true;
 	}
 	return false;

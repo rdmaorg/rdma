@@ -77,7 +77,7 @@ public class Column extends BaseEntity{
 	private Integer maxWidth;
 
 	@javax.persistence.Column(name = "ORDER_BY")
-	private Integer orderby;
+	private Integer sortOrder = 0;
 
 	@javax.persistence.Column(name = "COLUMN_SIZE")
 	private Integer columnSize;
@@ -124,12 +124,12 @@ public class Column extends BaseEntity{
 	}
 
 
-	public Integer getOrderby() {
-		return orderby;
+	public Integer getSortOrder() {
+		return sortOrder == null? 0: sortOrder;
 	}
 
-	public void setOrderby(Integer orderby) {
-		this.orderby = orderby;
+	public void setSortOrder(Integer sortOrder) {
+		this.sortOrder = sortOrder;
 	}
 
 	public Integer getMinWidth() {
@@ -292,7 +292,7 @@ public class Column extends BaseEntity{
 				+ ", allowUpdate=" + allowUpdate + ", nullable=" + nullable
 				+ ", primarykey=" + primarykey + ", special=" + special
 				+ ", minWidth=" + minWidth + ", maxWidth=" + maxWidth
-				+ ", orderby=" + orderby + ", columnSize=" + columnSize
+				+ ", orderby=" + sortOrder + ", columnSize=" + columnSize
 				+ ", active=" + active + ", searchable=" + searchable + ", alias=" + alias + ", getId()="
 				+ getId() + "]";
 	}

@@ -3,6 +3,8 @@ package ie.clients.gdma2.util;
 import java.math.BigDecimal;
 import java.sql.Types;
 import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.StringJoiner;
 
@@ -43,7 +45,15 @@ public class SQLUtil {
 
 		stringBuilder.append("SELECT ");
 
-		for (Column column : table.getColumns()) {
+		///// Farrukh Changes - START /////
+		// Sort the columns of a table by orderBy field, so that the display becomes sane.
+		List<Column> columns = new ArrayList<>(table.getColumns());
+		Collections.sort(columns, (c1, c2) -> {
+			return c1.getSortOrder() - c2.getSortOrder();
+		} );
+		///// Farrukh Changes - END   /////
+		
+		for (Column column : columns) {
 			if (column.isDisplayed()) {
 				if (addComma) {
 					stringBuilder.append(", ");

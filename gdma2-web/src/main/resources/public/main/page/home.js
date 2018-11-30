@@ -28,9 +28,10 @@ var loadDatatable = function(){
     }).done(function(data){
     	columnsMetadata = data.filter(filterDisplayed);
     	//sort columns by columnID
-    	columnsMetadata.sort(function(a, b) {
-		    return parseInt(a.id) - parseInt(b.id);
-		});
+//    	columnsMetadata.sort(function(a, b) {
+//		    return parseInt(a.id) - parseInt(b.id);
+//		});
+
     	//columnsMetadata.unshift({name:"", alias:""});
     	$("#tableHeaderRow").empty();
     	//select checkbox header
