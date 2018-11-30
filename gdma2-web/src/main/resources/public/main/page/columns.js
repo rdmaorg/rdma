@@ -14,6 +14,9 @@ var configureDataTable = function(){
        var config={
                fixedHeader: true,
                     order: [[ 1, "asc" ]],
+                    rowReorder: {
+                        dataSrc: 'sortOrder'
+                    },
                     "lengthMenu": [ [10, 25, 50, 100], [10, 25, 50, 100] ],
                     "columnDefs": [ { className: "text-center", "targets": [7,8] },{ "orderable": false, "targets": 8 }  ],
                     "columns": [
