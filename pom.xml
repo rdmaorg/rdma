@@ -467,6 +467,31 @@
 			</dependencies>
 		</profile>
 		
+		<profile>
+			<id>musgrave-prod</id>
+			<properties>
+				<db.jndi>java:comp/env/jdbc/rdma</db.jndi>
+				<log.location>${d}{catalina.home}/logs</log.location>
+				<spring.jmx.enabled>true</spring.jmx.enabled>
+				<!-- Security -->
+				<app.protocol>https</app.protocol>
+				<app.hostname>10.220.32.6</app.hostname>
+				<cas.hostname>10.220.32.4</cas.hostname>
+				<spring.profiles>localCachingCas</spring.profiles>
+				<db.hibernate.dialect>org.hibernate.dialect.SQLServerDialect</db.hibernate.dialect>
+
+				<authentication.local>false</authentication.local>
+			</properties>
+			<dependencies>
+				<!-- Removing embedded tomcat -->
+				<dependency>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+					<scope>provided</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		
 	</profiles>
 
 	<distributionManagement>
