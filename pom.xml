@@ -475,8 +475,8 @@
 				<spring.jmx.enabled>true</spring.jmx.enabled>
 				<!-- Security -->
 				<app.protocol>https</app.protocol>
-				<app.hostname>10.220.32.6</app.hostname>
-				<cas.hostname>10.220.32.4</cas.hostname>
+				<app.hostname>applications.musgrave.ie</app.hostname>
+				<cas.hostname>applications.musgrave.ie</cas.hostname>
 				<spring.profiles>localCachingCas</spring.profiles>
 				<db.hibernate.dialect>org.hibernate.dialect.SQLServerDialect</db.hibernate.dialect>
 
