@@ -173,7 +173,7 @@ var associatePostUser = function(){
 				    	window.setTimeout(function() {
 				    		$("#global-success").slideUp(500);
 				    	}, 4000);
-				    	savedServerID = -1;
+				    	savedUserID = -1;
 				    }).fail(function(e){
 				    	handleError('#global-alert', e);
 				    }).always(function(){
@@ -194,6 +194,10 @@ var associatePostUser = function(){
 var associateInsertButton = function(){
 	$("#inserUser").click(function(){
 		$("#modalUser").find('form').trigger('reset');
+		
+		//Reset the savedUserID to -1 to clear any cached user id as this is a new user being added
+		savedUserID = -1;
+		
 		$("#modalUser").on('shown.bs.modal', function () {
 			$("#name").focus();
 		});

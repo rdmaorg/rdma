@@ -55,6 +55,10 @@ var updateModal = function(connectionType) {
 var associateInsertButton = function(){
 	$("#addConnection").click(function(){
 		$("#modalConnectionType").find('form').trigger('reset');
+		
+		//Reset the connectionId to -1 to clear any cached connection type id as this is a new connection type being added
+		connectionId = -1;
+		
 		$("#modalConnectionType").on('shown.bs.modal', function () {
 			$("#name").focus();
 		});

@@ -233,6 +233,10 @@ $(document).ready(function(){
 	
 	$("#addServer").click(function(){
 		$("#modalServer").find('form').trigger('reset');
+		
+		//Reset the savedServerID to -1 to clear any cached server id as this is a new server being added
+		savedServerID = -1;
+		
         $("#name").focus();
 	});
 	
