@@ -49,6 +49,12 @@
 			<email>Daniel.Serva@techdata.com</email>
 			<organization>Client Solutions</organization>
 		</developer>
+		<developer>
+			<id>john.roche</id>
+			<name>John Roche</name>
+			<email>john.roche@clientsolutions.ie</email>
+			<organization>Client Solutions</organization>
+		</developer>
 	</developers>
 
 	<dependencies>
@@ -424,6 +430,8 @@
 				<app.hostname>10.252.220.65</app.hostname>
 				<cas.hostname>10.252.220.65</cas.hostname>
 				<spring.profiles>localCachingCas</spring.profiles>
+				
+				<authentication.local>true</authentication.local>
 			</properties>
 			<dependencies>
 				<!-- Removing embedded tomcat -->
@@ -443,7 +451,7 @@
 		</profile>
 		
 		<profile>
-			<id>musgrave-psq</id>
+			<id>musgrave-psq-old</id>
 			<properties>
 				<db.jndi>java:comp/env/jdbc/rdma</db.jndi>
 				<log.location>${d}{catalina.home}/logs</log.location>
@@ -466,6 +474,33 @@
 				</dependency>
 			</dependencies>
 		</profile>
+		
+		<profile>
+			<id>musgrave-psq</id>
+			<properties>
+				<db.jndi>java:comp/env/jdbc/rdma</db.jndi>
+				<log.location>${d}{catalina.home}/logs</log.location>
+				<spring.jmx.enabled>true</spring.jmx.enabled>
+				<!-- Security -->
+				<app.protocol>https</app.protocol>
+				<app.hostname>applications-psq.musgrave.ie</app.hostname>
+				<cas.hostname>applications-psq.musgrave.ie</cas.hostname>
+				<spring.profiles>localCachingCas</spring.profiles>
+				<db.hibernate.dialect>org.hibernate.dialect.SQLServerDialect</db.hibernate.dialect>
+
+				<authentication.local>false</authentication.local>
+			</properties>
+			<dependencies>
+				<!-- Removing embedded tomcat -->
+				<dependency>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+					<scope>provided</scope>
+				</dependency>
+			</dependencies>
+		</profile>
+		
+		
 		
 		<profile>
 			<id>musgrave-prod</id>

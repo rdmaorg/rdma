@@ -18,6 +18,8 @@ import org.springframework.web.servlet.config.annotation.ContentNegotiationConfi
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import ie.clients.gdma2.config.interceptor.EnvironmentActiveInterceptor;
 
 import ie.clients.gdma2.domain.app.PageEnum;
 
@@ -76,5 +78,16 @@ public class MvcConfig extends WebMvcAutoConfigurationAdapter {
 	public ServletListenerRegistrationBean httpSessionEventPublisher() {
 		return new ServletListenerRegistrationBean(new HttpSessionEventPublisher());
 	}
+	
+	
+	@Override
+	public void addInterceptors(InterceptorRegistry registry) {
+		registry.addInterceptor(environmentActiveInterceptor()).addPathPatterns("/**").excludePathPatterns("resources/");
+	}
+	@Bean
+	public EnvironmentActiveInterceptor environmentActiveInterceptor() {
+	    return new EnvironmentActiveInterceptor();
+	}
 
+	
 }

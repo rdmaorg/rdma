@@ -27,7 +27,7 @@ public class HashUtil extends SecurityUtil {
 		}
 	}
 
-	private static HashAlgorithm defaultHashAlgorithm = HashAlgorithm.SHA1;
+	private static HashAlgorithm defaultHashAlgorithm = HashAlgorithm.SHA256;
 	private static String defaultEncoding = "UTF-8";
 
 	public static String hash(String clearData) {

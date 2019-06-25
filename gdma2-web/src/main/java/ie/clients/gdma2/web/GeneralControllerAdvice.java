@@ -2,6 +2,7 @@ package ie.clients.gdma2.web;
 
 import java.util.logging.Logger;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +13,14 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.avnet.cs.core.grid.utils.AjaxResponse;
 
 import ie.clients.gdma2.rest.JsonWrapper;
 import ie.clients.gdma2.spi.BusinessException;
 import ie.clients.gdma2.spi.ServiceException;
+import ie.clients.gdma2.common.core.exception.CS_ServiceUnavailableException;
 
 @ControllerAdvice
 public class GeneralControllerAdvice {
@@ -96,6 +101,23 @@ public class GeneralControllerAdvice {
 
 		return "Unknown Error Received.";
 	}
+
+	@ExceptionHandler(CS_ServiceUnavailableException.class)
+	@ResponseBody
+	public JsonWrapper handleCS_ServiceUnavailableException(CS_ServiceUnavailableException se, HttpServletResponse response) {
+		logger.severe(se.getMessage());
+
+		response.setStatus(HttpStatus.SERVICE_UNAVAILABLE.value());
+
+		JsonWrapper jw = new JsonWrapper("{\"error\": "
+				+ truncateExceptionMessage(se.getMessage()) + "\"}");
+
+		logger.severe(jw.value());
+
+		return jw;
+	}
+	
+	
 
 
 }
