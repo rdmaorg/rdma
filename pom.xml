@@ -375,7 +375,7 @@
 		</profile>
 		
 		<profile>
-			<id>tomcat</id>
+			<id>old-tomcats</id>
 			<activation>
 				<activeByDefault>true</activeByDefault>
 			</activation>			
@@ -419,6 +419,36 @@
 				</dependency>
 			</dependencies>
 		</profile>
+		
+		<profile>
+			<id>httpdev</id>
+			<properties>
+				<db.jndi>java:comp/env/jdbc/rdma</db.jndi>
+				<log.location>${d}{catalina.home}/logs</log.location>
+				<spring.jmx.enabled>true</spring.jmx.enabled>
+				
+				<!-- Security -->
+				<app.protocol>http</app.protocol>
+				<app.hostname>localhost</app.hostname>
+				<app.port>:8080</app.port>
+				<cas.hostname>localhost</cas.hostname>
+				<cas.port>:8080</cas.port>
+				<spring.profiles>localCachingCas</spring.profiles>
+				
+				<authentication.local>true</authentication.local>
+			</properties>
+			
+			<dependencies>
+				<!-- Removing embedded tomcat -->
+				<dependency>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+					<scope>provided</scope>
+				</dependency>
+			</dependencies>
+			
+		</profile>
+		
 		<profile>
 			<id>test</id>
 			<properties>
@@ -427,8 +457,10 @@
 				<spring.jmx.enabled>true</spring.jmx.enabled>
 				<!-- Security -->
 				<app.protocol>https</app.protocol>
+				<app.port></app.port>
 				<app.hostname>10.252.220.65</app.hostname>
 				<cas.hostname>10.252.220.65</cas.hostname>
+				<cas.port></cas.port>
 				<spring.profiles>localCachingCas</spring.profiles>
 				
 				<authentication.local>true</authentication.local>
@@ -527,6 +559,38 @@
 			</dependencies>
 		</profile>
 		
+		<profile>
+			<id>ryanairdev</id>
+			<properties>
+				<db.jndi>java:comp/env/jdbc/rdma</db.jndi>
+				<log.location>${d}{catalina.home}/logs</log.location>
+				<spring.jmx.enabled>true</spring.jmx.enabled>
+				
+				<!-- Security -->
+				<app.protocol>http</app.protocol>
+				<app.hostname>10.154.12.34</app.hostname>
+				<app.port>:8080</app.port>
+				<cas.hostname>10.154.12.34</cas.hostname>
+				<cas.port>:8080</cas.port>
+				<spring.profiles>localCachingCas</spring.profiles>
+				
+				<!-- RDMA database dialect  -->
+				<db.hibernate.dialect>org.hibernate.dialect.MySQLDialect</db.hibernate.dialect>
+
+				<authentication.local>true</authentication.local>
+			</properties>
+			
+			<dependencies>
+				<!-- Removing embedded tomcat -->
+				<dependency>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+					<scope>provided</scope>
+				</dependency>
+			</dependencies>
+			
+		</profile>
+		
 	</profiles>
 
 	<distributionManagement>
@@ -544,7 +608,7 @@
 
 	<properties>
 		<d>$</d>
-		<db.jndi>java:jboss/datasources/gdma</db.jndi>
+		<!-- <db.jndi>java:jboss/datasources/gdma</db.jndi> -->
 		<db.initialize>true</db.initialize>
 		<!-- Dialect to be configured in the client specific profile -->
  		<db.hibernate.dialect>org.hibernate.dialect.PostgreSQL9Dialect</db.hibernate.dialect>
@@ -553,10 +617,27 @@
 		<spring.jmx.enabled>false</spring.jmx.enabled>
 
 		<!-- Security -->
-		<app.hostname>localhost</app.hostname>
-		<app.protocol>https</app.protocol>
+		<!-- <app.hostname>localhost</app.hostname> -->
+		<!-- <cas.port>433</cas.port> -->
+		<!-- <app.protocol>https</app.protocol> -->
 
-		<authentication.local>false</authentication.local>
+		<!-- <authentication.local>false</authentication.local>  -->
+		
+		<db.jndi>java:comp/env/jdbc/rdma</db.jndi>
+				<log.location>${d}{catalina.home}/logs</log.location>
+				<spring.jmx.enabled>true</spring.jmx.enabled>
+				
+				<!-- Security -->
+				<app.protocol>http</app.protocol>
+				<app.hostname>localhost</app.hostname>
+				<app.port>:8080</app.port>
+				<cas.hostname>localhost</cas.hostname>
+				<cas.port>:8080</cas.port>
+				<!-- <spring.profiles>localCachingCas</spring.profiles> -->
+				
+				<authentication.local>true</authentication.local>
+				
+				
 
 		<cas.hostname>localhost</cas.hostname>
 		<cas.path>/cas</cas.path>

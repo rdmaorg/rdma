@@ -38,12 +38,12 @@ public class SQLUtil {
 				ORDER BY customers.city asc
 	
 	 */
-	public static String createSelect(Server server, Table table, Column sortColumn, String dir, List<Filter> filters) {
+	public static String createSelect(Server server, Table table, Column sortColumn, String dir, List<Filter> filters, Long recordCount) {
 		StringBuilder stringBuilder = new StringBuilder(table.getColumns().size() * 20);
 		String tableName = table.getName();
 		boolean addComma = false;
 
-		stringBuilder.append("SELECT ");
+		stringBuilder.append("SELECT TOP " + recordCount + " ");
 
 		///// Farrukh Changes - START /////
 		// Sort the columns of a table by orderBy field, so that the display becomes sane.
@@ -82,6 +82,26 @@ public class SQLUtil {
 
 		stringBuilder.append(createOrderbyClause(table, sortColumn, dir));
 
+		return stringBuilder.toString();
+	}
+	
+	/*Get the number of records in the table so we can use TOP <record count> in the select to retrieve the data from the table
+	 * It was not possible to retrieve the data from tables with CLUSTERED COLUMNSTORE INDEXes without using TOP*/
+	public static String createSelectCount(Server server, Table table) {
+		StringBuilder stringBuilder = new StringBuilder();
+		String tableName = table.getName();
+		
+		stringBuilder.append("SELECT COUNT(*) ");
+
+		stringBuilder.append(" FROM ");
+		if (StringUtils.hasText(server.getPrefix())) {
+			stringBuilder.append(server.getPrefix());
+			stringBuilder.append('.');
+		}
+
+		stringBuilder.append(tableName);
+
+		
 		return stringBuilder.toString();
 	}
 
@@ -246,7 +266,7 @@ public class SQLUtil {
 		String tableName = table.getName();
 		boolean addComma = false;
 
-		stringBuilder.append("SELECT count(1) ");
+		stringBuilder.append("SELECT COUNT_BIG(1) ");
 
 		stringBuilder.append(" FROM ");
 		if (StringUtils.hasText(server.getPrefix())) {
@@ -377,15 +397,18 @@ public class SQLUtil {
 	 * @return
 	 */
 	public static Object convertToType(String data, int sqlDataType, Column column) {
+			
+		logger.info("SQLUtil.convertToType data in: **" + data + "**");
+		
 		Object oReturn = null;
-
+		
 		if (StringUtils.hasText(data)) {
 
 			switch (sqlDataType) {
 			case Types.CHAR:
 			case Types.VARCHAR:
 			case Types.LONGVARCHAR:
-				oReturn = data;
+				oReturn = data==""?"":data;
 				break;
 			case Types.TINYINT:
 			case Types.INTEGER:
@@ -396,7 +419,7 @@ public class SQLUtil {
 						return null;
 					}
 				} catch (Exception e) {
-				    throw new TypeMismatchDataAccessException("Vaule [" + data + "] could not be parsed as an Integer");
+				    throw new TypeMismatchDataAccessException("Value [" + data + "] could not be parsed as an Integer");
 				}
 				break;
 			case Types.BIT:
@@ -407,11 +430,11 @@ public class SQLUtil {
 						return null;
 					}
 				} catch (Exception e) {
-					logger.error("Vaule [" + data + "] is BIT and could not be parsed as an integer. trying to parse to boolean");
+					logger.error("Value [" + data + "] is BIT and could not be parsed as an integer. trying to parse to boolean");
 					try {
 						oReturn = Boolean.parseBoolean(data);	
 					} catch (Exception e2) {
-						throw new TypeMismatchDataAccessException("Vaule [" + data + "] could not be parsed as an boolean");
+						throw new TypeMismatchDataAccessException("Value [" + data + "] could not be parsed as an boolean");
 					}
 				}
 				break;
@@ -423,7 +446,7 @@ public class SQLUtil {
 						return null;
 					}
 				} catch (Exception e) {
-					throw new TypeMismatchDataAccessException("Vaule [" + data + "] could not be parsed as an integer");
+					throw new TypeMismatchDataAccessException("Value [" + data + "] could not be parsed as an integer");
 				}
 				break;
 			case Types.BIGINT:
@@ -434,7 +457,7 @@ public class SQLUtil {
 						return null;
 					}
 				} catch (Exception e) {
-					throw new TypeMismatchDataAccessException("Vaule [" + data + "] could not be parsed as an integer");
+					throw new TypeMismatchDataAccessException("Value [" + data + "] could not be parsed as an integer");
 				}
 				break;
 			case Types.DECIMAL:
@@ -449,7 +472,7 @@ public class SQLUtil {
 						return null;
 					}
 				} catch (Exception e) {
-					throw new TypeMismatchDataAccessException("Vaule [" + data + "] could not be parsed as a number");
+					throw new TypeMismatchDataAccessException("Value [" + data + "] could not be parsed as a number");
 				}
 				break;
 			case Types.DATE:
@@ -466,13 +489,14 @@ public class SQLUtil {
 					}
 				} catch (Exception e) {
 					if(column != null){
-						throw new TypeMismatchDataAccessException("Vaule [" + data + "] could not be parsed as " + column.getColumnTypeString());
+						throw new TypeMismatchDataAccessException("Value [" + data + "] could not be parsed as " + column.getColumnTypeString());
 					} else {
-						throw new TypeMismatchDataAccessException("Vaule [" + data + "] could not be parsed as a date. ");
+						throw new TypeMismatchDataAccessException("Value [" + data + "] could not be parsed as a date. ");
 					}
 				}
 				break;
 			case Types.TIMESTAMP:
+			case -155:
 				try {
 					if (StringUtils.hasText(data)) {
 						try {
@@ -484,7 +508,7 @@ public class SQLUtil {
 						return null;
 					}
 				} catch (Exception e) {
-					throw new TypeMismatchDataAccessException("Vaule [" + data + "] could not be parsed as a timestamp. ");
+					throw new TypeMismatchDataAccessException("Value [" + data + "] could not be parsed as a timestamp. ");
 				}
 				break;	
 			case Types.TIME:
@@ -496,7 +520,7 @@ public class SQLUtil {
 						return null;
 					}
 				} catch (Exception e) {
-					throw new TypeMismatchDataAccessException("Vaule [" + data + "] could not be parsed as a time. ");
+					throw new TypeMismatchDataAccessException("Value [" + data + "] could not be parsed as a time. ");
 				}
 				break;
 			default:
@@ -505,7 +529,25 @@ public class SQLUtil {
 				break;
 			}
 
+		}else{//deal with empty strings(not nulls) being passed in not nullable character fields
+			
+			oReturn = data;
+			switch (sqlDataType) {
+			case Types.CHAR:
+			case Types.VARCHAR:
+			case Types.LONGVARCHAR:
+			case Types.NVARCHAR:
+			case Types.NCHAR:
+				oReturn = data;
+				break;
+			default:
+				oReturn = null;
+				break;
+			}
 		}
+		
+		logger.info("SQLUtil.convertToType oReturn in: **" + oReturn + "**");
+		
 		return oReturn;
 	}
 

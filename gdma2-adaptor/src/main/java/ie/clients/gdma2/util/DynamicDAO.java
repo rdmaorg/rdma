@@ -127,4 +127,13 @@ public interface DynamicDAO {
 	 */
 	public Map<String, List<DataTableDropDown>> getDatatableEditorOptions(Table table);
 
+	
+	/**
+	 * 
+	 * @param server 
+	 * @param table
+	 * @return
+	 */
+	public Long getFullCount(Server server, Table table);
+
 }

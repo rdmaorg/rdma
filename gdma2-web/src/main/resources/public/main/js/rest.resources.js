@@ -32,6 +32,7 @@ var restUri = {
 	},
 	userAcces:{
 		table: getRestBaseUri() + '/access/table/{id}',
+		userAccessToTable: getRestBaseUri() + '/access/userTableAccess/{tableId}', 
 		update: getRestBaseUri() + '/access/update'
 	},
 	connection:{

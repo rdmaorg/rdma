@@ -88,6 +88,12 @@ public class UserAccessResource extends BaseDataTableResource {
 		logActivity("UserAccess deleted. id: " + id);
 	}
 	
-
+	/*Get user access for logged in user on single table 
+	 * https://localhost/gdma2/rest/datatable/access/table/133 */
+	@RequestMapping(value = "/userTableAccess/{tableId}", method = RequestMethod.GET)
+	public List<UserAccess> getUserAccessForUserOnTable(@PathVariable("tableId") Integer tableId){
+		logger.info("getUserAccessForUserOnTable:  " + tableId);
+		return serviceFacade.getDataModuleService().getUserAccessForUserOnTable(tableId);
+	}
 	
 }

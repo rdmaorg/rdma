@@ -722,6 +722,21 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 	}
 
+	/*	 sql: SELECT count(1)  FROM customers WHERE + filters*/
+	@Override
+	public Long getFullCount(Server server, Table table) {
+		// TODO optimise!!
+		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSourcePool.getTransactionManager(server).getDataSource());
+		final String sql = SQLUtil.createCount(server, table, null);
+		logger.info("getCount sql: " + sql);
+
+		//DEPRICATED return jdbcTemplate.queryForLong(sql, convertFiltersToSqlParameterValues(filters).toArray());
+		// NOW: jdbcTemplate.queryForObject(sql, Long.class);
+
+		return	jdbcTemplate.queryForObject(sql, null, Long.class); 
+
+	}
+
 	private void declareSqlParameters(PreparedStatementCreatorFactory psc, List<Filter> filters, Server server) {
 		for (Filter filter : filters) {
 			//if filter is null or blank
@@ -1094,6 +1109,8 @@ public class DynamicDAOImpl implements DynamicDAO{
 						logger.info("0: doInTransaction" +  status + " , start");
 
 						int countUpdated = 0;
+						int countToUpdate = 0;
+						
 						String whereClause = "";
 
 						for (List<ColumnDataUpdate> list : columnsUpdate) {//will perform multiple SQL UPDATEs row by row
@@ -1123,11 +1140,15 @@ public class DynamicDAOImpl implements DynamicDAO{
 								} else {
 									logger.info("3: column is NOT PK!");
 
-									if (columnUpdate.getNewColumnValue() != null) {
+									//Only save cells that have changed and don't save 'corrupt' ([object Object]) datetimeoffset values that came from cells that are not being inline edited.
+//									if (	columnUpdate.getNewColumnValue() != null  && (!columnUpdate.getNewColumnValue().equals(columnUpdate.getOldColumnValue()))
+//										&& (!column.getColumnTypeString().equalsIgnoreCase("DATETIMEOFFSET") && !columnUpdate.getNewColumnValue().equals("[object Object]"))
+									if (	columnUpdate.getNewColumnValue() != null  && (!columnUpdate.getNewColumnValue().equals(columnUpdate.getOldColumnValue()))) {
 										logger.info("4: column, not PK, has NEW value set (but can be null?)");
 										columns.add(column);
 										Object obj = SQLUtil.convertToType(columnUpdate.getNewColumnValue(), column.getColumnType(), column);
-
+										
+										logger.info("obj.toString() after SQLUtil.convertToType " + obj.toString());
 										if (obj == null && !column.isNullable()) {
 											throw new ServiceException("Column " + column.getName() + " can not be set to NULL and must have a value");
 										}
@@ -1146,7 +1167,19 @@ public class DynamicDAOImpl implements DynamicDAO{
 										}
 									}
 								}
+								
+								//count the number of fields to update
+								if(!columnUpdate.getNewColumnValue().equals(columnUpdate.getOldColumnValue())) {
+									countToUpdate++;
+								}
+								
 							} //internal for end
+							
+							//when inline editing, if you don't update a value, then the error, "No update values found!", displays each time you attempt to tab/move away from the cell
+							//To workaround this, I am setting the cell to it's old/current value
+							if(countToUpdate==0) { // && list.get(0).getNewColumnValue() == null) { //to deal with cases with 
+								return 0;
+							}
 
 							//ADD PKs at the end of both colums collection and key at : parameters.addAll(keys); //so they match positions
 							for (ColumnDataUpdate columnUpdate : list) {
@@ -1158,10 +1191,10 @@ public class DynamicDAOImpl implements DynamicDAO{
 									AuditRecord ar = extractAuditRecord(columnUpdate);
 									auditRecordList.add(ar);
 								} 
-							} //internal for end
+							} 
 
 							if (CollectionUtils.isEmpty(parameters)) {
-								throw new InvalidDataAccessResourceUsageException("No update values found!");
+								throw new InvalidDataAccessResourceUsageException("No update values found! " );
 							}
 
 							if (null == keys || keys.isEmpty()) {
@@ -1326,8 +1359,14 @@ public class DynamicDAOImpl implements DynamicDAO{
 	public List getEditableTableData(Table table, Server server, Column orderByColumn,
 			List<Filter> filters,
 			String orderDirection, int startIndex,int length) {
+		
 		logger.info("getEditableTableData");
-		String sql = SQLUtil.createSelect(server, table, orderByColumn, orderDirection, filters);
+		
+		logger.info("get the record count from the table");
+		Long recordCount =  getFullCount(server, table);
+		logger.info("record count: " + recordCount);
+		
+		String sql = SQLUtil.createSelect(server, table, orderByColumn, orderDirection, filters, recordCount);
 		logger.info("sql created: " + sql);
 		PreparedStatementCreatorFactory psc = new PreparedStatementCreatorFactory(sql);
 		declareSqlParameters(psc, filters, server);
@@ -1448,10 +1487,10 @@ public class DynamicDAOImpl implements DynamicDAO{
 				//UPDATE
 				List<Column> tableColumns = repositoryManager.getColumnRepository().findActiveforTable(table.getId(), null);
 				final List<Integer> keysPosition = getKeysPositionList(columns, headers);
-				if (null == keysPosition || keysPosition.isEmpty()) {
-					logger.error("Update Not possible as no Table Primary Key Present in the headers. Please contact your administrator");
-					return 0;
-				}
+//				if (null == keysPosition || keysPosition.isEmpty()) {
+//					logger.error("Update Not possible as no Table Primary Key Present in the headers. Please contact your administrator.");
+//					return 0;
+//				}
 				
 				final List<Column> columnsList = getColumnsListFromHeader(columns, headers, table);
 				final List<Integer> dropDownColumnPositions = getLookUpColumnPositions(columns, headers);

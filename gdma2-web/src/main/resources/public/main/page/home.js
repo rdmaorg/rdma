@@ -3,11 +3,33 @@
 var columnsMetadata = new Array();
 var tableData;
 var datatableEditor;
+var userHasEditAccess;
+
 
 $(document).ready(function(){	
 	if(tableId){
 		loadBreadCrumbs(tableId);
-		loadDatatable();
+		
+		$.ajax({
+	        type: "get", 
+	        url: mapPathVariablesInUrl(restUri.userAcces.userAccessToTable, {'tableId': tableId}),
+	        contentType: "application/json; charset=utf-8",
+	        dataType: 'json'
+	    }).done(function(userAccessdata){
+	    	
+	    	userHasEditAccess = userAccessdata[0].allowUpdate;
+	    	
+	    	loadDatatable();
+	    	
+
+	    }).fail(function(e){
+	    	
+	    }).complete(function(e){
+	    	
+	    }).always(function(){
+	    	hideLoading();
+	    });
+		
 	}
 });
 
@@ -97,8 +119,8 @@ var configureDataTable = function(columnsMetadata){
 	datatableEditor = $('#table_data').configureEditor(configEditor);
 	
 	// Disable KeyTable while the main editing form is open
-	datatableEditor.on( 'open', function ( e, mode, action ) {
-            if ( mode === 'main' ) {
+	datatableEditor.on( 'open', function ( e, mode, action ) { 
+            if ( mode === 'main' || mode === 'inline') {
             	tableData.keys.disable();
             	if (action === 'create') {
             		enableDisableAllowInsertFields(columnsMetadata, editorFields);
@@ -146,7 +168,7 @@ var configureDataTable = function(columnsMetadata){
 	        };
 	        //VALIDATING EDIT
 	        if (action === 'edit') {
-	            for (var i = 0, len = columnsMetadata.length; i < len; i++) {
+        		for (var i = 0, len = columnsMetadata.length; i < len; i++) {
 	            	if(columnsMetadata[i].allowUpdate === true){
 	            		if (!columnsMetadata[i].nullable && columnsMetadata[i].special === 'N'){
 	            			var field = this.field( 'columns.'+columnsMetadata[i].name );
@@ -155,12 +177,26 @@ var configureDataTable = function(columnsMetadata){
 	            			// the end user has not entered a value
 	            			if ( ! field.isMultiValue() ) {
 	            				if ( ! field.val() ) {
-	            					field.error( 'A value must be given for ' + columnsMetadata[i].alias);
+	            					
+	            					if(e.currentTarget.s.mode=='inline'){ //if edit is an inline edit, only validate the selected cell
+	            						//if(Object.keys(data.data[1].columns) === columnsMetadata[i].name){
+	            						if(e.currentTarget.s.includeFields[0] === 'columns.'+columnsMetadata[i].name){
+	            							field = this.field( 'columns.'+columnsMetadata[i].name );
+	            							field.error( 'A value must be given for ' + columnsMetadata[i].alias);
+	            						}
+	            					}else{
+	            						
+	            						field.error( 'A value must be given for ' + columnsMetadata[i].alias);
+	            						
+	            					}	            				
+	            					
 	            				};
 	            			};
 	            		};
 	            	};
 	        	};
+	        	
+	            
 	        };
 	        // If any error was reported, cancel the submission so it can be corrected
 	        if ( this.inError() ) {
@@ -315,7 +351,7 @@ var createEditorFields = function(columnsMetadata){
 			fields[i].type = "select";
 			fields[i].options = columnsMetadata[i].datatableEditorFieldOptions;
 		};
-		if(columnsMetadata[i].columnTypeString.toUpperCase() === "DATE"){
+		if(	columnsMetadata[i].columnTypeString.toUpperCase() === "DATE"){
 			fields[i].type = "datetime";
 		};
 		
@@ -407,6 +443,9 @@ var verifyEnabledButtons = function (dataTable) {
     	if(!data[0].allowUpdate){
     		buttonsRemoved.push('1');
     	}
+    	if(!data[0].allowUpdate || !data[0].allowInsert){
+    		buttonsRemoved.push('6');
+    	}
     	if(!data[0].allowDelete){
     		buttonsRemoved.push('2');
     	}
@@ -473,8 +512,8 @@ var enableDisableAllowInsertFields = function(columnsMetadata, editorFields){
 };
 
 var enableDisableAllowUpdateFields= function(columnsMetadata, editorFields){
-	for(var i = 0; i < columnsMetadata.length; i++){
-		if(columnsMetadata[i].allowUpdate === true){
+	for(var i = 0; i < columnsMetadata.length; i++){ 
+		if(columnsMetadata[i].allowUpdate === true && userHasEditAccess === true){
 			datatableEditor.enable(editorFields[i].name);
 		} else {
 			datatableEditor.disable(editorFields[i].name);

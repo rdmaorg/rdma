@@ -147,6 +147,12 @@ public class DataSourcePool {
 			basicDataSource.setMinEvictableIdleTimeMillis(24000);//4 min *60*100
 			basicDataSource.setTimeBetweenEvictionRunsMillis(60000);//10 min *60*100
 
+			//If connecting to a Sybase database with a jTDS driver the ValidationQuery property of the data source must be set
+			if(server.getConnectionUrl().toLowerCase().contains(":jtds:")) {
+				basicDataSource.setValidationQuery("select 1");
+			}
+			
+			
 			// BH
 
 			DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(basicDataSource);
