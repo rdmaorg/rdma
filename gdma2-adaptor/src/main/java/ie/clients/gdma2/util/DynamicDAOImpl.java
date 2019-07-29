@@ -18,6 +18,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.StringJoiner;
 
@@ -25,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
+import org.springframework.dao.TypeMismatchDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreatorFactory;
 import org.springframework.jdbc.core.SqlParameter;
@@ -48,6 +50,7 @@ import ie.clients.gdma2.domain.UpdateDataRequest;
 import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.domain.ui.DataTableDropDown;
 import ie.clients.gdma2.domain.ui.Filter;
+import ie.clients.gdma2.spi.BusinessException;
 import ie.clients.gdma2.spi.ServiceException;
 import ie.clients.gdma2.spi.interfaces.UserContextProvider;
 
@@ -1201,11 +1204,13 @@ public class DynamicDAOImpl implements DynamicDAO{
 								throw new InvalidDataAccessResourceUsageException("Update Not possible as no Table Primary Key Set. Please contact your administrator");
 							}
 							logger.info("6: before handling special columns");
+							
+							handleSpecialColumns(table.getColumns(), columns, parameters);
 							//TODO !!!
 							parameters.addAll(keys); //add keys at the end because they are always last in:  
 							// UPDATE new_table_test_autoincrement SET year = ?, name = ?, employment_date = ? WHERE  (id = ?) 
 							//...now positions are matched for mapping by index and collections of columns and  parameters have the same size
-							handleSpecialColumns(table.getColumns(), columns, parameters);
+//							handleSpecialColumns(table.getColumns(), columns, parameters);
 
 							String sql = SQLUtil.createUpdateStatement(server, table, columns);
 							whereClause = SQLUtil.createWhereClause(server, table, columns);
@@ -1243,10 +1248,19 @@ public class DynamicDAOImpl implements DynamicDAO{
 	}
 	
 	private AuditRecord extractAuditRecord(ColumnDataUpdate columnUpdate) {
+		
+		Column col = repositoryManager.getColumnRepository().findOne(columnUpdate.getColumnId());
+		String newVal = StringUtil.abbreviateString(columnUpdate.getNewColumnValue(),255);
+		String oldVal = StringUtil.abbreviateString(columnUpdate.getOldColumnValue(),255);
+		
+		return extractAuditRecord(col, newVal, oldVal);
+	}
+	
+	private AuditRecord extractAuditRecord(Column col, String newVal, String oldVal) {
 		AuditRecord ar = new AuditRecord();
-		ar.setColumnID(repositoryManager.getColumnRepository().findOne(columnUpdate.getColumnId()));
-		ar.setNewValue(StringUtil.abbreviateString(columnUpdate.getNewColumnValue(),255));
-		ar.setOldValue(StringUtil.abbreviateString(columnUpdate.getOldColumnValue(),255));
+		ar.setColumnID(col);
+		ar.setNewValue(newVal);
+		ar.setOldValue(oldVal);
 		return ar;
 	}
 
@@ -1531,16 +1545,19 @@ public class DynamicDAOImpl implements DynamicDAO{
 						logger.info("Row starting with: " + row[0] );
 						// TODO - Check whether the user has permission to update
 						int updatedRows = executeUpdateFromFileRow(keysPosition, updateStatement, updateStatementCreatorFactory, 
-								row, jdbcTemplate, dropDownDataRowsMap, insertSpecialColumnsMap, columnsList);
+								row, jdbcTemplate, dropDownDataRowsMap, insertSpecialColumnsMap, columnsList, table, server);
 						if(updatedRows == 0){
 							// TODO - Check whether the user has permission to insert
 							updatedRows = executeInsertFromFileRow(insertStatement, pscFactory, 
-									row, jdbcTemplate, dropDownDataRowsMap,insertSpecialColumnsMap, columnsList);
+									row, jdbcTemplate, dropDownDataRowsMap,insertSpecialColumnsMap, columnsList, table);
 						}
-						counter += updatedRows; 
+
+							counter += updatedRows; 
+
 					}catch (Exception e) {
 						e.printStackTrace();
 						logger.error(e.getMessage());
+						throw new TypeMismatchDataAccessException("Error uploading data from file!");
 					} finally {
 						row = rdr.readNext();
 					}
@@ -1651,7 +1668,8 @@ public class DynamicDAOImpl implements DynamicDAO{
 
 	private int executeUpdateFromFileRow(List<Integer> keysPosition, final String updateStatement,
 			final PreparedStatementCreatorFactory updateStatementCreatorFactory, String[] row,
-			final JdbcTemplate jdbcTemplate, Map<Integer, List<List>> dropDownDataRowsMap, Map<Integer,String> specialColumnsMap, List<Column> columnsList) {
+			final JdbcTemplate jdbcTemplate, Map<Integer, List<List>> dropDownDataRowsMap, Map<Integer,
+			String> specialColumnsMap, List<Column> columnsList, Table table, Server server) {
 		if (null == keysPosition || keysPosition.isEmpty()) {
 			logger.error("Update Not possible as no Table Primary Key Present in the headers. Please contact your administrator");
 		} else {
@@ -1688,7 +1706,11 @@ public class DynamicDAOImpl implements DynamicDAO{
 						}
 					}
 				} else {
-					updateValues.add(SQLUtil.convertToType(row[i], columnsList.get(i).getColumnType(),columnsList.get(i)));
+					//updateValues.add(SQLUtil.convertToType(row[i], columnsList.get(i).getColumnType(),columnsList.get(i)));
+					Object obj = SQLUtil.convertToType(row[i], columnsList.get(i).getColumnType(),columnsList.get(i));
+					logger.info("obj.toString() after SQLUtil.convertToType " + (obj!=null?obj.toString():null));
+
+						updateValues.add(obj);//					
 				}
 			}
 			if (null == updateKeysValues || updateKeysValues.isEmpty()) {
@@ -1702,8 +1724,19 @@ public class DynamicDAOImpl implements DynamicDAO{
 				logger.info("Update SQL query: " + updateStatement);
 				logger.info("parameters: " + updateValues);
 				try {
-				    // return jdbcTemplate.update(updateStatement, updateStatementCreatorFactory.newPreparedStatementSetter(updateValues));
-					return jdbcTemplate.update(updateStatement, updateValues.toArray());
+					
+//					List<TableRowDTO> rows = getOldValuesFromDB(jdbcTemplate, columnsList, table, server, row );
+//					TableRowDTO dbOldRow = (Objects.isNull(rows)||rows.isEmpty())?null:rows.get(0);
+					
+					int numRecordsUpdated = jdbcTemplate.update(updateStatement, updateValues.toArray());
+					
+					//If a record was inserted, audit the change
+//					if(numRecordsUpdated > 0) {				
+//						auditFileRowUpdate(row, dbOldRow, columnsList, table);				
+//					}
+					
+					return numRecordsUpdated;
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 					logger.error(e.getMessage());
@@ -1715,7 +1748,7 @@ public class DynamicDAOImpl implements DynamicDAO{
 	
 	private int executeInsertFromFileRow(final String insertStatement, final PreparedStatementCreatorFactory insertStatementCreatorFactory, 
 			String[] row, final JdbcTemplate jdbcTemplate, Map<Integer, List<List>> dropDownDataRowsMap,
-			Map<Integer,String> specialColumnsMap, List<Column> columnsList) {
+			Map<Integer,String> specialColumnsMap, List<Column> columnsList, Table table) {
 		List<Object> insertValues = new ArrayList<Object>();
 		for (int i = 0; i < row.length; i++) {
 		    if(specialColumnsMap.containsKey(i)){
@@ -1748,7 +1781,12 @@ public class DynamicDAOImpl implements DynamicDAO{
 						
 		    		}
 		    	} else {
-		    		insertValues.add(SQLUtil.convertToType(row[i], columnsList.get(i).getColumnType(), columnsList.get(i)));
+		    		//insertValues.add(SQLUtil.convertToType(row[i], columnsList.get(i).getColumnType(), columnsList.get(i)));
+		    		Object obj = SQLUtil.convertToType(row[i], columnsList.get(i).getColumnType(),columnsList.get(i));
+					logger.info("obj.toString() after SQLUtil.convertToType " + obj.toString());
+
+					insertValues.add(obj);
+
 		    	}
 		    }
 		    	
@@ -1756,14 +1794,99 @@ public class DynamicDAOImpl implements DynamicDAO{
 		logger.info("Update SQL query: " + insertStatement);
 		logger.info("parameters: " + insertValues);
 		try {
-			// return jdbcTemplate.update(insertStatement, insertStatementCreatorFactory.newPreparedStatementSetter(insertValues));
-			return jdbcTemplate.update(insertStatement, insertValues.toArray());
+			
+			// return jdbcTemplate.update(insertStatement, insertStatementCreatorFactory.newPreparedStatementSetter(insertValues));			
+			int numRecordsInserted = jdbcTemplate.update(insertStatement, insertValues.toArray());
+			
+			//If a record was inserted, audit the change
+//			if(numRecordsInserted > 0) {				
+//				auditFileRowInsert(row, columnsList, table);				
+//			}
+			
+			return numRecordsInserted;
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage());
 		}
 		return 0;
 	}
+	
+	@SuppressWarnings("unchecked")
+	private List<TableRowDTO> getOldValuesFromDB(final JdbcTemplate jdbcTemplate, List<Column> columnsList, Table table, Server server, String[] row) {
+		
+		//String selectDBValues = SQLUtil.createSelectForBulkAudit(columnsList, table, server);
+				
+		String sql = SQLUtil.createSelectForBulkAudit(columnsList, table, server);
+		logger.info("sql created: " + sql);
+		
+		PreparedStatementCreatorFactory psc = new PreparedStatementCreatorFactory(sql);
+		
+		final List<Object> params = new ArrayList<Object>();
+		
+		for(int i = 0; i < columnsList.size(); i++) {
+			Column col = columnsList.get(i);
+			if(col.isPrimarykey()) {
+				params.add(SQLUtil.convertToType(row[i], col.getColumnType(), col));
+				psc.addParameter(new SqlParameter(col.getColumnType()));
+			}
+		}
+		logger.info("params: " +  params);
+		
+//		psc.setResultSetType(ResultSet.TYPE_SCROLL_INSENSITIVE);
+//		psc.setUpdatableResults(false);
+
+		List<TableRowDTO> rows =(List<TableRowDTO>) jdbcTemplate.query(psc.newPreparedStatementCreator(params), 
+				new PagedResultSetExtractor(new TableDataRowMapper(),
+//						startIndex,length));	
+						0,-1));
+		
+		return rows;
+
+	}
+	
+	private void auditFileRowInsert(String[] row, List<Column> columnsList, Table table) {
+		
+		String whereClause = "";		
+				
+		List<AuditRecord> auditRecordList = new ArrayList<AuditRecord>();
+		
+		for(int j = 0; j < row.length; j++) {
+			
+				// do audit
+				AuditRecord ar = extractAuditRecord(columnsList.get(j), row[j], null);
+				auditRecordList.add(ar);
+
+		}
+		
+		saveAuditRecords(auditRecordList, table, AUDIT_TYPE_CREATE, whereClause);
+	}
+	
+	private void auditFileRowUpdate(String[] row, TableRowDTO oldDBRow, List<Column> columnsList, Table table) {
+		
+		String whereClause = "";		
+				
+		List<AuditRecord> auditRecordList = new ArrayList<AuditRecord>();
+		
+		//loop through the each column in the row from the file  
+		for(int j = 0; j < row.length; j++) {
+			
+			String dbVal = oldDBRow.getColumns().get(columnsList.get(j).getName())!=null?oldDBRow.getColumns().get(columnsList.get(j).getName()).toString():null;
+			String fileVal = row[j];			
+			
+			//if the column value doesn't match the value in the database, audit the update. 
+			//Case 1 the DB value is not null but theFile value is
+			//The file value is not null but is different to the DB value.
+			if((fileVal==null && dbVal!=null) || (!fileVal.equals(dbVal))) {
+				// do audit
+				AuditRecord ar = extractAuditRecord(columnsList.get(j), fileVal, dbVal);
+				auditRecordList.add(ar);
+			}
+		}
+		
+		saveAuditRecords(auditRecordList, table, AUDIT_TYPE_UPDATE, whereClause);
+	}
+	
 	
 	
 	private Map<Integer,String> extractSpecialColumnsMap(List<Column> metadataColumnSet, List<Column> columns) {

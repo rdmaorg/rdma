@@ -26,6 +26,7 @@ public class Formatter {
 	// (at some DB's also called DATETIME),
 	public static String timeStampFormat = "yyyy-MM-dd HH:mm:ss";
 	public static String timeStampFormat_ExcelWorkaround = "dd/MM/yyyy HH:mm:ss";
+	public static String timeStampFormat_ExcelWorkaroundNoSecs = "dd/MM/yyyy HH:mm";
 
 	private static SimpleDateFormat sdf = new SimpleDateFormat(dateFormat);
 
@@ -36,6 +37,8 @@ public class Formatter {
 	private static SimpleDateFormat sdf4 = new SimpleDateFormat(timeStampFormat);
 
 	private static SimpleDateFormat sdf4_ExcelWorkaround = new SimpleDateFormat(timeStampFormat_ExcelWorkaround);
+
+	private static SimpleDateFormat sdf4_ExcelWorkaroundNoSecs = new SimpleDateFormat(timeStampFormat_ExcelWorkaroundNoSecs);
 
 	private static String frontEndTimeStampFormat = "dd-MMM-yyyy HH:mm:ss.SSS";
 
@@ -107,11 +110,9 @@ public class Formatter {
 
 	public static Date parseDateTime(String value) throws Exception {
 		Date date = null;
-		try {
-			date = new Date(Long.parseLong(value));
-		} catch (Exception e) {
-			date = null;
-		}
+		//Removed code that allowed Long data types to be entered as it allowed users to enter invalid Long values, e.g. that did not cater for time.
+		//The values were accepted but invalid dates were set
+//		try {
 		if (date == null) {
 			try {
 				date = sdf4.parse(value);
@@ -119,14 +120,18 @@ public class Formatter {
 				try {
 					date = sdf4_ExcelWorkaround.parse(value);
 				} catch (Exception e2) {
-					date = null;
-					throw new Exception("Could not parse value [" + value + "] into a datetime");
+					try {
+						date = sdf4_ExcelWorkaroundNoSecs.parse(value);
+					} catch (Exception e3) {
+						date = null;
+						throw new Exception("Could not parse value [" + value + "] into a datetime");
+					}
 				}
 			}
 		}
 		return date;
 	}
-
+	
 	public static Timestamp parseTimeStamp(String value) throws Exception {
 		DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(frontEndTimeStampFormat);
 		try {

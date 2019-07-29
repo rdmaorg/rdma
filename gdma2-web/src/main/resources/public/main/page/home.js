@@ -4,6 +4,7 @@ var columnsMetadata = new Array();
 var tableData;
 var datatableEditor;
 var userHasEditAccess;
+var userHasInsertAccess;
 
 
 $(document).ready(function(){	
@@ -18,6 +19,7 @@ $(document).ready(function(){
 	    }).done(function(userAccessdata){
 	    	
 	    	userHasEditAccess = userAccessdata[0].allowUpdate;
+	    	userHasInsertAccess =  userAccessdata[0].allowInsert;
 	    	
 	    	loadDatatable();
 	    	
@@ -351,8 +353,16 @@ var createEditorFields = function(columnsMetadata){
 			fields[i].type = "select";
 			fields[i].options = columnsMetadata[i].datatableEditorFieldOptions;
 		};
-		if(	columnsMetadata[i].columnTypeString.toUpperCase() === "DATE"){
+		if(	columnsMetadata[i].columnTypeString.toUpperCase() === "DATE" && userHasEditAccess == true){
 			fields[i].type = "datetime";
+		};
+		//datetimeoffset are nested objects, i.e. they contain a timestamp and an offset.
+		//Datatables wasn't reading the nested values and so [object Object] was displayed 
+		//when you clicked on a cell with this datatype and [object Object] was passed back 
+		//to the  server when saving the cell.
+		//The code below extracts the timestamp of the object to pass back to the server. 
+		if(	columnsMetadata[i].columnTypeString.toUpperCase() === "DATETIMEOFFSET"){
+			fields[i].name =  fields[i].name+ '.timestamp';
 		};
 		
 		fields.push( {
@@ -396,6 +406,17 @@ var createDataTableColumns = function(columnsMetadata){
 	for(var i = 0; i < columnsMetadata.length; i++){
 		var dataValue = 'columns.'+columnsMetadata[i].name;
 		var editFieldName = 'columns.'+columnsMetadata[i].name;
+		
+		//datetimeoffset are nested objects, i.e. they contain a timestamp and an offset.
+		//Datatables wasn't reading the nested values and so [object Object] was displayed 
+		//when you clicked on a cell with this datatype and [object Object] was passed back 
+		//to the  server when saving the cell.
+		//The code below sets the timestamp part of the object as the part of the object 
+		// to edit. 
+		if(columnsMetadata[i].columnTypeString === 'datetimeoffset'){
+			editFieldName = 'columns.'+columnsMetadata[i].name+'.timestamp';
+		}
+		
 		
 		var renderFunction = function ( data, type, row ) {
  	      if (data && data.timestamp){
@@ -476,13 +497,23 @@ var configureUploadButton = function() {
 	    		cache: false,
 	    		contentType: false,
 	    		success: function (data) {
-	                console.log("SUCCESS : ", data);
-	                $("#global-success-text").html(data.numRecords + ' record(s) successfully uploaded. Please refresh your page to see the latest changes.');
-	                $("#global-success").slideDown(500);
-                    window.setTimeout(function() {
-                          $("#global-success").slideUp(500);
-                          $("#global-success-text").html('Success!');
-                    }, 4000);
+	    			
+	    			if(data.numRecords >= 0){
+	    				console.log("SUCCESS : ", data);
+		                $("#global-success-text").html(data.numRecords + ' record(s) successfully uploaded. Please refresh your page to see the latest changes.');
+		                $("#global-success").slideDown(500);
+	                    window.setTimeout(function() {
+	                          $("#global-success").slideUp(500);
+	                          $("#global-success-text").html('Success!');
+	                    }, 4000);
+	    			}else{
+	    				console.log("ERROR : ", "Data conversion error, no records were uploaded!");
+		    			handleError('#global-alert',e);
+		    			window.setTimeout(function() {
+		    	    		$("#global-alert").slideUp(500);
+		    	    	}, 4000);
+
+	    			}
 	            },
 	            error: function (e) {
 	            	console.log("ERROR : ", e);

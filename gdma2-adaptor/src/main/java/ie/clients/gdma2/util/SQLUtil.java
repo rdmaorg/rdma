@@ -43,7 +43,10 @@ public class SQLUtil {
 		String tableName = table.getName();
 		boolean addComma = false;
 
-		stringBuilder.append("SELECT TOP " + recordCount + " ");
+		if(server.getConnectionUrl().toLowerCase().contains(":sqlserver:")) {
+			stringBuilder.append("BEGIN ");
+		}
+		stringBuilder.append("SELECT ");
 
 		///// Farrukh Changes - START /////
 		// Sort the columns of a table by orderBy field, so that the display becomes sane.
@@ -81,6 +84,58 @@ public class SQLUtil {
 		}
 
 		stringBuilder.append(createOrderbyClause(table, sortColumn, dir));
+		
+		if(server.getConnectionUrl().toLowerCase().contains(":sqlserver:")) {
+			stringBuilder.append(" SET NOCOUNT ON END ");
+		}
+		
+
+		return stringBuilder.toString();
+	}
+	
+	
+
+	public static String createSelectForBulkAudit(List<Column> columsList, Table table, Server server) {
+		StringBuilder stringBuilder = new StringBuilder(table.getColumns().size() * 20);
+		String tableName = table.getName();
+		boolean addComma = false;
+
+		if(server.getConnectionUrl().toLowerCase().contains(":sqlserver:")) {
+			stringBuilder.append("BEGIN ");
+		}
+		stringBuilder.append("SELECT ");
+
+				
+		for (Column column : columsList) {
+			
+			if (addComma) {
+				stringBuilder.append(", ");
+			} else {
+				addComma = true;
+			}
+			stringBuilder.append(tableName);
+			stringBuilder.append('.');
+			stringBuilder.append(column.getName());
+			
+		}
+
+		stringBuilder.append(" FROM ");
+		if (StringUtils.hasText(server.getPrefix())) {
+			stringBuilder.append(server.getPrefix());
+			stringBuilder.append('.');
+		}
+
+		stringBuilder.append(tableName);
+
+		String whereClause = createWhereClause(server, table, columsList);
+		if (whereClause.length() > 0) {
+			stringBuilder.append(whereClause);
+		}
+		
+		if(server.getConnectionUrl().toLowerCase().contains(":sqlserver:")) {
+			stringBuilder.append(" SET NOCOUNT ON END ");
+		}
+		
 
 		return stringBuilder.toString();
 	}
@@ -266,7 +321,7 @@ public class SQLUtil {
 		String tableName = table.getName();
 		boolean addComma = false;
 
-		stringBuilder.append("SELECT COUNT_BIG(1) ");
+		stringBuilder.append("SELECT COUNT(1) ");
 
 		stringBuilder.append(" FROM ");
 		if (StringUtils.hasText(server.getPrefix())) {
@@ -508,7 +563,7 @@ public class SQLUtil {
 						return null;
 					}
 				} catch (Exception e) {
-					throw new TypeMismatchDataAccessException("Value [" + data + "] could not be parsed as a timestamp. ");
+					throw new TypeMismatchDataAccessException("Value [" + data + "] could not be parsed as a timestamp. Please use the format: 'dd/MM/yyyy HH:mm:ss'" );
 				}
 				break;	
 			case Types.TIME:
