@@ -303,9 +303,14 @@ var configureDataTable = function(columnsMetadata){
 	
     //Inline editing on tab focus
     tableData.on( 'key-focus', function ( e, datatable, cell ) {
-	  datatableEditor.inline( cell.index(),{ submit: 'allIfChanged',
+	/*  datatableEditor.inline( cell.index(),{ submit: 'allIfChanged',
   	  submitOnBlur: true
-	  });
+	  });*/
+    	var elems = document.querySelectorAll(".editable.focus");
+
+    	[].forEach.call(elems, function(el) {
+    	    el.classList.remove("focus");
+    	});
     });
 
     // Activate an inline edit on click of a table cell
