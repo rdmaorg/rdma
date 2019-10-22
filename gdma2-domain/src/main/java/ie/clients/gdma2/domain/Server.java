@@ -164,7 +164,7 @@ public class Server extends BaseEntity {
 	@Override
 	public String toString() {
 		return "Server [name=" + name + ", username=" + username
-				+ ", password=" + password + ", connectionUrl=" + connectionUrl
+				+ ", connectionUrl=" + connectionUrl
 				+ ", prefix=" + prefix + ", active=" + active + ","
 				+ " connectionType=" + connectionType + ", tables="
 				+ tables + ", connected=" + connected + ", lastError="
