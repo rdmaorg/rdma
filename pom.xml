@@ -641,9 +641,9 @@
 	            <!-- Security -->
 	            <app.protocol>https</app.protocol>
 	            <app.hostname>asdac-uat.bge.ie</app.hostname>
-					<app.port>:443</app.port>
+					<app.port></app.port>
 	            <cas.hostname>asdac-uat.bge.ie</cas.hostname>
-					<cas.port>:443</cas.port>
+					<cas.port></cas.port>
 	            <spring.profiles>localCachingCas</spring.profiles>
 	             <db.hibernate.dialect>org.hibernate.dialect.SQLServerDialect</db.hibernate.dialect>
 	
@@ -668,9 +668,9 @@
 	            <!-- Security -->
 	            <app.protocol>https</app.protocol>
 	            <app.hostname>asdac.bge.ie</app.hostname>
-					<app.port>:443</app.port>
+					<app.port></app.port>
 	            <cas.hostname>asdac.bge.ie</cas.hostname>
-					<cas.port>:443</cas.port>
+					<cas.port></cas.port>
 	            <spring.profiles>localCachingCas</spring.profiles>
 	             <db.hibernate.dialect>org.hibernate.dialect.SQLServerDialect</db.hibernate.dialect>
 	
