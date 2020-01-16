@@ -684,7 +684,38 @@
 	                   <scope>provided</scope>
 	            </dependency>
             </dependencies>
-      </profile>		
+      </profile>	
+      		
+		<profile>
+			<id>kingspan</id>
+			<properties>
+				<db.jndi>java:comp/env/jdbc/rdma</db.jndi>
+				<log.location>${d}{catalina.home}/logs</log.location>
+				<spring.jmx.enabled>true</spring.jmx.enabled>
+				
+				<!-- Security -->
+				<app.protocol>http</app.protocol>
+				<app.hostname>KILDCAPP023</app.hostname>
+				<app.port></app.port>
+				<cas.hostname>KILDCAPP023</cas.hostname>
+				<cas.port></cas.port>
+				<spring.profiles>localCachingCas</spring.profiles>
+				
+				<!-- RDMA database dialect  -->
+				<db.hibernate.dialect>org.hibernate.dialect.SQLServerDialect</db.hibernate.dialect>
+
+				<authentication.local>false</authentication.local>
+			</properties>
+			
+			<dependencies>
+				<!-- Removing embedded tomcat -->
+				<dependency>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-starter-tomcat</artifactId>
+					<scope>provided</scope>
+				</dependency>
+			</dependencies>			
+		</profile>	
 		
 	</profiles>
 

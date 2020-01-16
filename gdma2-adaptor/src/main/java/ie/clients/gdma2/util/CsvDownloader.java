@@ -20,6 +20,8 @@ public class CsvDownloader {
 	private static final String EOL = "\r\n";
 
 	private static final String COLUMN_VALUE_DELIMITER = ",";
+	private static final String CARRIAGE_RETURN_VALUE_DELIMITER = "\r";
+	private static final String LINE_FEED_VALUE_DELIMITER = "\n";
 
 	private static final String COLUMN_VALUE_PRE_SUFFIX = "\"";
 
@@ -65,10 +67,10 @@ public class CsvDownloader {
 					logger.info("Processing: " + column.getName() + ": " + v);
 
 					String colValue = v == null ? " " : getValue(column, v);
-					// If the column value contains a comma(s), then surround the value with double
-					// quotes so the comma(s) are escaped
+					// If the column value contains a comma(s) or a cariage return(s)/line feed(s), then surround the value with double
+					// quotes so the comma(s) or cariage return(s)/line feed(s) are escaped
 					// to ensure that the resultant CSV file will not be 'skewed'.
-					if (colValue.indexOf(COLUMN_VALUE_DELIMITER) != -1) {
+					if ((colValue.indexOf(COLUMN_VALUE_DELIMITER) != -1) || (colValue.indexOf(CARRIAGE_RETURN_VALUE_DELIMITER) != -1)  || (colValue.indexOf(LINE_FEED_VALUE_DELIMITER) != -1)) {
 						StringBuilder columnValueBuilder = new StringBuilder("");
 						columnValueBuilder.append(COLUMN_VALUE_PRE_SUFFIX);
 						columnValueBuilder.append(colValue.replaceAll(COLUMN_VALUE_PRE_SUFFIX, "\"\""));
