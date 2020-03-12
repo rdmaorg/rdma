@@ -343,7 +343,7 @@ div.DTE_Body div.DTE_Body_Content div.DTE_Field {
   position: relative;
   zoom: 1;
   clear: both;
-  padding: 5px 10%;
+  padding: 5px 5%;
   border: 1px solid transparent;
 }
 div.DTE_Body div.DTE_Body_Content div.DTE_Field:after {
