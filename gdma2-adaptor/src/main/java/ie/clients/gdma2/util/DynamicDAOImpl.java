@@ -18,7 +18,6 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.StringJoiner;
 
@@ -50,7 +49,6 @@ import ie.clients.gdma2.domain.UpdateDataRequest;
 import ie.clients.gdma2.domain.UserAccess;
 import ie.clients.gdma2.domain.ui.DataTableDropDown;
 import ie.clients.gdma2.domain.ui.Filter;
-import ie.clients.gdma2.spi.BusinessException;
 import ie.clients.gdma2.spi.ServiceException;
 import ie.clients.gdma2.spi.interfaces.UserContextProvider;
 
@@ -714,8 +712,9 @@ public class DynamicDAOImpl implements DynamicDAO{
 	@Override
 	public Long getCount(Server server, Table table, List<Filter> filters) {
 		// TODO optimise!!
+		//Pass false as the SQL will NOT be used in a prepared statement
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSourcePool.getTransactionManager(server).getDataSource());
-		final String sql = SQLUtil.createCount(server, table, filters);
+		final String sql = SQLUtil.createCount(server, table, filters, false);
 		logger.info("getCount sql: " + sql);
 
 		//DEPRICATED return jdbcTemplate.queryForLong(sql, convertFiltersToSqlParameterValues(filters).toArray());
@@ -729,8 +728,9 @@ public class DynamicDAOImpl implements DynamicDAO{
 	@Override
 	public Long getFullCount(Server server, Table table) {
 		// TODO optimise!!
+		//Pass false as the SQL will NOT be used in a prepared statement
 		JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSourcePool.getTransactionManager(server).getDataSource());
-		final String sql = SQLUtil.createCount(server, table, null);
+		final String sql = SQLUtil.createCount(server, table, null, false);
 		logger.info("getCount sql: " + sql);
 
 		//DEPRICATED return jdbcTemplate.queryForLong(sql, convertFiltersToSqlParameterValues(filters).toArray());
@@ -1380,7 +1380,8 @@ public class DynamicDAOImpl implements DynamicDAO{
 		Long recordCount =  getFullCount(server, table);
 		logger.info("record count: " + recordCount);
 		
-		String sql = SQLUtil.createSelect(server, table, orderByColumn, orderDirection, filters, recordCount);
+		//Pass true as the SQL will be used in a prepared statement
+		String sql = SQLUtil.createSelect(server, table, orderByColumn, orderDirection, filters, recordCount, true);
 		logger.info("sql created: " + sql);
 		PreparedStatementCreatorFactory psc = new PreparedStatementCreatorFactory(sql);
 		declareSqlParameters(psc, filters, server);

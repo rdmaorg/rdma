@@ -38,7 +38,7 @@ public class SQLUtil {
 				ORDER BY customers.city asc
 	
 	 */
-	public static String createSelect(Server server, Table table, Column sortColumn, String dir, List<Filter> filters, Long recordCount) {
+	public static String createSelect(Server server, Table table, Column sortColumn, String dir, List<Filter> filters, Long recordCount, Boolean isForPreparedStatement) {
 		StringBuilder stringBuilder = new StringBuilder(table.getColumns().size() * 20);
 		String tableName = table.getName();
 		boolean addComma = false;
@@ -63,27 +63,27 @@ public class SQLUtil {
 				} else {
 					addComma = true;
 				}
-				stringBuilder.append(tableName);
+				stringBuilder.append(EscapeDBObject.escapeObjectName(server.getConnectionUrl(), tableName));
 				stringBuilder.append('.');
-				stringBuilder.append(column.getName());
+				stringBuilder.append(EscapeDBObject.escapeObjectName(server.getConnectionUrl(), column.getName()));
 			}
 		}
 
 		stringBuilder.append(" FROM ");
 		if (StringUtils.hasText(server.getPrefix())) {
-			stringBuilder.append(server.getPrefix());
+			stringBuilder.append(EscapeDBObject.escapeObjectName(server.getConnectionUrl(), server.getPrefix()));
 			stringBuilder.append('.');
 		}
 
-		stringBuilder.append(tableName);
+		stringBuilder.append(EscapeDBObject.escapeObjectName(server.getConnectionUrl(), tableName));
 
-		String whereClause = createFilterWhereClause(table, filters);
+		String whereClause = createFilterWhereClause(table, filters, server.getConnectionUrl(), isForPreparedStatement );
 		if (whereClause.length() > 0) {
 			stringBuilder.append(" WHERE ");
 			stringBuilder.append(whereClause);
 		}
 
-		stringBuilder.append(createOrderbyClause(table, sortColumn, dir));
+		stringBuilder.append(createOrderbyClause(table, sortColumn, dir, server.getConnectionUrl()));
 		
 		if(server.getConnectionUrl().toLowerCase().contains(":sqlserver:")) {
 			stringBuilder.append(" SET NOCOUNT ON END ");
@@ -113,19 +113,19 @@ public class SQLUtil {
 			} else {
 				addComma = true;
 			}
-			stringBuilder.append(tableName);
+			stringBuilder.append(EscapeDBObject.escapeObjectName(server.getConnectionUrl(), tableName));
 			stringBuilder.append('.');
-			stringBuilder.append(column.getName());
+			stringBuilder.append(EscapeDBObject.escapeObjectName(server.getConnectionUrl(), column.getName()));
 			
 		}
 
 		stringBuilder.append(" FROM ");
 		if (StringUtils.hasText(server.getPrefix())) {
-			stringBuilder.append(server.getPrefix());
+			stringBuilder.append(EscapeDBObject.escapeObjectName(server.getConnectionUrl(), server.getPrefix()));
 			stringBuilder.append('.');
 		}
 
-		stringBuilder.append(tableName);
+		stringBuilder.append(EscapeDBObject.escapeObjectName(server.getConnectionUrl(), tableName));
 
 		String whereClause = createWhereClause(server, table, columsList);
 		if (whereClause.length() > 0) {
@@ -150,11 +150,11 @@ public class SQLUtil {
 
 		stringBuilder.append(" FROM ");
 		if (StringUtils.hasText(server.getPrefix())) {
-			stringBuilder.append(server.getPrefix());
+			stringBuilder.append(EscapeDBObject.escapeObjectName(server.getConnectionUrl(), server.getPrefix()));
 			stringBuilder.append('.');
 		}
 
-		stringBuilder.append(tableName);
+		stringBuilder.append(EscapeDBObject.escapeObjectName(server.getConnectionUrl(), tableName));
 
 		
 		return stringBuilder.toString();
@@ -177,44 +177,44 @@ public class SQLUtil {
 
 		stringBuilder.append("SELECT ");
 
-		stringBuilder.append(tableName);
+		stringBuilder.append(EscapeDBObject.escapeObjectName(server.getConnectionUrl(), tableName));
 		stringBuilder.append('.');
-		stringBuilder.append(store.getName());
+		stringBuilder.append(EscapeDBObject.escapeObjectName(server.getConnectionUrl(), store.getName()));
 		stringBuilder.append(", ");
-		stringBuilder.append(tableName);
+		stringBuilder.append(EscapeDBObject.escapeObjectName(server.getConnectionUrl(), tableName));
 		stringBuilder.append('.');
-		stringBuilder.append(display.getName());
+		stringBuilder.append(EscapeDBObject.escapeObjectName(server.getConnectionUrl(), display.getName()));
 
 		stringBuilder.append(" FROM ");
 		if (StringUtils.hasText(server.getPrefix())) {
-			stringBuilder.append(server.getPrefix());
+			stringBuilder.append(EscapeDBObject.escapeObjectName(server.getConnectionUrl(), server.getPrefix()));
 			stringBuilder.append('.');
 		}
 
-		stringBuilder.append(tableName);
+		stringBuilder.append(EscapeDBObject.escapeObjectName(server.getConnectionUrl(), tableName));
 
-		stringBuilder.append(createOrderbyClause(table, display, "asc"));
+		stringBuilder.append(createOrderbyClause(table, display, "asc", server.getConnectionUrl()));
 
 		return stringBuilder.toString();
 	}
 
-	public static String createOrderbyClause(Table table, Column sortColumn, String dir) {
+	public static String createOrderbyClause(Table table, Column sortColumn, String dir, String serverConnectionURL) {
 		if (sortColumn == null) {
 			return "";
 		}
 
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append(" ORDER BY ");
-		stringBuilder.append(table.getName());
+		stringBuilder.append(EscapeDBObject.escapeObjectName(serverConnectionURL, table.getName()));
 		stringBuilder.append('.');
-		stringBuilder.append(sortColumn.getName());
+		stringBuilder.append(EscapeDBObject.escapeObjectName(serverConnectionURL, sortColumn.getName()));
 		stringBuilder.append(' ');
 		stringBuilder.append(dir);
 
 		return stringBuilder.toString();
 	}
 
-	public static String createFilterWhereClause(Table table, List<Filter> filters) {
+	public static String createFilterWhereClause(Table table, List<Filter> filters, String serverConnectionURL, Boolean forPreparedStatement) {
 		StringBuilder stringBuilder = new StringBuilder();
 
 		boolean addAnd = false;
@@ -243,18 +243,18 @@ public class SQLUtil {
 
 					//if (filter.isNullValue()) {
 					if (filter.getFilterOperator() == 8) {
-						stringBuilder.append(table.getName());
+						stringBuilder.append(EscapeDBObject.escapeObjectName(serverConnectionURL, table.getName()));
 						stringBuilder.append('.');
-						stringBuilder.append(filter.getColumnName());
+						stringBuilder.append(EscapeDBObject.escapeObjectName(serverConnectionURL, filter.getColumnName()));
 						stringBuilder.append(" IS NULL ");
 						addOr = true;
 					}
 
 					//if (filter.isBlank()) {
 					if (filter.getFilterOperator() == 9) {
-						stringBuilder.append(table.getName());
+						stringBuilder.append(EscapeDBObject.escapeObjectName(serverConnectionURL, table.getName()));
 						stringBuilder.append('.');
-						stringBuilder.append(filter.getColumnName());
+						stringBuilder.append(EscapeDBObject.escapeObjectName(serverConnectionURL, filter.getColumnName()));
 						stringBuilder.append(" = '' ");
 					}
 
@@ -277,11 +277,27 @@ public class SQLUtil {
 						//This method is only applied for Like FilterOperation
 						//For all other operation like =, <, >, <=, >= absolute table name is used only.
 						if(filter.getFilterOperator() == 0 || filter.getFilterOperator() == 1 || filter.getFilterOperator() == 2 || filter.getFilterOperator() == 3 || filter.getFilterOperator() == 4){
-							stringBuilder.append(table.getName());
-							stringBuilder.append('.');
-							stringBuilder.append(filter.getColumnName());
+							
+							if(forPreparedStatement) {
+								stringBuilder.append(EscapeDBObject.escapeObjectName(serverConnectionURL, table.getName()));
+								stringBuilder.append('.');
+								stringBuilder.append(EscapeDBObject.escapeObjectName(serverConnectionURL, filter.getColumnName()));
+							}else {
+//								stringBuilder.append(EscapeDBObject.escapeObjectName(serverConnectionURL, table.getName()));
+//								stringBuilder.append('.');
+//								stringBuilder.append(EscapeDBObject.escapeObjectName(serverConnectionURL, filter.getColumnName()));
+								stringBuilder.append(
+									MessageFormat.format(table.getServer().getConnectionType().getSqlCastColumnForSearch()
+								  , EscapeDBObject.escapeObjectName(serverConnectionURL, table.getName())
+								  + '.'
+								  + EscapeDBObject.escapeObjectName(serverConnectionURL, filter.getColumnName())));
+							}
 						}	else {
-							stringBuilder.append(MessageFormat.format(table.getServer().getConnectionType().getSqlCastColumnForSearch(), table.getName()+'.'+filter.getColumnName()));
+							stringBuilder.append(
+													MessageFormat.format(table.getServer().getConnectionType().getSqlCastColumnForSearch()
+												  , EscapeDBObject.escapeObjectName(serverConnectionURL, table.getName())
+												  + '.'
+												  + EscapeDBObject.escapeObjectName(serverConnectionURL, filter.getColumnName())));
 						}
 
 						//////// OLD CODE - Start //////
@@ -316,7 +332,7 @@ public class SQLUtil {
 		return stringBuilder.toString();
 	}
 
-	public static String createCount(Server server, Table table, List<Filter> filters) {
+	public static String createCount(Server server, Table table, List<Filter> filters, Boolean isForPreparedStatement) {
 		StringBuilder stringBuilder = new StringBuilder(100);
 		String tableName = table.getName();
 		boolean addComma = false;
@@ -325,13 +341,13 @@ public class SQLUtil {
 
 		stringBuilder.append(" FROM ");
 		if (StringUtils.hasText(server.getPrefix())) {
-			stringBuilder.append(server.getPrefix());
+			stringBuilder.append(EscapeDBObject.escapeObjectName(server.getConnectionUrl(), server.getPrefix()));
 			stringBuilder.append('.');
 		}
 
-		stringBuilder.append(tableName);
+		stringBuilder.append(EscapeDBObject.escapeObjectName(server.getConnectionUrl(), tableName));
 
-		String whereClause = createFilterWhereClause(table, filters);
+		String whereClause = createFilterWhereClause(table, filters, server.getConnectionUrl(), isForPreparedStatement);
 		if (whereClause.length() > 0) {
 			stringBuilder.append(" WHERE ");
 			stringBuilder.append(whereClause);
@@ -346,15 +362,15 @@ public class SQLUtil {
 		sbInsert.append("INSERT INTO ");
 
 		if (StringUtils.hasText(server.getPrefix())) {
-			sbInsert.append(server.getPrefix());
+			sbInsert.append(EscapeDBObject.escapeObjectName(server.getConnectionUrl(), server.getPrefix()));
 			sbInsert.append('.');
 		}
-		sbInsert.append(table.getName());
+		sbInsert.append(EscapeDBObject.escapeObjectName(server.getConnectionUrl(), table.getName()));
 		
 		StringJoiner columnNamesJoiner = new StringJoiner(","," ( "," )");
 		StringJoiner columnValuesJoiner = new StringJoiner(","," VALUES ( "," )");
 		for (Column column : columns) {
-			columnNamesJoiner.add(column.getName());
+			columnNamesJoiner.add(EscapeDBObject.escapeObjectName(server.getConnectionUrl(), column.getName()));
 			columnValuesJoiner.add("?");
 		}
 		sbInsert.append(columnNamesJoiner.toString());
@@ -377,11 +393,11 @@ public class SQLUtil {
 		sbUpdate.append("UPDATE ");
 
 		if (StringUtils.hasText(server.getPrefix())) {
-			sbUpdate.append(server.getPrefix());
+			sbUpdate.append(EscapeDBObject.escapeObjectName(server.getConnectionUrl(), server.getPrefix()));
 			sbUpdate.append('.');
 		}
 
-		sbUpdate.append(table.getName());
+		sbUpdate.append(EscapeDBObject.escapeObjectName(server.getConnectionUrl(), table.getName()));
 		sbUpdate.append(" SET ");
 		boolean needComma = false;
 		for (Column column : columns) {
@@ -391,7 +407,7 @@ public class SQLUtil {
 				} else {
 					needComma = true;
 				}
-				sbUpdate.append(column.getName());
+				sbUpdate.append(EscapeDBObject.escapeObjectName(server.getConnectionUrl(), column.getName()));
 				sbUpdate.append(" = ?");
 			}
 		}
@@ -406,11 +422,11 @@ public class SQLUtil {
 		sbDelete.append("DELETE FROM ");
 
 		if (StringUtils.hasText(server.getPrefix())) {
-			sbDelete.append(server.getPrefix());
+			sbDelete.append(EscapeDBObject.escapeObjectName(server.getConnectionUrl(), server.getPrefix()));
 			sbDelete.append('.');
 		}
 
-		sbDelete.append(table.getName());
+		sbDelete.append(EscapeDBObject.escapeObjectName(server.getConnectionUrl(), table.getName()));
 
 		sbDelete.append(createWhereClause(server, table, columns));
 
@@ -430,7 +446,7 @@ public class SQLUtil {
 					needAnd = true;
 				}
 				sbWhere.append(" (");
-				sbWhere.append(column.getName());
+				sbWhere.append(EscapeDBObject.escapeObjectName(server.getConnectionUrl(), column.getName()));
 				sbWhere.append(" = ?");
 				sbWhere.append(") ");
 			}
@@ -745,10 +761,10 @@ public class SQLUtil {
 		StringBuilder stringBuilder = new StringBuilder();
 		stringBuilder.append("select * from ");
 		if (StringUtils.hasText(server.getPrefix())) {
-			stringBuilder.append(server.getPrefix());
+			stringBuilder.append(EscapeDBObject.escapeObjectName(server.getConnectionUrl(), server.getPrefix()));
 			stringBuilder.append('.');
 		}
-		stringBuilder.append(tableName);
+		stringBuilder.append(EscapeDBObject.escapeObjectName(server.getConnectionUrl(), tableName));
 		stringBuilder.append("  where 1 = 0");
 
 		logger.info("SQL Select query: " + stringBuilder.toString());
