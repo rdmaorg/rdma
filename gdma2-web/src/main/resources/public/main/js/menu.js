@@ -56,10 +56,22 @@ var buildDataModuleMenu = function(){
     	        	  return 0;
     	        	});
     	        	
-        			$.each(data, function(i, table) {
+    	        	$.each(data, function(i, table) {
         	            var serverId = table.server.id;
-        			    $("<li><a href='" + dataModulePage + "home/" + table.id + "/" + table.server.id + "/" + table.alias + "/" + table.server.name + "' class='table-data' data-id='"+table.id+"' data-tablename='"+table.name+"' data-serverid='"+table.server.id+"' data-servername='"+table.server.name+"'><i class='fa fa-table'></i><span> " + table.alias + " </span></a></li>").appendTo("#server" + serverId + " .treeview-menu");
-        			});        			
+        	            $("<li><a id='table-" + table.id + "'href='" + dataModulePage + "home/' class='table-data' data-id='"+table.id+"' data-tablename='"+table.name+"' data-serverid='"+table.server.id+"' data-servername='"+table.server.name+"'><i class='fa fa-table'></i><span> " + table.alias + " </span></a></li>").appendTo("#server" + serverId + " .treeview-menu");
+        	            var sidebarSelectionId = "#table-" + table.id;
+        	            
+        	            var tableDetailsArray = [table.id, table.server.id, table.alias, table.server.name];
+        	            var postData = {tableDetailsArray: tableDetailsArray};
+						$(sidebarSelectionId).on("click",function(e) {
+        			        e.preventDefault();
+        			        $.post(this.href, postData, function(data) {
+        			        	document.open();
+        			            document.write(data);
+        			            document.close();
+        			        });
+        			    });
+        			});		
         	        },
         	        contentType: "application/json; charset=utf-8",
         	        dataType: 'json'
