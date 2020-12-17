@@ -73,6 +73,10 @@
 			$.extend(cfg, dtConfig);
 		}
 		
+		if(dtConfig.dataTablesPostRequest == true){
+			cfg.ajax.type = "POST";    //Convert any requests to (rest/datatable/table) to POST because large amount of columns were causing 'large request uri' error
+		}
+		
 		var tbl=$(container).on('error.dt', function(e, settings, techNote, message){
 			opts.error(message, (settings.jqXHR? settings.jqXHR : {"error": "Unknown Error"}) );
 		}).DataTable(cfg);

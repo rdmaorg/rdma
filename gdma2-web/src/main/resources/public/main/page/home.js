@@ -245,7 +245,8 @@ var configureDataTable = function(columnsMetadata){
     	 },
    	     order: [
     	     [1, 'asc']
-    	 ]
+    	 ],
+    	 dataTablesPostRequest: true
 	};
 	tableData = $('#table_data').configureDataTable(config, {
 		url: mapPathVariablesInUrl(restUri.datatable.table, {'id': tableId}),
