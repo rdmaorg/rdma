@@ -92,7 +92,7 @@ public class DataTableResource extends BaseDataTableResource{
 	 * https://localhost/gdma2/rest/datatable/table/133?length=22&order[0][column]=628   WITH LENGTH and OrderBY column CITY; use 629 for country 
 	 * https://localhost/gdma2/rest/datatable/table/133?length=22&order[0][column]=6  WITH LENGTH and WITHOUT OrderBY column
 	 * */
-	@RequestMapping(value = "/table/{id}", method = RequestMethod.GET)
+	@RequestMapping(value = "/table/{id}", method = RequestMethod.POST)
 	public PaginatedTableResponse<Column> getTableData(@PathVariable("id") Integer tableId,
 			@RequestParam Map<String, String> reqParams){
 		
