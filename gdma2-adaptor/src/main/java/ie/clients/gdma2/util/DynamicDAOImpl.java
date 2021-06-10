@@ -1690,7 +1690,23 @@ public class DynamicDAOImpl implements DynamicDAO{
 						updateValues.add(new Timestamp(new Date().getTime()));
 					}
 				}else if(keysPosition.contains(i)){
-					updateKeysValues.add(SQLUtil.convertToType(row[i], columnsList.get(i).getColumnType(), columnsList.get(i)));
+//					updateKeysValues.add(SQLUtil.convertToType(row[i], columnsList.get(i).getColumnType(), columnsList.get(i)));
+					if(dropDownDataRowsMap.containsKey(i)){
+						List<List> dropDownDataRows = dropDownDataRowsMap.get(i);
+						for (List dropDownDataRow : dropDownDataRows) {
+							if(null == dropDownDataRow.get(DROPDOWN_LABEL_POSITION) && null == row[i]){
+								updateKeysValues.add(SQLUtil.convertToType(dropDownDataRow.get(DROPDOWN_VALUE_POSITION).toString(), columnsList.get(i).getColumnType(),columnsList.get(i)));
+								break;
+							}
+							
+							if(null != dropDownDataRow.get(DROPDOWN_LABEL_POSITION) && dropDownDataRow.get(2).toString().equalsIgnoreCase(row[i])){
+								updateKeysValues.add(SQLUtil.convertToType(dropDownDataRow.get(DROPDOWN_VALUE_POSITION).toString(), columnsList.get(i).getColumnType(),columnsList.get(i)));
+								break;
+							}
+						}
+					}else {
+						updateKeysValues.add(SQLUtil.convertToType(row[i], columnsList.get(i).getColumnType(), columnsList.get(i)));
+					}
 				} else if(row[i].isEmpty()){
 					updateValues.add(SQLUtil.convertToType(null, columnsList.get(i).getColumnType()));
 				} else if(dropDownDataRowsMap.containsKey(i)){
