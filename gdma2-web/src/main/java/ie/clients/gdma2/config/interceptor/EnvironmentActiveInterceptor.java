@@ -36,7 +36,7 @@ public class EnvironmentActiveInterceptor extends HandlerInterceptorAdapter {
 	    	SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 
 	    	try {
-	    		String dateString = "21-07-2021";
+	    		String dateString = "21-07-2023";
 		    	expirationDate = sdf.parse(dateString);
 		    	
 	    	} catch (ParseException e) {
