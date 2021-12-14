@@ -766,6 +766,7 @@
 		<!-- Dialect to be configured in the client specific profile -->
  		<db.hibernate.dialect>org.hibernate.dialect.PostgreSQL9Dialect</db.hibernate.dialect>
 		
+		<log4j2.version>2.15.0</log4j2.version>
 
 		<spring.jmx.enabled>false</spring.jmx.enabled>
 
