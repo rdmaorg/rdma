@@ -191,6 +191,21 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-log4j</artifactId>
 		</dependency>
+		
+	<!-- updated Log4J to 2.15.0 after CVE-2021-44228 alert  -->
+		<dependency>
+		  	 <groupId>org.apache.logging.log4j</groupId>
+			 <artifactId>log4j-core</artifactId>
+			 <version>2.15.0</version>
+		</dependency>
+	   
+		<dependency>
+		    <groupId>org.apache.logging.log4j</groupId>
+		    <artifactId>log4j-api</artifactId>
+		    <version>2.15.0</version>
+		</dependency>
+	<!-- updated Log4J to 2.15.0 after CVE-2021-44228 alert  -->		
+				
 
 		<!-- ehcache for Caching -->
 		<dependency>
@@ -766,8 +781,6 @@
 		<!-- Dialect to be configured in the client specific profile -->
  		<db.hibernate.dialect>org.hibernate.dialect.PostgreSQL9Dialect</db.hibernate.dialect>
 		
-		<log4j2.version>2.15.0</log4j2.version>
-
 		<spring.jmx.enabled>false</spring.jmx.enabled>
 
 		<!-- Security -->
