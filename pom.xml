@@ -539,7 +539,10 @@
 				<db.jndi>java:comp/env/jdbc/rdma</db.jndi>
 				<log.location>${d}{catalina.home}/logs</log.location>
 				<spring.jmx.enabled>true</spring.jmx.enabled>
-				<!-- Security -->
+				<!-- Security -->				
+				<app.port></app.port>
+				<cas.port></cas.port>		
+				
 				<app.protocol>https</app.protocol>
 				<app.hostname>applications-psq.musgrave.ie</app.hostname>
 				<cas.hostname>applications-psq.musgrave.ie</cas.hostname>
@@ -566,7 +569,9 @@
 				<db.jndi>java:comp/env/jdbc/rdma</db.jndi>
 				<log.location>${d}{catalina.home}/logs</log.location>
 				<spring.jmx.enabled>true</spring.jmx.enabled>
-				<!-- Security -->
+				<!-- Security -->				
+				<app.port></app.port>
+				<cas.port></cas.port>
 				<app.protocol>https</app.protocol>
 				<app.hostname>applications.musgrave.ie</app.hostname>
 				<cas.hostname>applications.musgrave.ie</cas.hostname>
