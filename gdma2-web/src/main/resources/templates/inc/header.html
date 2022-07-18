@@ -7,34 +7,23 @@
 	<meta name="description" content="GDMA by Avnet Clients Solutions." />
 
     <title th:text="${@environment.getProperty('application.name')}"></title>
-	<!-- All JavaScript at the bottom, except for Modernizr which enables HTML5 elements and feature detects -->
-	<script th:src="@{/public/lib/html5support/js/modernizr-2.6.2.js}"></script>
-    
-    
-	<link th:href="@{/public/lib/bootstrap/css/bootstrap.css}" rel="stylesheet"/>
-	<link th:href="@{/public/lib/adminlte/css/AdminLTE.min.css}" rel="stylesheet"/>
-	<link th:href="@{/public/lib/adminlte/css/_all-skins.min.css}" rel="stylesheet"/>
-	<link th:href="@{/public/lib/fontawesome/css/font-awesome.min.css}" rel="stylesheet"/>
-	<!-- link th:href="@{/public/lib/bootstrap/css/bootstrap-theme-darkly.css}" rel="stylesheet"/ -->
-	<link th:href="@{/public/lib/jquery/css/jquery.validate.css}" rel="stylesheet"/>
-	<link th:href="@{/public/lib/datatable/css/dataTables.bootstrap.css}" rel="stylesheet" />
-	<link th:href="@{/public/lib/datatableEditor/css/buttons.dataTables.min.css}" rel="stylesheet" />
-	<link th:href="@{/public/lib/datatableEditor/css/editor.dataTables.css}" rel="stylesheet" />
-	<link th:href="@{/public/lib/datatable/css/select.dataTables.min.css}" rel="stylesheet" />
-	<link th:href="@{/public/lib/datatable/css/keyTable.dataTables.min.css}" rel="stylesheet" />
-	<link th:href="@{/public/lib/datatable/css/responsive.dataTables.min.css}" rel="stylesheet" />
-	<link th:href="@{/public/lib/datatable/css/fixedHeader.dataTables.min.css}" rel="stylesheet" />
-	<link th:href="@{/public/lib/datatable/css/scroller.dataTables.min.css}" rel="stylesheet" />
-	<link th:href="@{/public/lib/datatable/css/rowReorder.dataTables.min.css}" rel="stylesheet" />
-	<link th:href="@{/public/lib/spinner/css/spinners.css}" rel="stylesheet" />
-	<link th:href="@{/public/lib/bootstro/css/bootstro.min.css}" rel="stylesheet" />
-	<link th:href="@{/public/lib/switch/css/bootstrap-switch.min.css}" rel="stylesheet" />
-	
-	<link th:href="@{/public/main/css/custom.css}" rel="stylesheet" />
-	<link th:href="@{/public/lib/bootstrap/css/{theme}(theme=${@environment.getProperty('bootstrap.theme')})}" rel="stylesheet" />
-	<link th:href="@{/public/main/css/{theme}(theme=${@environment.getProperty('client.theme')})}" rel="stylesheet" />
-	
-    
+    <link th:href="@{/public/lib/jquery/css/jquery.validate.css}" rel="stylesheet"/>
+    <link type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.12.1/b-2.2.3/cr-1.5.6/date-1.1.2/fc-4.1.0/fh-3.2.3/kt-2.7.0/r-2.3.0/rg-1.2.0/rr-1.2.8/sc-2.0.6/sb-1.3.3/sp-2.0.1/sl-1.4.0/sr-1.1.1/datatables.min.css" rel="stylesheet"/>
+    <!-- All JavaScript at the bottom, except for Modernizr which enables HTML5 elements and feature detects -->
+    <script th:src="@{/public/lib/html5support/js/modernizr-2.6.2.js}"></script>
+    <link th:href="@{/public/lib/bootstrap/css/bootstrap.css}" rel="stylesheet"/>
+    <link th:href="@{/public/lib/adminlte/css/AdminLTE.min.css}" rel="stylesheet"/>
+    <link th:href="@{/public/lib/adminlte/css/_all-skins.min.css}" rel="stylesheet"/>
+    <link th:href="@{/public/lib/fontawesome/css/font-awesome.min.css}" rel="stylesheet"/>
+    <link th:href="@{/public/lib/datatableEditor/css/buttons.dataTables.min.css}" rel="stylesheet" />
+    <link th:href="@{/public/lib/datatableEditor/css/editor.dataTables.css}" rel="stylesheet" />
+    <link th:href="@{/public/lib/spinner/css/spinners.css}" rel="stylesheet" />
+    <link th:href="@{/public/lib/bootstro/css/bootstro.min.css}" rel="stylesheet" />
+    <link th:href="@{/public/lib/switch/css/bootstrap-switch.min.css}" rel="stylesheet" />
+    <link th:href="@{/public/main/css/custom.css}" rel="stylesheet" />
+    <link th:href="@{/public/lib/bootstrap/css/{theme}(theme=${@environment.getProperty('bootstrap.theme')})}" rel="stylesheet" />
+    <link th:href="@{/public/main/css/{theme}(theme=${@environment.getProperty('client.theme')})}" rel="stylesheet" />
+
     <!--[if (lt IE 9) & (!IEMobile)]>
 		<script th:src="@{/public/lib/html5support/js/selectivizr-min.js}"></script>
 	    <script th:src="@{/public/lib/html5support/js/json3.min.js}"></script>
@@ -43,40 +32,23 @@
 
     <script th:src="@{/public/lib/jquery/js/jquery.js}"></script>
     <script th:src="@{/public/lib/jquery/js/jquery.validate.min.js}"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.12.1/b-2.2.3/cr-1.5.6/date-1.1.2/fc-4.1.0/fh-3.2.3/kt-2.7.0/r-2.3.0/rg-1.2.0/rr-1.2.8/sc-2.0.6/sb-1.3.3/sp-2.0.1/sl-1.4.0/sr-1.1.1/datatables.min.js"></script>
     <script th:src="@{/public/lib/bootstrap/js/bootstrap.js}"></script>
     <script th:src="@{/public/lib/adminlte/js/adminLte.min.js}"></script>
-    <script th:src="@{/public/lib/datatable/js/jquery.dataTables.min.js}"></script>
-    <script th:src="@{/public/lib/datatable/js/dataTables.buttons.min.js}"></script>
-    <script th:src="@{/public/lib/datatable/js/buttons.flash.min.js}"></script>
-<!--     <script th:src="@{/public/lib/datatable/js/buttons.html5.min.js}"></script> -->
-    <script th:src="@{/public/lib/datatable/js/buttons.print.min.js}"></script>
     <script th:src="@{/public/lib/datatableEditor/js/dataTables.editor.js}"></script>
-    <script th:src="@{/public/lib/datatable/js/dataTables.bootstrap.js}"></script>
-    <script th:src="@{/public/lib/datatable/js/dataTables.fixedHeader.js}"></script>
-    <script th:src="@{/public/lib/datatable/js/dataTables.scroller.min.js}"></script>
-    <script th:src="@{/public/lib/datatable/js/dataTables.select.min.js}"></script>
-    <script th:src="@{/public/lib/datatable/js/dataTables.keyTable.min.js}"></script>
     <script th:src="@{/public/lib/moment/js/moment.js}"></script>
-    <script th:src="@{/public/lib/datatable/js/dataTables.moment.sorting.datetime.js}"></script>
-    <script th:src="@{/public/lib/datatable/js/dataTables.responsive.min.js}"></script>
-    <script th:src="@{/public/lib/datatable/js/dataTables.rowReorder.min.js}"></script>
     <script th:src="@{/public/lib/confirmation/js/bootstrap-confirmation.js}"></script>
     <script th:src="@{/public/lib/messages/js/alerts.js}"></script>
     <script th:src="@{/public/lib/messages/js/loading.js}"></script>
     <script th:src="@{/public/lib/bootstro/js/bootstro.min.js}"></script>
     <script th:src="@{/public/lib/switch/js/bootstrap-switch.min.js}"></script>
     <!-- <script src="http://cdn.jsdelivr.net/jquery.cookie/1.3.1/jquery.cookie.js"></script> -->
-
 	<script th:src="@{/public/main/js/errorHandler.js?v=}+#{app.version}"></script>
-
     <script th:src="@{/public/main/js/util.js}"></script>
     <script th:src="@{/public/main/js/util.format.js}"></script>
     <script th:src="@{/public/main/js/util.web.js}"></script>
-
     <script th:src="@{/public/main/js/rest.resources.js}"></script>
     <script th:src="@{/public/main/js/datatable.js}"></script>
-    <script th:src="@{/public/main/js/editor.js}"></script>        
-    
+    <script th:src="@{/public/main/js/editor.js}"></script>
     <script th:src="@{/public/main/js/menu.js}"></script>
-	    
 </head>
