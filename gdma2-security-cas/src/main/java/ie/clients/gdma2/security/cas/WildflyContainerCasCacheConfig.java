@@ -3,7 +3,6 @@ package ie.clients.gdma2.security.cas;
 import org.jasig.cas.client.proxy.ProxyGrantingTicketStorage;
 import org.jboss.as.clustering.infinispan.DefaultCacheContainer;
 import org.kamranzafar.cas.client.infinispan.InfinispanProxyGrantingTicketStorage;
-import org.omg.CORBA.Object;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

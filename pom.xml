@@ -190,6 +190,12 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-log4j</artifactId>
+				<exclusions>
+					<exclusion>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-log4j12</artifactId>
+					</exclusion>
+				</exclusions>
 		</dependency>
 		
 	<!-- updated Log4J to 2.15.0 after CVE-2021-44228 alert  -->
@@ -284,14 +290,11 @@
         </dependency>
         
         <!-- Oracle support-->
-		<!-- Due to Oracle license restrictions, the Oracle JDBC driver is not available in the public Maven repository  -->
-		<!-- https://mvnrepository.com/artifact/com.oracle/ojdbc6 -->
-<!-- 		<dependency> -->
-<!-- 		    <groupId>com.oracle</groupId> -->
-<!-- 		    <artifactId>ojdbc6</artifactId> -->
-<!-- 		    <version>11.1.0.7.0</version> -->
-<!-- 		    <scope>test</scope> -->
-<!-- 		</dependency> -->
+		<dependency>
+			<groupId>com.oracle.database.jdbc</groupId>
+			<artifactId>ojdbc10</artifactId>
+			<version>19.15.0.0.1</version>
+		</dependency>
 
 		<!-- Apache Commons DBCP 2.0 - implements Database Connection Pooling, 
 			see : http://commons.apache.org/proper/commons-dbcp/ DBCP 2 compiles and 
