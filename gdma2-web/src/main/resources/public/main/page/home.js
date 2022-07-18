@@ -302,17 +302,16 @@ var configureDataTable = function(columnsMetadata){
 		tableData.page.len( $(this).val() ).draw();
 	});
 	
-    //Inline editing on tab focus
-    tableData.on( 'key-focus', function ( e, datatable, cell ) {
-	  datatableEditor.inline( cell.index(),{ submit: 'allIfChanged',
-  	  submitOnBlur: true
-	  });
-    	/*var elems = document.querySelectorAll(".editable.focus");
+    // Inline editing on tab focus
+    // FIXME: unnecessary as on click should be enough (?) and buggy with newest versions
+    // tableData.on( 'key-focus', function ( e, datatable, cell ) {
+    // datatableEditor.inline( cell.index(),{ submit: 'allIfChanged', onBlur: 'submit' });
+        /*var elems = document.querySelectorAll(".editable.focus");
 
-    	[].forEach.call(elems, function(el) {
-    	    el.classList.remove("focus");
-    	});*/
-    });
+        [].forEach.call(elems, function(el) {
+            el.classList.remove("focus");
+        });*/
+    // });
 
     // Activate an inline edit on click of a table cell
     // or a DataTables Responsive data cell
@@ -324,9 +323,9 @@ var configureDataTable = function(columnsMetadata){
         //Farrukh: Previously the following line was datatableEditor.inline( this ,{ submit: 'allIfChanged',
         //Changed this line as per https://datatables.net//forums/discussion/comment/86077/#Comment_86077
         //TODO: Daniel to verify
-  	  	datatableEditor.inline( tableData.cell(this).index() ,{ submit: 'allIfChanged',
-  	  	  submitOnBlur: true
-	  });
+        datatableEditor.inline(
+            tableData.cell(this).index(), {submit: 'allIfChanged', onBlur: submit}
+        );
     } );
     
     $(window).scroll(function(){
